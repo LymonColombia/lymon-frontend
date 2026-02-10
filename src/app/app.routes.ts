@@ -6,6 +6,7 @@ import { CheckinComponent } from './presentation/pages/checkin/checkin';
 import { CreateRoomComponent } from './presentation/pages/createRoom/createRoom';
 import { RegisterEmployeeComponent } from './presentation/pages/registerEmployee/registerEmployee';
 import { RoomDetailsComponent } from './presentation/pages/roomDetails/roomDetails';
+import { SalesSummaryComponent } from './presentation/pages/salesSummary/salesSummary';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'checkin', component: CheckinComponent },
   { path: 'create-room', component: CreateRoomComponent },
   { path: 'register-employee', component: RegisterEmployeeComponent },
-  {path: 'room-details', component: RoomDetailsComponent},
+  { path: 'room-details', component: RoomDetailsComponent },
+  { path: 'sales-summary', component: SalesSummaryComponent },
   { path: '**', redirectTo: '/login' }
 ];
