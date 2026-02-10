@@ -20,15 +20,13 @@ export class SidebarComponent {
   @Input() activeRoute: string = '';
 
   menuItems: MenuItem[] = [
-    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
     { icon: 'calendar', label: 'Reservaciones', route: '/booking' },
-    { icon: 'hotel', label: 'Habitaciones', route: '/rooms' },
-    { icon: 'inventory', label: 'Inventario', route: '/inventory' },
-    { icon: 'services', label: 'Servicios', route: '/services' },
-    { icon: 'people', label: 'Huéspedes', route: '/guests' },
-    { icon: 'reports', label: 'Reportes', route: '/reports' },
-    { icon: 'receipt', label: 'Facturación', route: '/billing' },
-    { icon: 'settings', label: 'Configuración', route: '/settings' }
+    { icon: 'hotel', label: 'Check-in', route: '/checkin' },
+    { icon: 'dashboard', label: 'Crear Habitación', route: '/create-room' },
+    { icon: 'people', label: 'Registrar Empleado', route: '/register-employee' },
+    { icon: 'reports', label: 'Resumen de Ventas', route: '/sales-summary' },
+    { icon: 'calendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
+    { icon: 'settings', label: 'Configuración de Correos', route: '/email-config' }
   ];
 
   isActive(route: string): boolean {
