@@ -1,0 +1,243 @@
+<app-sidebar [activeRoute]="'/rooms'"></app-sidebar>
+
+<div class="main-content">
+    <input type="radio" name="step" id="step1-radio" checked>
+<input type="radio" name="step" id="step2-radio">
+<input type="radio" name="step" id="step3-radio">
+<input type="checkbox" id="modal-toggle">
+
+    <div class="room-container">
+        <div class="room-modal">
+            <div class="modal-header">
+                <h1 class="modal-title">Crear Nueva Habitación</h1>
+                <p class="modal-step">Paso <span class="current-step-1">1</span><span class="current-step-2">2</span><span class="current-step-3">3</span> de 3</p>
+                <a href="#" class="close-button">✕</a>
+            </div>
+
+            <div class="stepper">
+                <div class="step step-1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Información Básica</span>
+                </div>
+                <div class="step-line step-line-1"></div>
+                <div class="step step-2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Configuración</span>
+                </div>
+                <div class="step-line step-line-2"></div>
+                <div class="step step-3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Detalles Extra</span>
+                </div>
+            </div>
+
+            <div class="step-content" id="step1">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="roomNumber">Número de Habitación <span class="required">*</span></label>
+                        <input type="text" id="roomNumber" placeholder="Ej: 301" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="floor">Piso <span class="required">*</span></label>
+                        <input type="text" id="floor" placeholder="Ej: 3" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Habitación <span class="required">*</span></label>
+                    <div class="room-type-grid">
+                        <div class="room-type-btn">Habitación Sencilla</div>
+                        <div class="room-type-btn">Habitación Doble</div>
+                        <div class="room-type-btn">Suite Ejecutiva</div>
+                        <div class="room-type-btn">Suite Presidencial</div>
+                        <div class="room-type-btn">Habitación Familiar</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Precio por Noche <span class="required">*</span></label>
+                    <div class="input-with-prefix">
+                        <span class="prefix">$</span>
+                        <input type="number" id="price" placeholder="150" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-content" id="step2">
+                <div class="form-group">
+                    <label>Tipo de Cama</label>
+                    <div class="bed-type-grid">
+                        <div class="bed-type-btn">Individual</div>
+                        <div class="bed-type-btn">Matrimonial</div>
+                        <div class="bed-type-btn">King</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cantidad de Camas</label>
+                        <div class="counter">
+                            <span class="counter-btn">-</span>
+                            <input type="number" value="1" readonly>
+                            <span class="counter-btn">+</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Capacidad (Personas)</label>
+                        <div class="counter">
+                            <span class="counter-btn">-</span>
+                            <input type="number" value="2" readonly>
+                            <span class="counter-btn">+</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Amenidades y Comodidades</label>
+                    <div class="amenities-grid">
+                        <div class="amenity-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                                <line x1="12" y1="20" x2="12.01" y2="20"/>
+                            </svg>
+                            <span>WiFi</span>
+                        </div>
+                        <div class="amenity-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                                <polyline points="17 2 12 7 7 2"/>
+                            </svg>
+                            <span>TV</span>
+                        </div>
+                        <div class="amenity-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3.5 8h17M3.5 16h17"/>
+                                <path d="M8 8v8m8-8v8"/>
+                            </svg>
+                            <span>Aire Acondicionado</span>
+                        </div>
+                        <div class="amenity-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                                <line x1="6" y1="1" x2="6" y2="4"/>
+                                <line x1="10" y1="1" x2="10" y2="4"/>
+                                <line x1="14" y1="1" x2="14" y2="4"/>
+                            </svg>
+                            <span>Cafetera</span>
+                        </div>
+                        <div class="amenity-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 3h18v18H3z"/>
+                                <path d="M8 3v18M16 3v18"/>
+                                <path d="M3 9h18M3 15h18"/>
+                            </svg>
+                            <span>Minibar</span>
+                        </div>
+                        <div class="amenity-btn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 22v-4h6v4"/>
+                                <path d="M3 10a7 7 0 0 1 14 0v8H3v-8z"/>
+                                <circle cx="6" cy="10" r="1"/>
+                            </svg>
+                            <span>Baño Privado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-content" id="step3">
+                <div class="form-group">
+                    <label>Imagen de la Habitación</label>
+                    <div class="image-upload">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#666" stroke-width="2">
+                            <path d="M24 8v32M8 24h32"/>
+                        </svg>
+                        <p class="upload-text">Haz clic para subir una imagen</p>
+                        <p class="upload-hint">PNG, JPG hasta 10MB</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" rows="4" placeholder="Descripción de la habitación..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <label for="step1-radio" class="btn-secondary prev-btn">Anterior</label>
+                <label for="step2-radio" class="btn-secondary prev-btn-2">Anterior</label>
+                <a href="../../index.html" class="btn-secondary">Cancelar</a>
+                <label for="step2-radio" class="btn-primary next-btn-1">Siguiente</label>
+                <label for="step3-radio" class="btn-primary next-btn-2">Siguiente</label>
+                <label for="modal-toggle" class="btn-primary create-btn">Crear Habitación</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirmation-modal">
+        <div class="confirmation-content">
+            <h2>Resumen de la Habitación</h2>
+            
+            <div class="summary-section">
+                <h3>Información Básica</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Número de Habitación:</span>
+                    <span class="summary-value">301</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Piso:</span>
+                    <span class="summary-value">3</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Tipo de Habitación:</span>
+                    <span class="summary-value">Suite Ejecutiva</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Precio por Noche:</span>
+                    <span class="summary-value">$150.00</span>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3>Configuración</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Tipo de Cama:</span>
+                    <span class="summary-value">King</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Cantidad de Camas:</span>
+                    <span class="summary-value">1</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Capacidad:</span>
+                    <span class="summary-value">2 personas</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Amenidades:</span>
+                    <span class="summary-value">WiFi, TV, Aire Acondicionado</span>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3>Detalles Extra</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Imagen:</span>
+                    <span class="summary-value">Imagen cargada</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Descripción:</span>
+                    <span class="summary-value">Habitación amplia con vista al mar</span>
+                </div>
+            </div>
+
+            <div class="confirmation-actions">
+                <label for="modal-toggle" class="btn-secondary">Cancelar</label>
+                <label for="step1-radio" class="btn-outline">Editar</label>
+                <a href="#" class="btn-primary">Confirmar</a>
+            </div>
+        </div>
+    </div>
+</div>

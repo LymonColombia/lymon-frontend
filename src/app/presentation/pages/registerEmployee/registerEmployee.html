@@ -1,0 +1,293 @@
+<app-sidebar [activeRoute]="'/settings'"></app-sidebar>
+
+<div class="main-content">
+    <input type="radio" name="step" id="step1-radio" checked>
+<input type="radio" name="step" id="step2-radio">
+<input type="radio" name="step" id="step3-radio">
+<input type="checkbox" id="modal-toggle">
+
+    <div class="employee-container">
+        <div class="employee-modal">
+            <div class="modal-header">
+                <h1 class="modal-title">Registrar Empleado</h1>
+                <p class="modal-step">Paso <span class="current-step-1">1</span><span class="current-step-2">2</span><span class="current-step-3">3</span> de 3</p>
+                <a href="#" class="close-button">✕</a>
+            </div>
+
+            <div class="stepper">
+                <div class="step step-1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Información Personal</span>
+                </div>
+                <div class="step-line step-line-1"></div>
+                <div class="step step-2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Rol y Permisos</span>
+                </div>
+                <div class="step-line step-line-2"></div>
+                <div class="step step-3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Información de Acceso</span>
+                </div>
+            </div>
+
+            <div class="step-content" id="step1">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Foto de Perfil</label>
+                        <div class="photo-upload">
+                            <div class="photo-preview">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="8" r="4"/>
+                                    <path d="M4 20c0-4 3-7 8-7s8 3 8 7"/>
+                                </svg>
+                            </div>
+                            <div class="photo-info">
+                                <p>Sube una foto de perfil del empleado</p>
+                                <label class="upload-btn">Seleccionar Imagen</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">Nombre <span class="required">*</span></label>
+                        <input type="text" id="firstName" placeholder="Nombre del empleado" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Apellido <span class="required">*</span></label>
+                        <input type="text" id="lastName" placeholder="Apellido del empleado" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico <span class="required">*</span></label>
+                        <input type="email" id="email" placeholder="correo@ejemplo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Teléfono <span class="required">*</span></label>
+                        <input type="text" id="phone" placeholder="(555) 123-4567" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="department">Departamento <span class="required">*</span></label>
+                        <select id="department" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="recepcion">Recepción</option>
+                            <option value="limpieza">Limpieza</option>
+                            <option value="mantenimiento">Mantenimiento</option>
+                            <option value="cocina">Cocina</option>
+                            <option value="administracion">Administración</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hireDate">Fecha de Ingreso <span class="required">*</span></label>
+                        <div class="input-with-icon">
+                            
+                            <input type="date" id="hireDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salary">Salario Mensual <span class="required">*</span></label>
+                        <div class="input-with-prefix"> 
+                            <input type="number" id="salary" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="workSchedule">Horario de Trabajo <span class="required">*</span></label>
+                        <div class="input-with-icon">
+                            
+                            <input type="text" id="workSchedule" placeholder="Ej: 9:00 AM - 6:00 PM" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="ssn">Número de Seguro Social</label>
+                    <input type="text" id="ssn" placeholder="NSS / IMSS">
+                </div>
+            </div>
+
+            <div class="step-content" id="step2">
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">◯</span>
+                        Rol y Permisos
+                    </div>
+
+                    <div class="form-group">
+                        <label>Seleccionar Rol <span class="required">*</span></label>
+                        <select required style="width: 100%;">
+                            <option value="">Seleccionar...</option>
+                            <option value="admin">Administrador</option>
+                            <option value="gerente">Gerente</option>
+                            <option value="recepcionista">Recepcionista</option>
+                            <option value="limpieza">Personal de Limpieza</option>
+                            <option value="mantenimiento">Personal de Mantenimiento</option>
+                            <option value="cocina">Personal de Cocina</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 32px;">
+                        <label>Descripción del Rol</label>
+                        <p style="font-size: 14px; color: #666; margin-top: 8px;">
+                            El rol seleccionado determinará los permisos y accesos que tendrá el empleado en el sistema. 
+                            Los administradores tienen acceso completo, mientras que otros roles tienen permisos limitados según sus funciones.
+                        </p>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 32px;">
+                        <label>Permisos Principales</label>
+                        <div class="role-grid" style="margin-top: 12px;">
+                            <div class="role-option">
+                                <input type="checkbox" id="perm1">
+                                <label for="perm1" style="cursor: pointer;">Ver Habitaciones</label>
+                            </div>
+                            <div class="role-option">
+                                <input type="checkbox" id="perm2">
+                                <label for="perm2" style="cursor: pointer;">Gestionar Reservas</label>
+                            </div>
+                            <div class="role-option">
+                                <input type="checkbox" id="perm3">
+                                <label for="perm3" style="cursor: pointer;">Ver Reportes</label>
+                            </div>
+                            <div class="role-option">
+                                <input type="checkbox" id="perm4">
+                                <label for="perm4" style="cursor: pointer;">Gestionar Empleados</label>
+                            </div>
+                            <div class="role-option">
+                                <input type="checkbox" id="perm5">
+                                <label for="perm5" style="cursor: pointer;">Acceso a Finanzas</label>
+                            </div>
+                            <div class="role-option">
+                                <input type="checkbox" id="perm6">
+                                <label for="perm6" style="cursor: pointer;">Configuración del Sistema</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-content" id="step3">
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-icon">◯</span>
+                        Información de Acceso al Sistema
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Nombre de Usuario <span class="required">*</span></label>
+                        <input type="text" id="username" placeholder="nombre.apellido" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Contraseña <span class="required">*</span></label>
+                            <input type="password" id="password" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Contraseña <span class="required">*</span></label>
+                            <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="sendEmail" style="display: inline-block; width: auto;">
+                            <span style="font-weight: 400;">Enviar credenciales por correo electrónico</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 32px;">
+                        <label>Notas Adicionales</label>
+                        <textarea id="notes" rows="4" placeholder="Información adicional sobre el empleado..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <label for="step1-radio" class="btn-secondary prev-btn">Anterior</label>
+                <label for="step2-radio" class="btn-secondary prev-btn-2">Anterior</label>
+                <a href="../../index.html" class="btn-secondary">Cancelar</a>
+                <label for="step2-radio" class="btn-primary next-btn-1">Siguiente</label>
+                <label for="step3-radio" class="btn-primary next-btn-2">Siguiente</label>
+                <label for="modal-toggle" class="btn-primary create-btn">Registrar Empleado</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirmation-modal">
+        <div class="confirmation-content">
+            <h2>Resumen del Empleado</h2>
+            
+            <div class="summary-section">
+                <h3>Información Personal</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Nombre Completo:</span>
+                    <span class="summary-value">Juan Pérez García</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Correo Electrónico:</span>
+                    <span class="summary-value">juan.perez@lymon.com</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Teléfono:</span>
+                    <span class="summary-value">(555) 123-4567</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Departamento:</span>
+                    <span class="summary-value">Recepción</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Fecha de Ingreso:</span>
+                    <span class="summary-value">29/01/2026</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Salario Mensual:</span>
+                    <span class="summary-value">$15,000.00</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Horario:</span>
+                    <span class="summary-value">9:00 AM - 6:00 PM</span>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3>Rol y Permisos</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Rol Asignado:</span>
+                    <span class="summary-value">Recepcionista</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Permisos:</span>
+                    <span class="summary-value">Ver Habitaciones, Gestionar Reservas</span>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3>Acceso al Sistema</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Nombre de Usuario:</span>
+                    <span class="summary-value">juan.perez</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Enviar credenciales:</span>
+                    <span class="summary-value">Sí</span>
+                </div>
+            </div>
+
+            <div class="confirmation-actions">
+                <label for="modal-toggle" class="btn-secondary">Cancelar</label>
+                <label for="step1-radio" class="btn-outline modal-close-label">Editar</label>
+                <a href="#" class="btn-primary">Confirmar Registro</a>
+            </div>
+        </div>
+    </div>
+</div>
