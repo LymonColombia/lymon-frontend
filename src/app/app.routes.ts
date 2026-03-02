@@ -9,18 +9,19 @@ import { RoomDetailsComponent } from './presentation/pages/roomDetails/roomDetai
 import { SalesSummaryComponent } from './presentation/pages/salesSummary/salesSummary';
 import { CalendarSyncComponent } from './presentation/pages/calendarSync/calendarSync';
 import { EmailConfigComponent } from './presentation/pages/emailConfig/emailConfig';
+import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'booking', component: BookingComponent },
-  { path: 'checkin', component: CheckinComponent },
-  { path: 'create-room', component: CreateRoomComponent },
-  { path: 'register-employee', component: RegisterEmployeeComponent },
-  { path: 'room-details', component: RoomDetailsComponent },
-  { path: 'sales-summary', component: SalesSummaryComponent },
-  { path: 'calendar-sync', component: CalendarSyncComponent },
-  { path: 'email-config', component: EmailConfigComponent },
-  { path: '**', redirectTo: '/login' }
+  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
+  { path: 'booking', component: BookingComponent, canActivate: [authGuard] },
+  { path: 'checkin', component: CheckinComponent, canActivate: [authGuard] },
+  { path: 'create-room', component: CreateRoomComponent, canActivate: [authGuard] },
+  { path: 'register-employee', component: RegisterEmployeeComponent, canActivate: [authGuard] },
+  { path: 'room-details', component: RoomDetailsComponent, canActivate: [authGuard] },
+  { path: 'sales-summary', component: SalesSummaryComponent, canActivate: [authGuard] },
+  { path: 'calendar-sync', component: CalendarSyncComponent, canActivate: [authGuard] },
+  { path: 'email-config', component: EmailConfigComponent, canActivate: [authGuard] },
+  { path: '**', redirectTo: '/login' },
 ];

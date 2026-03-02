@@ -314,3 +314,47 @@
 .auth-content {
     animation: fadeInUp 0.6s ease-out;
 }
+
+/* ── Validation & feedback ── */
+
+.error-banner {
+    background: #fff0f0;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    font-family: 'Syne', sans-serif;
+}
+
+.field-error {
+    display: block;
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 4px;
+    font-family: 'Syne', sans-serif;
+}
+
+.input-wrapper.input-error input,
+.input-wrapper.input-error select {
+    border-color: #dc3545;
+    outline-color: #dc3545;
+}
+
+.select-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    padding: 2px 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.select-input:focus {
+    outline: none;
+}
