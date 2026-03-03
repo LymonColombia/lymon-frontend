@@ -1,4 +1,9 @@
-import { LoginResponse, RegisterResponse } from '@/domain/entities/auth.model';
+import {
+  LoginResponse,
+  RegisterResponse,
+  RecoverPasswordResponse,
+  ConfirmRecoverPasswordResponse,
+} from '@/domain/entities/auth.model';
 
 export class AuthMapper {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,5 +37,15 @@ export class AuthMapper {
         refreshToken: raw.data.refreshToken,
       },
     };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static toRecoverPasswordResponse(raw: any): RecoverPasswordResponse {
+    return { message: raw.message };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static toConfirmRecoverPasswordResponse(raw: any): ConfirmRecoverPasswordResponse {
+    return { message: raw.message };
   }
 }

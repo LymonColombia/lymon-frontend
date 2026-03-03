@@ -37,3 +37,21 @@ export interface RegisterResponse {
   user: AuthUser;
   tokens: AuthTokens;
 }
+
+export interface RecoverPasswordRequest {
+  email: string;
+}
+
+export interface RecoverPasswordResponse {
+  message: string;
+}
+
+export interface ConfirmRecoverPasswordRequest {
+  token: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+}
+
+export interface ConfirmRecoverPasswordResponse {
+  message: string;
+}
