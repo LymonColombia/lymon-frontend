@@ -6,6 +6,8 @@ import { AuthRepositoryImpl } from '@/infrastructure/repositories/auth.repositor
 import { UserRepository } from '@/domain/repositories/user.repository';
 import { UserRepositoryImpl } from '@/infrastructure/repositories/user.repository.impl';
 import { authInterceptor } from '@/infrastructure/interceptors/auth.interceptor';
+import { StaffRepository } from '@/domain/repositories/staff.repository';
+import { StaffRepositoryImpl } from '@/infrastructure/repositories/staff.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -15,5 +17,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
     { provide: AuthRepository, useClass: AuthRepositoryImpl },
     { provide: UserRepository, useClass: UserRepositoryImpl },
+    { provide: StaffRepository, useClass: StaffRepositoryImpl },
   ],
 };
