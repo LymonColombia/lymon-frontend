@@ -75,6 +75,12 @@
                 <path d="M12 1v6m0 6v6m9.66-9H16.5m-9 0H1.34m17.32-4.24l-4.24 4.24m-6.36 6.36L3.82 20.6m16.36 0l-4.24-4.24M8.06 8.06 3.82 3.82"/>
               </svg>
             }
+            @case ('lock') {
+              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            }
           }
           <span class="menu-label">{{ item.label }}</span>
         </a>

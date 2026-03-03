@@ -26,7 +26,8 @@ export class SidebarComponent {
     { icon: 'people', label: 'Registrar Empleado', route: '/register-employee' },
     { icon: 'reports', label: 'Resumen de Ventas', route: '/sales-summary' },
     { icon: 'calendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
-    { icon: 'settings', label: 'Configuración de Correos', route: '/email-config' }
+    { icon: 'settings', label: 'Configuración de Correos', route: '/email-config' },
+    { icon: 'lock', label: 'Cambiar Contraseña', route: '/change-password' },
   ];
 
   isActive(route: string): boolean {

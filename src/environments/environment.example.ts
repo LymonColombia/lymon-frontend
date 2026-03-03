@@ -9,4 +9,7 @@ export const environment = {
   auth: {
     endpoint: '/auth',
   },
+  user: {
+    endpoint: '/user',
+  },
 };
