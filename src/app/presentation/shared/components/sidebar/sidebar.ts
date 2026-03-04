@@ -28,6 +28,7 @@ export class SidebarComponent {
     { icon: 'calendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
     { icon: 'settings', label: 'Configuración de Correos', route: '/email-config' },
     { icon: 'lock', label: 'Cambiar Contraseña', route: '/change-password' },
+    { icon: 'reports', label: 'Novedades Laborales', route: '/incident-report/list' },
   ];
 
   isActive(route: string): boolean {
