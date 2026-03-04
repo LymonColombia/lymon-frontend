@@ -30,6 +30,7 @@ export class SidebarComponent {
     { icon: 'lock', label: 'Cambiar Contraseña', route: '/change-password' },
     { icon: 'reports', label: 'Novedades Laborales', route: '/incident-report/list' },
     { icon: 'settings', label: 'Perfil del Negocio', route: '/tenant-profile' },
+    { icon: 'reports', label: 'Registros de Auditoría', route: '/audit-log' },
   ];
 
   isActive(route: string): boolean {

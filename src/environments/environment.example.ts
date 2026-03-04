@@ -27,4 +27,7 @@ export const environment = {
   guestAuth: {
     endpoint: '/guest/auth',
   },
+  audit: {
+    endpoint: '/audit',
+  },
 };

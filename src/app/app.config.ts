@@ -16,6 +16,8 @@ import { PropertyRepository } from '@/domain/repositories/property.repository';
 import { PropertyRepositoryImpl } from '@/infrastructure/repositories/property.repository.impl';
 import { GuestAuthRepository } from '@/domain/repositories/guest-auth.repository';
 import { GuestAuthRepositoryImpl } from '@/infrastructure/repositories/guest-auth.repository.impl';
+import { AuditLogRepository } from '@/domain/repositories/audit-log.repository';
+import { AuditLogRepositoryImpl } from '@/infrastructure/repositories/audit-log.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -30,5 +32,6 @@ export const appConfig: ApplicationConfig = {
     { provide: StaffRepository, useClass: StaffRepositoryImpl },
     { provide: PropertyRepository, useClass: PropertyRepositoryImpl },
     { provide: GuestAuthRepository, useClass: GuestAuthRepositoryImpl },
+    { provide: AuditLogRepository, useClass: AuditLogRepositoryImpl },
   ],
 };
