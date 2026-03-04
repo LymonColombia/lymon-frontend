@@ -15,4 +15,10 @@ export const environment = {
   incidentReport: {
     endpoint: '/incident-reports',
   },
+  properties: {
+    endpoint: '/properties',
+  },
+  units: {
+    endpoint: '/units',
+  },
 };
