@@ -2,7 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
-import { InviteStaffDto, RolesResponse } from '@/domain/entities/staff.model';
+import {
+  InviteStaffDto,
+  PropertiesResponse,
+  RolesResponse,
+  UnitsResponse,
+} from '@/domain/entities/staff.model';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { environment } from '@env';
 
@@ -29,5 +34,19 @@ export class StaffRepositoryImpl extends StaffRepository {
     return this.http.get<RolesResponse>(`${environment.apiUrl}/roles`, {
       headers: this.authHeaders,
     });
+  }
+
+  getProperties(): Observable<PropertiesResponse> {
+    return this.http.get<PropertiesResponse>(
+      `${environment.apiUrl}${environment.properties.endpoint}`,
+      { headers: this.authHeaders },
+    );
+  }
+
+  getUnits(propertyId: string): Observable<UnitsResponse> {
+    return this.http.get<UnitsResponse>(
+      `${environment.apiUrl}${environment.units.endpoint}/${propertyId}`,
+      { headers: this.authHeaders },
+    );
   }
 }

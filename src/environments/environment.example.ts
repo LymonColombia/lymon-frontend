@@ -12,4 +12,10 @@ export const environment = {
   user: {
     endpoint: '/user',
   },
+  properties: {
+    endpoint: '/properties',
+  },
+  units: {
+    endpoint: '/units',
+  },
 };

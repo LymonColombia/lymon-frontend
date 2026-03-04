@@ -175,6 +175,12 @@
   border-color: #e53935;
 }
 
+.form-group select.select-multiple {
+  height: 120px;
+  padding: 8px 14px;
+  resize: vertical;
+}
+
 /* ── Password field ──────────────────────────────── */
 .password-wrapper {
   position: relative;

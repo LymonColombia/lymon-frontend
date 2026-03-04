@@ -5,7 +5,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { AddStaffUseCase } from '@/domain/use-cases/add-staff.use-case';
 import { GetRolesUseCase } from '@/domain/use-cases/get-roles.use-case';
-import { Role, ScopeType } from '@/domain/entities/staff.model';
+import { GetPropertiesUseCase } from '@/domain/use-cases/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/use-cases/get-units.use-case';
+import { Role, Property, Unit, ScopeType } from '@/domain/entities/staff.model';
 
 @Component({
   selector: 'app-register-employee',
@@ -19,14 +21,20 @@ export class RegisterEmployeeComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly addStaffUseCase = inject(AddStaffUseCase);
   private readonly getRolesUseCase = inject(GetRolesUseCase);
+  private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
+  private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly router = inject(Router);
 
   readonly isLoading = signal(false);
   readonly rolesLoading = signal(true);
+  readonly propertiesLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
   readonly showPassword = signal(false);
   readonly availableRoles = signal<Role[]>([]);
+  readonly availableProperties = signal<Property[]>([]);
+  readonly unitsPerRow = signal<Partial<Record<number, Unit[]>>>({});
+  readonly unitsLoadingPerRow = signal<Partial<Record<number, boolean>>>({});
 
   readonly SCOPE_TENANT: ScopeType = 'TENANT';
   readonly SCOPE_PROPERTY: ScopeType = 'PROPERTY';
@@ -49,6 +57,14 @@ export class RegisterEmployeeComponent implements OnInit {
         this.errorMessage.set('No se pudieron cargar los roles disponibles.');
       },
     });
+
+    this.getPropertiesUseCase.execute().subscribe({
+      next: (properties) => {
+        this.availableProperties.set(properties);
+        this.propertiesLoading.set(false);
+      },
+      error: () => this.propertiesLoading.set(false),
+    });
   }
 
   get email() {
@@ -69,7 +85,8 @@ export class RegisterEmployeeComponent implements OnInit {
     return this.fb.group({
       roleId: ['', Validators.required],
       scopeType: ['TENANT' as ScopeType, Validators.required],
-      resourceIds: [''],
+      selectedPropertyId: [''],
+      resourceIds: [[] as string[]],
     });
   }
 
@@ -79,6 +96,37 @@ export class RegisterEmployeeComponent implements OnInit {
 
   removeRoleAssignment(index: number): void {
     this.roleAssignments.removeAt(index);
+    this.unitsPerRow.update((m) => {
+      const c = { ...m };
+      delete c[index];
+      return c;
+    });
+    this.unitsLoadingPerRow.update((m) => {
+      const c = { ...m };
+      delete c[index];
+      return c;
+    });
+  }
+
+  onScopeChange(index: number): void {
+    this.getRoleGroupAt(index).patchValue({ resourceIds: [], selectedPropertyId: '' });
+    this.unitsPerRow.update((m) => ({ ...m, [index]: [] }));
+  }
+
+  onPropertySelectChange(index: number, propertyId: string): void {
+    this.getRoleGroupAt(index).patchValue({ resourceIds: [] });
+    if (!propertyId) {
+      this.unitsPerRow.update((m) => ({ ...m, [index]: [] }));
+      return;
+    }
+    this.unitsLoadingPerRow.update((m) => ({ ...m, [index]: true }));
+    this.getUnitsUseCase.execute(propertyId).subscribe({
+      next: (units) => {
+        this.unitsPerRow.update((m) => ({ ...m, [index]: units }));
+        this.unitsLoadingPerRow.update((m) => ({ ...m, [index]: false }));
+      },
+      error: () => this.unitsLoadingPerRow.update((m) => ({ ...m, [index]: false })),
+    });
   }
 
   togglePasswordVisibility(): void {
@@ -105,18 +153,19 @@ export class RegisterEmployeeComponent implements OnInit {
       email: raw.email as string,
       password: raw.password as string,
       roleAssignments: (
-        raw.roleAssignments as Array<{ roleId: string; scopeType: ScopeType; resourceIds: string }>
+        raw.roleAssignments as Array<{
+          roleId: string;
+          scopeType: ScopeType;
+          selectedPropertyId: string;
+          resourceIds: string[];
+        }>
       ).map((r) => {
         if (r.scopeType === this.SCOPE_TENANT) {
           return { roleId: r.roleId, scope: { type: 'TENANT' as const } };
         }
-        const resourceIds = r.resourceIds
-          .split(',')
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0);
         return {
           roleId: r.roleId,
-          scope: { type: r.scopeType as 'PROPERTY' | 'UNIT', resourceIds },
+          scope: { type: r.scopeType as 'PROPERTY' | 'UNIT', resourceIds: r.resourceIds },
         };
       }),
     };
@@ -129,7 +178,14 @@ export class RegisterEmployeeComponent implements OnInit {
         while (this.roleAssignments.length > 1) {
           this.roleAssignments.removeAt(1);
         }
-        this.getRoleGroupAt(0).patchValue({ scopeType: 'TENANT', roleId: '', resourceIds: '' });
+        this.getRoleGroupAt(0).patchValue({
+          scopeType: 'TENANT',
+          roleId: '',
+          resourceIds: [],
+          selectedPropertyId: '',
+        });
+        this.unitsPerRow.set({});
+        this.unitsLoadingPerRow.set({});
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);

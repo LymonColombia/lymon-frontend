@@ -210,7 +210,7 @@
 
                 <div class="form-group">
                   <label>Tipo de Alcance <span class="required">*</span></label>
-                  <select formControlName="scopeType">
+                  <select formControlName="scopeType" (change)="onScopeChange($index)">
                     <option [value]="SCOPE_TENANT">TENANT — Todo el hotel</option>
                     <option [value]="SCOPE_PROPERTY">PROPERTY — Propiedad específica</option>
                     <option [value]="SCOPE_UNIT">UNIT — Unidad específica</option>
@@ -218,11 +218,53 @@
                 </div>
               </div>
 
-              @if (getRoleGroupAt($index).get('scopeType')?.value !== SCOPE_TENANT) {
+              @if (getRoleGroupAt($index).get('scopeType')?.value === SCOPE_PROPERTY) {
                 <div class="form-group">
-                  <label>IDs de Recursos <span class="required">*</span></label>
-                  <input type="text" formControlName="resourceIds" placeholder="ID1, ID2, ID3" />
-                  <span class="field-hint">Ingresa los IDs separados por comas</span>
+                  <label>Propiedades <span class="required">*</span></label>
+                  @if (propertiesLoading()) {
+                    <p class="field-hint">Cargando propiedades...</p>
+                  } @else {
+                    <select multiple formControlName="resourceIds" class="select-multiple">
+                      @for (p of availableProperties(); track p.id) {
+                        <option [value]="p.id">{{ p.name }} — {{ p.city }}</option>
+                      }
+                    </select>
+                    <span class="field-hint">Mantén Ctrl / Cmd para seleccionar varias</span>
+                  }
+                </div>
+              }
+
+              @if (getRoleGroupAt($index).get('scopeType')?.value === SCOPE_UNIT) {
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Propiedad <span class="required">*</span></label>
+                    <select
+                      formControlName="selectedPropertyId"
+                      [disabled]="propertiesLoading()"
+                      (change)="onPropertySelectChange($index, $any($event.target).value)"
+                    >
+                      <option value="">Seleccionar propiedad...</option>
+                      @for (p of availableProperties(); track p.id) {
+                        <option [value]="p.id">{{ p.name }} — {{ p.city }}</option>
+                      }
+                    </select>
+                  </div>
+
+                  @if (getRoleGroupAt($index).get('selectedPropertyId')?.value) {
+                    <div class="form-group">
+                      <label>Unidades <span class="required">*</span></label>
+                      @if (unitsLoadingPerRow()[$index]) {
+                        <p class="field-hint">Cargando unidades...</p>
+                      } @else {
+                        <select multiple formControlName="resourceIds" class="select-multiple">
+                          @for (u of unitsPerRow()[$index] ?? []; track u.id) {
+                            <option [value]="u.id">{{ u.name }}</option>
+                          }
+                        </select>
+                        <span class="field-hint">Mantén Ctrl / Cmd para seleccionar varias</span>
+                      }
+                    </div>
+                  }
                 </div>
               }
             </div>

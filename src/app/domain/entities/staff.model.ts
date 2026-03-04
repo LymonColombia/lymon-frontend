@@ -1,5 +1,27 @@
 export type ScopeType = 'TENANT' | 'PROPERTY' | 'UNIT';
 
+export interface Property {
+  id: string;
+  name: string;
+  propertyType: string;
+  city: string;
+}
+
+export interface PropertiesResponse {
+  data: Property[];
+}
+
+export interface Unit {
+  id: string;
+  name: string;
+}
+
+export interface UnitsResponse {
+  data: {
+    units: Unit[];
+  };
+}
+
 export interface Role {
   id: string;
   name: string;
