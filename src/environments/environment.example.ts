@@ -24,4 +24,7 @@ export const environment = {
   units: {
     endpoint: '/units',
   },
+  guestAuth: {
+    endpoint: '/guest/auth',
+  },
 };
