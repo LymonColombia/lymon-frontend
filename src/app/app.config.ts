@@ -8,6 +8,8 @@ import { UserRepositoryImpl } from '@/infrastructure/repositories/user.repositor
 import { authInterceptor } from '@/infrastructure/interceptors/auth.interceptor';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffRepositoryImpl } from '@/infrastructure/repositories/staff.repository.impl';
+import { PropertyRepository } from '@/domain/repositories/property.repository';
+import { PropertyRepositoryImpl } from '@/infrastructure/repositories/property.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -18,5 +20,6 @@ export const appConfig: ApplicationConfig = {
     { provide: AuthRepository, useClass: AuthRepositoryImpl },
     { provide: UserRepository, useClass: UserRepositoryImpl },
     { provide: StaffRepository, useClass: StaffRepositoryImpl },
+    { provide: PropertyRepository, useClass: PropertyRepositoryImpl },
   ],
 };

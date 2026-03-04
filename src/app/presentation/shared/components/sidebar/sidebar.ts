@@ -14,7 +14,7 @@ interface MenuItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css'
+  styleUrl: './sidebar.css',
 })
 export class SidebarComponent {
   @Input() activeRoute: string = '';
@@ -22,7 +22,7 @@ export class SidebarComponent {
   menuItems: MenuItem[] = [
     { icon: 'calendar', label: 'Reservaciones', route: '/booking' },
     { icon: 'hotel', label: 'Check-in', route: '/checkin' },
-    { icon: 'dashboard', label: 'Crear Habitación', route: '/create-room' },
+    { icon: 'dashboard', label: 'Propiedades y Unidades', route: '/properties' },
     { icon: 'people', label: 'Registrar Empleado', route: '/register-employee' },
     { icon: 'reports', label: 'Resumen de Ventas', route: '/sales-summary' },
     { icon: 'calendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },

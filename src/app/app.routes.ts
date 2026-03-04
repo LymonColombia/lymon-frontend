@@ -6,6 +6,7 @@ import { ConfirmRecoverPasswordComponent } from '@/presentation/features/auth/pa
 import { BookingComponent } from '@/presentation/features/hotel/pages/booking/booking';
 import { CheckinComponent } from '@/presentation/features/hotel/pages/checkin/checkin';
 import { CreateRoomComponent } from '@/presentation/features/hotel/pages/createRoom/createRoom';
+import { PropertiesComponent } from '@/presentation/features/hotel/pages/properties/properties';
 import { RegisterEmployeeComponent } from '@/presentation/features/hotel/pages/registerEmployee/registerEmployee';
 import { RoomDetailsComponent } from '@/presentation/features/hotel/pages/roomDetails/roomDetails';
 import { SalesSummaryComponent } from '@/presentation/features/hotel/pages/salesSummary/salesSummary';
@@ -19,9 +20,14 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   { path: 'recover-password', component: RecoverPasswordComponent, canActivate: [guestGuard] },
-  { path: 'recover-password/confirm', component: ConfirmRecoverPasswordComponent, canActivate: [guestGuard] },
+  {
+    path: 'recover-password/confirm',
+    component: ConfirmRecoverPasswordComponent,
+    canActivate: [guestGuard],
+  },
   { path: 'booking', component: BookingComponent, canActivate: [authGuard] },
   { path: 'checkin', component: CheckinComponent, canActivate: [authGuard] },
+  { path: 'properties', component: PropertiesComponent, canActivate: [authGuard] },
   { path: 'create-room', component: CreateRoomComponent, canActivate: [authGuard] },
   { path: 'register-employee', component: RegisterEmployeeComponent, canActivate: [authGuard] },
   { path: 'room-details', component: RoomDetailsComponent, canActivate: [authGuard] },
