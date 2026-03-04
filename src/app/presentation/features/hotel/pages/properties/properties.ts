@@ -77,8 +77,8 @@ export class PropertiesComponent implements OnInit {
     }
   }
 
-  navigateToCreateUnit(propertyId: string): void {
-    this.router.navigate(['/create-room'], { queryParams: { propertyId } });
+  navigateToUnits(propertyId: string): void {
+    this.router.navigate(['/property-units'], { queryParams: { propertyId } });
   }
 
   onSubmit(): void {

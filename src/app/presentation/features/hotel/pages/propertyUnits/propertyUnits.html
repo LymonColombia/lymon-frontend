@@ -1,0 +1,165 @@
+<div class="page-layout">
+  <app-sidebar activeRoute="/properties" />
+
+  <div class="page-content">
+    <!-- Back + Header -->
+    <div class="page-header">
+      <button class="btn-back" (click)="goBack()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path
+            d="M10 12L6 8l4-4"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Mis Propiedades
+      </button>
+
+      <div class="header-row">
+        <div class="header-left">
+          <div class="property-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.8">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+          </div>
+          <div>
+            <div class="breadcrumb">
+              <span class="crumb-link" (click)="goBack()">Propiedades</span>
+              <span class="crumb-sep">›</span>
+              <span class="crumb-current">{{ propertyName() }}</span>
+            </div>
+            <h1 class="page-title">{{ propertyName() }}</h1>
+            @if (propertyType()) {
+              <span class="property-type-badge">{{ propertyType() }}</span>
+            }
+          </div>
+        </div>
+
+        <button type="button" class="btn-new-unit" (click)="navigateToCreateUnit()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Nueva Unidad
+        </button>
+      </div>
+    </div>
+
+    <!-- Error -->
+    @if (errorMessage()) {
+      <div class="alert-error">{{ errorMessage() }}</div>
+    }
+
+    <!-- Loading -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando unidades…</p>
+      </div>
+    } @else if (units().length === 0) {
+      <!-- Empty state -->
+      <div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.2">
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+        </svg>
+        <p class="empty-title">Sin unidades</p>
+        <p class="empty-subtitle">Esta propiedad aún no tiene unidades registradas.</p>
+        <button type="button" class="btn-new-unit" (click)="navigateToCreateUnit()">
+          Crear primera unidad
+        </button>
+      </div>
+    } @else {
+      <!-- Sub-header count -->
+      <p class="units-count">
+        {{ units().length }} unidad{{ units().length !== 1 ? 'es' : '' }}
+      </p>
+
+      <!-- Units grid -->
+      <div class="units-grid">
+        @for (unit of units(); track unit.id) {
+          <div class="unit-card">
+            <div class="unit-card-top">
+              <h3 class="unit-name">{{ unit.name }}</h3>
+              @if (unit.isShared !== undefined) {
+                <span class="shared-badge" [class.shared]="unit.isShared">
+                  {{ unit.isShared ? 'Compartida' : 'Privada' }}
+                </span>
+              }
+            </div>
+
+            @if (unit.description) {
+              <p class="unit-description">{{ unit.description }}</p>
+            }
+
+            <div class="unit-stats">
+              @if (unit.maxGuests !== undefined) {
+                <div class="stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  <span>Máx {{ unit.maxGuests }} huéspedes</span>
+                </div>
+              }
+              @if (unit.bathroomsCount !== undefined) {
+                <div class="stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M4 12h16v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-4z"/>
+                    <path d="M4 12V6a2 2 0 0 1 2-2h2v4"/>
+                  </svg>
+                  <span>{{ unit.bathroomsCount }} baño{{ unit.bathroomsCount !== 1 ? 's' : '' }}</span>
+                </div>
+              }
+              @if (unit.inventoryCount !== undefined) {
+                <div class="stat">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2"/>
+                    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                  </svg>
+                  <span>{{ unit.inventoryCount }} hab.</span>
+                </div>
+              }
+              @if (unit.pricePerNight !== undefined) {
+                <div class="stat stat-price">
+                  <span>${{ unit.pricePerNight | number: '1.0-0' }} / noche</span>
+                </div>
+              }
+            </div>
+
+            @if (unit.amenities && unit.amenities.length > 0) {
+              <div class="amenity-chips">
+                @for (a of unit.amenities.slice(0, 4); track a) {
+                  <span class="amenity-chip">{{ a }}</span>
+                }
+                @if (unit.amenities.length > 4) {
+                  <span class="amenity-chip more">+{{ unit.amenities.length - 4 }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Add unit card -->
+        <button type="button" class="unit-card unit-card-add" (click)="navigateToCreateUnit()">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#009a44"
+            stroke-width="1.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>Agregar unidad</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

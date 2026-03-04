@@ -22,6 +22,7 @@ import { CreateIncidentReportComponent } from '@/presentation/features/hotel/pag
 import { IncidentReportListComponent } from '@/presentation/features/hotel/pages/incidentReport/list/incidentReportList';
 import { TenantProfileComponent } from '@/presentation/features/hotel/pages/tenantProfile/tenantProfile';
 import { AuditLogComponent } from '@/presentation/features/hotel/pages/auditLog/auditLog';
+import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/propertyUnits/propertyUnits';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
 export const routes: Routes = [
@@ -56,6 +57,7 @@ export const routes: Routes = [
   },
   { path: 'tenant-profile', component: TenantProfileComponent, canActivate: [authGuard] },
   { path: 'audit-log', component: AuditLogComponent, canActivate: [authGuard] },
+  { path: 'property-units', component: PropertyUnitsComponent, canActivate: [authGuard] },
   // Guest auth routes — separate flow for hotel guests
   { path: 'guest/login', component: GuestLoginComponent },
   { path: 'guest/register', component: GuestRegisterComponent },

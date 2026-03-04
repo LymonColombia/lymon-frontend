@@ -138,7 +138,11 @@ export class CreateRoomComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/properties']);
+    if (this.propertyId()) {
+      this.router.navigate(['/property-units'], { queryParams: { propertyId: this.propertyId() } });
+    } else {
+      this.router.navigate(['/properties']);
+    }
   }
 
   onSubmit(): void {
