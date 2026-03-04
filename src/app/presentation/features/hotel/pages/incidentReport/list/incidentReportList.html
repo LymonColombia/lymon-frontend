@@ -1,0 +1,57 @@
+<div class="page-layout">
+  <app-sidebar activeRoute="/incident-report/list" />
+
+  <main class="page-content">
+    <div class="page-header">
+      <div class="header-top">
+        <div>
+          <h1 class="page-title">Novedades Laborales</h1>
+          <p class="page-subtitle">Historial de ausencias, reemplazos, eventos y daños.</p>
+        </div>
+        <a routerLink="/incident-report/create" class="btn-new">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Nueva Novedad
+        </a>
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    }
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando novedades...</p>
+      </div>
+    } @else if (reports().length === 0) {
+      <div class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="9" y1="13" x2="15" y2="13"/>
+          <line x1="9" y1="17" x2="12" y2="17"/>
+        </svg>
+        <p class="empty-title">No hay novedades registradas</p>
+        <p class="empty-subtitle">Registra la primera novedad laboral de tu propiedad.</p>
+        <a routerLink="/incident-report/create" class="btn-new">Registrar Novedad</a>
+      </div>
+    } @else {
+      <div class="reports-grid">
+        @for (report of reports(); track report._id) {
+          <div class="report-card">
+            <div class="report-header">
+              <span class="report-badge">Novedad</span>
+              <span class="report-date">{{ formatDate(report.createdAt) }}</span>
+            </div>
+            <h3 class="report-title">{{ report.title }}</h3>
+            <p class="report-description">{{ report.description }}</p>
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>

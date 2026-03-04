@@ -12,6 +12,8 @@ import { SalesSummaryComponent } from '@/presentation/features/hotel/pages/sales
 import { CalendarSyncComponent } from '@/presentation/features/hotel/pages/calendarSync/calendarSync';
 import { EmailConfigComponent } from '@/presentation/features/hotel/pages/emailConfig/emailConfig';
 import { ChangePasswordComponent } from '@/presentation/features/hotel/pages/changePassword/changePassword';
+import { CreateIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/create/createIncidentReport';
+import { IncidentReportListComponent } from '@/presentation/features/hotel/pages/incidentReport/list/incidentReportList';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
 export const routes: Routes = [
@@ -29,5 +31,7 @@ export const routes: Routes = [
   { path: 'calendar-sync', component: CalendarSyncComponent, canActivate: [authGuard] },
   { path: 'email-config', component: EmailConfigComponent, canActivate: [authGuard] },
   { path: 'change-password', component: ChangePasswordComponent, canActivate: [authGuard] },
+  { path: 'incident-report/create', component: CreateIncidentReportComponent, canActivate: [authGuard] },
+  { path: 'incident-report/list', component: IncidentReportListComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '/login' },
 ];

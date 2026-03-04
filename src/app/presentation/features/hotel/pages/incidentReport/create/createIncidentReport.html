@@ -1,0 +1,81 @@
+<div class="page-layout">
+  <app-sidebar activeRoute="/incident-report/create" />
+
+  <main class="page-content">
+    <div class="page-header">
+      <h1 class="page-title">Registrar Novedad Laboral</h1>
+      <p class="page-subtitle">Documenta ausencias, reemplazos, eventos y daños.</p>
+    </div>
+
+    <div class="form-card">
+      @if (successMessage()) {
+        <div class="alert alert-success">{{ successMessage() }}</div>
+      }
+
+      @if (errorMessage()) {
+        <div class="alert alert-error">{{ errorMessage() }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- Título -->
+        <div class="form-group">
+          <label for="title">
+            Título <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="title"
+            formControlName="title"
+            placeholder="Ej: Daño general, Ausencia de empleado..."
+            [class.input-error]="titleControl.invalid && titleControl.touched"
+          />
+          @if (titleControl.invalid && titleControl.touched) {
+            <span class="field-error">
+              @if (titleControl.hasError('required')) {
+                El título es requerido.
+              } @else if (titleControl.hasError('minlength')) {
+                El título debe tener al menos 3 caracteres.
+              } @else if (titleControl.hasError('maxlength')) {
+                El título no puede superar los 100 caracteres.
+              }
+            </span>
+          }
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group">
+          <label for="description">
+            Descripción <span class="required">*</span>
+          </label>
+          <textarea
+            id="description"
+            formControlName="description"
+            placeholder="Describe detalladamente la novedad ocurrida..."
+            rows="6"
+            [class.input-error]="descriptionControl.invalid && descriptionControl.touched"
+          ></textarea>
+          @if (descriptionControl.invalid && descriptionControl.touched) {
+            <span class="field-error">
+              @if (descriptionControl.hasError('required')) {
+                La descripción es requerida.
+              } @else if (descriptionControl.hasError('minlength')) {
+                La descripción debe tener al menos 10 caracteres.
+              }
+            </span>
+          }
+        </div>
+
+        <div class="form-actions">
+          <a routerLink="/incident-report/list" class="btn btn-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary" [disabled]="isLoading()">
+            @if (isLoading()) {
+              Guardando...
+            } @else {
+              Registrar Novedad
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>

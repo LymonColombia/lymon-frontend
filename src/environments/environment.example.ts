@@ -12,4 +12,7 @@ export const environment = {
   user: {
     endpoint: '/user',
   },
+  incidentReport: {
+    endpoint: '/incident-reports',
+  },
 };
