@@ -15,6 +15,9 @@ export const environment = {
   incidentReport: {
     endpoint: '/incident-reports',
   },
+  tenant: {
+    endpoint: '/tenant',
+  },
   properties: {
     endpoint: '/properties',
   },

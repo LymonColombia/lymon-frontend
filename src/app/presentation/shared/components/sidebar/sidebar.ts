@@ -29,6 +29,7 @@ export class SidebarComponent {
     { icon: 'settings', label: 'Configuración de Correos', route: '/email-config' },
     { icon: 'lock', label: 'Cambiar Contraseña', route: '/change-password' },
     { icon: 'reports', label: 'Novedades Laborales', route: '/incident-report/list' },
+    { icon: 'settings', label: 'Perfil del Negocio', route: '/tenant-profile' },
   ];
 
   isActive(route: string): boolean {

@@ -7,6 +7,8 @@ import { UserRepository } from '@/domain/repositories/user.repository';
 import { UserRepositoryImpl } from '@/infrastructure/repositories/user.repository.impl';
 import { IncidentReportRepository } from '@/domain/repositories/incident-report.repository';
 import { IncidentReportRepositoryImpl } from '@/infrastructure/repositories/incident-report.repository.impl';
+import { TenantRepository } from '@/domain/repositories/tenant.repository';
+import { TenantRepositoryImpl } from '@/infrastructure/repositories/tenant.repository.impl';
 import { authInterceptor } from '@/infrastructure/interceptors/auth.interceptor';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffRepositoryImpl } from '@/infrastructure/repositories/staff.repository.impl';
@@ -22,6 +24,7 @@ export const appConfig: ApplicationConfig = {
     { provide: AuthRepository, useClass: AuthRepositoryImpl },
     { provide: UserRepository, useClass: UserRepositoryImpl },
     { provide: IncidentReportRepository, useClass: IncidentReportRepositoryImpl },
+    { provide: TenantRepository, useClass: TenantRepositoryImpl },
     { provide: StaffRepository, useClass: StaffRepositoryImpl },
     { provide: PropertyRepository, useClass: PropertyRepositoryImpl },
   ],

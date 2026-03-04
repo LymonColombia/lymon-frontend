@@ -15,6 +15,7 @@ import { EmailConfigComponent } from '@/presentation/features/hotel/pages/emailC
 import { ChangePasswordComponent } from '@/presentation/features/hotel/pages/changePassword/changePassword';
 import { CreateIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/create/createIncidentReport';
 import { IncidentReportListComponent } from '@/presentation/features/hotel/pages/incidentReport/list/incidentReportList';
+import { TenantProfileComponent } from '@/presentation/features/hotel/pages/tenantProfile/tenantProfile';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
 export const routes: Routes = [
@@ -39,5 +40,6 @@ export const routes: Routes = [
   { path: 'change-password', component: ChangePasswordComponent, canActivate: [authGuard] },
   { path: 'incident-report/create', component: CreateIncidentReportComponent, canActivate: [authGuard] },
   { path: 'incident-report/list', component: IncidentReportListComponent, canActivate: [authGuard] },
+  { path: 'tenant-profile', component: TenantProfileComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '/login' },
 ];
