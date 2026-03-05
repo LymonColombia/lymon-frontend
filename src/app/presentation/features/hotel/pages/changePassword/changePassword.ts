@@ -12,7 +12,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
-import { ChangePasswordUseCase } from '@/domain/use-cases/change-password.use-case';
+import { ChangePasswordUseCase } from '@/domain/use-cases/user/change-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 
 function passwordsDifferentValidator(control: AbstractControl): ValidationErrors | null {

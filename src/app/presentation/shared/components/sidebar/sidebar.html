@@ -3,10 +3,10 @@
     <div class="sidebar-logo">LYMON</div>
     <div class="sidebar-subtitle">Gestión Hotelera</div>
   </div>
-  
+
   <ul class="sidebar-menu">
     @for (item of menuItems; track item.route) {
-      <li class="menu-item" [class.active]="isActive(item.route)">
+      <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         <a [routerLink]="item.route" class="menu-link">
           @switch (item.icon) {
             @case ('dashboard') {

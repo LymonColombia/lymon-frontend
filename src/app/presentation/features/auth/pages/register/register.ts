@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { RegisterUseCase } from '@/domain/use-cases/register.use-case';
+import { RegisterUseCase } from '@/domain/use-cases/auth/register.use-case';
 import { PlanType } from '@/domain/entities/auth.model';
 import { HttpErrorResponse } from '@angular/common/http';
 

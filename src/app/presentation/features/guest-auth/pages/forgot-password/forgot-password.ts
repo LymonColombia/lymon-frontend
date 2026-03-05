@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { GuestRecoverPasswordUseCase } from '@/domain/use-cases/guest-recover-password.use-case';
+import { GuestRecoverPasswordUseCase } from '@/domain/use-cases/guest/guest-recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({

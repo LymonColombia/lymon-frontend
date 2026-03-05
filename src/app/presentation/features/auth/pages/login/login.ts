@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { LoginUseCase } from '@/domain/use-cases/login.use-case';
+import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({

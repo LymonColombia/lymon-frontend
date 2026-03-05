@@ -3,10 +3,10 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup } fr
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
-import { AddStaffUseCase } from '@/domain/use-cases/add-staff.use-case';
-import { GetRolesUseCase } from '@/domain/use-cases/get-roles.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/get-properties.use-case';
-import { GetUnitsUseCase } from '@/domain/use-cases/get-units.use-case';
+import { AddStaffUseCase } from '@/domain/use-cases/staff/add-staff.use-case';
+import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
+import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Role, Property, Unit, ScopeType } from '@/domain/entities/staff.model';
 
 @Component({

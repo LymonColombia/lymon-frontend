@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
-import { GetIncidentReportsUseCase } from '@/domain/use-cases/get-incident-reports.use-case';
+import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident/get-incident-reports.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
 

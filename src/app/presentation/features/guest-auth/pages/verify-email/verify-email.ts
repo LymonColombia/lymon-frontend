@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { GuestVerifyEmailUseCase } from '@/domain/use-cases/guest-verify-email.use-case';
+import { GuestVerifyEmailUseCase } from '@/domain/use-cases/guest/guest-verify-email.use-case';
 
 type VerifyStatus = 'loading' | 'success' | 'already-verified' | 'error';
 

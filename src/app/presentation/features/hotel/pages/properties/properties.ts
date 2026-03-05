@@ -3,8 +3,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
-import { GetPropertiesUseCase } from '@/domain/use-cases/get-properties.use-case';
-import { CreatePropertyUseCase } from '@/domain/use-cases/create-property.use-case';
+import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
+import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-property.use-case';
 import { Property } from '@/domain/entities/staff.model';
 import { CancellationPolicy, PropertyType } from '@/domain/entities/property.model';
 

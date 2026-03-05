@@ -1,24 +1,20 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 interface MenuItem {
   icon: string;
   label: string;
   route: string;
-  active?: boolean;
 }
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
 export class SidebarComponent {
-  @Input() activeRoute: string = '';
-
   menuItems: MenuItem[] = [
     { icon: 'calendar', label: 'Reservaciones', route: '/booking' },
     { icon: 'hotel', label: 'Check-in', route: '/checkin' },
@@ -32,8 +28,4 @@ export class SidebarComponent {
     { icon: 'settings', label: 'Perfil del Negocio', route: '/tenant-profile' },
     { icon: 'reports', label: 'Registros de Auditoría', route: '/audit-log' },
   ];
-
-  isActive(route: string): boolean {
-    return this.activeRoute === route;
-  }
 }

@@ -7,7 +7,7 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { GuestConfirmRecoverPasswordUseCase } from '@/domain/use-cases/guest-confirm-recover-password.use-case';
+import { GuestConfirmRecoverPasswordUseCase } from '@/domain/use-cases/guest/guest-confirm-recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {

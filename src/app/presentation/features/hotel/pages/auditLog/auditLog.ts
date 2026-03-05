@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
-import { GetAuditLogsUseCase } from '@/domain/use-cases/get-audit-logs.use-case';
+import { GetAuditLogsUseCase } from '@/domain/use-cases/audit/get-audit-logs.use-case';
 import {
   AuditAction,
   AuditEntityType,

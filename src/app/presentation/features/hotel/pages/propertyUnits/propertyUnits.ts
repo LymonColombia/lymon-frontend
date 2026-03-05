@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { Router, ActivatedRoute } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
-import { GetUnitsUseCase } from '@/domain/use-cases/get-units.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
+import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { Unit } from '@/domain/entities/staff.model';
 
 @Component({
