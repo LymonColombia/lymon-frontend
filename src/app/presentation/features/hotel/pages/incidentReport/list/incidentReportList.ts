@@ -5,7 +5,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetIncidentReportsUseCase } from '@/domain/use-cases/get-incident-reports.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
@@ -21,6 +21,7 @@ import { IncidentReport } from '@/domain/entities/incident-report.model';
 export class IncidentReportListComponent implements OnInit {
   private readonly getIncidentReportsUseCase = inject(GetIncidentReportsUseCase);
   private readonly userSessionService = inject(UserSessionService);
+  private readonly router = inject(Router);
 
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
@@ -53,6 +54,12 @@ export class IncidentReportListComponent implements OnInit {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+    });
+  }
+
+  navigateToEdit(report: IncidentReport): void {
+    this.router.navigate(['/incident-report/edit', report.id], {
+      state: { report },
     });
   }
 }

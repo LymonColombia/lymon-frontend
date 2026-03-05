@@ -1,0 +1,101 @@
+<div class="page-layout">
+  <app-sidebar activeRoute="/incident-report/list" />
+
+  <main class="page-content">
+    @if (notFound()) {
+      <div class="not-found">
+        <p>No se encontró la novedad o accediste directamente a esta URL.</p>
+        <a routerLink="/incident-report/list" class="btn btn-primary">Volver al listado</a>
+      </div>
+    } @else {
+      <div class="page-header">
+        <h1 class="page-title">Editar Novedad</h1>
+        <p class="page-subtitle">Modifica el título, descripción o archivos adjuntos.</p>
+      </div>
+
+      <div class="form-card">
+        @if (errorMessage()) {
+          <div class="alert alert-error">{{ errorMessage() }}</div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <!-- Título -->
+          <div class="form-group">
+            <label for="title">Título <span class="required">*</span></label>
+            <input
+              type="text"
+              id="title"
+              formControlName="title"
+              placeholder="Ej: Daño general, Ausencia de empleado..."
+              [class.input-error]="titleControl.invalid && titleControl.touched"
+            />
+            @if (titleControl.invalid && titleControl.touched) {
+              <span class="field-error">
+                @if (titleControl.hasError('required')) { El título es requerido. }
+                @else if (titleControl.hasError('minlength')) { Mínimo 5 caracteres. }
+              </span>
+            }
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group">
+            <label for="description">Descripción <span class="required">*</span></label>
+            <textarea
+              id="description"
+              formControlName="description"
+              placeholder="Describe detalladamente la novedad..."
+              rows="5"
+              [class.input-error]="descriptionControl.invalid && descriptionControl.touched"
+            ></textarea>
+            @if (descriptionControl.invalid && descriptionControl.touched) {
+              <span class="field-error">
+                @if (descriptionControl.hasError('required')) { La descripción es requerida. }
+                @else if (descriptionControl.hasError('minlength')) { Mínimo 10 caracteres. }
+              </span>
+            }
+          </div>
+
+          <!-- Archivos adjuntos -->
+          <div class="form-group">
+            <div class="attachments-header">
+              <label>Archivos adjuntos</label>
+              <button type="button" class="btn-add-url" (click)="addAttachmentUrl()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Agregar URL
+              </button>
+            </div>
+
+            @for (ctrl of attachmentUrlsArray.controls; track $index) {
+              <div class="url-row">
+                <input
+                  type="text"
+                  [formControl]="$any(ctrl)"
+                  placeholder="https://storage.ejemplo.com/foto.jpg"
+                  [class.input-error]="ctrl.invalid && ctrl.touched"
+                />
+                <button type="button" class="btn-remove" (click)="removeAttachmentUrl($index)" title="Eliminar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              @if (ctrl.invalid && ctrl.touched) {
+                <span class="field-error">Ingresa una URL válida (debe comenzar con http:// o https://).</span>
+              }
+            }
+          </div>
+
+          <div class="form-actions">
+            <a routerLink="/incident-report/list" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { Guardando... } @else { Guardar Cambios }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  </main>
+</div>

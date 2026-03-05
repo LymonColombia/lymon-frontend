@@ -6,6 +6,8 @@ import {
   CreateIncidentReportRequest,
   CreateIncidentReportResponse,
   GetIncidentReportsResponse,
+  UpdateIncidentReportRequest,
+  UpdateIncidentReportResponse,
 } from '@/domain/entities/incident-report.model';
 import { environment } from '@env';
 
@@ -23,5 +25,9 @@ export class IncidentReportRepositoryImpl extends IncidentReportRepository {
     return this.http.get<GetIncidentReportsResponse>(
       `${BASE_URL}/by-property/${propertyId}`,
     );
+  }
+
+  update(id: string, data: UpdateIncidentReportRequest): Observable<UpdateIncidentReportResponse> {
+    return this.http.patch<UpdateIncidentReportResponse>(`${BASE_URL}/${id}`, data);
   }
 }
