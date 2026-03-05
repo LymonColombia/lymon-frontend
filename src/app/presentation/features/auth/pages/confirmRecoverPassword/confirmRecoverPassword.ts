@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmRecoverPasswordUseCase } from '@/domain/use-cases/confirm-recover-password.use-case';
+import { ConfirmRecoverPasswordUseCase } from '@/domain/use-cases/auth/confirm-recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {

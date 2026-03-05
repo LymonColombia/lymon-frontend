@@ -8,7 +8,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
-import { CreateIncidentReportUseCase } from '@/domain/use-cases/create-incident-report.use-case';
+import { CreateIncidentReportUseCase } from '@/domain/use-cases/incident/create-incident-report.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 
 @Component({

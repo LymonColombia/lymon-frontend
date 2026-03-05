@@ -14,6 +14,14 @@ export interface PropertiesResponse {
 export interface Unit {
   id: string;
   name: string;
+  description?: string;
+  maxGuests?: number;
+  standardGuests?: number;
+  inventoryCount?: number;
+  pricePerNight?: number;
+  isShared?: boolean;
+  amenities?: string[];
+  bathroomsCount?: number;
 }
 
 export interface UnitsResponse {

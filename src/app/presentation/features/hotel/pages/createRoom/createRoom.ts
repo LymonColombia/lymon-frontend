@@ -3,8 +3,8 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup } fr
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
-import { CreateUnitUseCase } from '@/domain/use-cases/create-unit.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/get-properties.use-case';
+import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
+import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { BedType } from '@/domain/entities/property.model';
 
 const AMENITY_OPTIONS = [
@@ -138,7 +138,11 @@ export class CreateRoomComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/properties']);
+    if (this.propertyId()) {
+      this.router.navigate(['/property-units'], { queryParams: { propertyId: this.propertyId() } });
+    } else {
+      this.router.navigate(['/properties']);
+    }
   }
 
   onSubmit(): void {

@@ -1,6 +1,11 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from '@/presentation/features/auth/pages/login/login';
 import { RegisterComponent } from '@/presentation/features/auth/pages/register/register';
+import { GuestLoginComponent } from '@/presentation/features/guest-auth/pages/login/guest-login';
+import { GuestRegisterComponent } from '@/presentation/features/guest-auth/pages/register/guest-register';
+import { GuestVerifyEmailComponent } from '@/presentation/features/guest-auth/pages/verify-email/verify-email';
+import { GuestForgotPasswordComponent } from '@/presentation/features/guest-auth/pages/forgot-password/forgot-password';
+import { GuestResetPasswordComponent } from '@/presentation/features/guest-auth/pages/reset-password/reset-password';
 import { RecoverPasswordComponent } from '@/presentation/features/auth/pages/recoverPassword/recoverPassword';
 import { ConfirmRecoverPasswordComponent } from '@/presentation/features/auth/pages/confirmRecoverPassword/confirmRecoverPassword';
 import { BookingComponent } from '@/presentation/features/hotel/pages/booking/booking';
@@ -17,6 +22,8 @@ import { CreateIncidentReportComponent } from '@/presentation/features/hotel/pag
 import { IncidentReportListComponent } from '@/presentation/features/hotel/pages/incidentReport/list/incidentReportList';
 import { EditIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/edit/editIncidentReport';
 import { TenantProfileComponent } from '@/presentation/features/hotel/pages/tenantProfile/tenantProfile';
+import { AuditLogComponent } from '@/presentation/features/hotel/pages/auditLog/auditLog';
+import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/propertyUnits/propertyUnits';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
 export const routes: Routes = [
@@ -39,9 +46,25 @@ export const routes: Routes = [
   { path: 'calendar-sync', component: CalendarSyncComponent, canActivate: [authGuard] },
   { path: 'email-config', component: EmailConfigComponent, canActivate: [authGuard] },
   { path: 'change-password', component: ChangePasswordComponent, canActivate: [authGuard] },
-  { path: 'incident-report/create', component: CreateIncidentReportComponent, canActivate: [authGuard] },
-  { path: 'incident-report/list', component: IncidentReportListComponent, canActivate: [authGuard] },
+  {
+    path: 'incident-report/create',
+    component: CreateIncidentReportComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'incident-report/list',
+    component: IncidentReportListComponent,
+    canActivate: [authGuard],
+  },
   { path: 'incident-report/edit/:id', component: EditIncidentReportComponent, canActivate: [authGuard] },
   { path: 'tenant-profile', component: TenantProfileComponent, canActivate: [authGuard] },
+  { path: 'audit-log', component: AuditLogComponent, canActivate: [authGuard] },
+  { path: 'property-units', component: PropertyUnitsComponent, canActivate: [authGuard] },
+  // Guest auth routes — separate flow for hotel guests
+  { path: 'guest/login', component: GuestLoginComponent },
+  { path: 'guest/register', component: GuestRegisterComponent },
+  { path: 'guest/verify-email', component: GuestVerifyEmailComponent },
+  { path: 'guest/forgot-password', component: GuestForgotPasswordComponent },
+  { path: 'guest/reset-password', component: GuestResetPasswordComponent },
   { path: '**', redirectTo: '/login' },
 ];
