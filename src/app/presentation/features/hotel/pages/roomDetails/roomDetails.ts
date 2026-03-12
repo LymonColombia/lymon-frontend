@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 
 @Component({
   selector: 'app-room-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule, ButtonComponent],
   templateUrl: './roomDetails.html',
   styleUrl: './roomDetails.css',
   changeDetection: ChangeDetectionStrategy.OnPush
