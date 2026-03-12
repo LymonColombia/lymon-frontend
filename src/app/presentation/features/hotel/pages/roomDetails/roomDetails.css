@@ -46,38 +46,9 @@
     max-width: 700px;
 }
 
-.search-input-group {
-    position: relative;
+.header-search-form app-input,
+.header-search-form app-select {
     flex: 1;
-}
-
-.input-icon {
-    position: absolute;
-    left: var(--spacing-md);
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-text-secondary);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.search-input-group input,
-.search-input-group select {
-    width: 100%;
-    padding: var(--input-padding);
-    font-family: var(--font-secondary);
-    font-size: var(--font-size-sm);
-    border: var(--input-border-width) solid var(--color-border-light);
-    border-radius: var(--radius-md);
-    outline: none;
-    transition: all var(--transition-base);
-    background: var(--color-bg-primary);
-}
-
-.search-input-group input:focus,
-.search-input-group select:focus {
-    border-color: var(--color-primary);
-    box-shadow: var(--input-focus-ring);
 }
 
 .room-details-container {
