@@ -1,0 +1,212 @@
+:host {
+  display: inline-block;
+  position: relative;
+}
+
+:host.btn-full-width {
+  display: block;
+  width: 100%;
+}
+
+.btn-inner {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  
+  border: none;
+  border-radius: var(--radius-md);
+  
+  cursor: pointer;
+  transition: all var(--transition-base);
+  
+  outline: none;
+  text-decoration: none;
+  
+  width: 100%;
+}
+
+.btn-inner:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== SIZE VARIANTS ===== */
+
+:host.btn-small .btn-inner {
+  padding: var(--btn-padding-sm);
+  font-size: var(--btn-font-size-sm);
+  min-height: var(--btn-height-sm);
+}
+
+:host.btn-medium .btn-inner {
+  padding: var(--btn-padding-md);
+  font-size: var(--btn-font-size-md);
+  min-height: var(--btn-height-md);
+}
+
+:host.btn-large .btn-inner {
+  padding: var(--btn-padding-lg);
+  font-size: var(--btn-font-size-lg);
+  min-height: var(--btn-height-lg);
+}
+
+/* ===== VARIANT: PRIMARY ===== */
+
+:host.btn-primary .btn-inner {
+  color: var(--color-bg-primary);
+  background: var(--color-primary-gradient);
+  border: none;
+  box-shadow: var(--shadow-sm);
+}
+
+:host.btn-primary .btn-inner:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-primary);
+}
+
+:host.btn-primary .btn-inner:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ===== VARIANT: SECONDARY ===== */
+
+:host.btn-secondary .btn-inner {
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border-light);
+}
+
+:host.btn-secondary .btn-inner:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+:host.btn-secondary .btn-inner:active:not(:disabled) {
+  background: var(--color-bg-secondary);
+}
+
+/* ===== VARIANT: OUTLINE ===== */
+
+:host.btn-outline .btn-inner {
+  color: var(--color-primary-dark);
+  background: transparent;
+  border: 2px solid var(--color-primary);
+}
+
+:host.btn-outline .btn-inner:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: var(--color-bg-primary);
+}
+
+:host.btn-outline .btn-inner:active:not(:disabled) {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+/* ===== VARIANT: GHOST ===== */
+
+:host.btn-ghost .btn-inner {
+  color: var(--color-text-primary);
+  background: transparent;
+  border: none;
+}
+
+:host.btn-ghost .btn-inner:hover:not(:disabled) {
+  background: var(--color-bg-secondary);
+  color: var(--color-primary-dark);
+}
+
+:host.btn-ghost .btn-inner:active:not(:disabled) {
+  background: var(--color-border-light);
+}
+
+/* ===== VARIANT: TEXT ===== */
+
+:host.btn-text .btn-inner {
+  color: var(--color-primary-dark);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+:host.btn-text .btn-inner:hover:not(:disabled) {
+  text-decoration: underline;
+  color: var(--color-primary);
+}
+
+/* ===== DISABLED STATE ===== */
+
+:host.btn-disabled .btn-inner,
+.btn-inner:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ===== LOADING STATE ===== */
+
+:host.btn-loading .btn-inner {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  transition: opacity var(--transition-fast);
+}
+
+.btn-content-hidden {
+  opacity: 0;
+}
+
+/* ===== LOADING SPINNER ===== */
+
+.btn-spinner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== ICON SUPPORT ===== */
+
+:host ::ng-deep svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+:host.btn-small ::ng-deep svg {
+  width: 14px;
+  height: 14px;
+}
+
+:host.btn-large ::ng-deep svg {
+  width: 20px;
+  height: 20px;
+}

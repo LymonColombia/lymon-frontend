@@ -25,10 +25,12 @@ import { TenantProfileComponent } from '@/presentation/features/hotel/pages/tena
 import { AuditLogComponent } from '@/presentation/features/hotel/pages/auditLog/auditLog';
 import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/propertyUnits/propertyUnits';
 import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCrm/guestsCrm';
+import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   { path: 'recover-password', component: RecoverPasswordComponent, canActivate: [guestGuard] },
