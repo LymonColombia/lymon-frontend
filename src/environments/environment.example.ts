@@ -21,6 +21,9 @@ export const environment = {
   properties: {
     endpoint: '/properties',
   },
+    reservations: {
+    endpoint: '/reservations',
+  },
   units: {
     endpoint: '/units',
   },

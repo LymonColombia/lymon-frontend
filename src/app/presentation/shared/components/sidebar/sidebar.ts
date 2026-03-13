@@ -16,6 +16,7 @@ interface MenuItem {
 })
 export class SidebarComponent {
   menuItems: MenuItem[] = [
+    { icon: 'dashboard', label: 'Inicio', route: '/dashboard' },
     { icon: 'calendar', label: 'Reservaciones', route: '/booking' },
     { icon: 'hotel', label: 'Check-in', route: '/checkin' },
     { icon: 'dashboard', label: 'Propiedades y Unidades', route: '/properties' },

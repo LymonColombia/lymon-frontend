@@ -1,0 +1,315 @@
+.layout-container {
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
+}
+
+.main-content {
+  margin-left: 260px;
+  min-height: 100vh;
+}
+
+.dashboard-container {
+  padding: var(--spacing-4xl);
+  max-width: var(--max-width-2xl);
+  margin: 0 auto;
+  font-family: var(--font-primary);
+}
+
+.dashboard-header {
+  margin-bottom: var(--spacing-3xl);
+}
+
+.dashboard-header h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-3xl);
+}
+
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-card {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  border: 1px solid var(--color-border-light);
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.card-title {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.icon-container {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.building-icon {
+  background-color: rgba(108, 194, 74, 0.1);
+  color: var(--color-primary-dark);
+}
+
+.users-icon {
+  background-color: rgba(108, 194, 74, 0.1);
+  color: var(--color-primary-dark);
+}
+
+.money-icon {
+  background-color: rgba(108, 194, 74, 0.1);
+  color: var(--color-primary-dark);
+}
+
+.chart-icon {
+  background-color: rgba(108, 194, 74, 0.1);
+  color: var(--color-primary-gradient); 
+  color: var(--color-success);
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.trend {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trend-value {
+  font-weight: var(--font-weight-semibold);
+}
+
+.trend.positive .trend-value {
+  color: var(--color-success);
+}
+
+.trend.negative .trend-value {
+  color: var(--color-error);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--spacing-3xl);
+  margin-bottom: var(--spacing-3xl);
+}
+
+.chart-card {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+}
+
+.chart-card h3 {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xl);
+}
+
+.chart-container {
+  height: 200px;
+  width: 100%;
+  position: relative;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed var(--color-border-light);
+  border-left: 1px dashed var(--color-border-light);
+  padding-left: 10px;
+  box-sizing: border-box;
+}
+
+.bar-group {
+  width: 12%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+
+.bar {
+  width: 100%;
+  background-color: var(--color-primary);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.label {
+  position: absolute;
+  bottom: -25px; 
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+
+.line-chart-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.chart-text {
+  font-size: 10px;
+  fill: var(--color-text-secondary);
+}
+
+.table-card {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+}
+
+.table-card h3 {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-primary);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.reservations-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.reservations-table th {
+  padding: var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.reservations-table td {
+  padding: var(--spacing-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-bg-secondary);
+}
+
+.reservations-table tr:last-child td {
+  border-bottom: none;
+}
+
+.guest-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  min-width: 80px;
+  height: 28px;
+}
+
+.status-badge.confirmed {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.status-badge.pending {
+  background-color: #8ED168; 
+  color: white; 
+  background-color: rgba(108, 194, 74, 0.5);
+  color: var(--color-primary-dark);
+}
+
+
+.status-dot {
+  width: 24px;
+  height: 6px;
+  background-color: white;
+  border-radius: 4px;
+  display: none; 
+}
+
+.status-badge.active {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.status-badge.confirmed {
+  background-color: var(--color-info);
+  color: white;
+}
+
+.status-badge.pending {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #d39e00;
+}
+
+.status-badge.finished {
+  background-color: var(--color-border-medium);
+  color: var(--color-text-secondary);
+}
+
+.status-badge.cancelled {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
