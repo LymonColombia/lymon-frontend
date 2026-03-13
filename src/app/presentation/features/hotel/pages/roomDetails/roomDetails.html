@@ -66,11 +66,7 @@
 </app-header>
 
     <div class="room-details-container">
-        <div class="breadcrumb">
-            <a href="../booking/index.html">Habitaciones</a>
-            <span class="separator">/</span>
-            <span class="current">Suite Ejecutiva</span>
-        </div>
+        <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 
         <div class="room-header">
             <h1 class="room-name">Suite Ejecutiva</h1>

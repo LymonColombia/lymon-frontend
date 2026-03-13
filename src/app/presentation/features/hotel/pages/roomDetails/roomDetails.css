@@ -34,33 +34,6 @@
     padding: var(--spacing-3xl);
 }
 
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-2xl);
-    font-size: var(--font-size-sm);
-}
-
-.breadcrumb a {
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    transition: var(--transition-base);
-}
-
-.breadcrumb a:hover {
-    color: var(--color-primary);
-}
-
-.separator {
-    color: var(--color-border-light);
-}
-
-.current {
-    color: var(--color-primary);
-    font-weight: var(--font-weight-semibold);
-}
-
 .room-header {
     margin-bottom: var(--spacing-4xl);
 }

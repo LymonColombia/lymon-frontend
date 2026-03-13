@@ -6,6 +6,7 @@ import { InputComponent } from '@/presentation/shared/components/input/input.com
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { HeaderComponent } from '@/presentation/shared/components/header/header.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-room-details',
@@ -18,6 +19,7 @@ import { FooterComponent } from '@/presentation/shared/components/footer/footer.
     SelectComponent,
     HeaderComponent,
     FooterComponent,
+    BreadcrumbComponent,
   ],
   templateUrl: './roomDetails.html',
   styleUrl: './roomDetails.css',
@@ -35,6 +37,11 @@ export class RoomDetailsComponent {
     { value: 2, label: '2 Huéspedes' },
     { value: 3, label: '3 Huéspedes' },
     { value: 4, label: '4 Huéspedes' },
+  ];
+
+  readonly breadcrumbItems: readonly BreadcrumbItem[] = [
+    { label: 'Habitaciones', route: '/booking' },
+    { label: 'Suite Ejecutiva' },
   ];
 
   constructor() {
