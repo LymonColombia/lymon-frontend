@@ -80,6 +80,6 @@ export class CrmRepositoryImpl extends CrmRepository {
   }
 
   private toStatus(status: string | undefined): CrmGuestStatus {
-    return status?.toLowerCase() === 'inactive' ? 'Inactive' : 'Active';
+    return status?.toLowerCase() === 'inactive' ? 'inactive' : 'active';
   }
 }
