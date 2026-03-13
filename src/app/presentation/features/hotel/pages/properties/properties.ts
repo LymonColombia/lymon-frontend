@@ -4,8 +4,9 @@ import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { PropertyFormComponent } from './components/property-form/property-form.component';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-property.use-case';
 import { Property } from '@/domain/entities/staff.model';
@@ -15,7 +16,13 @@ import { CancellationPolicy, PropertyType } from '@/domain/entities/property.mod
   selector: 'app-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ReactiveFormsModule, SidebarComponent, ButtonComponent, InputComponent, SelectComponent],
+  imports: [
+    ReactiveFormsModule,
+    SidebarComponent,
+    ButtonComponent,
+    ModalComponent,
+    PropertyFormComponent,
+  ],
   templateUrl: './properties.html',
   styleUrls: ['./properties.css'],
 })
