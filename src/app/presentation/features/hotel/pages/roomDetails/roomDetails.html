@@ -1,73 +1,69 @@
-<header class="header">
-        <div class="header-container">
-            <div class="logo">
-                <img src="/images/logo.png" alt="Lymon Logo">
-            </div>
-            <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="header-search-form">
-                <app-input
-                    type="date"
-                    formControlName="checkIn"
-                    id="checkIn"
-                    name="checkIn"
-                    placeholder="Entrada"
-                    size="medium"
-                    [hasIcon]="true"
-                >
-                    <svg icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                </app-input>
+<app-header>
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="header-search-form">
+        <app-input
+            type="date"
+            formControlName="checkIn"
+            id="checkIn"
+            name="checkIn"
+            placeholder="Entrada"
+            size="medium"
+            [hasIcon]="true"
+        >
+            <svg icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+        </app-input>
 
-                <app-input
-                    type="date"
-                    formControlName="checkOut"
-                    id="checkOut"
-                    name="checkOut"
-                    placeholder="Salida"
-                    size="medium"
-                    [hasIcon]="true"
-                >
-                    <svg icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                </app-input>
+        <app-input
+            type="date"
+            formControlName="checkOut"
+            id="checkOut"
+            name="checkOut"
+            placeholder="Salida"
+            size="medium"
+            [hasIcon]="true"
+        >
+            <svg icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+        </app-input>
 
-                <app-select
-                    formControlName="guests"
-                    id="guests"
-                    name="guests"
-                    [options]="guestOptions"
-                    size="medium"
-                    [hasIcon]="true"
-                >
-                    <svg icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                    </svg>
-                </app-select>
+        <app-select
+            formControlName="guests"
+            id="guests"
+            name="guests"
+            [options]="guestOptions"
+            size="medium"
+            [hasIcon]="true"
+        >
+            <svg icon width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+            </svg>
+        </app-select>
 
-                <app-button type="submit" variant="primary" size="medium">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    Buscar
-                </app-button>
-            </form>
-            <app-button type="button" variant="secondary" size="medium" (clicked)="onGoBack()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"/>
-                </svg>
-                Volver
-            </app-button>
-        </div>
-    </header>
+        <app-button type="submit" variant="primary" size="medium">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+            Buscar
+        </app-button>
+    </form>
+    
+    <app-button actions type="button" variant="secondary" size="medium" (clicked)="onGoBack()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Volver
+    </app-button>
+</app-header>
 
     <div class="room-details-container">
         <div class="breadcrumb">
@@ -414,8 +410,4 @@
         </div>
     </div>
 
-<footer class="footer">
-    <div class="footer-container">
-        <p class="footer-text">© 2026 Lymon Hotel. Todos los derechos reservados.</p>
-    </div>
-</footer>
+<app-footer></app-footer>

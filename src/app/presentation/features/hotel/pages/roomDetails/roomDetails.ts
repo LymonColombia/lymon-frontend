@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { HeaderComponent } from '@/presentation/shared/components/header/header.component';
+import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-room-details',
@@ -14,6 +16,8 @@ import { SelectComponent, SelectOption } from '@/presentation/shared/components/
     ButtonComponent,
     InputComponent,
     SelectComponent,
+    HeaderComponent,
+    FooterComponent,
   ],
   templateUrl: './roomDetails.html',
   styleUrl: './roomDetails.css',
