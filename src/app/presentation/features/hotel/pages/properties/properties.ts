@@ -7,6 +7,7 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button.
 import { SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { PropertyFormComponent } from './components/property-form/property-form.component';
+import { PropertyCardComponent } from './components/property-card/property-card.component';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-property.use-case';
 import { Property } from '@/domain/entities/staff.model';
@@ -22,6 +23,7 @@ import { CancellationPolicy, PropertyType } from '@/domain/entities/property.mod
     ButtonComponent,
     ModalComponent,
     PropertyFormComponent,
+    PropertyCardComponent,
   ],
   templateUrl: './properties.html',
   styleUrls: ['./properties.css'],
