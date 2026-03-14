@@ -20,6 +20,8 @@ import {
   bootstrapPerson,
   bootstrapEnvelope,
   bootstrapTelephone,
+  bootstrapChevronLeft,
+  bootstrapChevronRight,
 } from '@ng-icons/bootstrap-icons';
 
 type SearchField = 'name' | 'email' | 'phone';
@@ -41,6 +43,8 @@ interface FilterOption {
       bootstrapPerson,
       bootstrapEnvelope,
       bootstrapTelephone,
+      bootstrapChevronLeft,
+      bootstrapChevronRight,
     }),
   ],
   templateUrl: './guestsCrm.html',
