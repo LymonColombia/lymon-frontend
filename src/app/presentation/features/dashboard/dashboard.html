@@ -1,0 +1,143 @@
+    <div class="layout-container">
+      <app-sidebar class="sidebar"></app-sidebar>
+      <main class="main-content">
+        <div class="dashboard-container">
+          <header class="dashboard-header">
+            <h1>Dashboard</h1>
+            <p class="subtitle">Resumen general de tu hotel</p>
+          </header>
+
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="card-header">
+                <span class="card-title">Habitaciones Ocupadas</span>
+                <div class="icon-container building-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line></svg>
+                </div>
+              </div>
+              <div class="metric-value">{{ occupiedRooms() }}</div>
+              <div class="trend positive">
+                <span class="trend-value">Activas</span> del tenant
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="card-header">
+                <span class="card-title">Huéspedes Activos</span>
+                <div class="icon-container users-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+              </div>
+              <div class="metric-value">{{ activeGuests() }}</div>
+              <div class="trend positive">
+                <span class="trend-value">En propiedad</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="card-header">
+                <span class="card-title">Ingresos del Mes</span>
+                <div class="icon-container money-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+              </div>
+              <div class="metric-value">{{ monthlyRevenue() | currency }}</div>
+              <div class="trend positive">
+                <span class="trend-value">Este mes</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="card-header">
+                <span class="card-title">Tasa de Ocupación</span>
+                <div class="icon-container chart-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                </div>
+              </div>
+              <div class="metric-value">{{ occupancyRate() }}%</div>
+              <div class="trend">
+                <span class="trend-value">Estimado</span> (Base 120)
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-card">
+              <h3>Reservaciones Finalizadas</h3>
+              <div class="chart-container bar-chart">
+                @for (stat of reservationStats(); track stat.monthLabel) {
+                  <div class="bar-group" [title]="stat.count + ' reservaciones'">
+                    <div class="bar" [style.height.%]="stat.countHeight"></div>
+                    <span class="label">{{ stat.monthLabel }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3>Ingresos Mensuales ($)</h3>
+              <div class="chart-container line-chart">
+                <svg viewBox="0 0 300 150" class="line-chart-svg">
+                  <line x1="30" y1="130" x2="290" y2="130" stroke="#eee" />
+                  <line x1="30" y1="90" x2="290" y2="90" stroke="#eee" />
+                  <line x1="30" y1="50" x2="290" y2="50" stroke="#eee" />
+                  
+                  <text x="28" y="135" class="chart-text" text-anchor="end">0</text>
+                  <text x="28" y="95" class="chart-text" text-anchor="end">{{ revenueAxisLabels()[0] | currency:'USD':'symbol':'1.0-0' }}</text>
+                  <text x="28" y="55" class="chart-text" text-anchor="end">{{ revenueAxisLabels()[2] | currency:'USD':'symbol':'1.0-0' }}</text>
+                  
+                  <path [attr.d]="revenueChartPath()" 
+                        fill="none" 
+                        stroke="#6CC24A" 
+                        stroke-width="3" />
+                  
+                  @for (point of revenueChartPoints(); track point.label) {
+                    <circle [attr.cx]="point.x" [attr.cy]="point.y" r="4" fill="#6CC24A">
+                      <title>{{ point.label }}: {{ point.value | currency }}</title>
+                    </circle>
+                  }
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <h3>Reservaciones Recientes</h3>
+            <div class="table-container">
+              <table class="reservations-table">
+                <thead>
+                  <tr>
+                    <th>Huésped</th>
+                    <th>Habitación</th>
+                    <th>Check-in</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (reservation of recentReservations(); track reservation.id) {
+                    <tr>
+                      <td class="guest-name">{{ reservation.guestId }}</td>
+                      <td>{{ reservation.unitId }}</td>
+                      <td>{{ reservation.checkIn | date: 'yyyy-MM-dd' }}</td>
+                      <td>
+                        <span [class]="'status-badge ' + reservation.status">
+                          @switch (reservation.status) {
+                            @case ('active') { Activo }
+                            @case ('pending') { Pendiente }
+                            @case ('finished') { Finalizada }
+                            @case ('confirmed') { Confirmada }
+                            @case ('cancelled') { Cancelada }
+                            @default { {{ reservation.status }} }
+                          }
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+

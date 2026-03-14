@@ -1,0 +1,145 @@
+<main class="main-content">
+  <section class="guests-crm-container">
+    <header class="page-header">
+      <div class="header-icon" aria-hidden="true">
+        <ng-icon name="bootstrapPeopleFill" size="26px"></ng-icon>
+      </div>
+      <div>
+        <h1 class="page-title">Huéspedes CRM</h1>
+        <p class="page-subtitle">
+          Visualiza y gestiona la información de los huéspedes que han realizado reservas en tus
+          propiedades.
+        </p>
+      </div>
+    </header>
+
+    <section class="search-section">
+      <app-select
+        class="filter-select"
+        id="crm-search-field"
+        name="crm-search-field"
+        size="large"
+        placeholder=""
+        [options]="selectOptions"
+        [hasIcon]="true"
+        [value]="searchField()"
+        (valueChange)="selectSearchField($event)"
+      >
+        <span icon class="filter-icon" aria-hidden="true">
+          @switch (selectedFilterOption().icon) {
+            @case ('user') {
+              <ng-icon name="bootstrapPerson" size="20px"></ng-icon>
+            }
+            @case ('mail') {
+              <ng-icon name="bootstrapEnvelope" size="20px"></ng-icon>
+            }
+            @case ('phone') {
+              <ng-icon name="bootstrapTelephone" size="20px"></ng-icon>
+            }
+          }
+        </span>
+      </app-select>
+
+      <label class="sr-only" for="searchInput">Buscar huésped</label>
+      <input
+        id="searchInput"
+        class="search-input"
+        type="text"
+        [placeholder]="searchPlaceholder()"
+        [value]="searchTerm()"
+        (input)="onSearchTermChange(($any($event.target).value ?? '').toString())"
+      />
+    </section>
+
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    }
+
+    <section class="table-card">
+      <table class="guests-table">
+        <thead>
+          <tr>
+            <th>Nombre del huésped</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Última reserva</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoading()) {
+            <tr>
+              <td class="empty-state" colspan="6">Cargando huéspedes...</td>
+            </tr>
+          } @else {
+          @for (guest of paginatedGuests(); track guest.email) {
+            <tr>
+              <td class="guest-name">{{ guest.name }}</td>
+              <td>{{ guest.email }}</td>
+              <td>{{ formatPhone(guest.phone) }}</td>
+              <td>15 Mar 2026</td>
+              <td>
+                <span
+                  class="status-pill"
+                  [class.status-active]="guest.status === 'active'"
+                  [class.status-inactive]="guest.status === 'inactive'"
+                >
+                  {{ guest.status === 'active' ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <app-button class="btn-view-profile" variant="primary" size="medium">
+                  Ver perfil
+                </app-button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty-state" colspan="6">No se encontraron huéspedes con ese filtro.</td>
+            </tr>
+          }
+          }
+        </tbody>
+      </table>
+
+      @if (!isLoading() && pageNumbers().length > 0) {
+      <nav class="pagination" aria-label="Paginación de huéspedes">
+        <app-button
+          class="page-btn icon-btn"
+          variant="primary"
+          size="medium"
+          [disabled]="currentPage() === 1"
+          (clicked)="goToPreviousPage()"
+          aria-label="Página anterior"
+        >
+          <ng-icon name="bootstrapChevronLeft" size="18px"></ng-icon>
+        </app-button>
+
+        @for (page of pageNumbers(); track page) {
+          <app-button
+            class="page-btn"
+            variant="primary"
+            size="medium"
+            [disabled]="page === currentPage()"
+            (clicked)="goToPage(page)"
+          >
+            {{ page }}
+          </app-button>
+        }
+
+        <app-button
+          class="page-btn icon-btn"
+          variant="primary"
+          size="medium"
+          [disabled]="currentPage() === totalPages()"
+          (clicked)="goToNextPage()"
+          aria-label="Página siguiente"
+        >
+          <ng-icon name="bootstrapChevronRight" size="18px"></ng-icon>
+        </app-button>
+      </nav>
+      }
+    </section>
+  </section>
+</main>
