@@ -19,20 +19,39 @@
   background-color: var(--color-bg-secondary);
 }
 
-.properties-container {
-  max-width: 1100px;
+.main-content-actions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: var(--spacing-lg);
 }
 
 /* ── Page header ──────────────────────────────────── */
 .page-title-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  border-radius: var(--radius-xl);
+  border: var(--input-border-width) solid var(--color-border-light);
+  background: var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.page-title-content {
   display: flex;
   align-items: center;
   gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-2xl);
+  flex: 1;
 }
 
 .title-text {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .page-icon {
@@ -45,18 +64,41 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: var(--shadow-primary);
 }
 
 .page-title {
+  margin: 0;
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
 }
 
 .page-subtitle {
+  margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  margin-top: var(--spacing-xs);
+}
+
+.properties-count {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
+  border: var(--input-border-width) solid var(--color-border-light);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.2px;
+}
+
+.page-title-meta-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 /* ── Alerts ───────────────────────────────────────── */
@@ -196,7 +238,23 @@
   }
 
   .page-title-row {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
+  }
+
+  .main-content-actions {
+    justify-content: flex-start;
+  }
+
+  .page-title-content {
+    width: 100%;
+  }
+
+  .page-title-meta-right {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .property-grid {

@@ -1,9 +1,9 @@
 <app-sidebar></app-sidebar>
 
 <div class="main-content">
-  <div class="properties-container">
-    <!-- Page header -->
-    <div class="page-title-row">
+  <!-- Page header -->
+  <div class="page-title-row">
+    <div class="page-title-content">
       <div class="page-icon">
         <svg
           width="28"
@@ -22,26 +22,41 @@
         <h1 class="page-title">Mis Propiedades</h1>
         <p class="page-subtitle">Gestiona tus propiedades y crea nuevas unidades</p>
       </div>
-      <app-button type="button" variant="primary" (clicked)="toggleForm()">
-        @if (showForm()) {
-          Cancelar
-        } @else {
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Nueva Propiedad
-        }
-      </app-button>
     </div>
 
+    <div class="page-title-meta-right">
+      <span class="properties-count">
+        @if (isLoading()) {
+          Cargando propiedades...
+        } @else {
+          {{ properties().length }} propiedades registradas
+        }
+      </span>
+    </div>
+  </div>
+
+  <div class="main-content-actions">
+    <app-button type="button" variant="primary" (clicked)="toggleForm()">
+      @if (showForm()) {
+        Cancelar
+      } @else {
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Nueva Propiedad
+      }
+    </app-button>
+  </div>
+
+  <div class="properties-container">
     <!-- Alerts -->
     @if (errorMessage()) {
       <div class="alert alert-error">{{ errorMessage() }}</div>
