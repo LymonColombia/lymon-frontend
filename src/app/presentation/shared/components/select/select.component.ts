@@ -5,6 +5,7 @@ import {
   output,
   computed,
   signal,
+  effect,
   forwardRef,
   ViewChild,
   ElementRef,
@@ -42,6 +43,7 @@ export class SelectComponent implements ControlValueAccessor {
 
   // Signal Inputs
   readonly options = input.required<SelectOption[]>();
+  readonly externalValue = input<string | number | null>(null, { alias: 'value' });
   readonly size = input<SelectSize>('medium');
   readonly placeholder = input<string>('Select an option');
   readonly disabled = input<boolean>(false);
@@ -58,6 +60,12 @@ export class SelectComponent implements ControlValueAccessor {
   // Internal state
   readonly value = signal<string | number | null>(null);
   readonly isFocused = signal<boolean>(false);
+
+  constructor() {
+    effect(() => {
+      this.value.set(this.externalValue());
+    });
+  }
 
   // Computed host classes
   readonly hostClasses = computed(() => {

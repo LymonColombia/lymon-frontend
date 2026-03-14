@@ -37,5 +37,7 @@ export const appConfig: ApplicationConfig = {
     { provide: PropertyRepository, useClass: PropertyRepositoryImpl },
     { provide: GuestAuthRepository, useClass: GuestAuthRepositoryImpl },
     { provide: AuditLogRepository, useClass: AuditLogRepositoryImpl },
+    { provide: ReservationRepository, useClass: ReservationRepositoryImpl },
+    { provide: CrmRepository, useClass: CrmRepositoryImpl },
   ],
 };
