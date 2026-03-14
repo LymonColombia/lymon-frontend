@@ -15,7 +15,12 @@ import {
   SelectOption,
 } from '@/presentation/shared/components/select/select.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapPeopleFill } from '@ng-icons/bootstrap-icons';
+import {
+  bootstrapPeopleFill,
+  bootstrapPerson,
+  bootstrapEnvelope,
+  bootstrapTelephone,
+} from '@ng-icons/bootstrap-icons';
 
 type SearchField = 'name' | 'email' | 'phone';
 type FilterIcon = 'user' | 'mail' | 'phone';
@@ -30,7 +35,14 @@ interface FilterOption {
   selector: 'app-guests-crm',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonComponent, SelectComponent, NgIcon],
-  providers: [provideIcons({ bootstrapPeopleFill })],
+  providers: [
+    provideIcons({
+      bootstrapPeopleFill,
+      bootstrapPerson,
+      bootstrapEnvelope,
+      bootstrapTelephone,
+    }),
+  ],
   templateUrl: './guestsCrm.html',
   styleUrl: './guestsCrm.css',
 })
