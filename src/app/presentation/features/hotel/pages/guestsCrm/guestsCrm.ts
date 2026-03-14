@@ -9,6 +9,13 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { CrmGuest } from '@/domain/entities/crm-guest.model';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import {
+  SelectComponent,
+  SelectOption,
+} from '@/presentation/shared/components/select/select.component';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapPeopleFill } from '@ng-icons/bootstrap-icons';
 
 type SearchField = 'name' | 'email' | 'phone';
 type FilterIcon = 'user' | 'mail' | 'phone';
@@ -22,27 +29,28 @@ interface FilterOption {
 @Component({
   selector: 'app-guests-crm',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '(document:click)': 'onDocumentClick($event)',
-  },
+  imports: [ButtonComponent, SelectComponent, NgIcon],
+  providers: [provideIcons({ bootstrapPeopleFill })],
   templateUrl: './guestsCrm.html',
   styleUrl: './guestsCrm.css',
 })
 export class GuestsCrmComponent implements OnInit {
   private readonly getCrmGuestsUseCase = inject(GetCrmGuestsUseCase);
-
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly searchField = signal<SearchField>('name');
   readonly searchTerm = signal('');
   readonly currentPage = signal(1);
-  readonly isFilterMenuOpen = signal(false);
   readonly pageSize = 5;
   readonly filterOptions: FilterOption[] = [
     { key: 'name', label: 'Nombre', icon: 'user' },
     { key: 'email', label: 'Email', icon: 'mail' },
     { key: 'phone', label: 'Teléfono', icon: 'phone' },
   ];
+  readonly selectOptions: SelectOption[] = this.filterOptions.map((option) => ({
+    value: option.key,
+    label: option.label,
+  }));
 
   readonly guests = signal<CrmGuest[]>([]);
 
@@ -69,7 +77,9 @@ export class GuestsCrmComponent implements OnInit {
   );
 
   readonly selectedFilterOption = computed(
-    () => this.filterOptions.find((option) => option.key === this.searchField()) ?? this.filterOptions[0],
+    () =>
+      this.filterOptions.find((option) => option.key === this.searchField()) ??
+      this.filterOptions[0],
   );
 
   readonly searchPlaceholder = computed(() => {
@@ -83,26 +93,33 @@ export class GuestsCrmComponent implements OnInit {
     return this.filteredGuests().slice(start, start + this.pageSize);
   });
 
-  toggleFilterMenu(): void {
-    this.isFilterMenuOpen.update((value) => !value);
-  }
+  selectSearchField(field: SearchField | string | number | null): void {
+    if (field !== 'name' && field !== 'email' && field !== 'phone') {
+      return;
+    }
 
-  selectSearchField(field: SearchField): void {
     this.searchField.set(field);
     this.currentPage.set(1);
-    this.isFilterMenuOpen.set(false);
-  }
-
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement | null;
-    if (!target?.closest('.filter-dropdown')) {
-      this.isFilterMenuOpen.set(false);
-    }
   }
 
   onSearchTermChange(value: string): void {
     this.searchTerm.set(value);
     this.currentPage.set(1);
+  }
+
+  formatPhone(phone: string): string {
+    if (!phone.startsWith('+') || phone.includes(' ')) {
+      return phone;
+    }
+
+    const digits = phone.slice(1);
+    if (digits.length <= 10) {
+      return phone;
+    }
+
+    const countryCode = digits.slice(0, digits.length - 10);
+    const localNumber = digits.slice(-10);
+    return `+${countryCode} ${localNumber}`;
   }
 
   goToPage(page: number): void {
