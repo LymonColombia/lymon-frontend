@@ -20,6 +20,8 @@ import { AuditLogRepository } from '@/domain/repositories/audit-log.repository';
 import { AuditLogRepositoryImpl } from '@/infrastructure/repositories/audit-log.repository.impl';
 import { ReservationRepository } from '@/domain/repositories/reservation.repository';
 import { ReservationRepositoryImpl } from '@/infrastructure/repositories/reservation.repository.impl';
+import { CrmRepository } from '@/domain/repositories/crm.repository';
+import { CrmRepositoryImpl } from '@/infrastructure/repositories/crm.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -36,5 +38,6 @@ export const appConfig: ApplicationConfig = {
     { provide: GuestAuthRepository, useClass: GuestAuthRepositoryImpl },
     { provide: AuditLogRepository, useClass: AuditLogRepositoryImpl },
     { provide: ReservationRepository, useClass: ReservationRepositoryImpl },
+    { provide: CrmRepository, useClass: CrmRepositoryImpl },
   ],
 };

@@ -33,4 +33,8 @@ export const environment = {
   audit: {
     endpoint: '/audit',
   },
+  crm: {
+    endpoint: '/crm',
+    guestsEndpoint: '/guests',
+  },
 };
