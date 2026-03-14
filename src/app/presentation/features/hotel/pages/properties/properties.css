@@ -12,11 +12,32 @@
 }
 
 .main-content {
+  display: flex;
+  flex-direction: column;
   margin-left: 260px;
   width: calc(100% - 260px);
   min-height: 100vh;
   padding: var(--spacing-3xl);
   background-color: var(--color-bg-secondary);
+}
+
+.properties-container {
+  flex: 1;
+}
+
+.main-content > app-footer {
+  margin-top: auto;
+  margin-left: calc(var(--spacing-3xl) * -1);
+  margin-right: calc(var(--spacing-3xl) * -1);
+  margin-bottom: calc(var(--spacing-3xl) * -1);
+}
+
+@media (max-width: 768px) {
+  .main-content > app-footer {
+    margin-left: calc(var(--spacing-xl) * -1);
+    margin-right: calc(var(--spacing-xl) * -1);
+    margin-bottom: calc(var(--spacing-xl) * -1);
+  }
 }
 
 /* ── Page header ──────────────────────────────────── */

@@ -12,6 +12,7 @@ import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties
 import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-property.use-case';
 import { Property } from '@/domain/entities/staff.model';
 import { CancellationPolicy, PropertyType } from '@/domain/entities/property.model';
+import { FooterComponent } from "@/presentation/shared/components/footer/footer.component";
 
 @Component({
   selector: 'app-properties',
@@ -24,7 +25,8 @@ import { CancellationPolicy, PropertyType } from '@/domain/entities/property.mod
     ModalComponent,
     PropertyFormComponent,
     PropertyCardComponent,
-  ],
+    FooterComponent
+],
   templateUrl: './properties.html',
   styleUrls: ['./properties.css'],
 })
