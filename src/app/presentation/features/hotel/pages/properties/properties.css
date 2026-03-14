@@ -230,6 +230,10 @@
   text-align: center;
 }
 
+.empty-state-icon {
+  color: var(--color-primary-dark);
+}
+
 .empty-title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);

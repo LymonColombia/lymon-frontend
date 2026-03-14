@@ -13,6 +13,8 @@ import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-proper
 import { Property } from '@/domain/entities/staff.model';
 import { CancellationPolicy, PropertyType } from '@/domain/entities/property.model';
 import { FooterComponent } from "@/presentation/shared/components/footer/footer.component";
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-properties',
@@ -25,8 +27,10 @@ import { FooterComponent } from "@/presentation/shared/components/footer/footer.
     ModalComponent,
     PropertyFormComponent,
     PropertyCardComponent,
-    FooterComponent
-],
+    FooterComponent,
+    NgIcon,
+  ],
+  providers: [provideIcons({ bootstrapHouseDoorFill, bootstrapPlus })],
   templateUrl: './properties.html',
   styleUrls: ['./properties.css'],
 })
