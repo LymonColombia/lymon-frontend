@@ -7,11 +7,26 @@ import { FooterComponent } from '@/presentation/shared/components/footer/footer.
 import { BookingRoomCard, RoomCardComponent } from './components/room-card/room-card.component';
 import { GetPublicUnitsUseCase } from '@/domain/use-cases/property/get-public-units.use-case';
 import { Unit } from '@/domain/entities/staff.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapCalendar,
+  bootstrapChevronLeft,
+  bootstrapPeopleFill,
+  bootstrapSearch,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [ButtonComponent, InputComponent, SelectComponent, FooterComponent, RoomCardComponent],
+  imports: [ButtonComponent, InputComponent, SelectComponent, FooterComponent, RoomCardComponent, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapChevronLeft,
+      bootstrapCalendar,
+      bootstrapPeopleFill,
+      bootstrapSearch,
+    }),
+  ],
   templateUrl: './booking.html',
   styleUrl: './booking.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
