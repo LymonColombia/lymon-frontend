@@ -87,4 +87,14 @@
       </li>
     }
   </ul>
+
+  <div class="sidebar-footer" aria-label="Perfil">
+    <div class="profile">
+      <div class="profile-avatar" aria-hidden="true">{{ tenantInitials() }}</div>
+      <div class="profile-text">
+        <div class="profile-name" [title]="tenantNameDisplay()">{{ tenantNameDisplay() }}</div>
+        <div class="profile-email" [title]="tenantEmailDisplay()">{{ tenantEmailDisplay() }}</div>
+      </div>
+    </div>
+  </div>
 </nav>
