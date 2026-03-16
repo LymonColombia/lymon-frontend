@@ -1,0 +1,29 @@
+<article class="property-card">
+  <div class="property-card-content">
+    <div class="property-visual" aria-hidden="true">
+      <ng-icon [name]="propertyTypeIcon()" size="62px"></ng-icon>
+    </div>
+
+    <div class="property-details">
+      <h3 class="property-name">{{ property().name }}</h3>
+
+      <div class="property-meta">
+        <p class="property-city">
+          <ng-icon name="bootstrapGeoAltFill" size="14px" aria-hidden="true"></ng-icon>
+          {{ property().city }}
+        </p>
+
+        <span class="property-badge" [attr.aria-label]="'Tipo: ' + propertyTypeLabel()">
+          {{ propertyTypeLabel() }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="property-card-actions">
+    <app-button type="button" variant="outline" (clicked)="onViewUnits()">
+      <ng-icon name="bootstrapDoorOpenFill" size="20px" aria-hidden="true"></ng-icon>
+      Ver Unidades
+    </app-button>
+  </div>
+</article>

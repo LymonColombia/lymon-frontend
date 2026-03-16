@@ -3,16 +3,34 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { PropertyFormComponent } from './components/property-form/property-form.component';
+import { PropertyCardComponent } from './components/property-card/property-card.component';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-property.use-case';
 import { Property } from '@/domain/entities/staff.model';
 import { CancellationPolicy, PropertyType } from '@/domain/entities/property.model';
+import { FooterComponent } from "@/presentation/shared/components/footer/footer.component";
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ReactiveFormsModule, SidebarComponent],
+  imports: [
+    ReactiveFormsModule,
+    SidebarComponent,
+    ButtonComponent,
+    ModalComponent,
+    PropertyFormComponent,
+    PropertyCardComponent,
+    FooterComponent,
+    NgIcon,
+  ],
+  providers: [provideIcons({ bootstrapHouseDoorFill, bootstrapPlus })],
   templateUrl: './properties.html',
   styleUrls: ['./properties.css'],
 })
@@ -29,8 +47,16 @@ export class PropertiesComponent implements OnInit {
   readonly successMessage = signal<string | null>(null);
   readonly properties = signal<Property[]>([]);
 
-  readonly PROPERTY_TYPES: PropertyType[] = ['HOTEL', 'HOSTEL', 'APARTMENT', 'RESORT', 'VILLA'];
-  readonly CANCELLATION_POLICIES: CancellationPolicy[] = ['FLEXIBLE', 'MODERATE', 'STRICT'];
+  readonly PROPERTY_TYPES: PropertyType[] = ['HOTEL', 'CASA', 'APARTAMENTO', 'VILLA', 'HOSTAL', 'GLAMPING'];
+  readonly CANCELLATION_POLICIES: CancellationPolicy[] = ['FLEXIBLE', 'STANDARD', 'STRICT'];
+  readonly propertyTypeOptions: SelectOption[] = this.PROPERTY_TYPES.map((type) => ({
+    value: type,
+    label: type,
+  }));
+  readonly cancellationPolicyOptions: SelectOption[] = this.CANCELLATION_POLICIES.map((policy) => ({
+    value: policy,
+    label: policy,
+  }));
 
   readonly form = this.fb.group({
     name: ['', Validators.required],

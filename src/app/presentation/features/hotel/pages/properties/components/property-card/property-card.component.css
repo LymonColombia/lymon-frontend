@@ -1,0 +1,132 @@
+:host {
+  display: block;
+}
+
+.property-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  min-height: 250px;
+  padding: var(--spacing-3xl);
+  border: var(--input-border-width) solid transparent;
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(var(--color-bg-primary), var(--color-bg-primary)) padding-box,
+    var(--color-primary-gradient) border-box;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.property-card:hover {
+  transform: translateY(calc(var(--spacing-xs) * -1));
+  box-shadow: var(--shadow-lg);
+}
+
+.property-card-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+}
+
+.property-visual {
+  width: 112px;
+  height: 112px;
+  flex-shrink: 0;
+  border-radius: var(--radius-lg);
+  border: var(--input-border-width) solid var(--color-border-light);
+  background: var(--color-bg-tertiary);
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.property-visual ng-icon {
+  width: 62px;
+  height: 62px;
+}
+
+.property-details {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.property-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
+  border: var(--input-border-width) solid var(--color-border-light);
+  background: var(--color-primary-gradient);
+  color: var(--color-bg-tertiary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.property-name {
+  margin: 0;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  word-break: break-word;
+}
+
+.property-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.property-city {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.property-card-actions {
+  margin-top: auto;
+  display: flex;
+  width: 100%;
+}
+
+.property-card-actions app-button {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .property-card {
+    min-height: 210px;
+    padding: var(--spacing-2xl);
+  }
+
+  .property-card-content {
+    gap: var(--spacing-md);
+  }
+
+  .property-visual {
+    width: 78px;
+    height: 78px;
+  }
+
+  .property-visual ng-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .property-name {
+    font-size: var(--font-size-xl);
+  }
+}
