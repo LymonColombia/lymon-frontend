@@ -1,0 +1,54 @@
+<article class="unit-card">
+  <div class="unit-card-top">
+    <h3 class="unit-name">{{ unit().name }}</h3>
+    @if (unit().isShared !== undefined) {
+      <span class="shared-badge" [class.shared]="unit().isShared">
+        {{ unit().isShared ? 'Compartida' : 'Privada' }}
+      </span>
+    }
+  </div>
+
+  @if (unit().description) {
+    <p class="unit-description">{{ unit().description }}</p>
+  }
+
+  <div class="unit-stats">
+    @if (unit().maxGuests !== undefined) {
+      <div class="stat">
+        <ng-icon name="bootstrapPeopleFill" size="14px" aria-hidden="true"></ng-icon>
+        <span>Máx {{ unit().maxGuests }} huéspedes</span>
+      </div>
+    }
+
+    @if (unit().bathroomsCount !== undefined) {
+      <div class="stat">
+        <ng-icon name="bootstrapDropletFill" size="14px" aria-hidden="true"></ng-icon>
+        <span>{{ unit().bathroomsCount }} baño{{ unit().bathroomsCount !== 1 ? 's' : '' }}</span>
+      </div>
+    }
+
+    @if (unit().inventoryCount !== undefined) {
+      <div class="stat">
+        <ng-icon name="bootstrapSuitcaseLgFill" size="14px" aria-hidden="true"></ng-icon>
+        <span>{{ unit().inventoryCount }} hab.</span>
+      </div>
+    }
+
+    @if (unit().pricePerNight !== undefined) {
+      <div class="stat stat-price">
+        <span>${{ unit().pricePerNight | number: '1.0-0' }} / noche</span>
+      </div>
+    }
+  </div>
+
+  @if ((unit().amenities?.length ?? 0) > 0) {
+    <div class="amenity-chips">
+      @for (amenity of visibleAmenities(); track amenity) {
+        <span class="amenity-chip">{{ amenity }}</span>
+      }
+      @if (hiddenAmenitiesCount() > 0) {
+        <span class="amenity-chip more">+{{ hiddenAmenitiesCount() }}</span>
+      }
+    </div>
+  }
+</article>

@@ -1,0 +1,144 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="unit-form">
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+
+  <div class="form-card">
+    <div class="section-title">Información Básica</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nombre de la Unidad <span class="required">*</span></label>
+        <app-input type="text" formControlName="name" placeholder="Deluxe Ocean View Suite" />
+      </div>
+      <div class="form-group">
+        <label>Precio por Noche <span class="required">*</span></label>
+        <app-input type="number" formControlName="pricePerNight" placeholder="150" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Descripción <span class="required">*</span></label>
+      <textarea formControlName="description" rows="3" placeholder="Spacious suite with private balcony..."></textarea>
+    </div>
+
+    <div class="form-row four-col">
+      <div class="form-group">
+        <label>Inventario <span class="required">*</span></label>
+        <app-input type="number" formControlName="inventoryCount" />
+      </div>
+      <div class="form-group">
+        <label>Máx. Huéspedes <span class="required">*</span></label>
+        <app-input type="number" formControlName="maxGuests" />
+      </div>
+      <div class="form-group">
+        <label>Huéspedes Estándar <span class="required">*</span></label>
+        <app-input type="number" formControlName="standardGuests" />
+      </div>
+      <div class="form-group">
+        <label>Baños <span class="required">*</span></label>
+        <app-input type="number" formControlName="bathroomsCount" />
+      </div>
+    </div>
+
+    <div class="checkbox-group">
+      <label class="checkbox-label">
+        <input type="checkbox" formControlName="isShared" />
+        <span class="checkbox-text">Unidad compartida</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="section-title">Habitaciones y Camas</div>
+
+    <div formArrayName="bedrooms">
+      @for (br of bedrooms.controls; track $index; let bedroomIndex = $index) {
+        <div [formGroupName]="bedroomIndex" class="bedroom-section">
+          <div class="bedroom-header">
+            <span class="bedroom-label">Habitación #{{ bedroomIndex + 1 }}</span>
+            @if (bedrooms.length > 1) {
+              <app-button type="button" variant="text" size="small" (clicked)="removeBedroom(bedroomIndex)">
+                Eliminar
+              </app-button>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Nombre de la Habitación <span class="required">*</span></label>
+            <app-input type="text" formControlName="roomName" placeholder="Master Bedroom" />
+          </div>
+
+          <div formArrayName="beds">
+            @for (bed of getBedsOf(bedroomIndex).controls; track $index; let bedIndex = $index) {
+              <div [formGroupName]="bedIndex" class="bed-row">
+                <div class="form-group">
+                  <label>Tipo de Cama</label>
+                  <app-select [options]="bedTypeOptions" formControlName="type" />
+                </div>
+                <div class="form-group">
+                  <label>Cantidad</label>
+                  <app-input type="number" formControlName="count" />
+                </div>
+                @if (getBedsOf(bedroomIndex).length > 1) {
+                  <app-button type="button" variant="text" size="small" (clicked)="removeBed(bedroomIndex, bedIndex)">
+                    Eliminar
+                  </app-button>
+                }
+              </div>
+            }
+          </div>
+
+          <app-button type="button" variant="outline" size="small" (clicked)="addBed(bedroomIndex)">
+            + Agregar cama
+          </app-button>
+        </div>
+      }
+    </div>
+
+    <app-button type="button" variant="outline" (clicked)="addBedroom()">
+      + Agregar habitación
+    </app-button>
+  </div>
+
+  <div class="form-card">
+    <div class="section-title">Amenidades</div>
+    <div class="amenities-grid">
+      @for (amenity of AMENITY_OPTIONS; track amenity) {
+        <button
+          type="button"
+          class="amenity-chip"
+          [class.selected]="isAmenitySelected(amenity)"
+          (click)="toggleAmenity(amenity)"
+        >
+          {{ amenity }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="section-title">Identificadores Externos <span class="optional">(Opcional)</span></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Airbnb ID</label>
+        <app-input type="text" formControlName="airbnbId" placeholder="airbnb123456" />
+      </div>
+      <div class="form-group">
+        <label>Booking.com ID</label>
+        <app-input type="text" formControlName="bookingId" placeholder="booking789012" />
+      </div>
+      <div class="form-group">
+        <label>VRBO ID</label>
+        <app-input type="text" formControlName="vrboId" placeholder="vrbo345678" />
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions" modal-footer>
+    <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
+    <app-button type="submit" variant="primary" [loading]="isSubmitting()" [disabled]="isSubmitting()">
+      Crear Unidad
+    </app-button>
+  </div>
+</form>

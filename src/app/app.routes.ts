@@ -10,7 +10,6 @@ import { RecoverPasswordComponent } from '@/presentation/features/auth/pages/rec
 import { ConfirmRecoverPasswordComponent } from '@/presentation/features/auth/pages/confirmRecoverPassword/confirmRecoverPassword';
 import { BookingComponent } from '@/presentation/features/hotel/pages/booking/booking';
 import { CheckinComponent } from '@/presentation/features/hotel/pages/checkin/checkin';
-import { CreateRoomComponent } from '@/presentation/features/hotel/pages/createRoom/createRoom';
 import { PropertiesComponent } from '@/presentation/features/hotel/pages/properties/properties';
 import { RegisterEmployeeComponent } from '@/presentation/features/hotel/pages/registerEmployee/registerEmployee';
 import { RoomDetailsComponent } from '@/presentation/features/hotel/pages/roomDetails/roomDetails';
@@ -42,7 +41,6 @@ export const routes: Routes = [
   { path: 'booking', component: BookingComponent, canActivate: [authGuard] },
   { path: 'checkin', component: CheckinComponent, canActivate: [authGuard] },
   { path: 'properties', component: PropertiesComponent, canActivate: [authGuard] },
-  { path: 'create-room', component: CreateRoomComponent, canActivate: [authGuard] },
   { path: 'register-employee', component: RegisterEmployeeComponent, canActivate: [authGuard] },
   { path: 'room-details', component: RoomDetailsComponent, canActivate: [authGuard] },
   { path: 'sales-summary', component: SalesSummaryComponent, canActivate: [authGuard] },
