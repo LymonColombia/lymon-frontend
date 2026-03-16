@@ -12,6 +12,8 @@ import {
   inject,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapChevronDown } from '@ng-icons/bootstrap-icons';
 
 export type SelectSize = 'small' | 'medium' | 'large';
 
@@ -24,11 +26,12 @@ export interface SelectOption {
 @Component({
   selector: 'app-select',
   standalone: true,
-  imports: [],
+  imports: [NgIcon],
   templateUrl: './select.component.html',
   styleUrl: './select.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
+    provideIcons({ bootstrapChevronDown }),
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => SelectComponent),

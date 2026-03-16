@@ -43,7 +43,7 @@
   justify-content: center;
 }
 
-.property-visual svg {
+.property-visual ng-icon {
   width: 62px;
   height: 62px;
 }
@@ -121,7 +121,7 @@
     height: 78px;
   }
 
-  .property-visual svg {
+  .property-visual ng-icon {
     width: 42px;
     height: 42px;
   }

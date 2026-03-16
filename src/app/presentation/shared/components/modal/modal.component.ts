@@ -5,13 +5,16 @@ import {
   input,
   output,
 } from '@angular/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapXCircleFill } from '@ng-icons/bootstrap-icons';
 
 export type ModalSize = 'small' | 'medium' | 'large';
 
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [],
+  imports: [NgIcon],
+  providers: [provideIcons({ bootstrapXCircleFill })],
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
