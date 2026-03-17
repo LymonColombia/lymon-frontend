@@ -38,7 +38,7 @@ export class LoginComponent {
     this.loginUseCase.execute({ email: email!, password: password! }).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/booking']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);

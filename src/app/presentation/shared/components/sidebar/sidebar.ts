@@ -58,9 +58,8 @@ export class SidebarComponent implements OnInit {
     { icon: 'reports', label: 'Resumen de Ventas', route: '/sales-summary' },
     { icon: 'calendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
     { icon: 'settings', label: 'Configuración de Correos', route: '/email-config' },
-    { icon: 'lock', label: 'Cambiar Contraseña', route: '/change-password' },
+    { icon: 'settings', label: 'Configuración', route: '/settings' },
     { icon: 'reports', label: 'Novedades Laborales', route: '/incident-report/list' },
-    { icon: 'settings', label: 'Perfil del Negocio', route: '/tenant-profile' },
     { icon: 'reports', label: 'Registros de Auditoría', route: '/audit-log' },
   ];
 
