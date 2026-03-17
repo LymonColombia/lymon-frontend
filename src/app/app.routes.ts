@@ -23,6 +23,7 @@ import { TenantSettingsComponent } from '@/presentation/features/hotel/pages/ten
 import { AuditLogComponent } from '@/presentation/features/hotel/pages/auditLog/auditLog';
 import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/propertyUnits/propertyUnits';
 import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCrm/guestsCrm';
+import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
@@ -45,6 +46,7 @@ export const routes: Routes = [
   { path: 'sales-summary', component: SalesSummaryComponent, canActivate: [authGuard] },
   { path: 'calendar-sync', component: CalendarSyncComponent, canActivate: [authGuard] },
   { path: 'email-config', component: EmailConfigComponent, canActivate: [authGuard] },
+  { path: 'plans', component: PlansComponent, canActivate: [authGuard] },
   { path: 'settings', component: TenantSettingsComponent, canActivate: [authGuard] },
   { path: 'change-password', redirectTo: 'settings', pathMatch: 'full' },
   {

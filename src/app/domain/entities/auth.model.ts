@@ -23,6 +23,7 @@ export interface AuthUser {
   userId: string;
   email: string;
   tenantId: string;
+  planType?: PlanType;
   role?: UserRole;
   emailVerified?: boolean;
 }

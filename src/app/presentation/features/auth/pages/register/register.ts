@@ -33,10 +33,9 @@ export class RegisterComponent {
   readonly errorMessage = signal<string | null>(null);
 
   readonly planOptions: { label: string; value: PlanType }[] = [
-    { label: 'Trial (gratis)', value: 'TRIAL' },
-    { label: 'Lymon One', value: 'LYMON_ONE' },
-    { label: 'Plus', value: 'PLUS' },
-    { label: 'Prime', value: 'PRIME' },
+    { label: 'Plan Básico (Trial)', value: 'TRIAL' },
+    { label: 'Plan Profesional', value: 'PLUS' },
+    { label: 'Plan Empresarial', value: 'PRIME' },
   ];
 
   readonly form = this.fb.group(
