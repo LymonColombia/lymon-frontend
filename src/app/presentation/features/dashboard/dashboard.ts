@@ -3,11 +3,26 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
 import { Reservation } from '@/domain/entities/reservation.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapBuilding,
+  bootstrapPeople,
+  bootstrapCurrencyDollar,
+  bootstrapGraphUpArrow,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule, SidebarComponent, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapBuilding,
+      bootstrapPeople,
+      bootstrapCurrencyDollar,
+      bootstrapGraphUpArrow,
+    }),
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./dashboard.css'],
   templateUrl: './dashboard.html'
