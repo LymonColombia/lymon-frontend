@@ -10,6 +10,14 @@ import { Router, RouterLink } from '@angular/router';
 import { RegisterUseCase } from '@/domain/use-cases/auth/register.use-case';
 import { PlanType } from '@/domain/entities/auth.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapArrowRightCircleFill,
+  bootstrapEnvelope,
+  bootstrapLock,
+  bootstrapQuestionCircleFill,
+  bootstrapBuilding,
+} from '@ng-icons/bootstrap-icons';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -20,7 +28,16 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 @Component({
   selector: 'app-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapArrowRightCircleFill,
+      bootstrapEnvelope,
+      bootstrapLock,
+      bootstrapQuestionCircleFill,
+      bootstrapBuilding,
+    }),
+  ],
   templateUrl: './register.html',
   styleUrls: ['../../auth-form.css'],
 })
