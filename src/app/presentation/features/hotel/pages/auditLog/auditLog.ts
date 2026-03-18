@@ -9,19 +9,24 @@ import {
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetAuditLogsUseCase } from '@/domain/use-cases/audit/get-audit-logs.use-case';
-import {
-  AuditAction,
-  AuditEntityType,
-  AuditLogEntry,
-} from '@/domain/entities/audit-log.model';
+import { AuditAction, AuditEntityType, AuditLogEntry } from '@/domain/entities/audit-log.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapInfoCircle, bootstrapSearch, bootstrapFileEarmarkText } from '@ng-icons/bootstrap-icons';
 
 const LIMIT = 20;
 
 @Component({
   selector: 'app-audit-log',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SidebarComponent, ReactiveFormsModule],
+  imports: [SidebarComponent, ReactiveFormsModule, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapInfoCircle,
+      bootstrapSearch,
+      bootstrapFileEarmarkText,
+    }),
+  ],
   templateUrl: './auditLog.html',
   styleUrl: './auditLog.css',
 })
