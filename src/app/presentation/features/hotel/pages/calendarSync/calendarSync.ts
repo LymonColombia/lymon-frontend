@@ -1,6 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapArrowRepeat,
+  bootstrapCalendar,
+  bootstrapCheck2,
+  bootstrapChevronLeft,
+  bootstrapInfoCircle,
+  bootstrapLink45deg,
+} from '@ng-icons/bootstrap-icons';
 
 interface Metric {
   label: string;
@@ -21,7 +30,17 @@ interface Platform {
 @Component({
   selector: 'app-calendar-sync',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule, SidebarComponent, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapChevronLeft,
+      bootstrapCalendar,
+      bootstrapLink45deg,
+      bootstrapArrowRepeat,
+      bootstrapInfoCircle,
+      bootstrapCheck2,
+    }),
+  ],
   templateUrl: './calendarSync.html',
   styleUrl: './calendarSync.css'
 })
