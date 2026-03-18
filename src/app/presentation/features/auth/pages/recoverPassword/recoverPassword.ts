@@ -3,11 +3,20 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { RecoverPasswordUseCase } from '@/domain/use-cases/auth/recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapArrowRightCircleFill, bootstrapEnvelope, bootstrapQuestionCircleFill } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-recover-password',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapArrowRightCircleFill,
+      bootstrapEnvelope,
+      bootstrapQuestionCircleFill
+    }),
+  ],
   templateUrl: './recoverPassword.html',
   styleUrls: ['../../auth-form.css'],
 })
