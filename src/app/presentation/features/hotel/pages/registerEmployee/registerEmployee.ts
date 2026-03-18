@@ -8,12 +8,33 @@ import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Role, Property, Unit, ScopeType } from '@/domain/entities/staff.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapChevronLeft,
+  bootstrapEye,
+  bootstrapEyeSlash,
+  bootstrapLock,
+  bootstrapPersonAdd,
+  bootstrapPlusLg,
+  bootstrapShieldLock,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-register-employee',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, SidebarComponent],
+  imports: [ReactiveFormsModule, RouterLink, SidebarComponent, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapChevronLeft,
+      bootstrapEye,
+      bootstrapEyeSlash,
+      bootstrapLock,
+      bootstrapPersonAdd,
+      bootstrapPlusLg,
+      bootstrapShieldLock,
+    }),
+  ],
   templateUrl: './registerEmployee.html',
   styleUrls: ['./registerEmployee.css'],
 })
