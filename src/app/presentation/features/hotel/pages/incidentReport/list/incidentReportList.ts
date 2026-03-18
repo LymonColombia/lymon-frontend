@@ -1,20 +1,23 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident/get-incident-reports.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapPlusLg, bootstrapFileEarmarkText, bootstrapPencilSquare } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-incident-report-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SidebarComponent, RouterLink],
+  imports: [SidebarComponent, RouterLink, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapPlusLg,
+      bootstrapFileEarmarkText,
+      bootstrapPencilSquare
+    }),
+  ],
   templateUrl: './incidentReportList.html',
   styleUrl: './incidentReportList.css',
 })
