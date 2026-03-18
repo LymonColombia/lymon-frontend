@@ -1,23 +1,31 @@
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormArray, Validators, AbstractControl } from '@angular/forms';
+  ReactiveFormsModule,
+  FormBuilder,
+  FormArray,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { UpdateIncidentReportUseCase } from '@/domain/use-cases/update-incident-report.use-case';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapPlusLg, bootstrapXLg } from '@ng-icons/bootstrap-icons';
 
 const URL_PATTERN = /^https?:\/\/.+/;
 
 @Component({
   selector: 'app-edit-incident-report',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, SidebarComponent, RouterLink],
+  imports: [ReactiveFormsModule, SidebarComponent, RouterLink, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapPlusLg,
+      bootstrapXLg,
+    }),
+  ],
   templateUrl: './editIncidentReport.html',
   styleUrl: './editIncidentReport.css',
 })
@@ -50,7 +58,9 @@ export class EditIncidentReportComponent implements OnInit {
     }
     this.reportId.set(id);
 
-    const state = this.router.getCurrentNavigation()?.extras.state as { report?: IncidentReport } | undefined;
+    const state = this.router.getCurrentNavigation()?.extras.state as
+      | { report?: IncidentReport }
+      | undefined;
     const report = state?.report ?? (history.state as { report?: IncidentReport })?.report;
 
     if (!report) {
@@ -95,7 +105,8 @@ export class EditIncidentReportComponent implements OnInit {
       .execute(this.reportId(), {
         title: title || undefined,
         description: description || undefined,
-        attachmentUrls: (attachmentUrls as string[]).length > 0 ? (attachmentUrls as string[]) : undefined,
+        attachmentUrls:
+          (attachmentUrls as string[]).length > 0 ? (attachmentUrls as string[]) : undefined,
       })
       .subscribe({
         next: () => {
@@ -117,6 +128,10 @@ export class EditIncidentReportComponent implements OnInit {
       });
   }
 
-  get titleControl() { return this.form.controls.title; }
-  get descriptionControl() { return this.form.controls.description; }
+  get titleControl() {
+    return this.form.controls.title;
+  }
+  get descriptionControl() {
+    return this.form.controls.description;
+  }
 }
