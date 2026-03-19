@@ -113,6 +113,9 @@
   --max-width-lg: 1024px;
   --max-width-xl: 1280px;
   --max-width-2xl: 1400px;
+  --layout-sidebar-expanded-width: 260px;
+  --layout-sidebar-collapsed-width: 80px;
+  --layout-sidebar-width: var(--layout-sidebar-expanded-width);
   
   /* ===== BUTTON SPECIFIC ===== */
   --btn-padding-sm: 8px 16px;
@@ -156,6 +159,11 @@ body {
   background-color: var(--color-bg-secondary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.main-content,
+.page-content {
+  transition: margin-left var(--transition-base), width var(--transition-base);
 }
 
 /* ========================================
