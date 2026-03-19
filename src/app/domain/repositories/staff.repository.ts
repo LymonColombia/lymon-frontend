@@ -11,4 +11,5 @@ export abstract class StaffRepository {
   abstract getRoles(): Observable<RolesResponse>;
   abstract getProperties(): Observable<PropertiesResponse>;
   abstract getUnits(propertyId: string): Observable<UnitsResponse>;
+  abstract getPublicUnits(tenantId: string): Observable<UnitsResponse>;
 }

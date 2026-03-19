@@ -49,4 +49,10 @@ export class StaffRepositoryImpl extends StaffRepository {
       { headers: this.authHeaders },
     );
   }
+
+  getPublicUnits(tenantId: string): Observable<UnitsResponse> {
+    return this.http.get<UnitsResponse>(
+      `${environment.apiUrl}${environment.units.endpoint}/public/${tenantId}`,
+    );
+  }
 }

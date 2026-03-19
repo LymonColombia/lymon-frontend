@@ -17,11 +17,22 @@ export interface Unit {
   description?: string;
   maxGuests?: number;
   standardGuests?: number;
+  bedrooms?: Bedroom[];
   inventoryCount?: number;
   pricePerNight?: number;
   isShared?: boolean;
   amenities?: string[];
   bathroomsCount?: number;
+}
+
+export interface Bedroom {
+  roomName: string;
+  beds: Bed[];
+}
+
+export interface Bed {
+  type: string;
+  count: number;
 }
 
 export interface UnitsResponse {
