@@ -3,11 +3,18 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { GuestRecoverPasswordUseCase } from '@/domain/use-cases/guest/guest-recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapArrowRightCircleFill,
+  bootstrapEnvelope,
+  bootstrapChevronLeft
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-guest-forgot-password',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  providers: [provideIcons({ bootstrapArrowRightCircleFill, bootstrapEnvelope, bootstrapChevronLeft })],
   templateUrl: './forgot-password.html',
   styleUrls: ['../../../auth/auth-form.css'],
 })

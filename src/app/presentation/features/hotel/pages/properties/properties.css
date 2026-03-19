@@ -14,8 +14,8 @@
 .main-content {
   display: flex;
   flex-direction: column;
-  margin-left: 260px;
-  width: calc(100% - 260px);
+  margin-left: var(--layout-sidebar-width);
+  width: calc(100% - var(--layout-sidebar-width));
   min-height: 100vh;
   padding: var(--spacing-3xl);
   background-color: var(--color-bg-secondary);

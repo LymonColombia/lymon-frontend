@@ -6,7 +6,7 @@
 }
 
 .main-content {
-    margin-left: 260px;
+    margin-left: var(--layout-sidebar-width);
     min-height: 100vh;
 }
 
@@ -654,6 +654,9 @@
     border: 1px solid #90CAF9;
     border-radius: 12px;
     padding: 16px;
+    width: 100%;
+    align-self: stretch;
+    box-sizing: border-box;
 }
 
 .preview-note svg {
@@ -665,6 +668,8 @@
     font-size: 14px;
     color: #0066CC;
     line-height: 1.6;
+    flex: 1;
+    min-width: 0;
 }
 
 .variable-highlight {

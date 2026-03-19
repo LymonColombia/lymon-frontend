@@ -9,6 +9,18 @@ import {
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapBarChartFill,
+  bootstrapCalendar,
+  bootstrapChevronLeft,
+  bootstrapChevronRight,
+  bootstrapGear,
+  bootstrapGrid,
+  bootstrapHouseFill,
+  bootstrapLock,
+  bootstrapPeopleFill,
+} from '@ng-icons/bootstrap-icons';
 
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
@@ -19,12 +31,38 @@ interface MenuItem {
   route: string;
 }
 
+const SIDEBAR_EXPANDED_STORAGE_KEY = 'sidebar-expanded';
+const SIDEBAR_EXPANDED_WIDTH = '260px';
+const SIDEBAR_COLLAPSED_WIDTH = '80px';
+
+function getInitialSidebarExpandedState(): boolean {
+  try {
+    const storedValue = globalThis.localStorage?.getItem(SIDEBAR_EXPANDED_STORAGE_KEY);
+    return storedValue === null ? true : storedValue === 'true';
+  } catch {
+    return true;
+  }
+}
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, NgIconComponent],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
+  providers: [
+    provideIcons({
+      bootstrapGrid,
+      bootstrapCalendar,
+      bootstrapHouseFill,
+      bootstrapPeopleFill,
+      bootstrapBarChartFill,
+      bootstrapGear,
+      bootstrapLock,
+      bootstrapChevronLeft,
+      bootstrapChevronRight,
+    }),
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit {
@@ -32,6 +70,8 @@ export class SidebarComponent implements OnInit {
   private readonly getTenantProfileUseCase = inject(GetTenantProfileUseCase);
   private readonly userSession = inject(UserSessionService);
 
+  readonly isExpanded = signal(getInitialSidebarExpandedState());
+  readonly transitionsReady = signal(false);
   readonly tenantName = signal('');
   readonly tenantEmail = signal('');
 
@@ -50,21 +90,44 @@ export class SidebarComponent implements OnInit {
   });
 
   readonly menuItems: MenuItem[] = [
-    { icon: 'dashboard', label: 'Inicio', route: '/dashboard' },
-    { icon: 'calendar', label: 'Reservaciones', route: '/booking' },
-    { icon: 'hotel', label: 'Check-in', route: '/checkin' },
-    { icon: 'dashboard', label: 'Propiedades y Unidades', route: '/properties' },
-    { icon: 'people', label: 'Registrar Empleado', route: '/register-employee' },
-    { icon: 'reports', label: 'Resumen de Ventas', route: '/sales-summary' },
-    { icon: 'calendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
-    { icon: 'settings', label: 'Configuración de Correos', route: '/email-config' },
-    { icon: 'lock', label: 'Cambiar Contraseña', route: '/change-password' },
-    { icon: 'reports', label: 'Novedades Laborales', route: '/incident-report/list' },
-    { icon: 'settings', label: 'Perfil del Negocio', route: '/tenant-profile' },
-    { icon: 'reports', label: 'Registros de Auditoría', route: '/audit-log' },
+    { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
+    { icon: 'bootstrapCalendar', label: 'Reservaciones', route: '/booking' },
+    { icon: 'bootstrapHouseFill', label: 'Check-in', route: '/checkin' },
+    { icon: 'bootstrapGrid', label: 'Propiedades y Unidades', route: '/properties' },
+    { icon: 'bootstrapPeopleFill', label: 'Registrar Empleado', route: '/register-employee' },
+    { icon: 'bootstrapBarChartFill', label: 'Resumen de Ventas', route: '/sales-summary' },
+    { icon: 'bootstrapCalendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
+    { icon: 'bootstrapGear', label: 'Configuración de Correos', route: '/email-config' },
+    { icon: 'bootstrapLock', label: 'Cambiar Contraseña', route: '/change-password' },
+    { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
+    { icon: 'bootstrapGear', label: 'Perfil del Negocio', route: '/tenant-profile' },
+    { icon: 'bootstrapBarChartFill', label: 'Registros de Auditoría', route: '/audit-log' },
   ];
 
+  private updateLayoutSidebarWidthVariable(): void {
+    const sidebarWidth = this.isExpanded() ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
+    document.documentElement.style.setProperty('--layout-sidebar-width', sidebarWidth);
+  }
+
+  toggleExpanded(): void {
+    this.isExpanded.update(v => {
+      const nextState = !v;
+      try {
+        localStorage.setItem(SIDEBAR_EXPANDED_STORAGE_KEY, String(nextState));
+      } catch {}
+      return nextState;
+    });
+
+    this.updateLayoutSidebarWidthVariable();
+  }
+
   ngOnInit(): void {
+    this.updateLayoutSidebarWidthVariable();
+
+    requestAnimationFrame(() => {
+      this.transitionsReady.set(true);
+    });
+
     this.getTenantProfileUseCase
       .execute()
       .pipe(takeUntilDestroyed(this.destroyRef))

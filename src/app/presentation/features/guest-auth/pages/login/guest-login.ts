@@ -3,11 +3,18 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { GuestLoginUseCase } from '@/domain/use-cases/guest/guest-login.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapArrowRightCircleFill,
+  bootstrapEnvelope,
+  bootstrapLock,
+} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-guest-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  providers: [provideIcons({ bootstrapEnvelope, bootstrapLock, bootstrapArrowRightCircleFill })],
   templateUrl: './guest-login.html',
   styleUrls: ['../../../auth/auth-form.css'],
 })

@@ -24,26 +24,12 @@
             class="input-wrapper"
             [class.input-error]="tenantNameControl.invalid && tenantNameControl.touched"
           >
-            <svg
+            <ng-icon
               class="input-icon"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="2"
-                y="7"
-                width="16"
-                height="11"
-                rx="1"
-                stroke="#666"
-                stroke-width="1.5"
-                fill="none"
-              />
-              <path d="M6 7V5a4 4 0 0 1 8 0v2" stroke="#666" stroke-width="1.5" fill="none" />
-            </svg>
+              name="bootstrapBuilding"
+              size="20px"
+              aria-hidden="true"
+            ></ng-icon>
             <input
               type="text"
               id="tenantName"
@@ -72,22 +58,12 @@
             class="input-wrapper"
             [class.input-error]="emailControl.invalid && emailControl.touched"
           >
-            <svg
+            <ng-icon
               class="input-icon"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3 4h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"
-                stroke="#666"
-                stroke-width="1.5"
-                fill="none"
-              />
-              <path d="M2 5l8 6 8-6" stroke="#666" stroke-width="1.5" fill="none" />
-            </svg>
+              name="bootstrapEnvelope"
+              size="20px"
+              aria-hidden="true"
+            ></ng-icon>
             <input
               type="email"
               id="email"
@@ -114,26 +90,12 @@
             class="input-wrapper"
             [class.input-error]="passwordControl.invalid && passwordControl.touched"
           >
-            <svg
+            <ng-icon
               class="input-icon"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="4"
-                y="9"
-                width="12"
-                height="9"
-                rx="1"
-                stroke="#666"
-                stroke-width="1.5"
-                fill="none"
-              />
-              <path d="M7 9V6a3 3 0 0 1 6 0v3" stroke="#666" stroke-width="1.5" fill="none" />
-            </svg>
+              name="bootstrapLock"
+              size="20px"
+              aria-hidden="true"
+            ></ng-icon>
             <input
               type="password"
               id="password"
@@ -163,26 +125,12 @@
               (form.hasError('passwordsMismatch') && confirmPasswordControl.touched)
             "
           >
-            <svg
+            <ng-icon
               class="input-icon"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="4"
-                y="9"
-                width="12"
-                height="9"
-                rx="1"
-                stroke="#666"
-                stroke-width="1.5"
-                fill="none"
-              />
-              <path d="M7 9V6a3 3 0 0 1 6 0v3" stroke="#666" stroke-width="1.5" fill="none" />
-            </svg>
+              name="bootstrapLock"
+              size="20px"
+              aria-hidden="true"
+            ></ng-icon>
             <input
               type="password"
               id="confirmPassword"
@@ -227,21 +175,7 @@
             <span>Cargando…</span>
           } @else {
             <span>Crear Cuenta</span>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M5 10h10M12 7l3 3-3 3"
-                stroke="white"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <ng-icon name="bootstrapArrowRightCircleFill" size="20px" aria-hidden="true"></ng-icon>
           }
         </button>
 
@@ -264,19 +198,6 @@
   </div>
 
   <button class="help-button">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" fill="white" />
-      <text
-        x="12"
-        y="17"
-        font-family="Syne"
-        font-weight="600"
-        font-size="16"
-        fill="#333"
-        text-anchor="middle"
-      >
-        ?
-      </text>
-    </svg>
+    <ng-icon name="bootstrapQuestionCircleFill" size="20px" aria-hidden="true" style="color: white"></ng-icon>
   </button>
 </div>

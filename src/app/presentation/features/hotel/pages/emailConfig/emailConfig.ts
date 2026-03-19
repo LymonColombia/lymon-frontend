@@ -1,6 +1,20 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapEnvelope,
+  bootstrapPlusLg,
+  bootstrapCheckLg,
+  bootstrapSend,
+  bootstrapChevronLeft,
+  bootstrapCalendar,
+  bootstrapEye,
+  bootstrapPencilSquare,
+  bootstrapTrash3,
+  bootstrapXCircleFill,
+  bootstrapInfoCircle,
+} from '@ng-icons/bootstrap-icons';
 
 interface Metric {
   label: string;
@@ -28,9 +42,24 @@ interface Variable {
 @Component({
   selector: 'app-email-config',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule, SidebarComponent, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapEnvelope,
+      bootstrapPlusLg,
+      bootstrapCheckLg,
+      bootstrapSend,
+      bootstrapChevronLeft,
+      bootstrapCalendar,
+      bootstrapEye,
+      bootstrapPencilSquare,
+      bootstrapTrash3,
+      bootstrapXCircleFill,
+      bootstrapInfoCircle,
+    }),
+  ],
   templateUrl: './emailConfig.html',
-  styleUrl: './emailConfig.css'
+  styleUrl: './emailConfig.css',
 })
 export class EmailConfigComponent {
   showModal = false;
@@ -43,22 +72,22 @@ export class EmailConfigComponent {
       value: '3',
       subtitle: 'Configuradas',
       icon: 'mail',
-      color: '#009A44'
+      color: '#009A44',
     },
     {
       label: 'Plantillas Activas',
       value: '3',
       subtitle: 'Enviándose automáticamente',
       icon: 'check',
-      color: '#6CC24A'
+      color: '#6CC24A',
     },
     {
       label: 'Correos Enviados (Mes)',
       value: '247',
       subtitle: 'Este mes',
       icon: 'send',
-      color: '#6CC24A'
-    }
+      color: '#6CC24A',
+    },
   ];
 
   templates: EmailTemplate[] = [
@@ -82,7 +111,7 @@ Detalles de su reserva:
 Estamos ansiosos por recibirle y hacer de su estancia una experiencia memorable.
 
 Atentamente,
-El equipo de {NOMBRE_HOTEL}`
+El equipo de {NOMBRE_HOTEL}`,
     },
     {
       id: '2',
@@ -102,7 +131,7 @@ Código de acceso: {CODIGO_ACCESO}
 ¡Esperamos verle pronto!
 
 Atentamente,
-El equipo de {NOMBRE_HOTEL}`
+El equipo de {NOMBRE_HOTEL}`,
     },
     {
       id: '3',
@@ -120,8 +149,8 @@ Nos encantaría conocer su opinión sobre su estancia. Por favor, tómese un mom
 Su opinión es muy valiosa para nosotros.
 
 Atentamente,
-El equipo de {NOMBRE_HOTEL}`
-    }
+El equipo de {NOMBRE_HOTEL}`,
+    },
   ];
 
   variables: Variable[] = [
@@ -134,7 +163,7 @@ El equipo de {NOMBRE_HOTEL}`
     { name: 'Número Huéspedes', code: '{NUM_HUESPEDES}' },
     { name: 'Dirección Hotel', code: '{DIRECCION_HOTEL}' },
     { name: 'Teléfono Hotel', code: '{TELEFONO_HOTEL}' },
-    { name: 'Código Acceso', code: '{CODIGO_ACCESO}' }
+    { name: 'Código Acceso', code: '{CODIGO_ACCESO}' },
   ];
 
   openModal(): void {
@@ -146,7 +175,7 @@ El equipo de {NOMBRE_HOTEL}`
   }
 
   viewTemplate(id: string): void {
-    const template = this.templates.find(t => t.id === id);
+    const template = this.templates.find((t) => t.id === id);
     if (template) {
       this.selectedTemplate = template;
       this.showPreviewModal = true;
@@ -187,10 +216,10 @@ El equipo de {NOMBRE_HOTEL}`
   getFormattedContent(content: string): string {
     // Reemplazar saltos de línea con <br>
     let formatted = content.replace(/\n/g, '<br>');
-    
+
     // Resaltar variables entre llaves con un span estilizado
     formatted = formatted.replace(/\{([A-Z_]+)\}/g, '<span class="variable-highlight">{$1}</span>');
-    
+
     return formatted;
   }
 }

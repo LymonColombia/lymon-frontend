@@ -1,6 +1,17 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapCalendar,
+  bootstrapChevronLeft,
+  bootstrapCurrencyDollar,
+  bootstrapDownload,
+  bootstrapEye,
+  bootstrapFilter,
+  bootstrapGraphUpArrow,
+  bootstrapReceipt,
+  bootstrapSearch,
+} from '@ng-icons/bootstrap-icons';
 
 interface SaleMetric {
   label: string;
@@ -25,9 +36,23 @@ interface Invoice {
 @Component({
   selector: 'app-sales-summary',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [SidebarComponent, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapCalendar,
+      bootstrapChevronLeft,
+      bootstrapCurrencyDollar,
+      bootstrapDownload,
+      bootstrapEye,
+      bootstrapFilter,
+      bootstrapGraphUpArrow,
+      bootstrapReceipt,
+      bootstrapSearch,
+    }),
+  ],
   templateUrl: './salesSummary.html',
-  styleUrl: './salesSummary.css'
+  styleUrl: './salesSummary.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesSummaryComponent {
   metrics: SaleMetric[] = [

@@ -4,21 +4,19 @@
     <div class="calendar-container">
         <div class="page-header">
             <button class="back-button">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"/>
-                </svg>
+                <ng-icon name="bootstrapChevronLeft" size="20px" aria-hidden="true"></ng-icon>
                 Volver
             </button>
 
             <div class="header-content">
                 <div class="header-left">
                     <div class="header-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
+                        <ng-icon
+                            name="bootstrapCalendar"
+                            size="32px"
+                            style="color: white"
+                            aria-hidden="true"
+                        ></ng-icon>
                     </div>
                     <div class="header-text">
                         <h1 class="page-title">Integración de Calendarios</h1>
@@ -28,11 +26,7 @@
 
                 <div class="header-actions">
                     <button class="btn-sync" (click)="syncAll()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="23 4 23 10 17 10"/>
-                            <polyline points="1 20 1 14 7 14"/>
-                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                        </svg>
+                        <ng-icon name="bootstrapArrowRepeat" size="20px" aria-hidden="true"></ng-icon>
                         Sincronizar
                     </button>
                 </div>
@@ -45,25 +39,31 @@
                     <div class="metric-header">
                         <span class="metric-label">{{ metric.label }}</span>
                         @if (metric.icon === 'link') {
-                            <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" [attr.stroke]="metric.color" stroke-width="2">
-                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                            </svg>
+                            <ng-icon
+                                class="metric-icon"
+                                name="bootstrapLink45deg"
+                                size="20px"
+                                [style.color]="metric.color"
+                                aria-hidden="true"
+                            ></ng-icon>
                         }
                         @if (metric.icon === 'calendar') {
-                            <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" [attr.stroke]="metric.color" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                <line x1="16" y1="2" x2="16" y2="6"/>
-                                <line x1="8" y1="2" x2="8" y2="6"/>
-                                <line x1="3" y1="10" x2="21" y2="10"/>
-                            </svg>
+                            <ng-icon
+                                class="metric-icon"
+                                name="bootstrapCalendar"
+                                size="20px"
+                                [style.color]="metric.color"
+                                aria-hidden="true"
+                            ></ng-icon>
                         }
                         @if (metric.icon === 'refresh') {
-                            <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" [attr.stroke]="metric.color" stroke-width="2">
-                                <polyline points="23 4 23 10 17 10"/>
-                                <polyline points="1 20 1 14 7 14"/>
-                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                            </svg>
+                            <ng-icon
+                                class="metric-icon"
+                                name="bootstrapArrowRepeat"
+                                size="20px"
+                                [style.color]="metric.color"
+                                aria-hidden="true"
+                            ></ng-icon>
                         }
                     </div>
                     <div class="metric-value">{{ metric.value }}</div>
@@ -73,11 +73,13 @@
         </div>
 
         <div class="info-banner">
-            <svg class="banner-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="16" x2="12" y2="12"/>
-                <line x1="12" y1="8" x2="12.01" y2="8"/>
-            </svg>
+            <ng-icon
+                class="banner-icon"
+                name="bootstrapInfoCircle"
+                size="20px"
+                style="color: #1976D2"
+                aria-hidden="true"
+            ></ng-icon>
             <div class="banner-content">
                 <h3 class="banner-title">Prevención de Overbooking Activa</h3>
                 <p class="banner-text">
@@ -88,10 +90,12 @@
 
         <div class="platforms-section">
             <div class="section-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="2">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                </svg>
+                <ng-icon
+                    name="bootstrapLink45deg"
+                    size="20px"
+                    style="color: #009A44"
+                    aria-hidden="true"
+                ></ng-icon>
                 <h3 class="section-title">Plataformas Disponibles</h3>
             </div>
 
@@ -116,9 +120,7 @@
                         <div class="platform-actions">
                             @if (platform.connected) {
                                 <span class="status-badge connected">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="20 6 9 17 4 12"/>
-                                    </svg>
+                                    <ng-icon name="bootstrapCheck2" size="16px" aria-hidden="true"></ng-icon>
                                     Conectado
                                 </span>
                                 <button class="btn-action btn-disconnect" (click)="disconnectPlatform(platform.name)">
