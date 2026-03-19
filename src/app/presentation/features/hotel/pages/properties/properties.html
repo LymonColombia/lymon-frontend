@@ -38,7 +38,7 @@
         [open]="true"
         title="Nueva Propiedad"
         size="large"
-        (closed)="toggleForm()"
+        (closed)="closeForm()"
       >
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <app-property-form
@@ -48,7 +48,7 @@
           />
 
           <div modal-footer class="form-actions">
-            <app-button type="button" variant="secondary" (clicked)="toggleForm()">Cancelar</app-button>
+            <app-button type="button" variant="secondary" (clicked)="cancelForm()">Cancelar</app-button>
             <app-button type="submit" variant="primary" [disabled]="isSaving()" [loading]="isSaving()">
               Crear Propiedad
             </app-button>
@@ -68,7 +68,7 @@
         <ng-icon class="empty-state-icon" name="bootstrapHouseDoorFill" size="64px"></ng-icon>
         <p class="empty-title">Aún no tienes propiedades</p>
         <p class="empty-subtitle">Crea tu primera propiedad para empezar a gestionar unidades</p>
-        <app-button type="button" variant="primary" (clicked)="toggleForm()">
+        <app-button type="button" variant="primary" (clicked)="openForm()">
           Crear primera propiedad
         </app-button>
       </div>
@@ -78,7 +78,7 @@
           <app-property-card [property]="prop" (viewUnits)="navigateToUnits($event)" />
         }
         
-        <button class="create-property-card" type="button" (click)="toggleForm()">
+        <button class="create-property-card" type="button" (click)="openForm()">
           <span class="create-property-icon" aria-hidden="true">
             <ng-icon name="bootstrapPlus" size="20px"></ng-icon>
           </span>
