@@ -301,6 +301,79 @@
               </div>
             }
           </section>
+
+          <section class="guest-panel-section">
+            <div class="notes-section-header">
+              <h3 class="guest-panel-section-title">Notas</h3>
+
+              @if (!isGuestNoteFormVisible()) {
+                <app-button variant="primary" size="medium" (clicked)="openGuestNoteForm()">
+                  <ng-icon name="bootstrapPlus" size="18px"></ng-icon>
+                  Añadir nota
+                </app-button>
+              }
+            </div>
+
+            @if (guestNoteErrorMessage()) {
+              <p class="notes-feedback notes-feedback-error">{{ guestNoteErrorMessage() }}</p>
+            }
+
+            @if (isGuestNoteFormVisible()) {
+              <article class="guest-note-card">
+                <div class="guest-note-header">
+                  <span class="guest-note-icon" aria-hidden="true">
+                    <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
+                  </span>
+                  <h4 class="guest-note-title">Nueva nota</h4>
+                </div>
+
+                <div class="guest-note-field">
+                  <label class="guest-note-label" for="guest-note-category">Categoría</label>
+                  <app-select
+                    id="guest-note-category"
+                    name="guest-note-category"
+                    size="medium"
+                    placeholder=""
+                    [options]="guestNoteSelectOptions"
+                    [value]="guestNoteCategory()"
+                    (valueChange)="setGuestNoteCategory($event)"
+                  >
+                  </app-select>
+                </div>
+
+                <div class="guest-note-field">
+                  <label class="sr-only" for="guest-note-content">Contenido de la nota</label>
+                  <textarea
+                    id="guest-note-content"
+                    class="guest-note-textarea"
+                    rows="5"
+                    maxlength="280"
+                    placeholder="Escribe una nueva nota..."
+                    [value]="guestNoteContent()"
+                    (input)="onGuestNoteContentChange(($any($event.target).value ?? '').toString())"
+                  ></textarea>
+                  <p class="guest-note-counter">
+                    {{ guestNoteCharacterCount() }}/280
+                  </p>
+                </div>
+
+                <div class="guest-note-actions">
+                  <app-button variant="secondary" size="medium" (clicked)="cancelGuestNoteForm()">
+                    Cancelar
+                  </app-button>
+                  <app-button
+                    variant="primary"
+                    size="medium"
+                    [loading]="isSavingGuestNote()"
+                    [disabled]="isSavingGuestNote()"
+                    (clicked)="saveGuestNote()"
+                  >
+                    Guardar
+                  </app-button>
+                </div>
+              </article>
+            }
+          </section>
         }
       </div>
     }
