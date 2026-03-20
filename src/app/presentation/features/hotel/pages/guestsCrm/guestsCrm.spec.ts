@@ -1,11 +1,21 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { GuestsCrmComponent } from './guestsCrm';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
+import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
+import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 
-const mockUseCase = { execute: vi.fn() };
+const mockGetGuests = { execute: vi.fn() };
+const mockGetGuestBookings = { execute: vi.fn() };
+const mockGetProperties = { execute: vi.fn() };
+const mockGetUnits = { execute: vi.fn() };
+const mockRouter = { navigate: vi.fn().mockResolvedValue(true) };
+
+const queryParamMap$ = new Subject<ReturnType<typeof convertToParamMap>>();
 
 const MOCK_GUESTS = [
   {
@@ -13,7 +23,6 @@ const MOCK_GUESTS = [
     name: 'María González',
     email: 'maria.gonzalez@email.com',
     phone: '+34 612 345 678',
-    lastBooking: '2026-03-15',
     status: 'active' as const,
   },
   {
@@ -21,7 +30,6 @@ const MOCK_GUESTS = [
     name: 'Carlos Rodríguez',
     email: 'carlos.rodriguez@email.com',
     phone: '+34 623 456 789',
-    lastBooking: '2026-03-10',
     status: 'active' as const,
   },
   {
@@ -29,7 +37,6 @@ const MOCK_GUESTS = [
     name: 'Ana Martínez',
     email: 'ana.martinez@email.com',
     phone: '+34 634 567 890',
-    lastBooking: '2026-03-08',
     status: 'active' as const,
   },
   {
@@ -37,7 +44,6 @@ const MOCK_GUESTS = [
     name: 'Javier López',
     email: 'javier.lopez@email.com',
     phone: '+34 645 678 901',
-    lastBooking: '2026-03-05',
     status: 'inactive' as const,
   },
   {
@@ -45,7 +51,6 @@ const MOCK_GUESTS = [
     name: 'Isabel Fernández',
     email: 'isabel.fernandez@email.com',
     phone: '+34 656 789 012',
-    lastBooking: '2026-03-01',
     status: 'active' as const,
   },
   {
@@ -53,7 +58,6 @@ const MOCK_GUESTS = [
     name: 'Daniel Torres',
     email: 'daniel.torres@email.com',
     phone: '+34 667 890 123',
-    lastBooking: '2026-02-28',
     status: 'active' as const,
   },
   {
@@ -61,7 +65,6 @@ const MOCK_GUESTS = [
     name: 'Sofía Herrera',
     email: 'sofia.herrera@email.com',
     phone: '+34 678 901 234',
-    lastBooking: '2026-02-23',
     status: 'inactive' as const,
   },
   {
@@ -69,15 +72,66 @@ const MOCK_GUESTS = [
     name: 'Luis Navarro',
     email: 'luis.navarro@email.com',
     phone: '+34 689 012 345',
-    lastBooking: '2026-02-18',
     status: 'active' as const,
   },
 ];
 
+const MOCK_BOOKINGS = [
+  {
+    id: 'booking-1',
+    propertyId: 'property-1',
+    propertyName: '',
+    unitId: 'unit-1',
+    unitName: '',
+    checkIn: '2026-06-01T00:00:00.000Z',
+    checkOut: '2026-06-05T00:00:00.000Z',
+    status: 'PENDING' as const,
+    totalAmount: 2450,
+    source: 'MANUAL' as const,
+    createdAt: '2026-03-19T18:31:12.492Z',
+  },
+  {
+    id: 'booking-2',
+    propertyId: 'property-2',
+    propertyName: '',
+    unitId: 'unit-2',
+    unitName: '',
+    checkIn: '2026-06-12T00:00:00.000Z',
+    checkOut: '2026-06-14T00:00:00.000Z',
+    status: 'CONFIRMED' as const,
+    totalAmount: 1200,
+    source: 'DIRECT' as const,
+    createdAt: '2026-03-20T10:15:00.000Z',
+  },
+];
+
+const MOCK_PROPERTIES = [
+  { id: 'property-1', name: 'Hotel Lymon Centro', propertyType: 'HOTEL', city: 'Bogotá' },
+  { id: 'property-2', name: 'Suites Retiro', propertyType: 'HOTEL', city: 'Medellín' },
+];
+
+const MOCK_UNITS_BY_PROPERTY: Record<string, Array<{ id: string; name: string }>> = {
+  'property-1': [{ id: 'unit-1', name: 'Habitación 204' }],
+  'property-2': [{ id: 'unit-2', name: 'Suite 12' }],
+};
+
 async function setup() {
   await TestBed.configureTestingModule({
     imports: [GuestsCrmComponent],
-    providers: [{ provide: GetCrmGuestsUseCase, useValue: mockUseCase }],
+    providers: [
+      { provide: GetCrmGuestsUseCase, useValue: mockGetGuests },
+      { provide: GetCrmGuestBookingsUseCase, useValue: mockGetGuestBookings },
+      { provide: GetPropertiesUseCase, useValue: mockGetProperties },
+      { provide: GetUnitsUseCase, useValue: mockGetUnits },
+      { provide: Router, useValue: mockRouter },
+      {
+        provide: ActivatedRoute,
+        useValue: {
+          queryParamMap: queryParamMap$.asObservable(),
+          snapshot: { queryParamMap: convertToParamMap({}) },
+        },
+      },
+    ],
     schemas: [NO_ERRORS_SCHEMA],
   })
     .overrideComponent(GuestsCrmComponent, {
@@ -88,15 +142,18 @@ async function setup() {
   const fixture = TestBed.createComponent(GuestsCrmComponent);
   const component = fixture.componentInstance;
   fixture.detectChanges();
+  queryParamMap$.next(convertToParamMap({}));
   return { fixture, component };
 }
 
-// ─── Carga inicial exitosa ────────────────────────────────────────────────────
 describe('GuestsCrmComponent – carga inicial exitosa', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('guests contiene los huéspedes devueltos', async () => {
@@ -125,27 +182,31 @@ describe('GuestsCrmComponent – carga inicial exitosa', () => {
   });
 });
 
-// ─── Carga en curso ──────────────────────────────────────────────────────────
 describe('GuestsCrmComponent – carga en curso', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('isLoading es true mientras el observable no emite', async () => {
     const pending = new Subject<typeof MOCK_GUESTS>();
-    mockUseCase.execute.mockReturnValue(pending.asObservable());
+    mockGetGuests.execute.mockReturnValue(pending.asObservable());
     const { component } = await setup();
     expect(component.isLoading()).toBe(true);
   });
 });
 
-// ─── Búsqueda y paginación ───────────────────────────────────────────────────
 describe('GuestsCrmComponent – búsqueda y paginación', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('al buscar por nombre reinicia a la primera página y filtra resultados', async () => {
@@ -181,12 +242,112 @@ describe('GuestsCrmComponent – búsqueda y paginación', () => {
   });
 });
 
-// ─── Error 403 ────────────────────────────────────────────────────────────────
+describe('GuestsCrmComponent – historial de reservas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuestBookings.execute.mockReturnValue(of(MOCK_BOOKINGS));
+    mockGetProperties.execute.mockReturnValue(of(MOCK_PROPERTIES));
+    mockGetUnits.execute.mockImplementation((propertyId: string) =>
+      of(MOCK_UNITS_BY_PROPERTY[propertyId] ?? []),
+    );
+  });
+
+  it('carga las reservas del huésped al abrir el panel', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    expect(mockGetGuestBookings.execute).toHaveBeenCalledWith('1');
+    expect(component.guestBookings().length).toBe(2);
+    expect(component.isGuestPanelOpen()).toBe(true);
+  });
+
+  it('resuelve nombres de propiedad y unidad a partir de los ids', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    expect(component.selectedGuestBookingPreview()[0].propertyLabel).toBe('Hotel Lymon Centro');
+    expect(component.selectedGuestBookingPreview()[0].unitLabel).toBe('Habitación 204');
+    expect(component.selectedGuestBookingPreview()[1].propertyLabel).toBe('Suites Retiro');
+    expect(component.selectedGuestBookingPreview()[1].unitLabel).toBe('Suite 12');
+  });
+
+  it('calcula las estadísticas usando las reservas cargadas', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    expect(component.selectedGuestPreview()?.stats[0].value).toBe('2');
+    expect(component.selectedGuestPreview()?.stats[1].value).toBe('$3,650');
+  });
+
+  it('actualiza el query param al abrir el panel', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    expect(mockRouter.navigate).toHaveBeenCalledWith([], {
+      relativeTo: TestBed.inject(ActivatedRoute),
+      queryParams: { guestId: '1' },
+      queryParamsHandling: 'merge',
+    });
+  });
+
+  it('usa la fecha de creación más reciente para la columna de última reserva', async () => {
+    const { component } = await setup();
+
+    expect(component.getLatestReservationLabel(MOCK_GUESTS[0])).toBe('20 mar 2026');
+    expect(component.getLatestReservationLabel(MOCK_GUESTS[1])).toBe('20 mar 2026');
+  });
+});
+
+describe('GuestsCrmComponent – errores en historial de reservas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('muestra mensaje cuando no se encuentran reservas para el huésped', async () => {
+    mockGetGuestBookings.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 404 })),
+    );
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    expect(component.bookingsErrorMessage()).toBe('No se encontraron reservas para este huésped.');
+    expect(component.guestBookings()).toEqual([]);
+  });
+
+  it('muestra mensaje genérico cuando falla la carga del historial', async () => {
+    mockGetGuestBookings.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    expect(component.bookingsErrorMessage()).toBe(
+      'No se pudo cargar el historial de reservas. Inténtalo de nuevo.',
+    );
+  });
+
+  it('muestra N/A en última reserva si el huésped no tiene reservas', async () => {
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    const { component } = await setup();
+
+    expect(component.getLatestReservationLabel(MOCK_GUESTS[0])).toBe('N/A');
+  });
+});
+
 describe('GuestsCrmComponent – error 403 (acceso denegado)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 403 })));
+    mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 403 })));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('muestra mensaje de permisos insuficientes', async () => {
@@ -200,12 +361,14 @@ describe('GuestsCrmComponent – error 403 (acceso denegado)', () => {
   });
 });
 
-// ─── Error 401 ────────────────────────────────────────────────────────────────
 describe('GuestsCrmComponent – error 401 (sesión expirada)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
+    mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('muestra mensaje de sesión expirada', async () => {
@@ -219,12 +382,14 @@ describe('GuestsCrmComponent – error 401 (sesión expirada)', () => {
   });
 });
 
-// ─── Error inesperado ─────────────────────────────────────────────────────────
 describe('GuestsCrmComponent – error inesperado', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('muestra mensaje de error genérico', async () => {
