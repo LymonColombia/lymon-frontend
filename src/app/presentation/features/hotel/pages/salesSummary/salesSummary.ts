@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import {
+  HotelPageActionsDirective,
+  HotelPageLayoutComponent,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCalendar,
-  bootstrapChevronLeft,
   bootstrapCurrencyDollar,
   bootstrapDownload,
   bootstrapEye,
@@ -35,12 +37,10 @@ interface Invoice {
 
 @Component({
   selector: 'app-sales-summary',
-  standalone: true,
-  imports: [SidebarComponent, NgIcon],
+  imports: [HotelPageLayoutComponent, HotelPageActionsDirective, NgIcon],
   providers: [
     provideIcons({
       bootstrapCalendar,
-      bootstrapChevronLeft,
       bootstrapCurrencyDollar,
       bootstrapDownload,
       bootstrapEye,
