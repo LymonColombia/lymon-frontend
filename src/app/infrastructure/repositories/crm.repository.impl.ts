@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import {
+  CreateCrmGuestNoteRequest,
   CrmGuestBooking,
   CrmGuestBookingSource,
   CrmGuestBookingStatus,
@@ -96,6 +97,13 @@ export class CrmRepositoryImpl extends CrmRepository {
           ),
         })),
       );
+  }
+
+  createGuestNote(guestId: string, data: CreateCrmGuestNoteRequest): Observable<unknown> {
+    return this.http.post<unknown>(
+      `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/notes`,
+      data,
+    );
   }
 
   private extractGuests(response: unknown): CrmGuestDto[] {
