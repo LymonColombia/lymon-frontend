@@ -1,25 +1,8 @@
-<app-sidebar></app-sidebar>
-
-<div class="main-content">
-  <div class="employee-container">
-    <!-- Page header -->
-    <div class="page-back">
-      <a routerLink="/booking" class="back-link">
-        <ng-icon name="bootstrapChevronLeft" size="16px" aria-hidden="true"></ng-icon>
-        Volver
-      </a>
-    </div>
-
-    <div class="page-title-row">
-      <div class="page-icon">
-        <ng-icon name="bootstrapPersonAdd" size="28px" aria-hidden="true"></ng-icon>
-      </div>
-      <div>
-        <h1 class="page-title">Registro de Empleado</h1>
-        <p class="page-subtitle">Registra un nuevo empleado en el sistema</p>
-      </div>
-    </div>
-
+<app-hotel-page-layout
+  title="Registro de Empleado"
+  subtitle="Registra un nuevo empleado en el sistema"
+  iconName="bootstrapPersonFillAdd"
+>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       @if (errorMessage()) {
         <div class="alert alert-error">{{ errorMessage() }}</div>
@@ -220,5 +203,4 @@
         </button>
       </div>
     </form>
-  </div>
-</div>
+</app-hotel-page-layout>

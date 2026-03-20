@@ -6,72 +6,8 @@
 }
 
 :host {
-  display: flex;
-  font-family: 'Syne', sans-serif;
-  background-color: #f5f5f5;
-  min-height: 100vh;
-}
-
-.main-content {
-  margin-left: var(--layout-sidebar-width);
-  width: calc(100% - var(--layout-sidebar-width));
-  min-height: 100vh;
-  padding: 32px;
-  background-color: #f5f5f5;
-}
-
-.employee-container {
-  max-width: 900px;
-}
-
-/* ── Page header ─────────────────────────────────── */
-.page-back {
-  margin-bottom: 16px;
-}
-
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  color: #666;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.back-link:hover {
-  color: #009A44;
-}
-
-.page-title-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.page-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  background: #009A44;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.page-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-.page-subtitle {
-  font-size: 14px;
-  color: #666;
-  margin-top: 2px;
+  display: block;
+  font-family: var(--font-primary);
 }
 
 /* ── Cards ───────────────────────────────────────── */
@@ -356,12 +292,6 @@
 
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-    padding: 16px;
-  }
-
   .form-row {
     grid-template-columns: 1fr;
   }
