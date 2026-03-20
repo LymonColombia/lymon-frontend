@@ -7,8 +7,12 @@ import {
   CrmGuestBookingSource,
   CrmGuestBookingStatus,
   CrmGuest,
+  CrmGuestNote,
+  CrmGuestNoteCategory,
+  CrmGuestNoteStatus,
   CrmGuestStatus,
   GetCrmGuestBookingsResponse,
+  GetCrmGuestNotesResponse,
   GetCrmGuestsResponse,
 } from '@/domain/entities/crm-guest.model';
 import { CrmRepository } from '@/domain/repositories/crm.repository';
@@ -73,6 +77,28 @@ interface GetCrmGuestBookingsApiEnvelope {
   results?: CrmGuestBookingDto[];
 }
 
+interface CrmGuestNoteDto {
+  id?: string;
+  _id?: string;
+  note?: string;
+  content?: string;
+  description?: string;
+  type?: string;
+  category?: string;
+  status?: string;
+  createdAt?: string;
+  createdBy?: string | { name?: string; fullName?: string; firstName?: string; lastName?: string };
+  author?: string | { name?: string; fullName?: string; firstName?: string; lastName?: string };
+  user?: string | { name?: string; fullName?: string; firstName?: string; lastName?: string };
+}
+
+interface GetCrmGuestNotesApiEnvelope {
+  data?: CrmGuestNoteDto[];
+  items?: CrmGuestNoteDto[];
+  notes?: CrmGuestNoteDto[];
+  results?: CrmGuestNoteDto[];
+}
+
 const BASE_URL = `${environment.apiUrl}${environment.crm.endpoint}`;
 
 @Injectable({ providedIn: 'root' })
@@ -97,6 +123,14 @@ export class CrmRepositoryImpl extends CrmRepository {
           ),
         })),
       );
+  }
+
+  getGuestNotes(guestId: string): Observable<GetCrmGuestNotesResponse> {
+    return this.http.get<unknown>(`${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/notes`).pipe(
+      map((response) => ({
+        data: this.extractGuestNotes(response).map((note) => this.toDomainGuestNote(note)),
+      })),
+    );
   }
 
   createGuestNote(guestId: string, data: CreateCrmGuestNoteRequest): Observable<unknown> {
@@ -165,6 +199,33 @@ export class CrmRepositoryImpl extends CrmRepository {
     };
   }
 
+  private extractGuestNotes(response: unknown): CrmGuestNoteDto[] {
+    if (Array.isArray(response)) {
+      return response as CrmGuestNoteDto[];
+    }
+
+    if (typeof response === 'object' && response !== null) {
+      const envelope = response as GetCrmGuestNotesApiEnvelope;
+      if (Array.isArray(envelope.data)) return envelope.data;
+      if (Array.isArray(envelope.items)) return envelope.items;
+      if (Array.isArray(envelope.notes)) return envelope.notes;
+      if (Array.isArray(envelope.results)) return envelope.results;
+    }
+
+    return [];
+  }
+
+  private toDomainGuestNote(dto: CrmGuestNoteDto): CrmGuestNote {
+    return {
+      id: dto.id ?? dto._id ?? '',
+      note: dto.note?.trim() || dto.content?.trim() || dto.description?.trim() || '',
+      type: this.toGuestNoteCategory(dto.type ?? dto.category),
+      status: this.toGuestNoteStatus(dto.status),
+      createdAt: dto.createdAt ?? '',
+      createdByName: this.getGuestNoteAuthor(dto),
+    };
+  }
+
   private getReferenceId(
     reference:
       | string
@@ -207,6 +268,57 @@ export class CrmRepositoryImpl extends CrmRepository {
     }
 
     return '';
+  }
+
+  private getGuestNoteAuthor(dto: CrmGuestNoteDto): string {
+    const author = dto.createdBy ?? dto.author ?? dto.user;
+
+    if (!author) {
+      return 'Admin';
+    }
+
+    if (typeof author === 'string') {
+      return this.toSafeGuestNoteAuthorLabel(author);
+    }
+
+    const resolvedName =
+      author.fullName?.trim() ||
+      author.name?.trim() ||
+      `${author.firstName?.trim() ?? ''} ${author.lastName?.trim() ?? ''}`.trim();
+
+    return this.toSafeGuestNoteAuthorLabel(resolvedName);
+  }
+
+  private toSafeGuestNoteAuthorLabel(value: string | undefined): string {
+    const normalizedValue = value?.trim() ?? '';
+    if (!normalizedValue) {
+      return 'Admin';
+    }
+
+    const looksLikeMongoId = /^[a-f0-9]{24}$/i.test(normalizedValue);
+    const looksLikeUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        normalizedValue,
+      );
+
+    return looksLikeMongoId || looksLikeUuid ? 'Admin' : normalizedValue;
+  }
+
+  private toGuestNoteCategory(value: string | undefined): CrmGuestNoteCategory {
+    switch (value?.toLowerCase()) {
+      case 'preference':
+        return 'preference';
+      case 'behavior':
+        return 'behavior';
+      case 'incident':
+        return 'incident';
+      default:
+        return 'general';
+    }
+  }
+
+  private toGuestNoteStatus(value: string | undefined): CrmGuestNoteStatus {
+    return value?.toLowerCase() === 'pinned' ? 'pinned' : 'not_pinned';
   }
 
   private toPrimaryPhone(phones: CrmGuestDto['phones']): string {
