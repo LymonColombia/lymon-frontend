@@ -1,37 +1,14 @@
-<app-sidebar></app-sidebar>
-
-<div class="main-content">
-    <div class="calendar-container">
-        <div class="page-header">
-            <button class="back-button">
-                <ng-icon name="bootstrapChevronLeft" size="20px" aria-hidden="true"></ng-icon>
-                Volver
-            </button>
-
-            <div class="header-content">
-                <div class="header-left">
-                    <div class="header-icon">
-                        <ng-icon
-                            name="bootstrapCalendar"
-                            size="32px"
-                            style="color: white"
-                            aria-hidden="true"
-                        ></ng-icon>
-                    </div>
-                    <div class="header-text">
-                        <h1 class="page-title">Integración de Calendarios</h1>
-                        <p class="page-subtitle">Conecta con Airbnb, Booking y más plataformas</p>
-                    </div>
-                </div>
-
-                <div class="header-actions">
-                    <button class="btn-sync" (click)="syncAll()">
-                        <ng-icon name="bootstrapArrowRepeat" size="20px" aria-hidden="true"></ng-icon>
-                        Sincronizar
-                    </button>
-                </div>
-            </div>
-        </div>
+<app-hotel-page-layout
+  title="Integración de Calendarios"
+  subtitle="Conecta con Airbnb, Booking y más plataformas"
+  iconName="bootstrapCalendar"
+>
+    <div hotelPageActions class="calendar-header-actions">
+        <button class="btn-sync" (click)="syncAll()">
+            <ng-icon name="bootstrapArrowRepeat" size="20px" aria-hidden="true"></ng-icon>
+            Sincronizar
+        </button>
+    </div>
 
         <div class="metrics-grid">
             @for (metric of metrics; track metric.label) {
@@ -137,5 +114,4 @@
                 }
             </div>
         </div>
-    </div>
-</div>
+</app-hotel-page-layout>
