@@ -1,36 +1,20 @@
-<app-sidebar></app-sidebar>
+<app-hotel-page-layout
+  title="Resumen de Ventas"
+  subtitle="Análisis financiero y facturas detalladas"
+  iconName="bootstrapCurrencyDollar"
+>
+    <div hotelPageActions class="sales-header-actions">
+        <button class="btn-export btn-pdf">
+            <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
+            PDF
+        </button>
+        <button class="btn-export btn-excel">
+            <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
+            Excel
+        </button>
+    </div>
 
-<div class="main-content">
     <div class="sales-container">
-        <div class="page-header">
-            <button class="back-button">
-                <ng-icon name="bootstrapChevronLeft" size="20px" aria-hidden="true"></ng-icon>
-                Volver
-            </button>
-
-            <div class="header-content">
-                <div class="header-left">
-                    <div class="header-icon">
-                        <ng-icon name="bootstrapCurrencyDollar" size="32px" style="color: white" aria-hidden="true"></ng-icon>
-                    </div>
-                    <div class="header-text">
-                        <h1 class="page-title">Resumen de Ventas</h1>
-                        <p class="page-subtitle">Análisis financiero y facturas detalladas</p>
-                    </div>
-                </div>
-
-                <div class="header-actions">
-                    <button class="btn-export btn-pdf">
-                        <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
-                        PDF
-                    </button>
-                    <button class="btn-export btn-excel">
-                        <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
-                        Excel
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <div class="filters-section">
             <div class="filters-header">
@@ -173,4 +157,4 @@
             </div>
         </div>
     </div>
-</div>
+</app-hotel-page-layout>
