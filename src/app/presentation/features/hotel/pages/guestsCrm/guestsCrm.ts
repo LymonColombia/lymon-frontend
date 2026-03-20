@@ -12,11 +12,13 @@ import {
   CreateCrmGuestNoteRequest,
   CrmGuest,
   CrmGuestBooking,
+  CrmGuestNote,
   CrmGuestNoteCategory,
 } from '@/domain/entities/crm-guest.model';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
+import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
@@ -43,6 +45,7 @@ import {
   bootstrapChevronRight,
   bootstrapXLg,
   bootstrapCardText,
+  bootstrapPinAngleFill,
 } from '@ng-icons/bootstrap-icons';
 
 type SearchField = 'name' | 'email' | 'phone';
@@ -85,6 +88,15 @@ interface GuestNoteCategoryOption {
   label: string;
 }
 
+interface GuestNotePreview {
+  id: string;
+  note: string;
+  dateLabel: string;
+  categoryLabel: string;
+  authorLabel: string;
+  isPinned: boolean;
+}
+
 type PropertyLookupItem = Property & {
   _id?: string;
   propertyId?: string;
@@ -123,6 +135,7 @@ const GUEST_NOTE_MAX_LENGTH = 280;
       bootstrapChevronRight,
       bootstrapXLg,
       bootstrapCardText,
+      bootstrapPinAngleFill,
     }),
   ],
   templateUrl: './guestsCrm.html',
@@ -132,6 +145,7 @@ export class GuestsCrmComponent implements OnInit {
   private readonly getCrmGuestsUseCase = inject(GetCrmGuestsUseCase);
   private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
   private readonly getCrmGuestBookingsUseCase = inject(GetCrmGuestBookingsUseCase);
+  private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly route = inject(ActivatedRoute);
@@ -145,7 +159,9 @@ export class GuestsCrmComponent implements OnInit {
   readonly guestNoteErrorMessage = signal<string | null>(null);
   readonly guestNoteCategory = signal<CrmGuestNoteCategory>('general');
   readonly guestNoteContent = signal('');
+  readonly guestNotes = signal<CrmGuestNote[]>([]);
   readonly loadedBookingsGuestId = signal<string | null>(null);
+  readonly loadedGuestNotesGuestId = signal<string | null>(null);
   readonly latestReservationDatesByGuestId = signal<Record<string, string | null>>({});
   readonly propertyNamesById = signal<Record<string, string>>({});
   readonly unitNamesById = signal<Record<string, string>>({});
@@ -189,6 +205,9 @@ export class GuestsCrmComponent implements OnInit {
   });
   readonly selectedGuestBookingPreview = computed<GuestBookingPreview[]>(() =>
     this.guestBookings().map((booking) => this.toGuestBookingPreview(booking)),
+  );
+  readonly selectedGuestNotePreview = computed<GuestNotePreview[]>(() =>
+    this.guestNotes().map((note) => this.toGuestNotePreview(note)),
   );
   readonly selectedGuestTags = computed(() => {
     const guest = this.selectedGuest();
@@ -325,6 +344,9 @@ export class GuestsCrmComponent implements OnInit {
     if (this.loadedBookingsGuestId() !== this.getGuestRouteId(guest)) {
       this.loadGuestBookings(guest);
     }
+    if (this.loadedGuestNotesGuestId() !== this.getGuestRouteId(guest)) {
+      this.loadGuestNotes(guest);
+    }
     this.updateGuestQueryParam(this.getGuestRouteId(guest));
   }
 
@@ -335,9 +357,11 @@ export class GuestsCrmComponent implements OnInit {
 
     this.selectedGuest.set(null);
     this.guestBookings.set([]);
+    this.guestNotes.set([]);
     this.bookingsErrorMessage.set(null);
     this.isBookingsLoading.set(false);
     this.loadedBookingsGuestId.set(null);
+    this.loadedGuestNotesGuestId.set(null);
     this.resetGuestNoteForm();
     this.updateGuestQueryParam(null);
   }
@@ -374,12 +398,28 @@ export class GuestsCrmComponent implements OnInit {
       next: () => {
         this.isSavingGuestNote.set(false);
         this.resetGuestNoteForm();
+        this.loadGuestNotes(this.selectedGuest(), true);
       },
       error: () => {
         this.isSavingGuestNote.set(false);
         this.guestNoteErrorMessage.set('No se pudo guardar la nota. Inténtalo de nuevo.');
       },
     });
+  }
+
+  toggleGuestNotePin(noteId: string): void {
+    this.guestNotes.update((notes) =>
+      notes.map((note) => {
+        if (this.getGuestNoteIdentifier(note) !== noteId) {
+          return note;
+        }
+
+        return {
+          ...note,
+          status: note.status === 'pinned' ? 'not_pinned' : 'pinned',
+        };
+      }),
+    );
   }
 
   private buildGuestPanelPreview(guest: CrmGuest): GuestPanelPreview {
@@ -417,13 +457,24 @@ export class GuestsCrmComponent implements OnInit {
   private toGuestBookingPreview(booking: CrmGuestBooking): GuestBookingPreview {
     return {
       id: booking.id,
-      propertyLabel: booking.propertyName || booking.propertyId || `Reserva ${booking.id}`,
-      unitLabel: booking.unitName || booking.unitId || 'Unidad no disponible',
+      propertyLabel: booking.propertyName || 'Propiedad no disponible',
+      unitLabel: booking.unitName || 'Unidad no disponible',
       dateRange: `${this.formatDateLabel(booking.checkIn)} - ${this.formatDateLabel(booking.checkOut)}`,
       amount: this.formatCurrency(booking.totalAmount),
       statusLabel: this.getBookingStatusLabel(booking.status),
       statusTone: this.getBookingStatusTone(booking.status),
       bookingDateLabel: this.formatDateLabel(booking.createdAt, true),
+    };
+  }
+
+  private toGuestNotePreview(note: CrmGuestNote): GuestNotePreview {
+    return {
+      id: this.getGuestNoteIdentifier(note),
+      note: note.note,
+      dateLabel: this.formatDateLabel(note.createdAt),
+      categoryLabel: this.getGuestNoteCategoryLabel(note.type),
+      authorLabel: note.createdByName || 'Admin',
+      isPinned: note.status === 'pinned',
     };
   }
 
@@ -616,9 +667,14 @@ export class GuestsCrmComponent implements OnInit {
     this.selectedGuest.set(matchedGuest ?? null);
     if (matchedGuest && this.loadedBookingsGuestId() !== guestId) {
       this.loadGuestBookings(matchedGuest);
+    }
+    if (matchedGuest && this.loadedGuestNotesGuestId() !== guestId) {
+      this.loadGuestNotes(matchedGuest);
     } else if (!matchedGuest) {
       this.guestBookings.set([]);
+      this.guestNotes.set([]);
       this.loadedBookingsGuestId.set(null);
+      this.loadedGuestNotesGuestId.set(null);
     }
   }
 
@@ -670,6 +726,43 @@ export class GuestsCrmComponent implements OnInit {
             'No se pudo cargar el historial de reservas. Inténtalo de nuevo.',
           );
         }
+      },
+    });
+  }
+
+  private loadGuestNotes(guest: CrmGuest | null, forceRefresh = false): void {
+    const guestId = this.getGuestRouteId(guest);
+    if (!guestId) {
+      this.guestNotes.set([]);
+      return;
+    }
+
+    if (!forceRefresh && this.loadedGuestNotesGuestId() === guestId) {
+      return;
+    }
+
+    this.loadedGuestNotesGuestId.set(null);
+    this.getCrmGuestNotesUseCase.execute(guestId).subscribe({
+      next: (notes) => {
+        if (this.getGuestRouteId(this.selectedGuest()) !== guestId) {
+          return;
+        }
+
+        this.guestNotes.set(
+          [...notes].sort(
+            (first, second) =>
+              new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime(),
+          ),
+        );
+        this.loadedGuestNotesGuestId.set(guestId);
+      },
+      error: () => {
+        if (this.getGuestRouteId(this.selectedGuest()) !== guestId) {
+          return;
+        }
+
+        this.guestNotes.set([]);
+        this.loadedGuestNotesGuestId.set(guestId);
       },
     });
   }
@@ -745,6 +838,23 @@ export class GuestsCrmComponent implements OnInit {
     return bookingDates.reduce((latest, current) =>
       new Date(current).getTime() > new Date(latest).getTime() ? current : latest,
     );
+  }
+
+  private getGuestNoteIdentifier(note: CrmGuestNote): string {
+    return note.id || `${note.createdAt}-${note.note}`;
+  }
+
+  private getGuestNoteCategoryLabel(category: CrmGuestNoteCategory): string {
+    switch (category) {
+      case 'preference':
+        return 'Preferencias';
+      case 'behavior':
+        return 'Comportamiento';
+      case 'incident':
+        return 'Incidente';
+      default:
+        return 'General';
+    }
   }
 
   private resetGuestNoteForm(): void {

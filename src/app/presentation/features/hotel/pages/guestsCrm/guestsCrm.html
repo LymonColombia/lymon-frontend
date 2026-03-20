@@ -373,6 +373,61 @@
                 </div>
               </article>
             }
+
+            @if (selectedGuestNotePreview().length > 0) {
+              <div class="guest-notes-list">
+                @for (note of selectedGuestNotePreview(); track note.id) {
+                  <article
+                    class="guest-note-history-card"
+                    [class.guest-note-history-card-pinned]="note.isPinned"
+                  >
+                    <div class="guest-note-history-main">
+                      <span class="guest-note-history-icon" aria-hidden="true">
+                        <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
+                      </span>
+
+                      <div class="guest-note-history-content">
+                        <p class="guest-note-history-text">{{ note.note }}</p>
+
+                        <div class="guest-note-history-meta">
+                          <span>{{ note.dateLabel }}</span>
+                          <span aria-hidden="true">•</span>
+                          <span
+                            class="guest-note-category-chip"
+                            [class.guest-note-category-chip-preference]="
+                              note.categoryLabel === 'Preferencias'
+                            "
+                            [class.guest-note-category-chip-behavior]="
+                              note.categoryLabel === 'Comportamiento'
+                            "
+                            [class.guest-note-category-chip-incident]="
+                              note.categoryLabel === 'Incidente'
+                            "
+                            [class.guest-note-category-chip-general]="
+                              note.categoryLabel === 'General'
+                            "
+                          >
+                            {{ note.categoryLabel }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="guest-note-history-side">
+                      <button
+                        type="button"
+                        class="guest-note-pin-badge"
+                        [class.guest-note-pin-badge-active]="note.isPinned"
+                        aria-label="Fijar nota"
+                        (click)="toggleGuestNotePin(note.id)"
+                      >
+                        <ng-icon name="bootstrapPinAngleFill" size="15px"></ng-icon>
+                      </button>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
           </section>
         }
       </div>
