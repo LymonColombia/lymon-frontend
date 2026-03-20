@@ -20,6 +20,7 @@ import {
   bootstrapHouseFill,
   bootstrapLock,
   bootstrapPeopleFill,
+  bootstrapPersonFillCheck,
 } from '@ng-icons/bootstrap-icons';
 
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
@@ -61,6 +62,7 @@ function getInitialSidebarExpandedState(): boolean {
       bootstrapLock,
       bootstrapChevronLeft,
       bootstrapChevronRight,
+      bootstrapPersonFillCheck,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -102,6 +104,7 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
     { icon: 'bootstrapGear', label: 'Perfil del Negocio', route: '/tenant-profile' },
     { icon: 'bootstrapBarChartFill', label: 'Registros de Auditoría', route: '/audit-log' },
+    { icon: 'bootstrapPersonFillCheck', label: 'CRM de Huéspedes', route: '/crm/guests' },
   ];
 
   private updateLayoutSidebarWidthVariable(): void {
@@ -110,7 +113,7 @@ export class SidebarComponent implements OnInit {
   }
 
   toggleExpanded(): void {
-    this.isExpanded.update(v => {
+    this.isExpanded.update((v) => {
       const nextState = !v;
       try {
         localStorage.setItem(SIDEBAR_EXPANDED_STORAGE_KEY, String(nextState));
