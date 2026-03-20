@@ -80,7 +80,7 @@
                 <td class="guest-name">{{ guest.name }}</td>
                 <td>{{ guest.email }}</td>
                 <td>{{ formatPhone(guest.phone) }}</td>
-                <td>15 Mar 2026</td>
+                <td>{{ getLatestReservationLabel(guest) }}</td>
                 <td>
                   <span
                     class="status-pill"

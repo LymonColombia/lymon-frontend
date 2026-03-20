@@ -123,6 +123,7 @@ export class GuestsCrmComponent implements OnInit {
   readonly isBookingsLoading = signal(false);
   readonly bookingsErrorMessage = signal<string | null>(null);
   readonly loadedBookingsGuestId = signal<string | null>(null);
+  readonly latestReservationDatesByGuestId = signal<Record<string, string | null>>({});
   readonly propertyNamesById = signal<Record<string, string>>({});
   readonly unitNamesById = signal<Record<string, string>>({});
   readonly loadedUnitPropertyIds = signal<string[]>([]);
@@ -232,6 +233,16 @@ export class GuestsCrmComponent implements OnInit {
     const countryCode = digits.slice(0, digits.length - 10);
     const localNumber = digits.slice(-10);
     return `+${countryCode} ${localNumber}`;
+  }
+
+  getLatestReservationLabel(guest: CrmGuest): string {
+    const guestId = this.getGuestRouteId(guest);
+    if (!guestId) {
+      return 'N/A';
+    }
+
+    const latestReservationDate = this.latestReservationDatesByGuestId()[guestId];
+    return latestReservationDate ? this.formatDateLabel(latestReservationDate) : 'N/A';
   }
 
   goToPage(page: number): void {
@@ -569,6 +580,7 @@ export class GuestsCrmComponent implements OnInit {
     this.getCrmGuestsUseCase.execute().subscribe({
       next: (guests) => {
         this.guests.set(guests);
+        this.loadLatestReservationDates(guests);
         this.syncSelectedGuestFromRoute();
         this.isLoading.set(false);
       },
@@ -583,5 +595,54 @@ export class GuestsCrmComponent implements OnInit {
         }
       },
     });
+  }
+
+  private loadLatestReservationDates(guests: CrmGuest[]): void {
+    const guestsWithIds = guests.filter((guest) => this.getGuestRouteId(guest));
+    if (guestsWithIds.length === 0) {
+      this.latestReservationDatesByGuestId.set({});
+      return;
+    }
+
+    forkJoin(
+      guestsWithIds.map((guest) => {
+        const guestId = this.getGuestRouteId(guest)!;
+        return this.getCrmGuestBookingsUseCase.execute(guestId).pipe(
+          map((bookings) => ({
+            guestId,
+            latestReservationDate: this.getLatestReservationDate(bookings),
+          })),
+          catchError(() =>
+            of({
+              guestId,
+              latestReservationDate: null,
+            }),
+          ),
+        );
+      }),
+    ).subscribe((results) => {
+      const latestDates = results.reduce<Record<string, string | null>>((guestDateMap, result) => {
+        guestDateMap[result.guestId] = result.latestReservationDate;
+        return guestDateMap;
+      }, {});
+
+      this.latestReservationDatesByGuestId.set(latestDates);
+    });
+  }
+
+  private getLatestReservationDate(bookings: CrmGuestBooking[]): string | null {
+    const bookingDates = bookings
+      .map((booking) => booking.createdAt)
+      .filter((date) => {
+        return Boolean(date) && !Number.isNaN(new Date(date).getTime());
+      });
+
+    if (bookingDates.length === 0) {
+      return null;
+    }
+
+    return bookingDates.reduce((latest, current) =>
+      new Date(current).getTime() > new Date(latest).getTime() ? current : latest,
+    );
   }
 }
