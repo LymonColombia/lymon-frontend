@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { AddStaffUseCase } from '@/domain/use-cases/staff/add-staff.use-case';
 import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
@@ -10,11 +10,10 @@ import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case'
 import { Role, Property, Unit, ScopeType } from '@/domain/entities/staff.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapChevronLeft,
   bootstrapEye,
   bootstrapEyeSlash,
   bootstrapLock,
-  bootstrapPersonAdd,
+  bootstrapPersonFillAdd,
   bootstrapPlusLg,
   bootstrapShieldLock,
 } from '@ng-icons/bootstrap-icons';
@@ -23,14 +22,13 @@ import {
   selector: 'app-register-employee',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, SidebarComponent, NgIcon],
+  imports: [ReactiveFormsModule, HotelPageLayoutComponent, NgIcon],
   providers: [
     provideIcons({
-      bootstrapChevronLeft,
       bootstrapEye,
       bootstrapEyeSlash,
       bootstrapLock,
-      bootstrapPersonAdd,
+      bootstrapPersonFillAdd,
       bootstrapPlusLg,
       bootstrapShieldLock,
     }),
