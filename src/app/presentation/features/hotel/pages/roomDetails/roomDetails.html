@@ -47,269 +47,143 @@
     </app-button>
 </app-header>
 
-    <div class="room-details-container">
-        <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+<div class="room-details-container">
+  <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
 
-        <div class="room-header">
-            <h1 class="room-name">Suite Ejecutiva</h1>
+  @if (isLoading()) {
+    <div class="state-message">Cargando detalle de la habitación...</div>
+  }
+
+  @if (!isLoading() && errorMessage()) {
+    <div class="state-message state-error">{{ errorMessage() }}</div>
+  }
+
+  @if (!isLoading() && !errorMessage() && unit(); as selectedUnit) {
+    <app-room-hero [unit]="selectedUnit">
+      <div room-hero-side class="booking-column">
+        <div class="booking-card">
+          <h2 class="booking-title">Selecciona tus Fechas</h2>
+
+          <div class="calendar-container">
+            <div class="calendar-header">
+              <button class="calendar-nav-btn" type="button" aria-label="Mes anterior">
+                <ng-icon name="bootstrapChevronLeft" size="20px" aria-hidden="true"></ng-icon>
+              </button>
+              <h3 class="calendar-month">Febrero 2026</h3>
+              <button class="calendar-nav-btn" type="button" aria-label="Mes siguiente">
+                <ng-icon name="bootstrapChevronRight" size="20px" aria-hidden="true"></ng-icon>
+              </button>
+            </div>
+
+            <div class="calendar-weekdays">
+              <span class="weekday">Dom</span>
+              <span class="weekday">Lun</span>
+              <span class="weekday">Mar</span>
+              <span class="weekday">Mié</span>
+              <span class="weekday">Jue</span>
+              <span class="weekday">Vie</span>
+              <span class="weekday">Sáb</span>
+            </div>
+
+            <div class="calendar-days">
+              <span class="day other-month">25</span>
+              <span class="day other-month">26</span>
+              <span class="day other-month">27</span>
+              <span class="day other-month">28</span>
+              <span class="day other-month">29</span>
+              <span class="day other-month">30</span>
+              <span class="day other-month">31</span>
+
+              <span class="day available">1</span>
+              <span class="day available">2</span>
+              <span class="day available">3</span>
+              <span class="day booked">4</span>
+              <span class="day booked">5</span>
+              <span class="day booked">6</span>
+              <span class="day available">7</span>
+              <span class="day available">8</span>
+              <span class="day available">9</span>
+              <span class="day available">10</span>
+              <span class="day booked">11</span>
+              <span class="day booked">12</span>
+              <span class="day booked">13</span>
+              <span class="day available">14</span>
+              <span class="day available selected">15</span>
+              <span class="day available">16</span>
+              <span class="day available">17</span>
+              <span class="day available selected">18</span>
+              <span class="day booked">19</span>
+              <span class="day booked">20</span>
+              <span class="day available">21</span>
+              <span class="day available">22</span>
+              <span class="day available">23</span>
+              <span class="day booked">24</span>
+              <span class="day booked">25</span>
+              <span class="day available">26</span>
+              <span class="day available">27</span>
+              <span class="day available">28</span>
+            </div>
+
+            <div class="calendar-legend">
+              <div class="legend-item">
+                <span class="legend-dot available-dot"></span>
+                <span class="legend-text">Disponible</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot booked-dot"></span>
+                <span class="legend-text">Reservado</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot selected-dot"></span>
+                <span class="legend-text">Seleccionado</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-summary">
+            <div class="summary-row">
+              <span class="summary-label">Entrada:</span>
+              <span class="summary-value">15 Feb 2026</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Salida:</span>
+              <span class="summary-value">18 Feb 2026</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Noches:</span>
+              <span class="summary-value">3</span>
+            </div>
+            <div class="summary-row total">
+              <span class="summary-label">Total:</span>
+              <span class="summary-value">${{ (selectedUnit.pricePerNight ?? 0) * 3 }}</span>
+            </div>
+          </div>
+
+          <a routerLink="/checkin" class="btn-reserve-now">Reservar Ahora</a>
+
+          <p class="booking-note">
+            <ng-icon name="bootstrapInfoCircle" size="16px" aria-hidden="true"></ng-icon>
+            No se realizará ningún cargo hasta confirmar tu reserva
+          </p>
+        </div>
+      </div>
+    </app-room-hero>
+
+    <div class="content-grid">
+      <div class="details-column">
+        <div class="room-description-card">
+          <h2 class="room-description-title">Descripción</h2>
+          <p class="room-description-text">
+            {{ selectedUnit.description || 'Esta habitación no tiene descripción disponible por el momento.' }}
+          </p>
         </div>
 
-        <div class="image-description-section">
-            <div class="room-image-container">
-                <img src="/images/suite2.avif" alt="Suite Ejecutiva" class="room-image">
-                
-                <div class="room-meta">
-                    <div class="room-rating">
-                        <div class="stars">
-                            <ng-icon name="bootstrapStarFill" size="20px" style="color: #FFD700" aria-hidden="true"></ng-icon>
-                            <ng-icon name="bootstrapStarFill" size="20px" style="color: #FFD700" aria-hidden="true"></ng-icon>
-                            <ng-icon name="bootstrapStarFill" size="20px" style="color: #FFD700" aria-hidden="true"></ng-icon>
-                            <ng-icon name="bootstrapStarFill" size="20px" style="color: #FFD700" aria-hidden="true"></ng-icon>
-                            <ng-icon name="bootstrapStarFill" size="20px" style="color: #FFD700" aria-hidden="true"></ng-icon>
-                        </div>
-                        <span class="rating-text">5.0 (124 reseñas)</span>
-                    </div>
-                    <div class="room-price-section">
-                        <div class="price">
-                            <span class="price-amount">$200</span>
-                            <span class="price-period">/noche</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="description-section">
-                <h2 class="section-title">Descripción</h2>
-                <p class="description-text">
-                    Nuestra Suite Ejecutiva está diseñada para viajeros de negocios y parejas que buscan una experiencia de lujo. 
-                    Con 45 m² de espacio elegantemente decorado, esta suite ofrece un ambiente sofisticado con todas las comodidades 
-                    modernas que necesitas para una estancia perfecta.
-                </p>
-                <p class="description-text">
-                    Disfruta de una cama King Size con ropa de cama premium, un área de trabajo espaciosa, y un baño privado 
-                    con acabados de lujo. La suite cuenta con grandes ventanales que permiten la entrada de luz natural y 
-                    ofrecen vistas espectaculares de la ciudad.
-                </p>
-            </div>
-        </div>
-
-        <div class="content-grid">
-            <div class="details-column">
-                <div class="info-section">
-                    <h2 class="section-title">Información General</h2>
-                    <div class="quick-info-grid">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <ng-icon name="bootstrapPeople" size="24px" aria-hidden="true"></ng-icon>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">Capacidad</span>
-                                <span class="info-value">2 Personas</span>
-                            </div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <ng-icon name="bootstrapBoundingBox" size="24px" aria-hidden="true"></ng-icon>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">Tamaño</span>
-                                <span class="info-value">45 m²</span>
-                            </div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <ng-icon name="bootstrapHouseDoor" size="24px" aria-hidden="true"></ng-icon>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">Tipo de Cama</span>
-                                <span class="info-value">1 King Size</span>
-                            </div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <ng-icon name="bootstrapClock" size="24px" aria-hidden="true"></ng-icon>
-                            </div>
-                            <div class="info-content">
-                                <span class="info-label">Check-in</span>
-                                <span class="info-value">3:00 PM</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-section">
-                    <h2 class="section-title">Amenidades</h2>
-                    <div class="amenities-grid">
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapWifi" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>WiFi de Alta Velocidad</span>
-                        </div>
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapTv" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>TV Smart 55"</span>
-                        </div>
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapCupHot" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Minibar</span>
-                        </div>
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapSafe" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Caja Fuerte</span>
-                        </div>
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapBriefcase" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Escritorio de Trabajo</span>
-                        </div>
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapSnow" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Aire Acondicionado</span>
-                        </div>
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapCupHot" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Cafetera</span>
-                        </div>
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapScissors" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Secadora de Cabello</span>
-                        </div>
-                        <div class="amenity-item">
-                            <ng-icon name="bootstrapCalendar" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Servicio de Habitación 24/7</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-section">
-                    <h2 class="section-title">Políticas de la Habitación</h2>
-                    <div class="policies-list">
-                        <div class="policy-item">
-                            <ng-icon name="bootstrapCheckLg" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Check-in: 3:00 PM - Check-out: 12:00 PM</span>
-                        </div>
-                        <div class="policy-item">
-                            <ng-icon name="bootstrapCheckLg" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Cancelación gratuita hasta 48 horas antes</span>
-                        </div>
-                        <div class="policy-item">
-                            <ng-icon name="bootstrapCheckLg" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>Se permiten mascotas (cargo adicional)</span>
-                        </div>
-                        <div class="policy-item">
-                            <ng-icon name="bootstrapCheckLg" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
-                            <span>No se permite fumar</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="booking-column">
-                <div class="booking-card">
-                    <h2 class="booking-title">Selecciona tus Fechas</h2>
-                    
-                    <div class="calendar-container">
-                        <div class="calendar-header">
-                            <button class="calendar-nav-btn">
-                                <ng-icon name="bootstrapChevronLeft" size="20px" aria-hidden="true"></ng-icon>
-                            </button>
-                            <h3 class="calendar-month">Febrero 2026</h3>
-                            <button class="calendar-nav-btn">
-                                <ng-icon name="bootstrapChevronRight" size="20px" aria-hidden="true"></ng-icon>
-                            </button>
-                        </div>
-
-                        <div class="calendar-weekdays">
-                            <span class="weekday">Dom</span>
-                            <span class="weekday">Lun</span>
-                            <span class="weekday">Mar</span>
-                            <span class="weekday">Mié</span>
-                            <span class="weekday">Jue</span>
-                            <span class="weekday">Vie</span>
-                            <span class="weekday">Sáb</span>
-                        </div>
-
-                        <div class="calendar-days">
-                            <span class="day other-month">25</span>
-                            <span class="day other-month">26</span>
-                            <span class="day other-month">27</span>
-                            <span class="day other-month">28</span>
-                            <span class="day other-month">29</span>
-                            <span class="day other-month">30</span>
-                            <span class="day other-month">31</span>
-                            
-                            <span class="day available">1</span>
-                            <span class="day available">2</span>
-                            <span class="day available">3</span>
-                            <span class="day booked">4</span>
-                            <span class="day booked">5</span>
-                            <span class="day booked">6</span>
-                            <span class="day available">7</span>
-                            <span class="day available">8</span>
-                            <span class="day available">9</span>
-                            <span class="day available">10</span>
-                            <span class="day booked">11</span>
-                            <span class="day booked">12</span>
-                            <span class="day booked">13</span>
-                            <span class="day available">14</span>
-                            <span class="day available selected">15</span>
-                            <span class="day available">16</span>
-                            <span class="day available">17</span>
-                            <span class="day available selected">18</span>
-                            <span class="day booked">19</span>
-                            <span class="day booked">20</span>
-                            <span class="day available">21</span>
-                            <span class="day available">22</span>
-                            <span class="day available">23</span>
-                            <span class="day booked">24</span>
-                            <span class="day booked">25</span>
-                            <span class="day available">26</span>
-                            <span class="day available">27</span>
-                            <span class="day available">28</span>
-                        </div>
-
-                        <div class="calendar-legend">
-                            <div class="legend-item">
-                                <span class="legend-dot available-dot"></span>
-                                <span class="legend-text">Disponible</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-dot booked-dot"></span>
-                                <span class="legend-text">Reservado</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-dot selected-dot"></span>
-                                <span class="legend-text">Seleccionado</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="booking-summary">
-                        <div class="summary-row">
-                            <span class="summary-label">Entrada:</span>
-                            <span class="summary-value">15 Feb 2026</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">Salida:</span>
-                            <span class="summary-value">18 Feb 2026</span>
-                        </div>
-                        <div class="summary-row">
-                            <span class="summary-label">Noches:</span>
-                            <span class="summary-value">3</span>
-                        </div>
-                        <div class="summary-row total">
-                            <span class="summary-label">Total:</span>
-                            <span class="summary-value">$600.00</span>
-                        </div>
-                    </div>
-
-                    <a href="../checkin/index.html" class="btn-reserve-now">Reservar Ahora</a>
-
-                    <p class="booking-note">
-                        <ng-icon name="bootstrapInfoCircle" size="16px" style="color: #666" aria-hidden="true"></ng-icon>
-                        No se realizará ningún cargo hasta confirmar tu reserva
-                    </p>
-                </div>
-            </div>
-        </div>
+        <app-room-general-info [unit]="selectedUnit"></app-room-general-info>
+        <app-room-amenities [amenities]="selectedUnit.amenities ?? []"></app-room-amenities>
+        <app-room-policies [unit]="selectedUnit"></app-room-policies>
+      </div>
     </div>
+  }
+</div>
 
 <app-footer></app-footer>
