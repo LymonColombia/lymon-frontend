@@ -55,7 +55,7 @@
 
         <div class="rooms-grid">
             @for (room of rooms(); track room.id) {
-                <app-room-card [room]="room" (viewDetails)="goToRoomDetails()"></app-room-card>
+                <app-room-card [room]="room" (viewDetails)="goToRoomDetails($event)"></app-room-card>
             } @empty {
                 <p class="empty-rooms-message">No hay habitaciones disponibles en este momento.</p>
             }
