@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import {
+  HotelPageActionsDirective,
+  HotelPageLayoutComponent,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRepeat,
   bootstrapCalendar,
   bootstrapCheck2,
-  bootstrapChevronLeft,
   bootstrapInfoCircle,
   bootstrapLink45deg,
 } from '@ng-icons/bootstrap-icons';
@@ -29,11 +30,9 @@ interface Platform {
 
 @Component({
   selector: 'app-calendar-sync',
-  standalone: true,
-  imports: [CommonModule, SidebarComponent, NgIcon],
+  imports: [HotelPageLayoutComponent, HotelPageActionsDirective, NgIcon],
   providers: [
     provideIcons({
-      bootstrapChevronLeft,
       bootstrapCalendar,
       bootstrapLink45deg,
       bootstrapArrowRepeat,
