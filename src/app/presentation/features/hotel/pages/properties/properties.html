@@ -1,28 +1,15 @@
-<app-sidebar></app-sidebar>
-
-<div class="main-content">
-  <!-- Page header -->
-  <div class="page-title-row">
-    <div class="page-title-content">
-      <div class="page-icon">
-        <ng-icon name="bootstrapHouseDoorFill" size="28px"></ng-icon>
-      </div>
-      <div class="title-text">
-        <h1 class="page-title">Mis Propiedades</h1>
-        <p class="page-subtitle">Gestiona tus propiedades y crea nuevas unidades</p>
-      </div>
-    </div>
-
-    <div class="page-title-meta-right">
-      <span class="properties-count">
-        @if (isLoading()) {
-          Cargando propiedades...
-        } @else {
-          {{ properties().length }} propiedades registradas
-        }
-      </span>
-    </div>
-  </div>
+<app-hotel-page-layout
+  title="Mis Propiedades"
+  subtitle="Gestiona tus propiedades y crea nuevas unidades"
+  iconName="bootstrapHouseDoorFill"
+>
+  <span hotelPageMeta class="properties-count">
+    @if (isLoading()) {
+      Cargando propiedades...
+    } @else {
+      {{ properties().length }} propiedades registradas
+    }
+  </span>
 
   <div class="properties-container">
     <!-- Alerts -->
@@ -88,5 +75,4 @@
       </div>
     }
   </div>
-  <app-footer></app-footer>
-</div>
+</app-hotel-page-layout>

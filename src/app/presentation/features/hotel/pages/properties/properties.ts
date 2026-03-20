@@ -2,7 +2,10 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import {
+  HotelPageLayoutComponent,
+  HotelPageMetaDirective,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
@@ -12,7 +15,6 @@ import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties
 import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-property.use-case';
 import { Property } from '@/domain/entities/staff.model';
 import { CancellationPolicy, PropertyType } from '@/domain/entities/property.model';
-import { FooterComponent } from "@/presentation/shared/components/footer/footer.component";
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
 
@@ -22,12 +24,12 @@ import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    SidebarComponent,
+    HotelPageLayoutComponent,
+    HotelPageMetaDirective,
     ButtonComponent,
     ModalComponent,
     PropertyFormComponent,
     PropertyCardComponent,
-    FooterComponent,
     NgIcon,
   ],
   providers: [provideIcons({ bootstrapHouseDoorFill, bootstrapPlus })],
