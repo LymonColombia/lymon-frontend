@@ -4,6 +4,8 @@ import {
   HotelPageLayoutComponent,
 } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import {
   bootstrapCalendar,
   bootstrapCurrencyDollar,
@@ -37,7 +39,13 @@ interface Invoice {
 
 @Component({
   selector: 'app-sales-summary',
-  imports: [HotelPageLayoutComponent, HotelPageActionsDirective, NgIcon],
+  imports: [
+    HotelPageLayoutComponent,
+    HotelPageActionsDirective,
+    NgIcon,
+    ButtonComponent,
+    InputComponent,
+  ],
   providers: [
     provideIcons({
       bootstrapCalendar,
@@ -90,9 +98,9 @@ export class SalesSummaryComponent {
   ];
 
   paymentMethods = [
-    { label: 'Tarjeta', percentage: 45, color: '#009A44' },
-    { label: 'Efectivo', percentage: 30, color: '#6CC24A' },
-    { label: 'Transferencia', percentage: 25, color: '#B8E986' }
+    { label: 'Tarjeta', percentage: 45, color: 'var(--color-primary-dark)' },
+    { label: 'Efectivo', percentage: 30, color: 'var(--color-primary)' },
+    { label: 'Transferencia', percentage: 25, color: 'var(--color-primary-light)' }
   ];
 
   invoices: Invoice[] = [
@@ -105,7 +113,7 @@ export class SalesSummaryComponent {
       total: '$450.00',
       method: 'Tarjeta',
       status: 'Pagada',
-      statusColor: '#E8F5E9'
+      statusColor: 'color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary))'
     },
     {
       id: 'F-002',
@@ -116,7 +124,7 @@ export class SalesSummaryComponent {
       total: '$400.00',
       method: 'Efectivo',
       status: 'Pagada',
-      statusColor: '#E8F5E9'
+      statusColor: 'color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary))'
     },
     {
       id: 'F-003',
@@ -127,7 +135,7 @@ export class SalesSummaryComponent {
       total: '$180.00',
       method: 'Transferencia',
       status: 'Pendiente',
-      statusColor: '#FFF3E0'
+      statusColor: 'color-mix(in srgb, var(--color-warning) 22%, var(--color-bg-primary))'
     },
     {
       id: 'F-004',
@@ -138,7 +146,7 @@ export class SalesSummaryComponent {
       total: '$600.00',
       method: 'Tarjeta',
       status: 'Pagada',
-      statusColor: '#E8F5E9'
+      statusColor: 'color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary))'
     },
     {
       id: 'F-005',
@@ -149,7 +157,7 @@ export class SalesSummaryComponent {
       total: '$350.00',
       method: 'Efectivo',
       status: 'Pagada',
-      statusColor: '#E8F5E9'
+      statusColor: 'color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary))'
     }
   ];
 
