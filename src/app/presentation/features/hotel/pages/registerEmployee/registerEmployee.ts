@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -9,6 +9,9 @@ import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Role, Property, Unit, ScopeType } from '@/domain/entities/staff.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import {
   bootstrapEye,
   bootstrapEyeSlash,
@@ -22,7 +25,14 @@ import {
   selector: 'app-register-employee',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ReactiveFormsModule, HotelPageLayoutComponent, NgIcon],
+  imports: [
+    ReactiveFormsModule,
+    HotelPageLayoutComponent,
+    NgIcon,
+    InputComponent,
+    SelectComponent,
+    ButtonComponent,
+  ],
   providers: [
     provideIcons({
       bootstrapEye,
@@ -59,6 +69,31 @@ export class RegisterEmployeeComponent implements OnInit {
   readonly SCOPE_PROPERTY: ScopeType = 'PROPERTY';
   readonly SCOPE_UNIT: ScopeType = 'UNIT';
 
+  readonly scopeTypeOptions: SelectOption[] = [
+    { value: this.SCOPE_TENANT, label: 'TENANT — Todo el hotel' },
+    { value: this.SCOPE_PROPERTY, label: 'PROPERTY — Propiedad específica' },
+    { value: this.SCOPE_UNIT, label: 'UNIT — Unidad específica' },
+  ];
+
+  readonly roleSelectOptions = computed<SelectOption[]>(() => {
+    if (this.rolesLoading()) {
+      return [{ value: '', label: 'Cargando roles...', disabled: true }];
+    }
+
+    return [
+      { value: '', label: 'Seleccionar...' },
+      ...this.availableRoles().map((role) => ({ value: role.id, label: role.name })),
+    ];
+  });
+
+  readonly propertySelectOptions = computed<SelectOption[]>(() => [
+    { value: '', label: 'Seleccionar propiedad...' },
+    ...this.availableProperties().map((property) => ({
+      value: property.id,
+      label: `${property.name} — ${property.city}`,
+    })),
+  ]);
+
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
@@ -66,14 +101,18 @@ export class RegisterEmployeeComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.syncControlDisabledState();
+
     this.getRolesUseCase.execute().subscribe({
       next: (roles) => {
         this.availableRoles.set(roles);
         this.rolesLoading.set(false);
+        this.syncControlDisabledState();
       },
       error: () => {
         this.rolesLoading.set(false);
         this.errorMessage.set('No se pudieron cargar los roles disponibles.');
+        this.syncControlDisabledState();
       },
     });
 
@@ -81,8 +120,12 @@ export class RegisterEmployeeComponent implements OnInit {
       next: (properties) => {
         this.availableProperties.set(properties);
         this.propertiesLoading.set(false);
+        this.syncControlDisabledState();
       },
-      error: () => this.propertiesLoading.set(false),
+      error: () => {
+        this.propertiesLoading.set(false);
+        this.syncControlDisabledState();
+      },
     });
   }
 
@@ -100,17 +143,47 @@ export class RegisterEmployeeComponent implements OnInit {
     return this.roleAssignments.at(index) as FormGroup;
   }
 
+  getUnitOptionsForRow(index: number): SelectOption[] {
+    const units = this.unitsPerRow()[index] ?? [];
+    return units.map((unit) => ({ value: unit.id, label: unit.name }));
+  }
+
   private buildRoleGroup(): FormGroup {
     return this.fb.group({
-      roleId: ['', Validators.required],
+      roleId: [{ value: '', disabled: this.rolesLoading() }, Validators.required],
       scopeType: ['TENANT' as ScopeType, Validators.required],
-      selectedPropertyId: [''],
+      selectedPropertyId: [{ value: '', disabled: this.propertiesLoading() }],
       resourceIds: [[] as string[]],
     });
   }
 
+  private syncControlDisabledState(): void {
+    for (let index = 0; index < this.roleAssignments.length; index++) {
+      const roleGroup = this.getRoleGroupAt(index);
+      const roleControl = roleGroup.get('roleId');
+      const selectedPropertyControl = roleGroup.get('selectedPropertyId');
+
+      if (roleControl) {
+        if (this.rolesLoading()) {
+          roleControl.disable({ emitEvent: false });
+        } else {
+          roleControl.enable({ emitEvent: false });
+        }
+      }
+
+      if (selectedPropertyControl) {
+        if (this.propertiesLoading()) {
+          selectedPropertyControl.disable({ emitEvent: false });
+        } else {
+          selectedPropertyControl.enable({ emitEvent: false });
+        }
+      }
+    }
+  }
+
   addRoleAssignment(): void {
     this.roleAssignments.push(this.buildRoleGroup());
+    this.syncControlDisabledState();
   }
 
   removeRoleAssignment(index: number): void {
