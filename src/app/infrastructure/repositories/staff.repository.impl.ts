@@ -6,6 +6,7 @@ import {
   InviteStaffDto,
   PropertiesResponse,
   RolesResponse,
+  UnitResponse,
   UnitsResponse,
 } from '@/domain/entities/staff.model';
 import { TokenService } from '@/infrastructure/services/token.service';
@@ -53,6 +54,12 @@ export class StaffRepositoryImpl extends StaffRepository {
   getPublicUnits(tenantId: string): Observable<UnitsResponse> {
     return this.http.get<UnitsResponse>(
       `${environment.apiUrl}${environment.units.endpoint}/public/${tenantId}`,
+    );
+  }
+
+  getPublicUnit(unitId: string): Observable<UnitResponse> {
+    return this.http.get<UnitResponse>(
+      `${environment.apiUrl}${environment.units.endpoint}/public/unit/${unitId}`,
     );
   }
 }

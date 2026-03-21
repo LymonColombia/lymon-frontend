@@ -128,7 +128,7 @@ export class BookingComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
-  goToRoomDetails(): void {
-    this.router.navigate(['/room-details']);
+  goToRoomDetails(unitId: string): void {
+    this.router.navigate(['/room-details', unitId]);
   }
 }

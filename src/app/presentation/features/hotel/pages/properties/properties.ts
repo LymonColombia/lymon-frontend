@@ -94,13 +94,21 @@ export class PropertiesComponent implements OnInit {
     });
   }
 
-  toggleForm(): void {
-    this.showForm.update((v) => !v);
+  openForm(): void {
+    this.showForm.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    if (!this.showForm()) {
-      this.form.reset({ propertyType: 'HOTEL', cancellationPolicy: 'FLEXIBLE' });
-    }
+  }
+
+  closeForm(): void {
+    this.showForm.set(false);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+  }
+
+  cancelForm(): void {
+    this.closeForm();
+    this.form.reset({ propertyType: 'HOTEL', cancellationPolicy: 'FLEXIBLE' });
   }
 
   navigateToUnits(propertyId: string): void {

@@ -26,6 +26,7 @@ export type ModalSize = 'small' | 'medium' | 'large';
 export class ModalComponent {
   private static nextId = 0;
   private readonly componentId = ++ModalComponent.nextId;
+  private canCloseFromBackdropClick = false;
 
   readonly open = input<boolean>(false);
   readonly title = input<string>('');
@@ -58,11 +59,23 @@ export class ModalComponent {
     this.closed.emit();
   }
 
-  onBackdropClick(): void {
+  onBackdropMouseDown(event: MouseEvent): void {
+    this.canCloseFromBackdropClick = event.target === event.currentTarget;
+  }
+
+  onBackdropClick(event: MouseEvent): void {
     if (!this.closeOnBackdrop()) {
+      this.canCloseFromBackdropClick = false;
       return;
     }
 
+    const isDirectBackdropClick = event.target === event.currentTarget;
+    if (!this.canCloseFromBackdropClick || !isDirectBackdropClick) {
+      this.canCloseFromBackdropClick = false;
+      return;
+    }
+
+    this.canCloseFromBackdropClick = false;
     this.requestClose();
   }
 
@@ -72,6 +85,10 @@ export class ModalComponent {
     }
 
     this.requestClose();
+  }
+
+  onDialogMouseDown(): void {
+    this.canCloseFromBackdropClick = false;
   }
 
   onDialogClick(event: MouseEvent): void {

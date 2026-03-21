@@ -1,11 +1,16 @@
 @if (open()) {
-  <div class="modal-backdrop" (click)="onBackdropClick()">
+  <div
+    class="modal-backdrop"
+    (mousedown)="onBackdropMouseDown($event)"
+    (click)="onBackdropClick($event)"
+  >
     <section
       class="modal-dialog"
       role="dialog"
       aria-modal="true"
       [attr.aria-labelledby]="titleId()"
       [attr.aria-label]="title() || 'Modal'"
+      (mousedown)="onDialogMouseDown()"
       (click)="onDialogClick($event)"
     >
       <header class="modal-header">
@@ -19,7 +24,7 @@
           aria-label="Close modal"
           (click)="requestClose()"
         >
-          <ng-icon name="bootstrapXCircleFill" size="18px" aria-hidden="true"></ng-icon>
+          <ng-icon name="bootstrapXCircleFill" size="18px" aria-hidden="true" style="color: var(--color-primary-dark)"></ng-icon>
         </button>
       </header>
 
