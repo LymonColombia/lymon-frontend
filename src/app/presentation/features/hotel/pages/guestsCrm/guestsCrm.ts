@@ -14,8 +14,9 @@ import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-c
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import {
   SelectComponent,
   SelectOption,
@@ -91,7 +92,7 @@ type UnitLookupItem = Unit & {
   host: {
     '(document:keydown.escape)': 'closeGuestPanel()',
   },
-  imports: [SidebarComponent, ButtonComponent, SelectComponent, NgIcon],
+  imports: [HotelPageLayoutComponent, ButtonComponent, InputComponent, SelectComponent, NgIcon],
   providers: [
     provideIcons({
       bootstrapPeopleFill,
