@@ -1,0 +1,337 @@
+<div class="landing-page">
+  <app-header [class.header-elevated]="isScrolled()">
+    <nav class="nav-links" aria-label="Main navigation">
+      @for (item of navItems; track item.id) {
+        <button type="button" class="nav-link" (click)="scrollToSection(item.id)">
+          {{ item.label }}
+        </button>
+      }
+    </nav>
+
+    <div actions>
+      <app-button variant="primary" size="medium" (clicked)="scrollToSection('contacto')">
+        Diagnóstico Gratuito
+      </app-button>
+    </div>
+  </app-header>
+
+  <main>
+    <section class="hero-section section" aria-labelledby="hero-title">
+      <div class="container hero-content">
+        <div class="hero-copy">
+          <h1 id="hero-title" class="hero-title">
+            Tecnología <span class="accent">operando</span>,<br />negocio <span class="accent">creciendo</span>
+          </h1>
+          <p class="hero-subtitle">
+            Soporte tecnológico 24/7, software de gestión hotelera y hardware premium. Todo integrado en una sola
+            experiencia.
+          </p>
+
+          <div class="hero-actions">
+            <app-button variant="primary" size="large" (clicked)="scrollToSection('contacto')">
+              Comenzar Ahora
+            </app-button>
+            <app-button variant="outline" size="large" (clicked)="scrollToSection('soporte')">
+              Ver Planes
+            </app-button>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-glow"></div>
+
+          <div class="hero-dashboard-shell">
+            <div class="shell-header">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="shell-grid">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+
+          <div class="hero-card performance-card">
+            <p class="card-label">Rendimiento</p>
+            <svg class="mini-chart" viewBox="0 0 240 80" fill="none" preserveAspectRatio="none">
+              <path d="M0 62 L38 47 L78 52 L122 31 L165 36 L205 18 L240 21" class="chart-line" />
+              <path d="M0 62 L38 47 L78 52 L122 31 L165 36 L205 18 L240 21 L240 80 L0 80 Z" class="chart-area" />
+            </svg>
+            <p class="card-number">99.9%</p>
+            <p class="card-meta">uptime</p>
+          </div>
+
+          <div class="hero-card management-card">
+            <p class="card-label">Gestión</p>
+            <ul class="mini-list">
+              <li><span>Reservas Hoy</span><strong>24</strong></li>
+              <li><span>Check-ins</span><strong>12</strong></li>
+              <li><span>Ocupación</span><strong>87%</strong></li>
+            </ul>
+          </div>
+
+          <div class="hero-card status-card">
+            <p class="card-label">Infraestructura</p>
+            <div class="status-grid">
+              <div>
+                <span class="status-dot"></span>
+                <small>Servidores</small>
+              </div>
+              <div>
+                <span class="status-dot"></span>
+                <small>Red</small>
+              </div>
+              <div>
+                <span class="status-dot"></span>
+                <small>Seguridad</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="servicios"
+      class="section section-animated"
+      [class.section-in-view]="isSectionVisible('servicios')"
+      aria-labelledby="services-title"
+    >
+      <div class="container">
+        <div class="section-header">
+          <h2 id="services-title">Soluciones <span class="accent">integradas</span></h2>
+          <p>Todo lo que necesitas para que tu tecnología impulse tu negocio</p>
+        </div>
+
+        <div class="services-grid">
+          @for (service of services; track service.title) {
+            <article class="service-card reveal-card">
+              <h3>{{ service.title }}</h3>
+              <p>{{ service.description }}</p>
+              <a href="#" class="service-link" (click)="$event.preventDefault()">{{ service.action }} →</a>
+            </article>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="soporte"
+      class="section section-animated"
+      [class.section-in-view]="isSectionVisible('soporte')"
+      aria-labelledby="pricing-title"
+    >
+      <div class="container">
+        <div class="section-header">
+          <h2 id="pricing-title">Planes de <span class="accent">soporte</span></h2>
+          <p>Elige el nivel de servicio que se adapte a tu operación</p>
+        </div>
+
+        <div class="pricing-grid">
+          @for (plan of plans; track plan.name) {
+            <article class="plan-card reveal-card" [class.plan-card-popular]="plan.popular">
+              @if (plan.popular) {
+                <span class="popular-badge">Más Elegido</span>
+              }
+
+              <h3>{{ plan.name }}</h3>
+              <p class="plan-description">{{ plan.description }}</p>
+
+              <div class="plan-price">
+                <strong>{{ plan.price }}</strong>
+                <span>{{ plan.period }}</span>
+              </div>
+
+              <app-button [variant]="plan.popular ? 'primary' : 'outline'" size="large" fullWidth>
+                {{ plan.cta }}
+              </app-button>
+
+              <ul class="features-list">
+                @for (feature of plan.features; track feature) {
+                  <li>
+                    <span class="feature-check">✓</span>
+                    <span>{{ feature }}</span>
+                  </li>
+                }
+              </ul>
+            </article>
+          }
+        </div>
+
+        <div class="comparison-toggle-wrap">
+          <app-button variant="outline" size="medium" (clicked)="toggleComparison()">
+            {{ showComparison() ? 'Ocultar' : 'Ver' }} comparación detallada
+            <span>⌄</span>
+          </app-button>
+        </div>
+
+        @if (showComparison()) {
+          <div class="comparison-card">
+            <h3>Comparación Detallada</h3>
+            <div class="comparison-table-wrap">
+              <table class="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Característica</th>
+                    <th>Básico</th>
+                    <th class="highlight-col">Profesional</th>
+                    <th>Empresarial</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of comparisonRows; track row.name) {
+                    <tr>
+                      <td>{{ row.name }}</td>
+                      <td>{{ row.basic }}</td>
+                      <td class="highlight-col">{{ row.professional }}</td>
+                      <td>{{ row.enterprise }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section
+      id="gestion"
+      class="section section-animated ecosystem-section"
+      [class.section-in-view]="isSectionVisible('gestion')"
+      aria-labelledby="ecosystem-title"
+    >
+      <div class="container">
+        <div class="section-header">
+          <h2 id="ecosystem-title"><span class="accent">LymonOne</span> Ecosistema</h2>
+          <p>Plataforma SaaS diseñada para la gestión hotelera moderna</p>
+        </div>
+
+        <div class="ecosystem-map" aria-hidden="true">
+          <div class="ecosystem-center">
+            <strong>LymonOne</strong>
+            <small>Núcleo</small>
+          </div>
+
+          @for (feature of ecosystemNodeStyle(); track feature.id) {
+            <article class="ecosystem-node reveal-card" [style.left]="feature.left" [style.top]="feature.top">
+              <strong>{{ feature.title }}</strong>
+              <small>{{ feature.description }}</small>
+            </article>
+          }
+        </div>
+
+        <div class="stats-grid">
+          @for (stat of stats; track stat.label) {
+            <article>
+              <strong>{{ stat.value }}</strong>
+              <p>{{ stat.label }}</p>
+            </article>
+          }
+        </div>
+
+        <div class="section-cta">
+          <app-button variant="primary" size="large">Solicitar Demo de LymonOne</app-button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="equipos"
+      class="section section-animated"
+      [class.section-in-view]="isSectionVisible('equipos')"
+      aria-labelledby="hardware-title"
+    >
+      <div class="container">
+        <div class="section-header">
+          <h2 id="hardware-title">Hardware <span class="accent">premium</span></h2>
+          <p>Equipamiento de última generación con garantía extendida</p>
+        </div>
+
+        <div class="hardware-grid">
+          @for (category of hardwareCategories; track category.title) {
+            <article class="hardware-card reveal-card">
+              <h3>{{ category.title }}</h3>
+              <p>{{ category.description }}</p>
+
+              <div class="brand-list">
+                @for (brand of category.brands; track brand) {
+                  <span>{{ brand }}</span>
+                }
+              </div>
+
+              <a href="#" class="service-link" (click)="$event.preventDefault()">Ver catálogo →</a>
+            </article>
+          }
+        </div>
+
+        <div class="hardware-benefits">
+          <div>
+            <h3>Ventajas Lymon</h3>
+            <ul>
+              @for (benefit of hardwareBenefits; track benefit) {
+                <li><span>✓</span>{{ benefit }}</li>
+              }
+            </ul>
+          </div>
+
+          <article class="quote-card">
+            <h4>Cotización Personalizada</h4>
+            <p>Nuestro equipo te ayudará a encontrar el equipamiento perfecto</p>
+            <app-button variant="primary" size="large" fullWidth>Solicitar Cotización</app-button>
+            <a href="tel:+50622223333">o llámanos al (506) 2222-3333</a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contacto" class="contact-footer">
+    <section class="contact-cta section-animated" [class.section-in-view]="isSectionVisible('contacto')">
+      <div class="container contact-cta-content">
+        <h2>¿Listo para dar el <span>siguiente paso</span>?</h2>
+        <p>Agenda tu diagnóstico tecnológico gratuito hoy mismo</p>
+        <app-button variant="secondary" size="large">Agenda tu Diagnóstico</app-button>
+
+        <div class="contact-methods">
+          <a href="tel:+50622223333">(506) 2222-3333</a>
+          <a href="mailto:hola@lymon.cr">hola@lymon.cr</a>
+          <span>San José, Costa Rica</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="footer-links">
+      <div class="container footer-grid">
+        <article>
+          <img ngSrc="/images/logo.png" width="132" height="40" alt="Lymon" />
+          <p>Soluciones tecnológicas integrales para impulsar tu negocio</p>
+        </article>
+        <article>
+          <h4>Servicios</h4>
+          <a href="#" (click)="$event.preventDefault()">Soporte Tecnológico</a>
+          <a href="#" (click)="$event.preventDefault()">LymonOne SaaS</a>
+          <a href="#" (click)="$event.preventDefault()">Venta de Hardware</a>
+        </article>
+        <article>
+          <h4>Recursos</h4>
+          <a href="#" (click)="$event.preventDefault()">Blog</a>
+          <a href="#" (click)="$event.preventDefault()">Casos de Éxito</a>
+          <a href="#" (click)="$event.preventDefault()">Documentación</a>
+        </article>
+        <article>
+          <h4>Empresa</h4>
+          <a href="#" (click)="$event.preventDefault()">Nosotros</a>
+          <a href="#" (click)="$event.preventDefault()">Equipo</a>
+          <a href="#" (click)="$event.preventDefault()">Contacto</a>
+        </article>
+      </div>
+      <div class="container footer-bottom">
+        <p>© {{ currentYear }} Lymon Technology Solutions. Todos los derechos reservados.</p>
+      </div>
+    </section>
+  </footer>
+</div>
