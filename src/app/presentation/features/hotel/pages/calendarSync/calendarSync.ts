@@ -4,6 +4,7 @@ import {
   HotelPageLayoutComponent,
 } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import {
   bootstrapArrowRepeat,
   bootstrapCalendar,
@@ -30,7 +31,7 @@ interface Platform {
 
 @Component({
   selector: 'app-calendar-sync',
-  imports: [HotelPageLayoutComponent, HotelPageActionsDirective, NgIcon],
+  imports: [HotelPageLayoutComponent, HotelPageActionsDirective, NgIcon, ButtonComponent],
   providers: [
     provideIcons({
       bootstrapCalendar,
@@ -50,21 +51,21 @@ export class CalendarSyncComponent {
       value: '2',
       subtitle: 'de 2 disponibles',
       icon: 'link',
-      color: '#009A44'
+      color: 'var(--color-primary-dark)'
     },
     {
       label: 'Reservas Activas',
       value: '20',
       subtitle: 'En todas las plataformas',
       icon: 'calendar',
-      color: '#6CC24A'
+      color: 'var(--color-primary)'
     },
     {
       label: 'Última Sincronización',
       value: '14:30',
       subtitle: 'Hace 5 minutos',
       icon: 'refresh',
-      color: '#6CC24A'
+      color: 'var(--color-primary)'
     }
   ];
 
