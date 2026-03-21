@@ -24,7 +24,7 @@ import {
   bootstrapCurrencyDollar,
   bootstrapEnvelopeAt,
   bootstrapInfoCircle,
-  bootstrapPersonFillCheck,
+  bootstrapPeople,
 } from '@ng-icons/bootstrap-icons';
 
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
@@ -70,7 +70,7 @@ function getInitialSidebarExpandedState(): boolean {
       bootstrapCurrencyDollar,
       bootstrapEnvelopeAt,
       bootstrapInfoCircle,
-      bootstrapPersonFillCheck,
+      bootstrapPeople,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -109,10 +109,10 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapCalendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
     { icon: 'bootstrapEnvelopeAt', label: 'Configuración de Correos', route: '/email-config' },
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/audit-log' },
+    { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/crm/guests' },
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
     { icon: 'bootstrapGear', label: 'Perfil del Negocio', route: '/tenant-profile' },
     { icon: 'bootstrapPersonLock', label: 'Cambiar Contraseña', route: '/change-password' },
-    { icon: 'bootstrapPersonFillCheck', label: 'CRM de Huéspedes', route: '/crm/guests' },
   ];
 
   private updateLayoutSidebarWidthVariable(): void {
