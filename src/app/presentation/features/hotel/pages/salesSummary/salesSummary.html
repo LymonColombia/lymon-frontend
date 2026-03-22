@@ -1,63 +1,44 @@
-<app-sidebar></app-sidebar>
+<app-hotel-page-layout
+  title="Resumen de Ventas"
+  subtitle="Análisis financiero y facturas detalladas"
+  iconName="bootstrapCurrencyDollar"
+>
+    <div hotelPageActions class="sales-header-actions">
+        <app-button type="button" variant="secondary" class="btn-pdf">
+            <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
+            PDF
+        </app-button>
+        <app-button type="button" variant="secondary" class="btn-excel">
+            <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
+            Excel
+        </app-button>
+    </div>
 
-<div class="main-content">
     <div class="sales-container">
-        <div class="page-header">
-            <button class="back-button">
-                <ng-icon name="bootstrapChevronLeft" size="20px" aria-hidden="true"></ng-icon>
-                Volver
-            </button>
-
-            <div class="header-content">
-                <div class="header-left">
-                    <div class="header-icon">
-                        <ng-icon name="bootstrapCurrencyDollar" size="32px" style="color: white" aria-hidden="true"></ng-icon>
-                    </div>
-                    <div class="header-text">
-                        <h1 class="page-title">Resumen de Ventas</h1>
-                        <p class="page-subtitle">Análisis financiero y facturas detalladas</p>
-                    </div>
-                </div>
-
-                <div class="header-actions">
-                    <button class="btn-export btn-pdf">
-                        <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
-                        PDF
-                    </button>
-                    <button class="btn-export btn-excel">
-                        <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
-                        Excel
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <div class="filters-section">
             <div class="filters-header">
-                <ng-icon name="bootstrapFilter" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
+                <ng-icon name="bootstrapFilter" size="20px" class="filters-icon" aria-hidden="true"></ng-icon>
                 <h3 class="filters-title">Filtros</h3>
             </div>
             <div class="filters-content">
                 <div class="filter-group">
                     <label>Fecha Inicio</label>
-                    <div class="date-input">
-                        <ng-icon name="bootstrapCalendar" size="18px" style="color: #666" aria-hidden="true"></ng-icon>
-                        <input type="date" value="2026-09-02">
-                    </div>
+                    <app-input type="date" [hasIcon]="true">
+                        <ng-icon icon name="bootstrapCalendar" size="18px" aria-hidden="true"></ng-icon>
+                    </app-input>
                 </div>
                 <div class="filter-group">
                     <label>Fecha Fin</label>
-                    <div class="date-input">
-                        <ng-icon name="bootstrapCalendar" size="18px" style="color: #666" aria-hidden="true"></ng-icon>
-                        <input type="date" value="2026-09-02">
-                    </div>
+                    <app-input type="date" [hasIcon]="true">
+                        <ng-icon icon name="bootstrapCalendar" size="18px" aria-hidden="true"></ng-icon>
+                    </app-input>
                 </div>
                 <div class="filter-group search-group">
                     <label>Buscar</label>
-                    <div class="search-input">
-                        <ng-icon name="bootstrapSearch" size="18px" style="color: #999" aria-hidden="true"></ng-icon>
-                        <input type="text" placeholder="Huésped, factura, habitación...">
-                    </div>
+                    <app-input type="text" placeholder="Huésped, factura, habitación..." [hasIcon]="true">
+                        <ng-icon icon name="bootstrapSearch" size="18px" aria-hidden="true"></ng-icon>
+                    </app-input>
                 </div>
             </div>
         </div>
@@ -68,13 +49,13 @@
                     <div class="metric-header">
                         <span class="metric-label">{{ metric.label }}</span>
                         @if (metric.icon === 'trending-up') {
-                            <ng-icon class="metric-icon" name="bootstrapGraphUpArrow" size="20px" style="color: #009A44" aria-hidden="true"></ng-icon>
+                            <ng-icon class="metric-icon metric-icon-primary" name="bootstrapGraphUpArrow" size="20px" aria-hidden="true"></ng-icon>
                         }
                         @if (metric.icon === 'receipt') {
-                            <ng-icon class="metric-icon" name="bootstrapReceipt" size="20px" style="color: #6CC24A" aria-hidden="true"></ng-icon>
+                            <ng-icon class="metric-icon metric-icon-success" name="bootstrapReceipt" size="20px" aria-hidden="true"></ng-icon>
                         }
                         @if (metric.icon === 'dollar') {
-                            <ng-icon class="metric-icon" name="bootstrapCurrencyDollar" size="20px" style="color: #6CC24A" aria-hidden="true"></ng-icon>
+                            <ng-icon class="metric-icon metric-icon-success" name="bootstrapCurrencyDollar" size="20px" aria-hidden="true"></ng-icon>
                         }
                     </div>
                     <div class="metric-value">{{ metric.value }}</div>
@@ -106,17 +87,38 @@
                 <h3 class="chart-title">Métodos de Pago</h3>
                 <div class="pie-chart-container">
                     <svg class="pie-chart" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" fill="none" stroke="#009A44" stroke-width="20"
-                                [attr.stroke-dasharray]="getPieChartDashArray(45)"
-                                transform="rotate(-90 50 50)"/>
-                        <circle cx="50" cy="50" r="40" fill="none" stroke="#6CC24A" stroke-width="20"
-                                [attr.stroke-dasharray]="getPieChartDashArray(30)"
-                                [attr.stroke-dashoffset]="getPieChartOffset([45])"
-                                transform="rotate(-90 50 50)"/>
-                        <circle cx="50" cy="50" r="40" fill="none" stroke="#B8E986" stroke-width="20"
-                                [attr.stroke-dasharray]="getPieChartDashArray(25)"
-                                [attr.stroke-dashoffset]="getPieChartOffset([45, 30])"
-                                transform="rotate(-90 50 50)"/>
+                        <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            fill="none"
+                            stroke="var(--color-primary-dark)"
+                            stroke-width="20"
+                            [attr.stroke-dasharray]="getPieChartDashArray(45)"
+                            transform="rotate(-90 50 50)"
+                        />
+                        <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            fill="none"
+                            stroke="var(--color-primary)"
+                            stroke-width="20"
+                            [attr.stroke-dasharray]="getPieChartDashArray(30)"
+                            [attr.stroke-dashoffset]="getPieChartOffset([45])"
+                            transform="rotate(-90 50 50)"
+                        />
+                        <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            fill="none"
+                            stroke="var(--color-primary-light)"
+                            stroke-width="20"
+                            [attr.stroke-dasharray]="getPieChartDashArray(25)"
+                            [attr.stroke-dashoffset]="getPieChartOffset([45, 30])"
+                            transform="rotate(-90 50 50)"
+                        />
                     </svg>
                     <div class="pie-chart-labels">
                         @for (method of paymentMethods; track method.label) {
@@ -162,9 +164,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <button class="action-button">
-                                        <ng-icon name="bootstrapEye" size="20px" style="color: #666" aria-hidden="true"></ng-icon>
-                                    </button>
+                                    <app-button type="button" variant="ghost" size="small" class="action-button">
+                                        <ng-icon name="bootstrapEye" size="20px" class="action-icon" aria-hidden="true"></ng-icon>
+                                    </app-button>
                                 </td>
                             </tr>
                         }
@@ -173,4 +175,4 @@
             </div>
         </div>
     </div>
-</div>
+</app-hotel-page-layout>

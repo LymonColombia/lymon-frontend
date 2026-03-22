@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import {
+  HotelPageActionsDirective,
+  HotelPageLayoutComponent,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import {
   bootstrapArrowRepeat,
   bootstrapCalendar,
   bootstrapCheck2,
-  bootstrapChevronLeft,
   bootstrapInfoCircle,
   bootstrapLink45deg,
 } from '@ng-icons/bootstrap-icons';
@@ -29,11 +31,9 @@ interface Platform {
 
 @Component({
   selector: 'app-calendar-sync',
-  standalone: true,
-  imports: [CommonModule, SidebarComponent, NgIcon],
+  imports: [HotelPageLayoutComponent, HotelPageActionsDirective, NgIcon, ButtonComponent],
   providers: [
     provideIcons({
-      bootstrapChevronLeft,
       bootstrapCalendar,
       bootstrapLink45deg,
       bootstrapArrowRepeat,
@@ -51,21 +51,21 @@ export class CalendarSyncComponent {
       value: '2',
       subtitle: 'de 2 disponibles',
       icon: 'link',
-      color: '#009A44'
+      color: 'var(--color-primary-dark)'
     },
     {
       label: 'Reservas Activas',
       value: '20',
       subtitle: 'En todas las plataformas',
       icon: 'calendar',
-      color: '#6CC24A'
+      color: 'var(--color-primary)'
     },
     {
       label: 'Última Sincronización',
       value: '14:30',
       subtitle: 'Hace 5 minutos',
       icon: 'refresh',
-      color: '#6CC24A'
+      color: 'var(--color-primary)'
     }
   ];
 

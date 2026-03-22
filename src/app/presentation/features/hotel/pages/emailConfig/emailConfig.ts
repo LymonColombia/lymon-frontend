@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import {
+  HotelPageActionsDirective,
+  HotelPageLayoutComponent,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapEnvelope,
+  bootstrapEnvelopeAt,
   bootstrapPlusLg,
   bootstrapCheckLg,
   bootstrapSend,
-  bootstrapChevronLeft,
   bootstrapCalendar,
   bootstrapEye,
   bootstrapPencilSquare,
@@ -41,15 +43,14 @@ interface Variable {
 
 @Component({
   selector: 'app-email-config',
-  standalone: true,
-  imports: [CommonModule, SidebarComponent, NgIcon],
+  imports: [HotelPageLayoutComponent, HotelPageActionsDirective, NgIcon],
   providers: [
     provideIcons({
       bootstrapEnvelope,
+      bootstrapEnvelopeAt,
       bootstrapPlusLg,
       bootstrapCheckLg,
       bootstrapSend,
-      bootstrapChevronLeft,
       bootstrapCalendar,
       bootstrapEye,
       bootstrapPencilSquare,

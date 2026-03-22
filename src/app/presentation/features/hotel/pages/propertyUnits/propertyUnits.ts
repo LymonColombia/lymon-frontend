@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import {
+  HotelPageLayoutComponent,
+  HotelPageMetaDirective,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { Unit } from '@/domain/entities/staff.model';
@@ -12,7 +14,6 @@ import { UnitCardComponent } from './components/unit-card/unit-card.component';
 import { UnitFormModalComponent } from './components/unit-form-modal/unit-form-modal.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapChevronLeft,
   bootstrapHouseDoorFill,
   bootstrapPlus,
 } from '@ng-icons/bootstrap-icons';
@@ -22,16 +23,15 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    SidebarComponent,
+    HotelPageLayoutComponent,
+    HotelPageMetaDirective,
     ButtonComponent,
-    BreadcrumbComponent,
     ModalComponent,
-    FooterComponent,
     UnitCardComponent,
     UnitFormModalComponent,
     NgIcon,
   ],
-  providers: [provideIcons({ bootstrapChevronLeft, bootstrapHouseDoorFill, bootstrapPlus })],
+  providers: [provideIcons({ bootstrapHouseDoorFill, bootstrapPlus })],
   templateUrl: './propertyUnits.html',
   styleUrl: './propertyUnits.css',
 })
@@ -112,9 +112,5 @@ export class PropertyUnitsComponent implements OnInit {
     }
 
     this.loadUnits(currentPropertyId);
-  }
-
-  goBack(): void {
-    this.router.navigate(['/properties']);
   }
 }
