@@ -1,9 +1,23 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  HotelPageLayoutComponent,
+  HotelPageMetaDirective,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapStar,
+  bootstrapStarFill,
+  bootstrapStarHalf,
+} from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { PlanType } from '@/domain/entities/auth.model';
+interface PlanDetailSection {
+  title: string;
+  items: string[];
+}
 
 interface PlanCard {
   type: PlanType;
@@ -11,14 +25,15 @@ interface PlanCard {
   subtitle: string;
   price: string;
   priceSuffix?: string;
-  description: string;
-  highlights: string[];
+  priceNote?: string;
+  detailsSections: PlanDetailSection[];
 }
 
 @Component({
   selector: 'app-plans',
   standalone: true,
-  imports: [SidebarComponent, ButtonComponent],
+  imports: [HotelPageLayoutComponent, HotelPageMetaDirective, NgIcon, ButtonComponent, ModalComponent],
+  providers: [provideIcons({ bootstrapStar, bootstrapStarHalf, bootstrapStarFill })],
   templateUrl: './plans.html',
   styleUrls: ['./plans.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,11 +42,12 @@ export class PlansComponent {
   private readonly tokenService = inject(TokenService);
   private readonly userSession = inject(UserSessionService);
 
+  readonly selectedPlan = signal<PlanCard | null>(null);
+
   readonly currentPlanType = computed<PlanType | null>(() => {
     const fromSession = this.userSession.currentUser()?.planType;
-    if (fromSession) {
-      return this.normalizePlanType(fromSession);
-    }
+    const normalizedFromSession = this.normalizePlanType(fromSession);
+    if (normalizedFromSession) return normalizedFromSession;
 
     const accessToken = this.tokenService.getAccessToken();
     if (!accessToken) {
@@ -39,36 +55,96 @@ export class PlansComponent {
     }
 
     const fromToken = this.tryExtractPlanTypeFromJwt(accessToken);
-    return fromToken ? this.normalizePlanType(fromToken) : null;
+    return this.normalizePlanType(fromToken);
   });
 
   readonly plans: PlanCard[] = [
     {
       type: 'TRIAL',
-      name: 'Plan Básico (Trial)',
-      subtitle: 'Soporte Reactivo',
-      price: '$55.000',
+      name: 'Trial',
+      subtitle: 'Prueba Lymon antes de suscribirte',
+      price: '$0',
+      priceNote: 'Acceso de prueba por tiempo limitado',
+      detailsSections: [
+        {
+          title: 'CAPACIDAD',
+          items: ['Hasta 1 propiedad', 'Hasta 1 usuario', 'Unidades ilimitadas'],
+        },
+        {
+          title: 'INTEGRACIONES',
+          items: ['Airbnb', 'Booking.com', 'Vrbo'],
+        },
+        {
+          title: 'GESTIÓN',
+          items: ['Multicalendario unificado', 'Inbox combinado'],
+        },
+      ],
+    },
+    {
+      type: 'LYMON_ONE',
+      name: 'LymonOne',
+      subtitle: 'Ideal para propietarios independientes',
+      price: '$89.900',
       priceSuffix: '/mes',
-      description: 'Atendemos cuando ocurre el problema.',
-      highlights: ['Soporte remoto', 'Respuesta reactiva', 'Cobertura de software estándar'],
+      priceNote: 'Pago mensual sin compromiso',
+      detailsSections: [
+        {
+          title: 'CAPACIDAD',
+          items: ['Hasta 5 propiedades', 'Hasta 2 usuarios', 'Unidades ilimitadas'],
+        },
+        {
+          title: 'INTEGRACIONES',
+          items: ['Airbnb', 'Booking.com', 'Vrbo'],
+        },
+        {
+          title: 'GESTIÓN',
+          items: ['Multicalendario unificado', 'Inbox combinado', 'Roles y turnos básicos'],
+        },
+      ],
     },
     {
       type: 'PLUS',
-      name: 'Plan Profesional',
-      subtitle: 'Soporte Preventivo',
-      price: '$95.000',
+      name: 'LymonPlus',
+      subtitle: 'Para administradores profesionales',
+      price: '$189.900',
       priceSuffix: '/mes',
-      description: 'Reducimos fallas antes de que afecten la operación.',
-      highlights: ['Incluye lo del Básico', 'Mantenimiento preventivo', 'Mejoras de estabilidad'],
+      priceNote: 'Incluye todo lo de LymonOne +',
+      detailsSections: [
+        {
+          title: 'CAPACIDAD',
+          items: ['Hasta 20 propiedades', 'Hasta 10 usuarios', 'Unidades ilimitadas'],
+        },
+        {
+          title: 'FUNCIONES PREMIUM',
+          items: ['Landing privada personalizada', 'CRM integrado', 'Turnos con biometría'],
+        },
+        {
+          title: 'GESTIÓN AVANZADA',
+          items: ['Reportes y analíticas', 'Gestión financiera básica', 'Soporte prioritario'],
+        },
+      ],
     },
     {
       type: 'PRIME',
-      name: 'Plan Empresarial',
-      subtitle: 'Gestión Integral',
-      price: '$160.000',
+      name: 'LymonPrime',
+      subtitle: 'Solución completa sin límites',
+      price: '$349.900',
       priceSuffix: '/mes',
-      description: 'Nos encargamos de la tecnología de sus equipos.',
-      highlights: ['Incluye lo del Profesional', 'Gestión integral', 'Acompañamiento dedicado'],
+      priceNote: 'Todo incluido + personalización',
+      detailsSections: [
+        {
+          title: 'CAPACIDAD',
+          items: ['Propiedades ilimitadas', 'Usuarios ilimitados', 'Unidades ilimitadas'],
+        },
+        {
+          title: 'PREMIUM FEATURES',
+          items: ['Todo lo de LymonPlus', 'API completa', 'White-label disponible'],
+        },
+        {
+          title: 'SOPORTE ENTERPRISE',
+          items: ['Account manager dedicado', 'Soporte 24/7', 'Capacitación personalizada'],
+        },
+      ],
     },
   ];
 
@@ -84,18 +160,30 @@ export class PlansComponent {
     return this.currentPlanType() === planType;
   }
 
+  openPlanDetails(plan: PlanCard): void {
+    this.selectedPlan.set(plan);
+  }
+
+  closePlanDetails(): void {
+    this.selectedPlan.set(null);
+  }
+
   onChangePlan(): void {
   }
 
   onUpdatePlan(): void {
   }
 
-  private normalizePlanType(planType: PlanType): PlanType {
-    if (planType === 'LYMON_ONE') {
-      return 'TRIAL';
+  private normalizePlanType(value: unknown): PlanType | null {
+    if (value === 'LYMON_PLUS') {
+      return 'PLUS';
     }
 
-    return planType;
+    if (this.isPlanType(value)) {
+      return value;
+    }
+
+    return null;
   }
 
   private tryExtractPlanTypeFromJwt(token: string): PlanType | null {
@@ -144,6 +232,6 @@ export class PlansComponent {
   }
 
   private isPlanType(value: unknown): value is PlanType {
-    return value === 'LYMON_ONE' || value === 'PLUS' || value === 'PRIME' || value === 'TRIAL';
+    return value === 'TRIAL' || value === 'LYMON_ONE' || value === 'PLUS' || value === 'PRIME';
   }
 }

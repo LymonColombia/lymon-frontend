@@ -1,4 +1,4 @@
-export type PlanType = 'LYMON_ONE' | 'PLUS' | 'PRIME' | 'TRIAL';
+export type PlanType = 'TRIAL' | 'LYMON_ONE' | 'PLUS' | 'PRIME';
 
 export type UserRole = 'OWNER' | 'EMPLOYEE';
 
