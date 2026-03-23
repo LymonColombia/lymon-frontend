@@ -475,6 +475,108 @@ app-select.filter-select {
   color: var(--color-danger);
 }
 
+.notes-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.guest-note-card {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid #9ad9b0;
+  background: linear-gradient(180deg, #f6fcf8 0%, #eef8f2 100%);
+}
+
+.guest-note-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.guest-note-icon {
+  color: var(--color-primary-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guest-note-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: var(--font-weight-semibold);
+}
+
+.guest-note-field {
+  display: grid;
+  gap: 10px;
+}
+
+.guest-note-label {
+  color: var(--color-text-primary);
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: var(--font-weight-semibold);
+}
+
+.guest-note-textarea {
+  width: 100%;
+  min-height: 124px;
+  resize: vertical;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-primary);
+  font-size: 15px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.guest-note-textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.guest-note-textarea:focus {
+  border-color: #9ad9b0;
+  box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.12);
+}
+
+.guest-note-counter {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.guest-note-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.notes-feedback {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notes-feedback-success {
+  color: var(--color-primary-dark);
+}
+
+.notes-feedback-error {
+  color: var(--color-danger);
+}
+
 @media (max-width: 1024px) {
   .search-section {
     flex-direction: column;
