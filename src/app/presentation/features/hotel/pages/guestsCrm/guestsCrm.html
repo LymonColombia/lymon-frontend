@@ -1,19 +1,8 @@
-<app-sidebar></app-sidebar>
-
-<main class="main-content">
-  <section class="guests-crm-container">
-    <header class="page-header">
-      <div class="header-icon" aria-hidden="true">
-        <ng-icon name="bootstrapPeopleFill" size="26px"></ng-icon>
-      </div>
-      <div>
-        <h1 class="page-title">Huéspedes CRM</h1>
-        <p class="page-subtitle">
-          Visualiza y gestiona la información de los huéspedes que han realizado reservas en tus
-          propiedades.
-        </p>
-      </div>
-    </header>
+<app-hotel-page-layout
+  title="Huéspedes CRM"
+  subtitle="Visualiza y gestiona la información de los huéspedes que han realizado reservas en tus propiedades."
+  iconName="bootstrapPeopleFill"
+>
 
     <section class="search-section">
       <app-select
@@ -43,14 +32,13 @@
       </app-select>
 
       <label class="sr-only" for="searchInput">Buscar huésped</label>
-      <input
+      <app-input
         id="searchInput"
         class="search-input"
         type="text"
         [placeholder]="searchPlaceholder()"
-        [value]="searchTerm()"
-        (input)="onSearchTermChange(($any($event.target).value ?? '').toString())"
-      />
+        (valueChange)="onSearchTermChange(($event ?? '').toString())"
+      ></app-input>
     </section>
 
     @if (errorMessage()) {
@@ -114,7 +102,7 @@
         <nav class="pagination" aria-label="Paginación de huéspedes">
           <app-button
             class="page-btn icon-btn"
-            variant="primary"
+            variant="secondary"
             size="medium"
             [disabled]="currentPage() === 1"
             (clicked)="goToPreviousPage()"
@@ -126,7 +114,7 @@
           @for (page of pageNumbers(); track page) {
             <app-button
               class="page-btn"
-              variant="primary"
+              variant="secondary"
               size="medium"
               [disabled]="page === currentPage()"
               (clicked)="goToPage(page)"
@@ -137,7 +125,7 @@
 
           <app-button
             class="page-btn icon-btn"
-            variant="primary"
+            variant="secondary"
             size="medium"
             [disabled]="currentPage() === totalPages()"
             (clicked)="goToNextPage()"
@@ -148,7 +136,6 @@
         </nav>
       }
     </section>
-  </section>
 
   <div
     class="guest-panel-backdrop"
@@ -378,4 +365,4 @@
       </div>
     }
   </aside>
-</main>
+</app-hotel-page-layout>

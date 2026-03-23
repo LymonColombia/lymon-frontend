@@ -1,90 +1,11 @@
 :host {
     display: block;
-    font-family: 'Syne', sans-serif;
-    background-color: #f5f5f5;
+    font-family: var(--font-primary);
+    background-color: var(--color-bg-secondary);
     min-height: 100vh;
 }
 
-.main-content {
-    margin-left: var(--layout-sidebar-width);
-    min-height: 100vh;
-}
-
-.email-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 32px 40px;
-}
-
-.page-header {
-    margin-bottom: 32px;
-}
-
-.back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: #666;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    margin-bottom: 16px;
-    transition: color 0.2s ease;
-}
-
-.back-button:hover {
-    color: #009A44;
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.header-icon {
-    width: 56px;
-    height: 56px;
-    background: #009A44;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.header-text {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.page-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0;
-}
-
-.page-subtitle {
-    font-size: 14px;
-    font-weight: 400;
-    color: #666;
-    margin: 0;
-}
-
-.header-actions {
+.email-header-actions {
     display: flex;
     gap: 12px;
 }
@@ -94,7 +15,7 @@
     align-items: center;
     gap: 8px;
     padding: 12px 24px;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-primary);
     font-size: 14px;
     font-weight: 600;
     color: white;
@@ -425,7 +346,7 @@
 .form-group select,
 .form-group textarea {
     padding: 12px 16px;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-primary);
     font-size: 14px;
     color: #1a1a1a;
     background: white;
@@ -503,7 +424,7 @@
 .btn-cancel,
 .btn-save {
     padding: 12px 24px;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-primary);
     font-size: 14px;
     font-weight: 600;
     border: 2px solid;
@@ -535,22 +456,6 @@
 }
 
 @media (max-width: 1024px) {
-    :host ::ng-deep app-sidebar {
-        display: none;
-    }
-    
-    .main-content {
-        margin-left: 0;
-    }
-    
-    .email-container {
-        padding: 24px 20px;
-    }
-    
-    .header-content {
-        flex-direction: column;
-    }
-    
     .modal-form {
         grid-template-columns: 1fr;
     }
@@ -561,14 +466,6 @@
 }
 
 @media (max-width: 768px) {
-    .email-container {
-        padding: 16px;
-    }
-    
-    .page-title {
-        font-size: 24px;
-    }
-    
     .metrics-grid {
         grid-template-columns: 1fr;
     }

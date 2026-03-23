@@ -1,31 +1,14 @@
-<app-sidebar></app-sidebar>
-
-<div class="main-content">
-  <div class="back-actions">
-    <app-button type="button" variant="text" (clicked)="goBack()">
-      <ng-icon name="bootstrapChevronLeft" size="16px" aria-hidden="true"></ng-icon>
-      Volver a Propiedades
-    </app-button>
-  </div>
-
-  <div class="page-title-row">
-    <div class="page-title-content">
-      <div class="page-icon">
-        <ng-icon name="bootstrapHouseDoorFill" size="28px"></ng-icon>
-      </div>
-      <div class="title-text">
-        <app-breadcrumb [items]="breadcrumbItems()" />
-        <h1 class="page-title">{{ propertyName() }}</h1>
-        <p class="page-subtitle">Gestiona las unidades de esta propiedad</p>
-      </div>
-    </div>
-
-    @if (propertyType()) {
-      <div class="page-title-meta-right">
-        <span class="property-type-chip">{{ propertyType() }}</span>
-      </div>
-    }
-  </div>
+<app-hotel-page-layout
+  [title]="propertyName()"
+  subtitle="Gestiona las unidades de esta propiedad"
+  iconName="bootstrapHouseDoorFill"
+  [breadcrumbItems]="breadcrumbItems()"
+  backLink="/properties"
+  backLabel="Volver a Propiedades"
+>
+  @if (propertyType()) {
+    <span hotelPageMeta class="property-type-chip">{{ propertyType() }}</span>
+  }
 
   <div class="units-container">
     <div class="units-count-row">
@@ -85,6 +68,4 @@
       </div>
     }
   </div>
-
-  <app-footer></app-footer>
-</div>
+</app-hotel-page-layout>

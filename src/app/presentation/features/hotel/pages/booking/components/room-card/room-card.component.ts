@@ -46,9 +46,9 @@ export interface BookingRoomCard {
 })
 export class RoomCardComponent {
   readonly room = input.required<BookingRoomCard>();
-  readonly viewDetails = output<void>();
+  readonly viewDetails = output<string>();
 
   onViewDetails(): void {
-    this.viewDetails.emit();
+    this.viewDetails.emit(this.room().id);
   }
 }

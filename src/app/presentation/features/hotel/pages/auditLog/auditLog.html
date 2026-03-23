@@ -1,12 +1,8 @@
-<div class="page-layout">
-  <app-sidebar />
-
-  <div class="page-content">
-    <!-- Header -->
-    <div class="page-header">
-      <h1 class="page-title">Registros de Auditoría</h1>
-      <p class="page-subtitle">Historial de acciones realizadas en tu organización.</p>
-    </div>
+<app-hotel-page-layout
+  title="Registros de Auditoría"
+  subtitle="Historial de acciones realizadas en tu organización."
+  iconName="bootstrapInfoCircle"
+>
 
     <!-- Forbidden -->
     @if (forbiddenError()) {
@@ -188,5 +184,4 @@
         }
       }
     }
-  </div>
-</div>
+</app-hotel-page-layout>

@@ -3,6 +3,7 @@ import {
   InviteStaffDto,
   PropertiesResponse,
   RolesResponse,
+  UnitResponse,
   UnitsResponse,
 } from '@/domain/entities/staff.model';
 
@@ -12,4 +13,5 @@ export abstract class StaffRepository {
   abstract getProperties(): Observable<PropertiesResponse>;
   abstract getUnits(propertyId: string): Observable<UnitsResponse>;
   abstract getPublicUnits(tenantId: string): Observable<UnitsResponse>;
+  abstract getPublicUnit(unitId: string): Observable<UnitResponse>;
 }

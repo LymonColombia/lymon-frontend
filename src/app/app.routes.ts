@@ -42,6 +42,7 @@ export const routes: Routes = [
   { path: 'checkin', component: CheckinComponent, canActivate: [authGuard] },
   { path: 'properties', component: PropertiesComponent, canActivate: [authGuard] },
   { path: 'register-employee', component: RegisterEmployeeComponent, canActivate: [authGuard] },
+  { path: 'room-details/:unitId', component: RoomDetailsComponent, canActivate: [authGuard] },
   { path: 'room-details', component: RoomDetailsComponent, canActivate: [authGuard] },
   { path: 'sales-summary', component: SalesSummaryComponent, canActivate: [authGuard] },
   { path: 'calendar-sync', component: CalendarSyncComponent, canActivate: [authGuard] },

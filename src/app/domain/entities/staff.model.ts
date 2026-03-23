@@ -41,6 +41,12 @@ export interface UnitsResponse {
   };
 }
 
+export interface UnitResponse {
+  data: {
+    unit: Unit;
+  };
+}
+
 export interface Role {
   id: string;
   name: string;

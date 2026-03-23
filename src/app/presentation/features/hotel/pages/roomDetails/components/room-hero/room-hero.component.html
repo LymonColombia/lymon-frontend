@@ -1,0 +1,33 @@
+<div class="room-header">
+  <h1 class="room-name">{{ unit().name }}</h1>
+</div>
+
+<div class="image-description-section">
+  <div class="room-image-container">
+    <img src="/images/suite2.avif" [alt]="unit().name" class="room-image" />
+
+    <div class="room-meta">
+      <div class="room-rating">
+        <div class="stars" aria-hidden="true">
+          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
+          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
+          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
+          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
+          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
+        </div>
+        <span class="rating-text">Habitación {{ unit().isShared ? 'compartida' : 'privada' }}</span>
+      </div>
+
+      <div class="room-price-section">
+        <div class="price">
+          <span class="price-amount">${{ unit().pricePerNight ?? 0 }}</span>
+          <span class="price-period">/noche</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-side-content">
+    <ng-content select="[room-hero-side]"></ng-content>
+  </div>
+</div>

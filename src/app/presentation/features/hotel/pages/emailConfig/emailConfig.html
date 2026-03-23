@@ -1,33 +1,13 @@
-<app-sidebar></app-sidebar>
-
-<div class="main-content">
-  <div class="email-container">
-    <div class="page-header">
-      <button class="back-button">
-        <ng-icon name="bootstrapChevronLeft" size="15px"></ng-icon>
-        Volver
+<app-hotel-page-layout
+  title="Configuración de Correos"
+  subtitle="Configura correos automáticos para mejorar la atención al cliente"
+  iconName="bootstrapEnvelopeAt"
+>
+    <div hotelPageActions class="email-header-actions">
+      <button class="btn-new-template" (click)="openModal()">
+        <ng-icon name="bootstrapPlusLg" size="18px" style="color: white"></ng-icon>
+        Nueva Plantilla
       </button>
-
-      <div class="header-content">
-        <div class="header-left">
-          <div class="header-icon">
-            <ng-icon name="bootstrapEnvelope" size="32px" style="color: white"></ng-icon>
-          </div>
-          <div class="header-text">
-            <h1 class="page-title">Configuración de Correos</h1>
-            <p class="page-subtitle">
-              Configura correos automáticos para mejorar la atención al cliente
-            </p>
-          </div>
-        </div>
-
-        <div class="header-actions">
-          <button class="btn-new-template" (click)="openModal()">
-            <ng-icon name="bootstrapPlusLg" size="18px" style="color: white"></ng-icon>
-            Nueva Plantilla
-          </button>
-        </div>
-      </div>
     </div>
 
     <div class="metrics-grid">
@@ -118,8 +98,7 @@
         }
       </div>
     </div>
-  </div>
-</div>
+</app-hotel-page-layout>
 
 @if (showModal) {
   <div class="modal-overlay" (click)="closeModal()">
