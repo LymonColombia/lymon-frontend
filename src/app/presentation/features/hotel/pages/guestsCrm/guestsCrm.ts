@@ -8,7 +8,13 @@ import {
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CrmGuest, CrmGuestBooking } from '@/domain/entities/crm-guest.model';
+import {
+  CreateCrmGuestNoteRequest,
+  CrmGuest,
+  CrmGuestBooking,
+  CrmGuestNoteCategory,
+} from '@/domain/entities/crm-guest.model';
+import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
@@ -25,6 +31,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import {
   bootstrapPeopleFill,
+  bootstrapPlus,
   bootstrapPerson,
   bootstrapPersonCheck,
   bootstrapEnvelope,
@@ -36,6 +43,7 @@ import {
   bootstrapChevronLeft,
   bootstrapChevronRight,
   bootstrapXLg,
+  bootstrapCardText,
 } from '@ng-icons/bootstrap-icons';
 
 type SearchField = 'name' | 'email' | 'phone';
@@ -73,6 +81,11 @@ interface GuestPanelPreview {
   stats: GuestPreviewStat[];
 }
 
+interface GuestNoteCategoryOption {
+  value: CrmGuestNoteCategory;
+  label: string;
+}
+
 type PropertyLookupItem = Property & {
   _id?: string;
   propertyId?: string;
@@ -86,6 +99,8 @@ type UnitLookupItem = Unit & {
   unitName?: string;
 };
 
+const GUEST_NOTE_MAX_LENGTH = 280;
+
 @Component({
   selector: 'app-guests-crm',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -96,6 +111,7 @@ type UnitLookupItem = Unit & {
   providers: [
     provideIcons({
       bootstrapPeopleFill,
+      bootstrapPlus,
       bootstrapPerson,
       bootstrapPersonCheck,
       bootstrapEnvelope,
@@ -107,6 +123,7 @@ type UnitLookupItem = Unit & {
       bootstrapChevronLeft,
       bootstrapChevronRight,
       bootstrapXLg,
+      bootstrapCardText,
     }),
   ],
   templateUrl: './guestsCrm.html',
@@ -114,6 +131,7 @@ type UnitLookupItem = Unit & {
 })
 export class GuestsCrmComponent implements OnInit {
   private readonly getCrmGuestsUseCase = inject(GetCrmGuestsUseCase);
+  private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
   private readonly getCrmGuestBookingsUseCase = inject(GetCrmGuestBookingsUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
@@ -123,6 +141,11 @@ export class GuestsCrmComponent implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly isBookingsLoading = signal(false);
   readonly bookingsErrorMessage = signal<string | null>(null);
+  readonly isGuestNoteFormVisible = signal(false);
+  readonly isSavingGuestNote = signal(false);
+  readonly guestNoteErrorMessage = signal<string | null>(null);
+  readonly guestNoteCategory = signal<CrmGuestNoteCategory>('general');
+  readonly guestNoteContent = signal('');
   readonly loadedBookingsGuestId = signal<string | null>(null);
   readonly latestReservationDatesByGuestId = signal<Record<string, string | null>>({});
   readonly propertyNamesById = signal<Record<string, string>>({});
@@ -140,6 +163,16 @@ export class GuestsCrmComponent implements OnInit {
   ];
   readonly selectOptions: SelectOption[] = this.filterOptions.map((option) => ({
     value: option.key,
+    label: option.label,
+  }));
+  readonly guestNoteCategoryOptions: GuestNoteCategoryOption[] = [
+    { value: 'general', label: 'General' },
+    { value: 'preference', label: 'Preferencia' },
+    { value: 'behavior', label: 'Comportamiento' },
+    { value: 'incident', label: 'Incidente' },
+  ];
+  readonly guestNoteSelectOptions: SelectOption[] = this.guestNoteCategoryOptions.map((option) => ({
+    value: option.value,
     label: option.label,
   }));
 
@@ -162,6 +195,7 @@ export class GuestsCrmComponent implements OnInit {
     const guest = this.selectedGuest();
     return guest?.tags?.filter((tag) => tag.trim().length > 0) ?? [];
   });
+  readonly guestNoteCharacterCount = computed(() => this.guestNoteContent().length);
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
@@ -221,6 +255,23 @@ export class GuestsCrmComponent implements OnInit {
     this.currentPage.set(1);
   }
 
+  setGuestNoteCategory(value: string | number | null): void {
+    if (
+      value !== 'general' &&
+      value !== 'preference' &&
+      value !== 'behavior' &&
+      value !== 'incident'
+    ) {
+      return;
+    }
+
+    this.guestNoteCategory.set(value);
+  }
+
+  onGuestNoteContentChange(value: string): void {
+    this.guestNoteContent.set(value.slice(0, GUEST_NOTE_MAX_LENGTH));
+  }
+
   formatPhone(phone: string): string {
     if (!phone.startsWith('+') || phone.includes(' ')) {
       return phone;
@@ -261,6 +312,15 @@ export class GuestsCrmComponent implements OnInit {
     this.goToPage(this.currentPage() + 1);
   }
 
+  openGuestNoteForm(): void {
+    this.isGuestNoteFormVisible.set(true);
+    this.guestNoteErrorMessage.set(null);
+  }
+
+  cancelGuestNoteForm(): void {
+    this.resetGuestNoteForm();
+  }
+
   openGuestPanel(guest: CrmGuest): void {
     this.selectedGuest.set(guest);
     if (this.loadedBookingsGuestId() !== this.getGuestRouteId(guest)) {
@@ -279,7 +339,48 @@ export class GuestsCrmComponent implements OnInit {
     this.bookingsErrorMessage.set(null);
     this.isBookingsLoading.set(false);
     this.loadedBookingsGuestId.set(null);
+    this.resetGuestNoteForm();
     this.updateGuestQueryParam(null);
+  }
+
+  saveGuestNote(): void {
+    const guestId = this.getGuestRouteId(this.selectedGuest());
+    const content = this.guestNoteContent().trim();
+
+    if (!guestId) {
+      this.guestNoteErrorMessage.set('No se pudo identificar al huésped para guardar la nota.');
+      return;
+    }
+
+    if (!content) {
+      this.guestNoteErrorMessage.set('Escribe una nota antes de guardarla.');
+      return;
+    }
+
+    if (content.length > GUEST_NOTE_MAX_LENGTH) {
+      this.guestNoteErrorMessage.set('La nota no puede superar los 280 caracteres.');
+      return;
+    }
+
+    const payload: CreateCrmGuestNoteRequest = {
+      note: content,
+      type: this.guestNoteCategory(),
+      status: 'not_pinned',
+    };
+
+    this.isSavingGuestNote.set(true);
+    this.guestNoteErrorMessage.set(null);
+
+    this.createCrmGuestNoteUseCase.execute(guestId, payload).subscribe({
+      next: () => {
+        this.isSavingGuestNote.set(false);
+        this.resetGuestNoteForm();
+      },
+      error: () => {
+        this.isSavingGuestNote.set(false);
+        this.guestNoteErrorMessage.set('No se pudo guardar la nota. Inténtalo de nuevo.');
+      },
+    });
   }
 
   private buildGuestPanelPreview(guest: CrmGuest): GuestPanelPreview {
@@ -645,5 +746,13 @@ export class GuestsCrmComponent implements OnInit {
     return bookingDates.reduce((latest, current) =>
       new Date(current).getTime() > new Date(latest).getTime() ? current : latest,
     );
+  }
+
+  private resetGuestNoteForm(): void {
+    this.isGuestNoteFormVisible.set(false);
+    this.isSavingGuestNote.set(false);
+    this.guestNoteCategory.set('general');
+    this.guestNoteContent.set('');
+    this.guestNoteErrorMessage.set(null);
   }
 }

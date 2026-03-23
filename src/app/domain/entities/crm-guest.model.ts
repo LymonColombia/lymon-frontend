@@ -7,6 +7,8 @@ export type CrmGuestBookingStatus =
   | 'CANCELLED'
   | 'NO_SHOW';
 export type CrmGuestBookingSource = 'MANUAL' | 'DIRECT' | 'AIRBNB' | 'BOOKING' | 'VRBO';
+export type CrmGuestNoteCategory = 'preference' | 'behavior' | 'incident' | 'general';
+export type CrmGuestNoteStatus = 'pinned' | 'not_pinned';
 
 export interface CrmGuest {
   id?: string;
@@ -37,4 +39,10 @@ export interface CrmGuestBooking {
 
 export interface GetCrmGuestBookingsResponse {
   data: CrmGuestBooking[];
+}
+
+export interface CreateCrmGuestNoteRequest {
+  note: string;
+  type: CrmGuestNoteCategory;
+  status: CrmGuestNoteStatus;
 }

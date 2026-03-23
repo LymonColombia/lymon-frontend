@@ -4,12 +4,14 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { GuestsCrmComponent } from './guestsCrm';
+import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 
 const mockGetGuests = { execute: vi.fn() };
+const mockCreateGuestNote = { execute: vi.fn() };
 const mockGetGuestBookings = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
 const mockGetUnits = { execute: vi.fn() };
@@ -120,6 +122,7 @@ async function setup() {
     imports: [GuestsCrmComponent],
     providers: [
       { provide: GetCrmGuestsUseCase, useValue: mockGetGuests },
+      { provide: CreateCrmGuestNoteUseCase, useValue: mockCreateGuestNote },
       { provide: GetCrmGuestBookingsUseCase, useValue: mockGetGuestBookings },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
       { provide: GetUnitsUseCase, useValue: mockGetUnits },
@@ -151,6 +154,7 @@ describe('GuestsCrmComponent – carga inicial exitosa', () => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
@@ -186,6 +190,7 @@ describe('GuestsCrmComponent – carga en curso', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
@@ -204,6 +209,7 @@ describe('GuestsCrmComponent – búsqueda y paginación', () => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
@@ -247,6 +253,7 @@ describe('GuestsCrmComponent – historial de reservas', () => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of(MOCK_BOOKINGS));
     mockGetProperties.execute.mockReturnValue(of(MOCK_PROPERTIES));
     mockGetUnits.execute.mockImplementation((propertyId: string) =>
@@ -305,6 +312,7 @@ describe('GuestsCrmComponent – errores en historial de reservas', () => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
   });
@@ -340,11 +348,94 @@ describe('GuestsCrmComponent – errores en historial de reservas', () => {
   });
 });
 
+describe('GuestsCrmComponent – creación de notas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of(MOCK_BOOKINGS));
+    mockGetProperties.execute.mockReturnValue(of(MOCK_PROPERTIES));
+    mockGetUnits.execute.mockImplementation((propertyId: string) =>
+      of(MOCK_UNITS_BY_PROPERTY[propertyId] ?? []),
+    );
+  });
+
+  it('abre y cancela el formulario de nota', async () => {
+    const { component } = await setup();
+
+    component.openGuestNoteForm();
+    expect(component.isGuestNoteFormVisible()).toBe(true);
+
+    component.cancelGuestNoteForm();
+    expect(component.isGuestNoteFormVisible()).toBe(false);
+    expect(component.guestNoteContent()).toBe('');
+    expect(component.guestNoteCategory()).toBe('general');
+  });
+
+  it('guarda una nota con el payload esperado', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    component.openGuestNoteForm();
+    component.setGuestNoteCategory('incident');
+    component.onGuestNoteContentChange('Customer broke a glass in the lobby');
+
+    component.saveGuestNote();
+
+    expect(mockCreateGuestNote.execute).toHaveBeenCalledWith('1', {
+      note: 'Customer broke a glass in the lobby',
+      type: 'incident',
+      status: 'not_pinned',
+    });
+    expect(component.isGuestNoteFormVisible()).toBe(false);
+  });
+
+  it('muestra error si la nota está vacía', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    component.openGuestNoteForm();
+    component.onGuestNoteContentChange('   ');
+
+    component.saveGuestNote();
+
+    expect(mockCreateGuestNote.execute).not.toHaveBeenCalled();
+    expect(component.guestNoteErrorMessage()).toBe('Escribe una nota antes de guardarla.');
+  });
+
+  it('limita el contenido de la nota a 280 caracteres', async () => {
+    const { component } = await setup();
+    const longText = 'a'.repeat(400);
+
+    component.onGuestNoteContentChange(longText);
+
+    expect(component.guestNoteContent().length).toBe(280);
+    expect(component.guestNoteCharacterCount()).toBe(280);
+  });
+
+  it('muestra error si falla el guardado de la nota', async () => {
+    mockCreateGuestNote.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    component.openGuestNoteForm();
+    component.onGuestNoteContentChange('Nota importante del huésped');
+
+    component.saveGuestNote();
+
+    expect(component.guestNoteErrorMessage()).toBe(
+      'No se pudo guardar la nota. Inténtalo de nuevo.',
+    );
+    expect(component.isGuestNoteFormVisible()).toBe(true);
+  });
+});
+
 describe('GuestsCrmComponent – error 403 (acceso denegado)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
     mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 403 })));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
@@ -366,6 +457,7 @@ describe('GuestsCrmComponent – error 401 (sesión expirada)', () => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
     mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
@@ -387,6 +479,7 @@ describe('GuestsCrmComponent – error inesperado', () => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
     mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
@@ -397,5 +490,360 @@ describe('GuestsCrmComponent – error inesperado', () => {
     expect(component.errorMessage()).toBe(
       'No se pudo cargar la lista de huéspedes. Inténtalo de nuevo.',
     );
+  });
+});
+
+describe('GuestsCrmComponent – cierre del panel de huésped', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of(MOCK_BOOKINGS));
+    mockGetProperties.execute.mockReturnValue(of(MOCK_PROPERTIES));
+    mockGetUnits.execute.mockImplementation((propertyId: string) =>
+      of(MOCK_UNITS_BY_PROPERTY[propertyId] ?? []),
+    );
+  });
+
+  it('limpia el estado del panel al cerrarlo', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    component.closeGuestPanel();
+
+    expect(component.isGuestPanelOpen()).toBe(false);
+    expect(component.guestBookings()).toEqual([]);
+    expect(component.bookingsErrorMessage()).toBeNull();
+    expect(component.isBookingsLoading()).toBe(false);
+  });
+
+  it('restablece el formulario de nota al cerrar el panel', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    component.openGuestNoteForm();
+    component.onGuestNoteContentChange('Nota temporal');
+    component.closeGuestPanel();
+
+    expect(component.isGuestNoteFormVisible()).toBe(false);
+    expect(component.guestNoteContent()).toBe('');
+    expect(component.guestNoteCategory()).toBe('general');
+  });
+
+  it('navega con guestId null al cerrar el panel', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    vi.clearAllMocks();
+    component.closeGuestPanel();
+
+    expect(mockRouter.navigate).toHaveBeenCalledWith([], {
+      relativeTo: TestBed.inject(ActivatedRoute),
+      queryParams: { guestId: null },
+      queryParamsHandling: 'merge',
+    });
+  });
+
+  it('no llama al router si el panel ya estaba cerrado', async () => {
+    const { component } = await setup();
+    vi.clearAllMocks();
+    component.closeGuestPanel();
+
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  });
+});
+
+describe('GuestsCrmComponent – formateo de teléfono', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of([]));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('devuelve el número tal cual si no empieza con +', async () => {
+    const { component } = await setup();
+    expect(component.formatPhone('3001234567')).toBe('3001234567');
+  });
+
+  it('devuelve el número tal cual si ya contiene espacios', async () => {
+    const { component } = await setup();
+    expect(component.formatPhone('+34 612 345 678')).toBe('+34 612 345 678');
+  });
+
+  it('devuelve el número tal cual si tiene 10 o menos dígitos tras el +', async () => {
+    const { component } = await setup();
+    expect(component.formatPhone('+1234567890')).toBe('+1234567890');
+  });
+
+  it('formatea un número con código de país de dos dígitos', async () => {
+    const { component } = await setup();
+    expect(component.formatPhone('+573001234567')).toBe('+57 3001234567');
+  });
+
+  it('formatea un número con código de país de un dígito', async () => {
+    const { component } = await setup();
+    expect(component.formatPhone('+12025551234')).toBe('+1 2025551234');
+  });
+});
+
+describe('GuestsCrmComponent – vista previa del panel (casos adicionales)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('muestra "Sin reservas registradas" cuando el huésped no tiene reservas', async () => {
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    expect(component.selectedGuestPreview()?.subtitle).toBe('Sin reservas registradas');
+  });
+
+  it('usa el singular cuando el huésped tiene exactamente una reserva', async () => {
+    mockGetGuestBookings.execute.mockReturnValue(of([MOCK_BOOKINGS[0]]));
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    expect(component.selectedGuestPreview()?.subtitle).toBe('1 reserva registrada');
+  });
+
+  it('muestra "Inactivo" con tono neutral para un huésped inactivo', async () => {
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[3]); // Javier López – inactive
+    const statStatus = component.selectedGuestPreview()?.stats[2];
+    expect(statStatus?.value).toBe('Inactivo');
+    expect(statStatus?.tone).toBe('neutral');
+  });
+
+  it('devuelve null cuando no hay huésped seleccionado', async () => {
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    const { component } = await setup();
+    expect(component.selectedGuestPreview()).toBeNull();
+  });
+});
+
+describe('GuestsCrmComponent – etiquetas del huésped seleccionado', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('filtra las etiquetas vacías o solo espacios', async () => {
+    const guestWithTags = { ...MOCK_GUESTS[0], tags: ['VIP', '', ' ', 'Frecuente'] };
+    const { component } = await setup();
+    component.openGuestPanel(guestWithTags as (typeof MOCK_GUESTS)[0]);
+    expect(component.selectedGuestTags()).toEqual(['VIP', 'Frecuente']);
+  });
+
+  it('devuelve un arreglo vacío si el huésped no tiene etiquetas', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    expect(component.selectedGuestTags()).toEqual([]);
+  });
+});
+
+describe('GuestsCrmComponent – estado de guardado de nota', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('isSavingGuestNote es true mientras el observable no emite', async () => {
+    const pending = new Subject<void>();
+    mockCreateGuestNote.execute.mockReturnValue(pending.asObservable());
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    component.openGuestNoteForm();
+    component.onGuestNoteContentChange('Una nota válida');
+    component.saveGuestNote();
+    expect(component.isSavingGuestNote()).toBe(true);
+  });
+
+  it('isSavingGuestNote vuelve a false tras guardar con éxito', async () => {
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    component.openGuestNoteForm();
+    component.onGuestNoteContentChange('Una nota válida');
+    component.saveGuestNote();
+    expect(component.isSavingGuestNote()).toBe(false);
+  });
+
+  it('muestra error si no hay huésped seleccionado al guardar', async () => {
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    const { component } = await setup();
+    component.openGuestNoteForm();
+    component.onGuestNoteContentChange('Una nota válida');
+    component.saveGuestNote();
+
+    expect(component.guestNoteErrorMessage()).toBe(
+      'No se pudo identificar al huésped para guardar la nota.',
+    );
+    expect(mockCreateGuestNote.execute).not.toHaveBeenCalled();
+  });
+});
+
+describe('GuestsCrmComponent – etiquetas de estado de reserva', () => {
+  const STATUS_CASES = [
+    { status: 'CONFIRMED' as const, expectedLabel: 'Confirmada', expectedTone: 'info' },
+    { status: 'CHECKED_IN' as const, expectedLabel: 'Check-in', expectedTone: 'success' },
+    { status: 'CHECKED_OUT' as const, expectedLabel: 'Check-out', expectedTone: 'success' },
+    { status: 'CANCELLED' as const, expectedLabel: 'Cancelada', expectedTone: 'danger' },
+    { status: 'NO_SHOW' as const, expectedLabel: 'No se presentó', expectedTone: 'muted' },
+    { status: 'PENDING' as const, expectedLabel: 'Pendiente', expectedTone: 'warning' },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  for (const { status, expectedLabel, expectedTone } of STATUS_CASES) {
+    it(`muestra "${expectedLabel}" para el estado ${status}`, async () => {
+      mockGetGuestBookings.execute.mockReturnValue(of([{ ...MOCK_BOOKINGS[0], status }]));
+      const { component } = await setup();
+      component.openGuestPanel(MOCK_GUESTS[0]);
+      const preview = component.selectedGuestBookingPreview()[0];
+      expect(preview.statusLabel).toBe(expectedLabel);
+      expect(preview.statusTone).toBe(expectedTone);
+    });
+  }
+});
+
+describe('GuestsCrmComponent – validación de entrada en selectores', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('ignora un campo de búsqueda con valor inválido', async () => {
+    const { component } = await setup();
+    component.selectSearchField('name');
+    component.selectSearchField('invalid_field');
+    expect(component.searchField()).toBe('name');
+  });
+
+  it('ignora una categoría de nota con valor inválido', async () => {
+    const { component } = await setup();
+    component.setGuestNoteCategory('general');
+    component.setGuestNoteCategory('unknown');
+    expect(component.guestNoteCategory()).toBe('general');
+  });
+});
+
+describe('GuestsCrmComponent – caché de reservas del panel', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of(MOCK_BOOKINGS));
+    mockGetProperties.execute.mockReturnValue(of(MOCK_PROPERTIES));
+    mockGetUnits.execute.mockImplementation((propertyId: string) =>
+      of(MOCK_UNITS_BY_PROPERTY[propertyId] ?? []),
+    );
+  });
+
+  it('no recarga las reservas si el mismo huésped ya está cargado en el panel', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    const callsAfterFirst = mockGetGuestBookings.execute.mock.calls.length;
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    expect(mockGetGuestBookings.execute.mock.calls.length).toBe(callsAfterFirst);
+  });
+});
+
+describe('GuestsCrmComponent – sincronización del panel por queryParam', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('abre el panel del huésped correcto cuando el queryParam contiene un guestId válido', async () => {
+    const { component } = await setup();
+    queryParamMap$.next(convertToParamMap({ guestId: '2' }));
+    expect(component.selectedGuest()?.id).toBe('2');
+    expect(component.isGuestPanelOpen()).toBe(true);
+  });
+
+  it('cierra el panel cuando el queryParam guestId desaparece', async () => {
+    const { component } = await setup();
+    queryParamMap$.next(convertToParamMap({ guestId: '1' }));
+    queryParamMap$.next(convertToParamMap({}));
+    expect(component.isGuestPanelOpen()).toBe(false);
+  });
+
+  it('no abre el panel para un guestId que no existe en la lista', async () => {
+    const { component } = await setup();
+    queryParamMap$.next(convertToParamMap({ guestId: 'nonexistent' }));
+    expect(component.isGuestPanelOpen()).toBe(false);
+  });
+});
+
+describe('GuestsCrmComponent – placeholder de búsqueda', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of([]));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('actualiza el placeholder al cambiar el campo de búsqueda', async () => {
+    const { component } = await setup();
+    expect(component.searchPlaceholder()).toBe('Buscar por nombre...');
+    component.selectSearchField('email');
+    expect(component.searchPlaceholder()).toBe('Buscar por correo electrónico...');
+    component.selectSearchField('phone');
+    expect(component.searchPlaceholder()).toBe('Buscar por teléfono...');
+  });
+});
+
+describe('GuestsCrmComponent – carga de reservas en curso', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('isBookingsLoading es true mientras las reservas no se han cargado', async () => {
+    const pending = new Subject<typeof MOCK_BOOKINGS>();
+    mockGetGuestBookings.execute.mockReturnValue(pending.asObservable());
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    expect(component.isBookingsLoading()).toBe(true);
   });
 });
