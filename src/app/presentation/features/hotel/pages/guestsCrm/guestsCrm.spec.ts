@@ -7,12 +7,14 @@ import { GuestsCrmComponent } from './guestsCrm';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
+import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 
 const mockGetGuests = { execute: vi.fn() };
 const mockCreateGuestNote = { execute: vi.fn() };
 const mockGetGuestBookings = { execute: vi.fn() };
+const mockGetGuestNotes = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
 const mockGetUnits = { execute: vi.fn() };
 const mockRouter = { navigate: vi.fn().mockResolvedValue(true) };
@@ -107,6 +109,33 @@ const MOCK_BOOKINGS = [
   },
 ];
 
+const MOCK_NOTES = [
+  {
+    id: 'note-1',
+    note: 'Guest requested extra towels',
+    type: 'preference' as const,
+    status: 'not_pinned' as const,
+    createdAt: '2026-03-10T10:00:00.000Z',
+    createdByName: 'Admin',
+  },
+  {
+    id: 'note-2',
+    note: 'Guest broke a glass in the lobby',
+    type: 'incident' as const,
+    status: 'pinned' as const,
+    createdAt: '2026-03-20T15:00:00.000Z',
+    createdByName: 'Staff Member',
+  },
+  {
+    id: 'note-3',
+    note: 'Very friendly and polite',
+    type: 'general' as const,
+    status: 'not_pinned' as const,
+    createdAt: '2026-03-15T12:00:00.000Z',
+    createdByName: '',
+  },
+];
+
 const MOCK_PROPERTIES = [
   { id: 'property-1', name: 'Hotel Lymon Centro', propertyType: 'HOTEL', city: 'Bogotá' },
   { id: 'property-2', name: 'Suites Retiro', propertyType: 'HOTEL', city: 'Medellín' },
@@ -124,6 +153,7 @@ async function setup() {
       { provide: GetCrmGuestsUseCase, useValue: mockGetGuests },
       { provide: CreateCrmGuestNoteUseCase, useValue: mockCreateGuestNote },
       { provide: GetCrmGuestBookingsUseCase, useValue: mockGetGuestBookings },
+      { provide: GetCrmGuestNotesUseCase, useValue: mockGetGuestNotes },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
       { provide: GetUnitsUseCase, useValue: mockGetUnits },
       { provide: Router, useValue: mockRouter },
@@ -156,6 +186,7 @@ describe('GuestsCrmComponent – carga inicial exitosa', () => {
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
   });
@@ -192,6 +223,7 @@ describe('GuestsCrmComponent – carga en curso', () => {
     TestBed.resetTestingModule();
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
   });
@@ -211,6 +243,7 @@ describe('GuestsCrmComponent – búsqueda y paginación', () => {
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
   });
@@ -255,6 +288,7 @@ describe('GuestsCrmComponent – historial de reservas', () => {
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of(MOCK_BOOKINGS));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of(MOCK_PROPERTIES));
     mockGetUnits.execute.mockImplementation((propertyId: string) =>
       of(MOCK_UNITS_BY_PROPERTY[propertyId] ?? []),
@@ -313,6 +347,7 @@ describe('GuestsCrmComponent – errores en historial de reservas', () => {
     TestBed.resetTestingModule();
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
   });
@@ -348,6 +383,133 @@ describe('GuestsCrmComponent – errores en historial de reservas', () => {
   });
 });
 
+describe('GuestsCrmComponent – historial de notas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockCreateGuestNote.execute.mockReturnValue(of(undefined));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetGuestNotes.execute.mockReturnValue(of(MOCK_NOTES));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('carga las notas del huésped al abrir el panel', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    expect(mockGetGuestNotes.execute).toHaveBeenCalledWith('1');
+    expect(component.guestNotes().length).toBe(3);
+  });
+
+  it('ordena las notas de más reciente a más antigua', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    const notes = component.guestNotes();
+    expect(notes[0].id).toBe('note-2'); // 2026-03-20
+    expect(notes[1].id).toBe('note-3'); // 2026-03-15
+    expect(notes[2].id).toBe('note-1'); // 2026-03-10
+  });
+
+  it('mapea correctamente las etiquetas de categoría en selectedGuestNotePreview', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    const previews = component.selectedGuestNotePreview();
+    const preferenceNote = previews.find((n) => n.id === 'note-1');
+    const incidentNote = previews.find((n) => n.id === 'note-2');
+    const generalNote = previews.find((n) => n.id === 'note-3');
+
+    expect(preferenceNote?.categoryLabel).toBe('Preferencias');
+    expect(incidentNote?.categoryLabel).toBe('Incidente');
+    expect(generalNote?.categoryLabel).toBe('General');
+  });
+
+  it('usa "Admin" como autor cuando createdByName está vacío', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    const previews = component.selectedGuestNotePreview();
+    const generalNote = previews.find((n) => n.id === 'note-3');
+    expect(generalNote?.authorLabel).toBe('Admin');
+  });
+
+  it('refleja el estado de pin en isPinned del preview', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    const previews = component.selectedGuestNotePreview();
+    const pinnedNote = previews.find((n) => n.id === 'note-2');
+    const unpinnedNote = previews.find((n) => n.id === 'note-1');
+
+    expect(pinnedNote?.isPinned).toBe(true);
+    expect(unpinnedNote?.isPinned).toBe(false);
+  });
+
+  it('toggleGuestNotePin alterna el estado de pin de una nota', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    component.toggleGuestNotePin('note-1');
+    expect(component.guestNotes().find((n) => n.id === 'note-1')?.status).toBe('pinned');
+
+    component.toggleGuestNotePin('note-1');
+    expect(component.guestNotes().find((n) => n.id === 'note-1')?.status).toBe('not_pinned');
+  });
+
+  it('toggleGuestNotePin sobre nota ya fijada la desfija', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    component.toggleGuestNotePin('note-2');
+    expect(component.guestNotes().find((n) => n.id === 'note-2')?.status).toBe('not_pinned');
+  });
+
+  it('no vuelve a cargar las notas si ya están cargadas para el mismo huésped', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    const callCount = mockGetGuestNotes.execute.mock.calls.length;
+
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    expect(mockGetGuestNotes.execute.mock.calls.length).toBe(callCount);
+  });
+
+  it('closeGuestPanel limpia las notas y el id de notas cargadas', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+    expect(component.guestNotes().length).toBe(3);
+
+    component.closeGuestPanel();
+    expect(component.guestNotes()).toEqual([]);
+    expect(component.loadedGuestNotesGuestId()).toBeNull();
+  });
+
+  it('notas vacías cuando la llamada al servidor falla', async () => {
+    mockGetGuestNotes.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    expect(component.guestNotes()).toEqual([]);
+  });
+
+  it('recarga las notas tras guardar una nueva con forceRefresh', async () => {
+    const { component } = await setup();
+    component.openGuestPanel(MOCK_GUESTS[0]);
+
+    const callsBefore = mockGetGuestNotes.execute.mock.calls.length;
+    component.openGuestNoteForm();
+    component.onGuestNoteContentChange('Nueva nota importante');
+    component.saveGuestNote();
+
+    expect(mockGetGuestNotes.execute.mock.calls.length).toBeGreaterThan(callsBefore);
+    expect(mockGetGuestNotes.execute).toHaveBeenLastCalledWith('1');
+  });
+});
+
 describe('GuestsCrmComponent – creación de notas', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -355,6 +517,7 @@ describe('GuestsCrmComponent – creación de notas', () => {
     mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of(MOCK_BOOKINGS));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of(MOCK_PROPERTIES));
     mockGetUnits.execute.mockImplementation((propertyId: string) =>
       of(MOCK_UNITS_BY_PROPERTY[propertyId] ?? []),
@@ -437,6 +600,7 @@ describe('GuestsCrmComponent – error 403 (acceso denegado)', () => {
     mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 403 })));
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
   });
@@ -459,6 +623,7 @@ describe('GuestsCrmComponent – error 401 (sesión expirada)', () => {
     mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
   });
@@ -481,6 +646,7 @@ describe('GuestsCrmComponent – error inesperado', () => {
     mockGetGuests.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
     mockCreateGuestNote.execute.mockReturnValue(of(undefined));
     mockGetGuestBookings.execute.mockReturnValue(of([]));
+    mockGetGuestNotes.execute.mockReturnValue(of([]));
     mockGetProperties.execute.mockReturnValue(of([]));
     mockGetUnits.execute.mockReturnValue(of([]));
   });
