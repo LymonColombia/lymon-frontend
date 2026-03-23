@@ -7,12 +7,17 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { UpdateTenantProfileUseCase } from '@/domain/use-cases/tenant/update-tenant-profile.use-case';
 import { ChangePasswordUseCase } from '@/domain/use-cases/user/change-password.use-case';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapEye,
+  bootstrapEyeSlash
+} from '@ng-icons/bootstrap-icons';
 
 const URL_PATTERN = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w\-./?%&=]*)?$/;
 
@@ -26,7 +31,8 @@ function passwordsDifferentValidator(control: AbstractControl): ValidationErrors
 @Component({
   selector: 'app-tenant-settings',
   standalone: true,
-  imports: [ReactiveFormsModule, SidebarComponent, ButtonComponent, InputComponent],
+  imports: [ReactiveFormsModule, HotelPageLayoutComponent, NgIcon, ButtonComponent, InputComponent],
+  providers: [provideIcons({ bootstrapEye, bootstrapEyeSlash })],
   templateUrl: './tenantSettings.html',
   styleUrl: './tenantSettings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
