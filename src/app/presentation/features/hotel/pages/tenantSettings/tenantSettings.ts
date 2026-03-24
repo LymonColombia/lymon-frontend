@@ -31,7 +31,13 @@ function passwordsDifferentValidator(control: AbstractControl): ValidationErrors
 @Component({
   selector: 'app-tenant-settings',
   standalone: true,
-  imports: [ReactiveFormsModule, HotelPageLayoutComponent, NgIcon, ButtonComponent, InputComponent],
+  imports: [
+    ReactiveFormsModule,
+    HotelPageLayoutComponent,
+    NgIcon,
+    ButtonComponent,
+    InputComponent,
+  ],
   providers: [provideIcons({ bootstrapEye, bootstrapEyeSlash })],
   templateUrl: './tenantSettings.html',
   styleUrl: './tenantSettings.css',

@@ -51,5 +51,54 @@
         <div class="profile-email" [title]="tenantEmailDisplay()">{{ tenantEmailDisplay() }}</div>
       </div>
     </div>
+
+    @if (isExpanded()) {
+      <div class="profile-menu-container" #profileMenuContainer>
+        <button
+          type="button"
+          class="profile-menu-trigger"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="isProfileMenuOpen()"
+          aria-label="Opciones de perfil"
+          (click)="toggleProfileMenu()"
+        >
+          <ng-icon name="bootstrapThreeDotsVertical" size="18px" aria-hidden="true"></ng-icon>
+        </button>
+
+        @if (isProfileMenuOpen()) {
+          <div class="profile-menu" role="menu" aria-label="Opciones">
+            <button type="button" class="profile-menu-item" role="menuitem" (click)="goToSettings()">
+              Configuración
+            </button>
+            <button
+              type="button"
+              class="profile-menu-item profile-menu-item--danger"
+              role="menuitem"
+              (click)="openLogoutConfirm()"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
+    }
   </div>
+
+  <app-modal
+    [open]="isLogoutConfirmOpen()"
+    title="Cerrar sesión"
+    size="small"
+    (closed)="closeLogoutConfirm()"
+  >
+    <p>¿Seguro que deseas cerrar sesión?</p>
+
+    <div modal-footer style="display: flex; justify-content: flex-end; gap: 10px;">
+      <app-button variant="secondary" size="medium" type="button" (clicked)="closeLogoutConfirm()">
+        Cancelar
+      </app-button>
+      <app-button variant="primary" size="medium" type="button" (clicked)="confirmLogout()">
+        Cerrar sesión
+      </app-button>
+    </div>
+  </app-modal>
 </nav>

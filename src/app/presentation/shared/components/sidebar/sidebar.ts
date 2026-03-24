@@ -4,10 +4,12 @@ import {
   DestroyRef,
   computed,
   inject,
+  ElementRef,
   OnInit,
   signal,
+  ViewChild,
 } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -25,10 +27,14 @@ import {
   bootstrapEnvelopeAt,
   bootstrapInfoCircle,
   bootstrapPeople,
+  bootstrapThreeDotsVertical,
 } from '@ng-icons/bootstrap-icons';
 
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
+import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 
 interface MenuItem {
   icon: string;
@@ -52,7 +58,7 @@ function getInitialSidebarExpandedState(): boolean {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterModule, NgIconComponent],
+  imports: [RouterModule, NgIconComponent, ModalComponent, ButtonComponent],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   providers: [
@@ -71,19 +77,32 @@ function getInitialSidebarExpandedState(): boolean {
       bootstrapEnvelopeAt,
       bootstrapInfoCircle,
       bootstrapPeople,
+      bootstrapThreeDotsVertical,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+    '(document:keydown.escape)': 'closeProfileMenu()',
+  },
 })
 export class SidebarComponent implements OnInit {
+  @ViewChild('profileMenuContainer', { read: ElementRef })
+  private readonly profileMenuContainer?: ElementRef<HTMLElement>;
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly getTenantProfileUseCase = inject(GetTenantProfileUseCase);
   private readonly userSession = inject(UserSessionService);
+  private readonly tokenService = inject(TokenService);
+  private readonly router = inject(Router);
 
   readonly isExpanded = signal(getInitialSidebarExpandedState());
   readonly transitionsReady = signal(false);
   readonly tenantName = signal('');
   readonly tenantEmail = signal('');
+
+  readonly isProfileMenuOpen = signal(false);
+  readonly isLogoutConfirmOpen = signal(false);
 
   readonly tenantNameDisplay = computed(() => this.tenantName().trim() || '—');
   readonly tenantEmailDisplay = computed(() => this.tenantEmail().trim() || '—');
@@ -128,7 +147,54 @@ export class SidebarComponent implements OnInit {
       return nextState;
     });
 
+    this.closeProfileMenu();
     this.updateLayoutSidebarWidthVariable();
+  }
+
+  toggleProfileMenu(): void {
+    if (!this.isExpanded()) return;
+    this.isProfileMenuOpen.set(!this.isProfileMenuOpen());
+  }
+
+  closeProfileMenu(): void {
+    this.isProfileMenuOpen.set(false);
+  }
+
+  goToSettings(): void {
+    this.closeProfileMenu();
+    void this.router.navigateByUrl('/settings');
+  }
+
+  openLogoutConfirm(): void {
+    this.closeProfileMenu();
+    this.isLogoutConfirmOpen.set(true);
+  }
+
+  closeLogoutConfirm(): void {
+    this.isLogoutConfirmOpen.set(false);
+  }
+
+  confirmLogout(): void {
+    this.closeLogoutConfirm();
+    this.closeProfileMenu();
+    this.tokenService.clear();
+    this.userSession.clear();
+    void this.router.navigateByUrl('/login', { replaceUrl: true });
+  }
+
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isProfileMenuOpen()) return;
+
+    const container = this.profileMenuContainer?.nativeElement;
+    if (!container) {
+      this.closeProfileMenu();
+      return;
+    }
+
+    const target = event.target as Node | null;
+    if (target && container.contains(target)) return;
+
+    this.closeProfileMenu();
   }
 
   ngOnInit(): void {
