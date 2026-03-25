@@ -29,7 +29,7 @@ import { LandingComponent } from '@/presentation/features/landing/pages/landing/
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/landing', pathMatch: 'full' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'landing', component: LandingComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
