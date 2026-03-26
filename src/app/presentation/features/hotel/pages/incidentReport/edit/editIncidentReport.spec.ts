@@ -8,6 +8,7 @@ import { vi } from 'vitest';
 
 import { EditIncidentReportComponent } from './editIncidentReport';
 import { UpdateIncidentReportUseCase } from '@/domain/use-cases/update-incident-report.use-case';
+import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────
@@ -43,6 +44,7 @@ describe('EditIncidentReportComponent — Editar Novedad Laboral', () => {
       providers: [
         provideRouter([]),
         { provide: UpdateIncidentReportUseCase, useValue: { execute: updateMock } },
+        { provide: GetTenantProfileUseCase, useValue: { execute: () => of({ data: {} }) } },
       ],
     }).compileComponents();
 
@@ -52,7 +54,7 @@ describe('EditIncidentReportComponent — Editar Novedad Laboral', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
 
     vi.spyOn(activatedRoute.snapshot.paramMap, 'get').mockReturnValue(MOCK_REPORT.id);
-    vi.spyOn(router, 'getCurrentNavigation').mockReturnValue({ extras: { state: { report: MOCK_REPORT } } } as any);
+    vi.spyOn(router, 'currentNavigation').mockReturnValue({ extras: { state: { report: MOCK_REPORT } } } as any);
   });
 
   // ─── Inicialización ────────────────────────────────────────────────────────
@@ -76,7 +78,7 @@ describe('EditIncidentReportComponent — Editar Novedad Laboral', () => {
     });
 
     it('debe mostrar notFound cuando falta el report en state', () => {
-      vi.spyOn(router, 'getCurrentNavigation').mockReturnValue({ extras: { state: {} } } as any);
+      vi.spyOn(router, 'currentNavigation').mockReturnValue({ extras: { state: {} } } as any);
 
       fixture.detectChanges();
 
@@ -190,6 +192,14 @@ describe('EditIncidentReportComponent — Editar Novedad Laboral', () => {
   describe('FormArray de URLs adjuntas — Agregar y eliminar', () => {
     beforeEach(() => {
       fixture.detectChanges();
+    });
+
+    it('debe retornar el mismo AbstractControl recibido', () => {
+      const ctrl = component.attachmentUrlsArray.at(0);
+
+      const result = component.asAbstractControl(ctrl);
+
+      expect(result).toBe(ctrl);
     });
 
     it('debe agregar una URL de archivo adjunto', () => {
