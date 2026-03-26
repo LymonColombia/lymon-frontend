@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapList, bootstrapXLg } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 
 interface LyhostNavLink {
@@ -11,10 +13,11 @@ interface LyhostNavLink {
 @Component({
   selector: 'app-lyhost-nav',
   standalone: true,
-  imports: [ButtonComponent, NgOptimizedImage],
+  imports: [ButtonComponent, NgOptimizedImage, NgIcon],
   templateUrl: './lyhost-nav.component.html',
   styleUrl: './lyhost-nav.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  viewProviders: [provideIcons({ bootstrapList, bootstrapXLg })],
 })
 export class LyhostNavComponent {
   private readonly router = inject(Router);
