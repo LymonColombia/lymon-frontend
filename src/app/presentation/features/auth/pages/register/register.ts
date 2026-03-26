@@ -27,6 +27,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 
 @Component({
   selector: 'app-register',
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, RouterLink, NgIcon],
   providers: [
@@ -50,10 +51,10 @@ export class RegisterComponent {
   readonly errorMessage = signal<string | null>(null);
 
   readonly planOptions: { label: string; value: PlanType }[] = [
-    { label: 'Trial (gratis)', value: 'TRIAL' },
-    { label: 'Lymon One', value: 'LYMON_ONE' },
-    { label: 'Plus', value: 'PLUS' },
-    { label: 'Prime', value: 'PRIME' },
+    { label: 'Plan Básico (Trial)', value: 'TRIAL' },
+    { label: 'Lymon one', value: 'LYMON_ONE' },
+    { label: 'Lymon plus', value: 'PLUS' },
+    { label: 'Lymon prime', value: 'PRIME' },
   ];
 
   readonly form = this.fb.group(
@@ -84,7 +85,7 @@ export class RegisterComponent {
       .subscribe({
         next: () => {
           this.isLoading.set(false);
-          this.router.navigate(['/booking']);
+          this.router.navigate(['/dashboard']);
         },
         error: (err: HttpErrorResponse) => {
           this.isLoading.set(false);

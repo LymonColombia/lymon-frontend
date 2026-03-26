@@ -13,6 +13,7 @@ export class AuthMapper {
         userId: raw.data.userId,
         email: raw.data.email,
         tenantId: raw.data.tenantId,
+        planType: raw.data.planType,
         role: raw.data.role,
         emailVerified: raw.data.emailVerified,
       },
@@ -31,6 +32,7 @@ export class AuthMapper {
         userId: raw.data.userId,
         email: raw.data.email,
         tenantId: raw.data.tenantId,
+        planType: raw.data.planType,
       },
       tokens: {
         accessToken: raw.data.accessToken,

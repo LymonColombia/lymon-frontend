@@ -1,0 +1,123 @@
+<app-hotel-page-layout title="Planes" subtitle="Consulta los planes disponibles.">
+  <div hotelPageMeta>
+    <span class="current-plan">Tu plan actual: <strong>{{ currentPlanLabel() }}</strong></span>
+  </div>
+
+  <section class="plans-grid" aria-label="Planes disponibles">
+    @for (plan of plans; track plan.type) {
+      <article class="plan-card" [class.plan-card-current]="isCurrent(plan.type)">
+        @if (isCurrent(plan.type)) {
+          <span class="plan-badge" aria-label="Plan actual">Plan actual</span>
+        }
+
+        <div class="plan-header">
+          <div class="plan-icon" aria-hidden="true">
+            @if (plan.type === 'PRIME') {
+              <ng-icon name="bootstrapStarFill" size="26px" aria-hidden="true"></ng-icon>
+            } @else if (plan.type === 'PLUS') {
+              <ng-icon name="bootstrapStarFill" size="26px" aria-hidden="true"></ng-icon>
+            } @else if (plan.type === 'LYMON_ONE') {
+              <ng-icon name="bootstrapStarHalf" size="26px" aria-hidden="true"></ng-icon>
+            } @else {
+              <ng-icon name="bootstrapStar" size="26px" aria-hidden="true"></ng-icon>
+            }
+          </div>
+
+          <div class="plan-title">
+            <h2 class="plan-name">{{ plan.name }}</h2>
+            <p class="plan-subtitle">{{ plan.subtitle }}</p>
+          </div>
+        </div>
+
+        <div class="plan-price-row" aria-label="Precio">
+          <span class="plan-price">{{ plan.price }}</span>
+          @if (plan.priceSuffix) {
+            <span class="plan-price-suffix">{{ plan.priceSuffix }}</span>
+          }
+        </div>
+
+        @if (plan.priceNote) {
+          <p class="plan-price-note">{{ plan.priceNote }}</p>
+        }
+
+        <div class="plan-sections" aria-label="Detalle del plan">
+          @for (section of plan.detailsSections; track section.title) {
+            <div class="plan-section">
+              <h3 class="plan-section-title">{{ section.title }}</h3>
+              <ul class="plan-highlights">
+                @for (item of section.items; track item) {
+                  <li class="plan-highlight">{{ item }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+
+        <div class="plan-card-actions">
+          <app-button
+            variant="outline"
+            size="small"
+            type="button"
+            [fullWidth]="true"
+            (clicked)="openPlanDetails(plan)"
+          >
+            Ver detalles del plan
+          </app-button>
+        </div>
+      </article>
+    }
+  </section>
+
+  <div class="page-actions" aria-label="Acciones del plan">
+    <app-button variant="outline" size="medium" type="button" (clicked)="onChangePlan()">
+      Cambiar de plan
+    </app-button>
+    <app-button variant="primary" size="medium" type="button" (clicked)="onUpdatePlan()">
+      Actualizar plan
+    </app-button>
+  </div>
+
+  @if (selectedPlan(); as plan) {
+    <app-modal
+      [open]="true"
+      size="large"
+      [title]="plan.name"
+      (closed)="closePlanDetails()"
+    >
+      <div class="plan-details">
+        <div class="plan-details-header">
+          <p class="plan-details-subtitle">{{ plan.subtitle }}</p>
+          <div class="plan-details-price" aria-label="Precio">
+            <span class="plan-details-price-value">{{ plan.price }}</span>
+            @if (plan.priceSuffix) {
+              <span class="plan-details-price-suffix">{{ plan.priceSuffix }}</span>
+            }
+          </div>
+
+          @if (plan.priceNote) {
+            <p class="plan-details-note">{{ plan.priceNote }}</p>
+          }
+        </div>
+
+        <div class="plan-details-grid" aria-label="Detalle del plan">
+          @for (section of plan.detailsSections; track section.title) {
+            <section class="plan-details-section" [attr.aria-label]="section.title">
+              <h3 class="plan-details-section-title">{{ section.title }}</h3>
+              <ul class="plan-details-list">
+                @for (item of section.items; track item) {
+                  <li class="plan-details-item">{{ item }}</li>
+                }
+              </ul>
+            </section>
+          }
+        </div>
+      </div>
+
+      <div modal-footer>
+        <app-button variant="secondary" size="medium" type="button" (clicked)="closePlanDetails()">
+          Cerrar
+        </app-button>
+      </div>
+    </app-modal>
+  }
+</app-hotel-page-layout>

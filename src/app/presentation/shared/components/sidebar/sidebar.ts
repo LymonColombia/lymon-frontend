@@ -111,8 +111,7 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/audit-log' },
     { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/crm/guests' },
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
-    { icon: 'bootstrapGear', label: 'Perfil del Negocio', route: '/tenant-profile' },
-    { icon: 'bootstrapPersonLock', label: 'Cambiar Contraseña', route: '/change-password' },
+    { icon: 'bootstrapPersonLock', label: 'Configuración', route: '/settings' },
   ];
 
   private updateLayoutSidebarWidthVariable(): void {

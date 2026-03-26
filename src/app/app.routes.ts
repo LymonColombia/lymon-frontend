@@ -16,14 +16,14 @@ import { RoomDetailsComponent } from '@/presentation/features/hotel/pages/roomDe
 import { SalesSummaryComponent } from '@/presentation/features/hotel/pages/salesSummary/salesSummary';
 import { CalendarSyncComponent } from '@/presentation/features/hotel/pages/calendarSync/calendarSync';
 import { EmailConfigComponent } from '@/presentation/features/hotel/pages/emailConfig/emailConfig';
-import { ChangePasswordComponent } from '@/presentation/features/hotel/pages/changePassword/changePassword';
 import { CreateIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/create/createIncidentReport';
 import { IncidentReportListComponent } from '@/presentation/features/hotel/pages/incidentReport/list/incidentReportList';
 import { EditIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/edit/editIncidentReport';
-import { TenantProfileComponent } from '@/presentation/features/hotel/pages/tenantProfile/tenantProfile';
+import { TenantSettingsComponent } from '@/presentation/features/hotel/pages/tenantSettings/tenantSettings';
 import { AuditLogComponent } from '@/presentation/features/hotel/pages/auditLog/auditLog';
 import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/propertyUnits/propertyUnits';
 import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCrm/guestsCrm';
+import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
@@ -47,7 +47,9 @@ export const routes: Routes = [
   { path: 'sales-summary', component: SalesSummaryComponent, canActivate: [authGuard] },
   { path: 'calendar-sync', component: CalendarSyncComponent, canActivate: [authGuard] },
   { path: 'email-config', component: EmailConfigComponent, canActivate: [authGuard] },
-  { path: 'change-password', component: ChangePasswordComponent, canActivate: [authGuard] },
+  { path: 'plans', component: PlansComponent, canActivate: [authGuard] },
+  { path: 'settings', component: TenantSettingsComponent, canActivate: [authGuard] },
+  { path: 'change-password', redirectTo: 'settings', pathMatch: 'full' },
   {
     path: 'incident-report/create',
     component: CreateIncidentReportComponent,
@@ -59,7 +61,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   { path: 'incident-report/edit/:id', component: EditIncidentReportComponent, canActivate: [authGuard] },
-  { path: 'tenant-profile', component: TenantProfileComponent, canActivate: [authGuard] },
+  { path: 'tenant-profile', redirectTo: 'settings', pathMatch: 'full' },
   { path: 'audit-log', component: AuditLogComponent, canActivate: [authGuard] },
   { path: 'property-units', component: PropertyUnitsComponent, canActivate: [authGuard] },
   { path: 'crm/guests', component: GuestsCrmComponent, canActivate: [authGuard] },
