@@ -55,7 +55,7 @@ export class LyhostPageComponent implements AfterViewInit, OnDestroy {
             continue;
           }
 
-          const sectionId = entry.target.getAttribute('data-section-id');
+          const sectionId = (entry.target as HTMLElement).dataset['sectionId'];
           if (!sectionId || nextVisible.has(sectionId)) {
             continue;
           }
