@@ -1,0 +1,51 @@
+<nav class="lyhost-nav">
+  <div class="container nav-inner">
+    <div class="brand-group">
+      <img
+        ngSrc="images/LyHost.svg"
+        width="180"
+        height="42"
+        priority
+        alt="LyHost"
+        class="brand-logo"
+      />
+    </div>
+
+    <div class="desktop-links" aria-label="Primary navigation">
+      @for (link of links; track link.sectionId) {
+        <button type="button" class="desktop-link" (click)="navigateToSection(link.sectionId)">{{ link.label }}</button>
+      }
+    </div>
+
+    <div class="desktop-actions">
+      <app-button variant="secondary" size="medium" (clicked)="goToManagerLogin()">Acceder como gestor</app-button>
+      <app-button variant="primary" size="medium" (clicked)="goToGuestLogin()">Acceder como huésped</app-button>
+    </div>
+
+    <button type="button" class="mobile-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileOpen()" aria-label="Toggle menu">
+      @if (mobileOpen()) {
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      } @else {
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 7H20M4 12H20M4 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      }
+    </button>
+  </div>
+
+  @if (mobileOpen()) {
+    <div class="mobile-panel">
+      <div class="mobile-links">
+        @for (link of links; track link.sectionId) {
+          <button type="button" class="mobile-link" (click)="navigateToSection(link.sectionId)">{{ link.label }}</button>
+        }
+      </div>
+      <div class="mobile-actions">
+        <app-button variant="secondary" size="medium" [fullWidth]="true" (clicked)="goToManagerLogin()">Acceder como gestor</app-button>
+        <app-button variant="primary" size="medium" [fullWidth]="true" (clicked)="goToGuestLogin()">Acceder como huésped</app-button>
+      </div>
+    </div>
+  }
+</nav>
