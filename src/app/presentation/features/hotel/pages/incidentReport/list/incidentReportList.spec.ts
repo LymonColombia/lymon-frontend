@@ -6,6 +6,7 @@ import { vi } from 'vitest';
 
 import { IncidentReportListComponent } from './incidentReportList';
 import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident/get-incident-reports.use-case';
+import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
 
@@ -42,7 +43,16 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
       providers: [
         provideRouter([]),
         { provide: GetIncidentReportsUseCase, useValue: { execute: getMock } },
-        { provide: UserSessionService, useValue: { tenantId: PROPERTY_ID } },
+        { provide: GetTenantProfileUseCase, useValue: { execute: () => of({ data: {} }) } },
+        {
+          provide: UserSessionService,
+          useValue: {
+            get tenantId() {
+              return PROPERTY_ID;
+            },
+            currentUser: () => null,
+          },
+        },
       ],
     }).compileComponents();
 

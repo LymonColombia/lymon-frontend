@@ -58,7 +58,7 @@ export class EditIncidentReportComponent implements OnInit {
     }
     this.reportId.set(id);
 
-    const state = this.router.getCurrentNavigation()?.extras.state as
+    const state = this.router.currentNavigation()?.extras.state as
       | { report?: IncidentReport }
       | undefined;
     const report = state?.report ?? (history.state as { report?: IncidentReport })?.report;
