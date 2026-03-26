@@ -121,9 +121,7 @@ export class LyhostEcosystemComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const tick = (timestamp: number) => {
-      if (this.startAt === null) {
-        this.startAt = timestamp;
-      }
+      this.startAt ??= timestamp;
 
       const elapsed = timestamp - this.startAt;
       this.orbitDeg = ((elapsed / ORBIT_MS) * 360) % 360;
