@@ -1,14 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-
-interface LyhostPlan {
-  name: string;
-  price: string;
-  description: string;
-  properties: string;
-  features: string[];
-  highlighted: boolean;
-}
+import { LyhostPlan, LYHOST_PLANS } from '@/domain/entities/lyhost-plan.model';
 
 @Component({
   selector: 'app-lyhost-plans',
@@ -21,53 +13,7 @@ interface LyhostPlan {
 export class LyhostPlansComponent {
   readonly annual = signal(true);
 
-  readonly plans: LyhostPlan[] = [
-    {
-      name: 'Starter',
-      price: '49',
-      description: 'Para propietarios con pocas propiedades',
-      properties: 'Hasta 5 propiedades',
-      features: [
-        'Channel Manager básico',
-        'Calendario unificado',
-        'Landing de reservas',
-        'Soporte por email',
-        'Métricas básicas',
-      ],
-      highlighted: false,
-    },
-    {
-      name: 'Profesional',
-      price: '129',
-      description: 'Para gestores que escalan su negocio',
-      properties: 'Hasta 25 propiedades',
-      features: [
-        'Channel Manager avanzado',
-        'CRM de huéspedes',
-        'Precios dinámicos',
-        'API de integración',
-        'Reportes avanzados',
-        'Soporte prioritario',
-        'Landing con marca propia',
-      ],
-      highlighted: true,
-    },
-    {
-      name: 'Enterprise',
-      price: 'Custom',
-      description: 'Para cadenas y grandes operaciones',
-      properties: 'Propiedades ilimitadas',
-      features: [
-        'Todo en Profesional',
-        'Multi-usuario con roles',
-        'SLA garantizado',
-        'Integraciones custom',
-        'Account manager dedicado',
-        'Onboarding personalizado',
-      ],
-      highlighted: false,
-    },
-  ];
+  readonly plans: LyhostPlan[] = LYHOST_PLANS;
 
   setAnnual(value: boolean): void {
     this.annual.set(value);
