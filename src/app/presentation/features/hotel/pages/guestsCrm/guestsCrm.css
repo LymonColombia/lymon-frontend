@@ -563,6 +563,134 @@ app-select.filter-select {
   gap: 12px;
 }
 
+.guest-notes-list {
+  display: grid;
+  gap: 14px;
+}
+
+.guest-note-history-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1px solid #d7e3db;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.guest-note-history-card-pinned {
+  border-color: #9ad9b0;
+  background: linear-gradient(180deg, #f7fdf9 0%, #f3fbf6 100%);
+}
+
+.guest-note-history-main {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.guest-note-history-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-dark);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.guest-note-history-content {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.guest-note-history-text {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 16px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.guest-note-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #667085;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.guest-note-category-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid #d0d5dd;
+  color: #475467;
+  background: #f8fafc;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: var(--font-weight-medium);
+}
+
+.guest-note-category-chip-preference {
+  border-color: #b3c8ff;
+  color: #2457d6;
+  background: #eef4ff;
+}
+
+.guest-note-category-chip-behavior {
+  border-color: #f5c7a1;
+  color: #c25b12;
+  background: #fff4ea;
+}
+
+.guest-note-category-chip-incident {
+  border-color: #f7b2b7;
+  color: #c01048;
+  background: #fff0f3;
+}
+
+.guest-note-category-chip-general {
+  border-color: #d0d5dd;
+  color: #475467;
+  background: #f8fafc;
+}
+
+.guest-note-history-side {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.guest-note-pin-badge {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: none;
+  background: #f2f4f7;
+  color: #98a2b3;
+  cursor: pointer;
+}
+
+.guest-note-pin-badge-active {
+  background: var(--color-primary-dark);
+  color: #ffffff;
+}
+
+.guest-note-pin-badge:focus-visible {
+  outline: 2px solid rgba(36, 87, 214, 0.28);
+  outline-offset: 2px;
+}
+
 .notes-feedback {
   margin: 0;
   font-size: 14px;
@@ -624,6 +752,12 @@ app-select.filter-select {
 
   .notes-section-header,
   .guest-note-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .guest-note-history-card,
+  .guest-note-history-side {
     align-items: stretch;
     flex-direction: column;
   }
