@@ -7,7 +7,7 @@ import { CreateCrmGuestNoteRequest } from '@/domain/entities/crm-guest.model';
 export class CreateCrmGuestNoteUseCase {
   private readonly crmRepository = inject(CrmRepository);
 
-  execute(guestId: string, data: CreateCrmGuestNoteRequest): Observable<unknown> {
+  execute(guestId: string, data: CreateCrmGuestNoteRequest): Observable<void> {
     return this.crmRepository.createGuestNote(guestId, data);
   }
 }

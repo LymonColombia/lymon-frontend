@@ -10,5 +10,5 @@ export abstract class CrmRepository {
   abstract getGuests(): Observable<GetCrmGuestsResponse>;
   abstract getGuestBookings(guestId: string): Observable<GetCrmGuestBookingsResponse>;
   abstract getGuestNotes(guestId: string): Observable<GetCrmGuestNotesResponse>;
-  abstract createGuestNote(guestId: string, data: CreateCrmGuestNoteRequest): Observable<unknown>;
+  abstract createGuestNote(guestId: string, data: CreateCrmGuestNoteRequest): Observable<void>;
 }
