@@ -163,18 +163,24 @@
       <aside class="summary-panel" aria-label="Resumen de reserva">
         <h2>Resumen:</h2>
 
+        @if (isLoadingSummary()) {
+          <p class="summary-message">Cargando reservacion...</p>
+        } @else if (summaryError()) {
+          <p class="summary-message summary-message--error">{{ summaryError() }}</p>
+        }
+
         <div class="summary-items">
-          <p><span>Huesped:</span> {{ reservationSummary.guestName }}</p>
-          <p><span>Habitacion:</span> {{ reservationSummary.room }}</p>
-          <p><span>Entrada:</span> {{ reservationSummary.checkIn }}</p>
-          <p><span>Salida:</span> {{ reservationSummary.checkOut }}</p>
-          <p><span>Noches:</span> {{ reservationSummary.nights }}</p>
-          <p><span>Huespedes:</span> {{ reservationSummary.guests }}</p>
+          <p><span>Huesped:</span> {{ reservationSummary().guestName }}</p>
+          <p><span>Habitacion:</span> {{ reservationSummary().room }}</p>
+          <p><span>Entrada:</span> {{ reservationSummary().checkIn }}</p>
+          <p><span>Salida:</span> {{ reservationSummary().checkOut }}</p>
+          <p><span>Noches:</span> {{ reservationSummary().nights }}</p>
+          <p><span>Huespedes:</span> {{ reservationSummary().guests }}</p>
         </div>
 
         <footer class="summary-total">
           <span>Total:</span>
-          <strong>{{ reservationSummary.total }}</strong>
+          <strong>{{ reservationSummary().total }}</strong>
         </footer>
       </aside>
     </div>

@@ -39,6 +39,7 @@ export const routes: Routes = [
     canActivate: [guestGuard],
   },
   { path: 'booking', component: BookingComponent, canActivate: [authGuard] },
+  { path: 'checkin/:reservationId', component: CheckinComponent, canActivate: [authGuard] },
   { path: 'checkin', component: CheckinComponent, canActivate: [authGuard] },
   { path: 'properties', component: PropertiesComponent, canActivate: [authGuard] },
   { path: 'register-employee', component: RegisterEmployeeComponent, canActivate: [authGuard] },

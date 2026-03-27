@@ -243,6 +243,20 @@
   color: #227b40;
 }
 
+.summary-message {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f4faf5;
+  color: #4a6a52;
+  font-size: 0.86rem;
+}
+
+.summary-message--error {
+  background: #fdf4f4;
+  color: #8f3b3b;
+}
+
 .summary-items {
   display: flex;
   flex-direction: column;
