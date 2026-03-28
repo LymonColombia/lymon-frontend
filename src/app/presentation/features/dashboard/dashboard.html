@@ -133,15 +133,8 @@
                 <td>{{ reservation.unitId }}</td>
                 <td>{{ reservation.checkIn | date: 'yyyy-MM-dd' }}</td>
                 <td>
-                  <span [class]="'status-badge ' + reservation.status">
-                    @switch (reservation.status) {
-                      @case ('active') { Activo }
-                      @case ('pending') { Pendiente }
-                      @case ('finished') { Finalizada }
-                      @case ('confirmed') { Confirmada }
-                      @case ('cancelled') { Cancelada }
-                      @default { {{ reservation.status }} }
-                    }
+                  <span [class]="'status-badge ' + getStatusClass(reservation.status)">
+                    {{ getStatusLabel(reservation.status) }}
                   </span>
                 </td>
               </tr>
