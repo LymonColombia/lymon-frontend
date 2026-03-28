@@ -34,6 +34,8 @@ import { guestPublicGuard } from '@/infrastructure/guards/guest-public.guard';
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
   { path: 'lyhost', component: LyhostPageComponent },
+  { path: 'room-details', component: RoomDetailsComponent },
+  { path: 'room-details/:unitId', component: RoomDetailsComponent },
 
   // Auth routes — only accessible when NOT authenticated as admin
   { path: 'login', component: LoginComponent, canActivate: [adminPublicGuard] },
@@ -65,8 +67,6 @@ export const routes: Routes = [
       { path: 'checkin', component: CheckinComponent },
       { path: 'properties', component: PropertiesComponent },
       { path: 'register-employee', component: RegisterEmployeeComponent },
-      { path: 'room-details/:unitId', component: RoomDetailsComponent },
-      { path: 'room-details', component: RoomDetailsComponent },
       { path: 'sales-summary', component: SalesSummaryComponent },
       { path: 'calendar-sync', component: CalendarSyncComponent },
       { path: 'email-config', component: EmailConfigComponent },
@@ -83,5 +83,5 @@ export const routes: Routes = [
     ],
   },
 
-  { path: '**', redirectTo: '/login' },
+  { path: '**', redirectTo: '/lyhost' },
 ];
