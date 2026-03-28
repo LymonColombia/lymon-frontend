@@ -1,5 +1,5 @@
 @if (isExpanded()) {
-  <div class="sidebar-backdrop" (click)="toggleExpanded()" aria-hidden="true"></div>
+  <div class="sidebar-backdrop" (click)="toggleExpanded()" (keydown)="toggleExpanded()" aria-hidden="true"></div>
 }
 
 <button
