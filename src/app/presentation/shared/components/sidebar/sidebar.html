@@ -1,18 +1,19 @@
-<nav class="sidebar" [class.sidebar--collapsed]="!isExpanded()" [class.sidebar--ready]="transitionsReady()">
-  <button
-    class="sidebar-toggle-rail"
-    type="button"
-    (click)="toggleExpanded()"
-    [title]="isExpanded() ? 'Contraer menú' : 'Expandir menú'"
-    [attr.aria-label]="isExpanded() ? 'Contraer menú lateral' : 'Expandir menú lateral'"
-  >
-    @if (isExpanded()) {
-      <ng-icon name="bootstrapChevronLeft" size="20px" aria-hidden="true" class="toggle-icon"></ng-icon>
-    } @else {
-      <ng-icon name="bootstrapChevronRight" size="20px" aria-hidden="true" class="toggle-icon"></ng-icon>
-    }
-  </button>
+@if (isExpanded()) {
+  <div class="sidebar-backdrop" (click)="toggleExpanded()" (keydown)="toggleExpanded()" aria-hidden="true"></div>
+}
 
+<button
+  class="sidebar-float-toggle"
+  type="button"
+  (click)="toggleExpanded()"
+  [title]="isExpanded() ? 'Contraer menú' : 'Expandir menú'"
+  [attr.aria-label]="isExpanded() ? 'Contraer menú lateral' : 'Expandir menú lateral'"
+  [attr.aria-expanded]="isExpanded()"
+>
+  <ng-icon name="bootstrapLayoutSidebar" size="20px" aria-hidden="true"></ng-icon>
+</button>
+
+<nav class="sidebar" [class.sidebar--collapsed]="!isExpanded()" [class.sidebar--ready]="transitionsReady()">
   <div class="sidebar-header">
     <img
       class="sidebar-logo-image"

@@ -1,5 +1,5 @@
 :host {
-  display: flex;
+  display: block;
   min-height: 100vh;
   font-family: var(--font-primary);
   background-color: var(--color-bg-secondary);
@@ -8,8 +8,7 @@
 .main-content {
   display: flex;
   flex-direction: column;
-  margin-left: var(--layout-sidebar-width);
-  width: calc(100% - var(--layout-sidebar-width));
+  width: 100%;
   min-height: 100vh;
   padding: var(--spacing-3xl);
   background-color: var(--color-bg-secondary);
@@ -147,8 +146,6 @@
 
 @media (max-width: 768px) {
   .main-content {
-    margin-left: 0;
-    width: 100%;
     padding: var(--spacing-xl);
   }
 
