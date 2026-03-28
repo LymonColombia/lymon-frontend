@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
 import { Reservation } from '@/domain/entities/reservation.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -23,7 +22,7 @@ import {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, NgIcon],
+  imports: [CommonModule, NgIcon],
   providers: [
     provideIcons({
       bootstrapBuilding,

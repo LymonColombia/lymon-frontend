@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapEnvelope,
@@ -9,7 +8,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 
 @Component({
-  imports: [SidebarComponent, NgIcon],
+  imports: [NgIcon],
   providers: [
     provideIcons({
       bootstrapEnvelope,
