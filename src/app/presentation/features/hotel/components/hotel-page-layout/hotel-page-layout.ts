@@ -10,7 +10,6 @@ import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapChevronLeft } from '@ng-icons/bootstrap-icons';
 
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import {
   BreadcrumbComponent,
@@ -34,7 +33,6 @@ export class HotelPageActionsDirective {}
   standalone: true,
   imports: [
     RouterLink,
-    SidebarComponent,
     FooterComponent,
     BreadcrumbComponent,
     NgIcon,
