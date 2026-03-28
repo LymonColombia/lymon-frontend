@@ -35,9 +35,25 @@ export interface Bed {
   count: number;
 }
 
+export interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PublicUnitsParams {
+  page: number;
+  limit: number;
+  checkIn?: string;
+  checkOut?: string;
+  guests?: number;
+}
+
 export interface UnitsResponse {
   data: {
     units: Unit[];
+    pagination?: Pagination;
   };
 }
 

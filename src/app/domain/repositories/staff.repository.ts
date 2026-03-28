@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 import {
   InviteStaffDto,
   PropertiesResponse,
+  PublicUnitsParams,
   RolesResponse,
   UnitResponse,
   UnitsResponse,
@@ -12,6 +13,6 @@ export abstract class StaffRepository {
   abstract getRoles(): Observable<RolesResponse>;
   abstract getProperties(): Observable<PropertiesResponse>;
   abstract getUnits(propertyId: string): Observable<UnitsResponse>;
-  abstract getPublicUnits(tenantId: string): Observable<UnitsResponse>;
+  abstract getPublicUnits(params: PublicUnitsParams): Observable<UnitsResponse>;
   abstract getPublicUnit(unitId: string): Observable<UnitResponse>;
 }
