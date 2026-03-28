@@ -9,24 +9,23 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBarChartFill,
   bootstrapCalendar,
-  bootstrapChevronLeft,
-  bootstrapChevronRight,
-  bootstrapGear,
-  bootstrapGrid,
-  bootstrapHouseFill,
-  bootstrapPersonLock,
-  bootstrapPersonAdd,
-  bootstrapHouseDoor,
   bootstrapCurrencyDollar,
   bootstrapEnvelopeAt,
+  bootstrapGrid,
+  bootstrapHouseDoor,
+  bootstrapHouseFill,
   bootstrapInfoCircle,
+  bootstrapLayoutSidebar,
   bootstrapPeople,
+  bootstrapPersonAdd,
+  bootstrapPersonGear,
   bootstrapThreeDotsVertical,
 } from '@ng-icons/bootstrap-icons';
 
@@ -42,18 +41,6 @@ interface MenuItem {
   route: string;
 }
 
-const SIDEBAR_EXPANDED_STORAGE_KEY = 'sidebar-expanded';
-const SIDEBAR_EXPANDED_WIDTH = '260px';
-const SIDEBAR_COLLAPSED_WIDTH = '80px';
-
-function getInitialSidebarExpandedState(): boolean {
-  try {
-    const storedValue = globalThis.localStorage?.getItem(SIDEBAR_EXPANDED_STORAGE_KEY);
-    return storedValue === null ? true : storedValue === 'true';
-  } catch {
-    return true;
-  }
-}
 
 @Component({
   selector: 'app-sidebar',
@@ -63,27 +50,27 @@ function getInitialSidebarExpandedState(): boolean {
   styleUrl: './sidebar.css',
   providers: [
     provideIcons({
-      bootstrapGrid,
-      bootstrapCalendar,
-      bootstrapHouseFill,
-      bootstrapPersonAdd,
       bootstrapBarChartFill,
-      bootstrapGear,
-      bootstrapPersonLock,
-      bootstrapChevronLeft,
-      bootstrapChevronRight,
-      bootstrapHouseDoor,
+      bootstrapCalendar,
       bootstrapCurrencyDollar,
       bootstrapEnvelopeAt,
+      bootstrapGrid,
+      bootstrapHouseDoor,
+      bootstrapHouseFill,
       bootstrapInfoCircle,
+      bootstrapLayoutSidebar,
       bootstrapPeople,
+      bootstrapPersonAdd,
+      bootstrapPersonGear,
       bootstrapThreeDotsVertical,
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
+    '[class.sidebar-host--expanded]': 'isExpanded()',
+    '[class.sidebar-host--ready]': 'transitionsReady()',
     '(document:click)': 'onDocumentClick($event)',
-    '(document:keydown.escape)': 'closeProfileMenu()',
+    '(document:keydown.escape)': 'onEscapeKey()',
   },
 })
 export class SidebarComponent implements OnInit {
@@ -96,7 +83,7 @@ export class SidebarComponent implements OnInit {
   private readonly tokenService = inject(TokenService);
   private readonly router = inject(Router);
 
-  readonly isExpanded = signal(getInitialSidebarExpandedState());
+  readonly isExpanded = signal(false);
   readonly transitionsReady = signal(false);
   readonly tenantName = signal('');
   readonly tenantEmail = signal('');
@@ -120,8 +107,6 @@ export class SidebarComponent implements OnInit {
 
   readonly menuItems: MenuItem[] = [
     { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
-    { icon: 'bootstrapCalendar', label: 'Reservaciones', route: '/booking' },
-    { icon: 'bootstrapHouseFill', label: 'Check-in', route: '/checkin' },
     { icon: 'bootstrapHouseDoor', label: 'Propiedades y Unidades', route: '/properties' },
     { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/register-employee' },
     { icon: 'bootstrapCurrencyDollar', label: 'Resumen de Ventas', route: '/sales-summary' },
@@ -130,25 +115,12 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/audit-log' },
     { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/crm/guests' },
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
-    { icon: 'bootstrapPersonLock', label: 'Configuración', route: '/settings' },
+    { icon: 'bootstrapPersonGear', label: 'Configuración', route: '/settings' },
   ];
 
-  private updateLayoutSidebarWidthVariable(): void {
-    const sidebarWidth = this.isExpanded() ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH;
-    document.documentElement.style.setProperty('--layout-sidebar-width', sidebarWidth);
-  }
-
   toggleExpanded(): void {
-    this.isExpanded.update((v) => {
-      const nextState = !v;
-      try {
-        localStorage.setItem(SIDEBAR_EXPANDED_STORAGE_KEY, String(nextState));
-      } catch {}
-      return nextState;
-    });
-
+    this.isExpanded.update((v) => !v);
     this.closeProfileMenu();
-    this.updateLayoutSidebarWidthVariable();
   }
 
   toggleProfileMenu(): void {
@@ -182,6 +154,13 @@ export class SidebarComponent implements OnInit {
     void this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
+  onEscapeKey(): void {
+    this.closeProfileMenu();
+    if (this.isExpanded()) {
+      this.toggleExpanded();
+    }
+  }
+
   onDocumentClick(event: MouseEvent): void {
     if (!this.isProfileMenuOpen()) return;
 
@@ -198,11 +177,19 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.updateLayoutSidebarWidthVariable();
-
     requestAnimationFrame(() => {
       this.transitionsReady.set(true);
     });
+
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.isExpanded.set(false);
+        this.closeProfileMenu();
+      });
 
     this.getTenantProfileUseCase
       .execute()
