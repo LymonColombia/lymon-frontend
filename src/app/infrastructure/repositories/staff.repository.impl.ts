@@ -5,6 +5,7 @@ import { StaffRepository } from '@/domain/repositories/staff.repository';
 import {
   InviteStaffDto,
   PropertiesResponse,
+  PublicUnitsParams,
   RolesResponse,
   UnitResponse,
   UnitsResponse,
@@ -51,9 +52,17 @@ export class StaffRepositoryImpl extends StaffRepository {
     );
   }
 
-  getPublicUnits(tenantId: string): Observable<UnitsResponse> {
+  getPublicUnits(params: PublicUnitsParams): Observable<UnitsResponse> {
+    const queryParams: Record<string, string> = {
+      page: String(params.page),
+      limit: String(params.limit),
+    };
+    if (params.checkIn) queryParams['checkIn'] = params.checkIn;
+    if (params.checkOut) queryParams['checkOut'] = params.checkOut;
+    if (params.guests) queryParams['guests'] = String(params.guests);
     return this.http.get<UnitsResponse>(
-      `${environment.apiUrl}${environment.units.endpoint}/public/${tenantId}`,
+      `${environment.apiUrl}${environment.units.endpoint}/public`,
+      { params: queryParams },
     );
   }
 
