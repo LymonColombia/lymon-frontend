@@ -31,7 +31,6 @@ import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'lyhost', component: LyhostPageComponent },
 
   // Auth routes — only accessible when NOT authenticated
