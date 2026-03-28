@@ -25,39 +25,41 @@ import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/prop
 import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCrm/guestsCrm';
 import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
-import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
-import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
+import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
+import { adminGuard } from '@/infrastructure/guards/admin.guard';
+import { adminPublicGuard } from '@/infrastructure/guards/admin-public.guard';
+import { guestPublicGuard } from '@/infrastructure/guards/guest-public.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
   { path: 'lyhost', component: LyhostPageComponent },
 
-  // Auth routes — only accessible when NOT authenticated
-  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
-  { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
-  { path: 'recover-password', component: RecoverPasswordComponent, canActivate: [guestGuard] },
+  // Auth routes — only accessible when NOT authenticated as admin
+  { path: 'login', component: LoginComponent, canActivate: [adminPublicGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [adminPublicGuard] },
+  { path: 'recover-password', component: RecoverPasswordComponent, canActivate: [adminPublicGuard] },
   {
     path: 'recover-password/confirm',
     component: ConfirmRecoverPasswordComponent,
-    canActivate: [guestGuard],
+    canActivate: [adminPublicGuard],
   },
-  
-  // Guest auth routes — separate flow for hotel guests
-  { path: 'guest/login', component: GuestLoginComponent },
-  { path: 'guest/register', component: GuestRegisterComponent },
-  { path: 'guest/verify-email', component: GuestVerifyEmailComponent },
-  { path: 'guest/forgot-password', component: GuestForgotPasswordComponent },
-  { path: 'guest/reset-password', component: GuestResetPasswordComponent },
 
-  // Booking — authenticated but no sidebar (Provitional route, will be changed on other branch)
-  { path: 'booking', component: BookingComponent, canActivate: [authGuard] },
+  // Guest auth routes — only accessible when NOT authenticated as guest
+  { path: 'guest/login', component: GuestLoginComponent, canActivate: [guestPublicGuard] },
+  { path: 'guest/register', component: GuestRegisterComponent, canActivate: [guestPublicGuard] },
+  { path: 'guest/verify-email', component: GuestVerifyEmailComponent, canActivate: [guestPublicGuard] },
+  { path: 'guest/forgot-password', component: GuestForgotPasswordComponent, canActivate: [guestPublicGuard] },
+  { path: 'guest/reset-password', component: GuestResetPasswordComponent, canActivate: [guestPublicGuard] },
+
+  // Booking — public route (no auth required)
+  { path: 'booking', component: BookingComponent },
 
   // Authenticated hotel shell
   {
     path: '',
     component: HotelShellComponent,
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'checkin', component: CheckinComponent },
