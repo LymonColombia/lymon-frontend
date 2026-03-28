@@ -1,0 +1,68 @@
+<section id="planes" class="lyhost-plans">
+  <div class="container">
+    <div class="plans-header">
+      <div class="section-chip"><span>PARA GESTORES DE PROPIEDADES</span></div>
+      <h2>
+        Gestiona tus propiedades<br />
+        <span>con el plan perfecto</span>
+      </h2>
+      <p>
+        Herramientas profesionales para propietarios y administradores de alojamientos turísticos.
+        Los huéspedes reservan gratis.
+      </p>
+
+      <div class="billing-toggle">
+        <button type="button" class="billing-option" [class.billing-option-active]="!annual()" (click)="setAnnual(false)">
+          Mensual
+        </button>
+        <button type="button" class="billing-option" [class.billing-option-active]="annual()" (click)="setAnnual(true)">
+          Anual <span class="billing-discount">-20%</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="plans-grid">
+      @for (plan of plans; track plan.name) {
+        <article class="plan-card" [class.plan-highlighted]="plan.highlighted">
+          @if (plan.highlighted) {
+            <div class="plan-badge">Más popular</div>
+          }
+
+          <div class="plan-header">
+            <h3>{{ plan.name }}</h3>
+            <p>{{ plan.description }}</p>
+          </div>
+
+          <div class="plan-price-block">
+            <div class="plan-price-row">
+              @if (annual()) {
+                <span class="plan-price price-fade">{{ getDisplayedPrice(plan.price) }}</span>
+              } @else {
+                <span class="plan-price price-fade">{{ getDisplayedPrice(plan.price) }}</span>
+              }
+              @if (plan.price !== 'Custom') {
+                <span class="plan-price-unit">/mes</span>
+              }
+            </div>
+            <p class="plan-properties">{{ plan.properties }}</p>
+          </div>
+
+          <div class="plan-features">
+            @for (feature of plan.features; track feature) {
+              <div class="plan-feature-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 6L9 17L4 12"></path>
+                </svg>
+                <span>{{ feature }}</span>
+              </div>
+            }
+          </div>
+
+          <app-button variant="secondary" size="medium" [fullWidth]="true">
+            {{ plan.price === 'Custom' ? 'Contactar ventas' : 'Empezar prueba gratuita' }}
+          </app-button>
+        </article>
+      }
+    </div>
+  </div>
+</section>
