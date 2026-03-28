@@ -26,10 +26,12 @@ import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCr
 import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
 import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
+import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'lyhost', component: LyhostPageComponent },
 
   // Auth routes — only accessible when NOT authenticated
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
@@ -40,7 +42,7 @@ export const routes: Routes = [
     component: ConfirmRecoverPasswordComponent,
     canActivate: [guestGuard],
   },
-
+  
   // Guest auth routes — separate flow for hotel guests
   { path: 'guest/login', component: GuestLoginComponent },
   { path: 'guest/register', component: GuestRegisterComponent },
