@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { GuestProfileComponent } from '@/presentation/features/hotel/pages/guestProfile/guestProfile';
 import { LoginComponent } from '@/presentation/features/auth/pages/login/login';
 import { RegisterComponent } from '@/presentation/features/auth/pages/register/register';
 import { GuestLoginComponent } from '@/presentation/features/guest-auth/pages/login/guest-login';
@@ -42,7 +43,7 @@ export const routes: Routes = [
     component: ConfirmRecoverPasswordComponent,
     canActivate: [guestGuard],
   },
-  
+
   // Guest auth routes — separate flow for hotel guests
   { path: 'guest/login', component: GuestLoginComponent },
   { path: 'guest/register', component: GuestRegisterComponent },
@@ -78,6 +79,7 @@ export const routes: Routes = [
       { path: 'audit-log', component: AuditLogComponent },
       { path: 'property-units', component: PropertyUnitsComponent },
       { path: 'crm/guests', component: GuestsCrmComponent },
+      { path: 'crm/guests/:guestId', component: GuestProfileComponent },
     ],
   },
 
