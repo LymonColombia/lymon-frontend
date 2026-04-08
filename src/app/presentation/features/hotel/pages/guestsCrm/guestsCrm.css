@@ -190,6 +190,12 @@ app-select.filter-select {
   border-bottom: 1px solid var(--color-border-light);
 }
 
+.guest-panel-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
 .guest-panel-title {
   margin: 0;
   color: var(--color-text-primary);
