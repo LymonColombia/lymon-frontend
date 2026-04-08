@@ -1,0 +1,571 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  CreateCrmGuestNoteRequest,
+  CrmGuest,
+  CrmGuestBooking,
+  CrmGuestBookingSource,
+  CrmGuestNote,
+  CrmGuestNoteCategory,
+} from '@/domain/entities/crm-guest.model';
+import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
+import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
+import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
+import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
+import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
+import { Property, Unit } from '@/domain/entities/staff.model';
+import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import {
+  SelectComponent,
+  SelectOption,
+} from '@/presentation/shared/components/select/select.component';
+import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { catchError, forkJoin, map, of } from 'rxjs';
+import {
+  bootstrapPerson,
+  bootstrapEnvelope,
+  bootstrapTelephone,
+  bootstrapTags,
+  bootstrapHouseDoor,
+  bootstrapCalendarCheck,
+  bootstrapWallet2,
+  bootstrapCardText,
+  bootstrapPinAngleFill,
+  bootstrapPlus,
+  bootstrapMoonStars,
+  bootstrapSun,
+  bootstrapChevronLeft,
+} from '@ng-icons/bootstrap-icons';
+
+type PropertyLookupItem = Property & {
+  _id?: string;
+  propertyId?: string;
+  title?: string;
+};
+
+type UnitLookupItem = Unit & {
+  _id?: string;
+  unitId?: string;
+  title?: string;
+  unitName?: string;
+};
+
+type BookingStatusTone = 'info' | 'muted' | 'success' | 'warning' | 'danger';
+
+const NOTE_MAX_LENGTH = 280;
+
+@Component({
+  selector: 'app-guest-profile',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [HotelPageLayoutComponent, ButtonComponent, SelectComponent, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapPerson,
+      bootstrapEnvelope,
+      bootstrapTelephone,
+      bootstrapTags,
+      bootstrapHouseDoor,
+      bootstrapCalendarCheck,
+      bootstrapWallet2,
+      bootstrapCardText,
+      bootstrapPinAngleFill,
+      bootstrapPlus,
+      bootstrapMoonStars,
+      bootstrapSun,
+      bootstrapChevronLeft,
+    }),
+  ],
+  templateUrl: './guestProfile.html',
+  styleUrl: './guestProfile.css',
+})
+export class GuestProfileComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly getCrmGuestsUseCase = inject(GetCrmGuestsUseCase);
+  private readonly getCrmGuestBookingsUseCase = inject(GetCrmGuestBookingsUseCase);
+  private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
+  private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
+  private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
+  private readonly getUnitsUseCase = inject(GetUnitsUseCase);
+
+  readonly isGuestLoading = signal(true);
+  readonly isBookingsLoading = signal(false);
+  readonly isNotesLoading = signal(false);
+  readonly notFoundError = signal(false);
+  readonly guestErrorMessage = signal<string | null>(null);
+  readonly bookingsErrorMessage = signal<string | null>(null);
+
+  readonly guest = signal<CrmGuest | null>(null);
+  readonly bookings = signal<CrmGuestBooking[]>([]);
+  readonly notes = signal<CrmGuestNote[]>([]);
+
+  readonly propertyNamesById = signal<Record<string, string>>({});
+  readonly unitNamesById = signal<Record<string, string>>({});
+  readonly loadedUnitPropertyIds = signal<string[]>([]);
+
+  readonly activeNoteFilter = signal<CrmGuestNoteCategory | 'all'>('all');
+  readonly isNoteFormVisible = signal(false);
+  readonly isSavingNote = signal(false);
+  readonly noteCategory = signal<CrmGuestNoteCategory>('general');
+  readonly noteContent = signal('');
+  readonly noteErrorMessage = signal<string | null>(null);
+
+  readonly noteFilterTabs: Array<{ value: CrmGuestNoteCategory | 'all'; label: string }> = [
+    { value: 'all', label: 'Todas' },
+    { value: 'general', label: 'General' },
+    { value: 'preference', label: 'Preferencias' },
+    { value: 'behavior', label: 'Comportamiento' },
+    { value: 'incident', label: 'Incidente' },
+  ];
+
+  readonly guestNoteSelectOptions: SelectOption[] = [
+    { value: 'general', label: 'General' },
+    { value: 'preference', label: 'Preferencia' },
+    { value: 'behavior', label: 'Comportamiento' },
+    { value: 'incident', label: 'Incidente' },
+  ];
+
+  readonly guestTags = computed(() =>
+    this.guest()?.tags?.filter((tag) => tag.trim().length > 0) ?? [],
+  );
+
+  readonly pinnedNotes = computed(() => this.notes().filter((n) => n.status === 'pinned'));
+
+  readonly filteredNotes = computed(() => {
+    const unpinned = this.notes().filter((n) => n.status === 'not_pinned');
+    const filter = this.activeNoteFilter();
+    if (filter === 'all') return unpinned;
+    return unpinned.filter((n) => n.type === filter);
+  });
+
+  readonly sortedBookings = computed(() =>
+    [...this.bookings()].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    ),
+  );
+
+  readonly totalBookings = computed(() => this.bookings().length);
+
+  readonly totalSpend = computed(() =>
+    this.bookings().reduce((sum, b) => sum + b.totalAmount, 0),
+  );
+
+  readonly avgStayNights = computed(() => {
+    const bks = this.bookings();
+    if (bks.length === 0) return null;
+    const total = bks.reduce((sum, b) => {
+      const nights =
+        (new Date(b.checkOut).getTime() - new Date(b.checkIn).getTime()) / (1000 * 60 * 60 * 24);
+      return sum + Math.max(0, nights);
+    }, 0);
+    return Math.round(total / bks.length);
+  });
+
+  readonly preferredProperty = computed(() => {
+    const bks = this.bookings();
+    if (bks.length === 0) return null;
+    const counts: Record<string, number> = {};
+    for (const b of bks) {
+      const name = b.propertyName || this.propertyNamesById()[b.propertyId] || 'Desconocida';
+      counts[name] = (counts[name] ?? 0) + 1;
+    }
+    return Object.entries(counts).sort(([, a], [, b]) => b - a)[0]?.[0] ?? null;
+  });
+
+  readonly preferredSeason = computed(() => {
+    const bks = this.bookings();
+    if (bks.length === 0) return null;
+    const counts: Record<string, number> = {};
+    for (const b of bks) {
+      const s = this.seasonOf(b.checkIn);
+      counts[s] = (counts[s] ?? 0) + 1;
+    }
+    return Object.entries(counts).sort(([, a], [, b]) => b - a)[0]?.[0] ?? null;
+  });
+
+  readonly noteCharCount = computed(() => this.noteContent().length);
+
+  readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
+    { label: 'CRM de Huéspedes', route: '/crm/guests' },
+    { label: this.guest()?.name ?? 'Perfil del huésped' },
+  ]);
+
+  ngOnInit(): void {
+    const guestId = this.route.snapshot.paramMap.get('guestId');
+    if (!guestId) {
+      this.notFoundError.set(true);
+      this.isGuestLoading.set(false);
+      return;
+    }
+
+    this.loadGuest(guestId);
+  }
+
+  setNoteFilter(value: CrmGuestNoteCategory | 'all'): void {
+    this.activeNoteFilter.set(value);
+  }
+
+  setNoteCategory(value: string | number | null): void {
+    if (
+      value !== 'general' &&
+      value !== 'preference' &&
+      value !== 'behavior' &&
+      value !== 'incident'
+    ) {
+      return;
+    }
+    this.noteCategory.set(value);
+  }
+
+  onNoteContentChange(value: string): void {
+    this.noteContent.set(value.slice(0, NOTE_MAX_LENGTH));
+  }
+
+  openNoteForm(): void {
+    this.isNoteFormVisible.set(true);
+    this.noteErrorMessage.set(null);
+  }
+
+  cancelNoteForm(): void {
+    this.resetNoteForm();
+  }
+
+  saveNote(): void {
+    const guestId = this.guest()?.id?.trim();
+    const content = this.noteContent().trim();
+
+    if (!guestId) {
+      this.noteErrorMessage.set('No se pudo identificar al huésped para guardar la nota.');
+      return;
+    }
+
+    if (!content) {
+      this.noteErrorMessage.set('Escribe una nota antes de guardarla.');
+      return;
+    }
+
+    if (content.length > NOTE_MAX_LENGTH) {
+      this.noteErrorMessage.set('La nota no puede superar los 280 caracteres.');
+      return;
+    }
+
+    const payload: CreateCrmGuestNoteRequest = {
+      note: content,
+      type: this.noteCategory(),
+      status: 'not_pinned',
+    };
+
+    this.isSavingNote.set(true);
+    this.noteErrorMessage.set(null);
+
+    this.createCrmGuestNoteUseCase.execute(guestId, payload).subscribe({
+      next: () => {
+        this.isSavingNote.set(false);
+        this.resetNoteForm();
+        this.loadNotes(guestId, true);
+      },
+      error: () => {
+        this.isSavingNote.set(false);
+        this.noteErrorMessage.set('No se pudo guardar la nota. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  toggleNotePin(noteId: string): void {
+    this.notes.update((notes) =>
+      notes.map((note) => {
+        if (this.getNoteIdentifier(note) !== noteId) return note;
+        return { ...note, status: note.status === 'pinned' ? 'not_pinned' : 'pinned' };
+      }),
+    );
+  }
+
+  getBookingStatusLabel(status: CrmGuestBooking['status']): string {
+    switch (status) {
+      case 'CONFIRMED':
+        return 'Confirmada';
+      case 'CHECKED_IN':
+        return 'Check-in';
+      case 'CHECKED_OUT':
+        return 'Check-out';
+      case 'CANCELLED':
+        return 'Cancelada';
+      case 'NO_SHOW':
+        return 'No se presentó';
+      default:
+        return 'Pendiente';
+    }
+  }
+
+  getBookingStatusTone(status: CrmGuestBooking['status']): BookingStatusTone {
+    switch (status) {
+      case 'CONFIRMED':
+        return 'info';
+      case 'CHECKED_IN':
+      case 'CHECKED_OUT':
+        return 'success';
+      case 'NO_SHOW':
+        return 'muted';
+      case 'CANCELLED':
+        return 'danger';
+      default:
+        return 'warning';
+    }
+  }
+
+  getSourceLabel(source: CrmGuestBookingSource): string {
+    switch (source) {
+      case 'AIRBNB':
+        return 'Airbnb';
+      case 'BOOKING':
+        return 'Booking.com';
+      case 'VRBO':
+        return 'VRBO';
+      case 'DIRECT':
+        return 'Directo';
+      case 'MANUAL':
+        return 'Manual';
+      default:
+        return source;
+    }
+  }
+
+  getNoteCategoryLabel(category: CrmGuestNoteCategory): string {
+    switch (category) {
+      case 'preference':
+        return 'Preferencias';
+      case 'behavior':
+        return 'Comportamiento';
+      case 'incident':
+        return 'Incidente';
+      default:
+        return 'General';
+    }
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
+
+  formatDateLabel(value: string, withTime = false): string {
+    if (!value) return 'Sin fecha';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Sin fecha';
+    return new Intl.DateTimeFormat('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      ...(withTime ? { hour: '2-digit', minute: '2-digit' } : {}),
+    })
+      .format(date)
+      .replace('.', '');
+  }
+
+  formatPhone(phone: string): string {
+    if (!phone.startsWith('+') || phone.includes(' ')) return phone;
+    const digits = phone.slice(1);
+    if (digits.length <= 10) return phone;
+    const countryCode = digits.slice(0, digits.length - 10);
+    const localNumber = digits.slice(-10);
+    return `+${countryCode} ${localNumber}`;
+  }
+
+  getNoteIdentifier(note: CrmGuestNote): string {
+    return note.id || `${note.createdAt}-${note.note}`;
+  }
+
+  private loadGuest(guestId: string): void {
+    this.isGuestLoading.set(true);
+    this.guestErrorMessage.set(null);
+    this.notFoundError.set(false);
+
+    this.getCrmGuestsUseCase.execute().subscribe({
+      next: (guests) => {
+        const found = guests.find((g) => g.id === guestId) ?? null;
+        if (!found) {
+          this.notFoundError.set(true);
+          this.isGuestLoading.set(false);
+          return;
+        }
+        this.guest.set(found);
+        this.isGuestLoading.set(false);
+        this.loadBookings(guestId);
+        this.loadNotes(guestId);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isGuestLoading.set(false);
+        if (error.status === 401) {
+          this.guestErrorMessage.set('Tu sesión expiró. Inicia sesión nuevamente.');
+        } else if (error.status === 403) {
+          this.guestErrorMessage.set('No tienes permisos para ver este huésped.');
+        } else {
+          this.guestErrorMessage.set('No se pudo cargar el perfil del huésped. Inténtalo de nuevo.');
+        }
+      },
+    });
+  }
+
+  private loadBookings(guestId: string): void {
+    this.isBookingsLoading.set(true);
+    this.bookingsErrorMessage.set(null);
+
+    this.getCrmGuestBookingsUseCase.execute(guestId).subscribe({
+      next: (bookings) => {
+        this.enrichBookingsWithNames(bookings, guestId);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.bookings.set([]);
+        this.isBookingsLoading.set(false);
+        if (error.status === 404) {
+          this.bookingsErrorMessage.set('No se encontraron reservas para este huésped.');
+        } else {
+          this.bookingsErrorMessage.set(
+            'No se pudo cargar el historial de reservas. Inténtalo de nuevo.',
+          );
+        }
+      },
+    });
+  }
+
+  private loadNotes(guestId: string, forceRefresh = false): void {
+    if (!forceRefresh && this.notes().length > 0) return;
+
+    this.isNotesLoading.set(true);
+
+    this.getCrmGuestNotesUseCase.execute(guestId).subscribe({
+      next: (notes) => {
+        this.notes.set(
+          [...notes].sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
+        );
+        this.isNotesLoading.set(false);
+      },
+      error: () => {
+        this.notes.set([]);
+        this.isNotesLoading.set(false);
+      },
+    });
+  }
+
+  private enrichBookingsWithNames(bookings: CrmGuestBooking[], requestedGuestId: string): void {
+    const missingPropertyNames = bookings.some(
+      (b) =>
+        b.propertyId && !b.propertyName && !this.propertyNamesById()[b.propertyId],
+    );
+    const propertyIdsForUnits = [
+      ...new Set(
+        bookings
+          .filter(
+            (b) =>
+              b.propertyId &&
+              b.unitId &&
+              !b.unitName &&
+              !this.unitNamesById()[b.unitId] &&
+              !this.loadedUnitPropertyIds().includes(b.propertyId),
+          )
+          .map((b) => b.propertyId),
+      ),
+    ];
+
+    const propertyNames$ = missingPropertyNames
+      ? this.getPropertiesUseCase.execute().pipe(
+          map((props) => this.toPropertyNameMap(props)),
+          catchError(() => of({} as Record<string, string>)),
+        )
+      : of({} as Record<string, string>);
+
+    const unitNames$ = propertyIdsForUnits.length
+      ? forkJoin(
+          propertyIdsForUnits.map((propertyId) =>
+            this.getUnitsUseCase.execute(propertyId).pipe(
+              map((units) => ({ propertyId, units })),
+              catchError(() => of({ propertyId, units: [] as Unit[] })),
+            ),
+          ),
+        )
+      : of([] as Array<{ propertyId: string; units: Unit[] }>);
+
+    forkJoin({ propertyNames: propertyNames$, unitsByProperty: unitNames$ }).subscribe(
+      ({ propertyNames, unitsByProperty }) => {
+        if (this.guest()?.id !== requestedGuestId) return;
+
+        const mergedPropertyNames = { ...this.propertyNamesById(), ...propertyNames };
+        const mergedUnitNames = {
+          ...this.unitNamesById(),
+          ...this.toUnitNameMap(unitsByProperty),
+        };
+
+        this.propertyNamesById.set(mergedPropertyNames);
+        this.unitNamesById.set(mergedUnitNames);
+        this.loadedUnitPropertyIds.set([
+          ...new Set([
+            ...this.loadedUnitPropertyIds(),
+            ...unitsByProperty.map(({ propertyId }) => propertyId),
+          ]),
+        ]);
+        this.bookings.set(
+          bookings.map((b) => ({
+            ...b,
+            propertyName: b.propertyName || mergedPropertyNames[b.propertyId] || '',
+            unitName: b.unitName || mergedUnitNames[b.unitId] || '',
+          })),
+        );
+        this.isBookingsLoading.set(false);
+      },
+    );
+  }
+
+  private toPropertyNameMap(properties: PropertyLookupItem[]): Record<string, string> {
+    return properties.reduce<Record<string, string>>((acc, property) => {
+      const id = property.id || property._id || property.propertyId || '';
+      const name = property.name || property.title || '';
+      if (id && name) acc[id] = name;
+      return acc;
+    }, {});
+  }
+
+  private toUnitNameMap(
+    unitsByProperty: Array<{ propertyId: string; units: UnitLookupItem[] }>,
+  ): Record<string, string> {
+    return unitsByProperty.reduce<Record<string, string>>((acc, { units }) => {
+      for (const unit of units) {
+        const id = unit.id || unit._id || unit.unitId || '';
+        const name = unit.name || unit.unitName || unit.title || '';
+        if (id && name) acc[id] = name;
+      }
+      return acc;
+    }, {});
+  }
+
+  private seasonOf(dateStr: string): string {
+    const month = new Date(dateStr).getMonth();
+    if (month >= 2 && month <= 4) return 'Primavera';
+    if (month >= 5 && month <= 7) return 'Verano';
+    if (month >= 8 && month <= 10) return 'Otoño';
+    return 'Invierno';
+  }
+
+  private resetNoteForm(): void {
+    this.isNoteFormVisible.set(false);
+    this.isSavingNote.set(false);
+    this.noteCategory.set('general');
+    this.noteContent.set('');
+    this.noteErrorMessage.set(null);
+  }
+}
