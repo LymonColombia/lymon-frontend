@@ -155,9 +155,16 @@
   >
     @if (selectedGuest(); as guest) {
       <header class="guest-panel-header">
-        <div>
+        <div class="guest-panel-header-info">
           <h2 id="guest-panel-title" class="guest-panel-title">{{ guest.name }}</h2>
           <p class="guest-panel-subtitle">{{ selectedGuestPreview()?.subtitle }}</p>
+          <app-button
+            variant="outline"
+            size="medium"
+            (clicked)="navigateToFullProfile(guest)"
+          >
+            Ver perfil completo
+          </app-button>
         </div>
 
         <button
