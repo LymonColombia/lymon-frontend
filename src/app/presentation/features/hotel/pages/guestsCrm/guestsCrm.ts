@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   CreateCrmGuestNoteRequest,
   CrmGuest,
@@ -149,7 +149,6 @@ export class GuestsCrmComponent implements OnInit {
   private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
@@ -170,7 +169,6 @@ export class GuestsCrmComponent implements OnInit {
   readonly searchField = signal<SearchField>('name');
   readonly searchTerm = signal('');
   readonly currentPage = signal(1);
-  readonly routeGuestId = signal<string | null>(null);
   readonly pageSize = 5;
   readonly filterOptions: FilterOption[] = [
     { key: 'name', label: 'Nombre', icon: 'user' },
@@ -217,11 +215,6 @@ export class GuestsCrmComponent implements OnInit {
   readonly guestNoteCharacterCount = computed(() => this.guestNoteContent().length);
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      this.routeGuestId.set(params.get('guestId'));
-      this.syncSelectedGuestFromRoute();
-    });
-
     this.loadGuests();
   }
 
@@ -348,7 +341,12 @@ export class GuestsCrmComponent implements OnInit {
     if (this.loadedGuestNotesGuestId() !== this.getGuestRouteId(guest)) {
       this.loadGuestNotes(guest);
     }
-    this.updateGuestQueryParam(this.getGuestRouteId(guest));
+  }
+
+  navigateToFullProfile(guest: CrmGuest): void {
+    const guestId = this.getGuestRouteId(guest);
+    if (!guestId) return;
+    void this.router.navigate(['/crm/guests', guestId]);
   }
 
   closeGuestPanel(): void {
@@ -364,7 +362,6 @@ export class GuestsCrmComponent implements OnInit {
     this.loadedBookingsGuestId.set(null);
     this.loadedGuestNotesGuestId.set(null);
     this.resetGuestNoteForm();
-    this.updateGuestQueryParam(null);
   }
 
   saveGuestNote(): void {
@@ -652,43 +649,8 @@ export class GuestsCrmComponent implements OnInit {
     }
   }
 
-  private syncSelectedGuestFromRoute(): void {
-    const guestId = this.routeGuestId();
-
-    if (!guestId) {
-      this.selectedGuest.set(null);
-      this.guestBookings.set([]);
-      this.bookingsErrorMessage.set(null);
-      this.isBookingsLoading.set(false);
-      this.loadedBookingsGuestId.set(null);
-      return;
-    }
-
-    const matchedGuest = this.guests().find((guest) => guest.id === guestId);
-    this.selectedGuest.set(matchedGuest ?? null);
-    if (matchedGuest && this.loadedBookingsGuestId() !== guestId) {
-      this.loadGuestBookings(matchedGuest);
-    }
-    if (matchedGuest && this.loadedGuestNotesGuestId() !== guestId) {
-      this.loadGuestNotes(matchedGuest);
-    } else if (!matchedGuest) {
-      this.guestBookings.set([]);
-      this.guestNotes.set([]);
-      this.loadedBookingsGuestId.set(null);
-      this.loadedGuestNotesGuestId.set(null);
-    }
-  }
-
   private getGuestRouteId(guest: CrmGuest | null): string | null {
     return guest?.id?.trim() || null;
-  }
-
-  private updateGuestQueryParam(guestId: string | null): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { guestId },
-      queryParamsHandling: 'merge',
-    });
   }
 
   private loadGuestBookings(guest: CrmGuest): void {
@@ -776,7 +738,6 @@ export class GuestsCrmComponent implements OnInit {
       next: (guests) => {
         this.guests.set(guests);
         this.loadLatestReservationDates(guests);
-        this.syncSelectedGuestFromRoute();
         this.isLoading.set(false);
       },
       error: (error: HttpErrorResponse) => {
