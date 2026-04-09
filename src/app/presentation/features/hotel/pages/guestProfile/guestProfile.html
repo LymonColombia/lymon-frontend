@@ -1,11 +1,11 @@
 <app-hotel-page-layout
   [title]="guest()?.name ?? 'Perfil del huésped'"
-  subtitle="Perfil completo del huésped"
-  iconName="bootstrapPerson"
+  subtitle="Consulta y administra la información de este huésped"
   [breadcrumbItems]="breadcrumbItems()"
-  backLink="/crm/guests"
-  backLabel="Volver a CRM"
+
 >
+
+  <div hotelPageIcon class="guest-initials-avatar">{{ guestInitials() }}</div>
 
   @if (isGuestLoading()) {
     <p class="page-feedback">Cargando perfil...</p>

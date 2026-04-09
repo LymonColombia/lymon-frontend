@@ -23,7 +23,7 @@ import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-no
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
-import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { HotelPageLayoutComponent, HotelPageIconDirective } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import {
   SelectComponent,
@@ -33,7 +33,7 @@ import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/brea
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import {
-  bootstrapPerson,
+  bootstrapPersonFill,
   bootstrapEnvelope,
   bootstrapTelephone,
   bootstrapTags,
@@ -68,10 +68,10 @@ const NOTE_MAX_LENGTH = 280;
 @Component({
   selector: 'app-guest-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HotelPageLayoutComponent, ButtonComponent, SelectComponent, NgIcon],
+  imports: [HotelPageLayoutComponent, HotelPageIconDirective, ButtonComponent, SelectComponent, NgIcon],
   providers: [
     provideIcons({
-      bootstrapPerson,
+      bootstrapPersonFill,
       bootstrapEnvelope,
       bootstrapTelephone,
       bootstrapTags,
@@ -135,6 +135,14 @@ export class GuestProfileComponent implements OnInit {
     { value: 'behavior', label: 'Comportamiento' },
     { value: 'incident', label: 'Incidente' },
   ];
+
+  readonly guestInitials = computed(() =>
+    (this.guest()?.name ?? '')
+      .split(' ')
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? '')
+      .join(''),
+  );
 
   readonly guestTags = computed(() =>
     this.guest()?.tags?.filter((tag) => tag.trim().length > 0) ?? [],
