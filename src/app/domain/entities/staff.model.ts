@@ -15,6 +15,8 @@ export interface Unit {
   id: string;
   name: string;
   description?: string;
+  tenantId?: string;
+  propertyId?: string;
   maxGuests?: number;
   standardGuests?: number;
   bedrooms?: Bedroom[];
