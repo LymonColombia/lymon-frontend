@@ -16,7 +16,8 @@ import { ChangePasswordUseCase } from '@/domain/use-cases/user/change-password.u
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapEye,
-  bootstrapEyeSlash
+  bootstrapEyeSlash,
+  bootstrapPersonGear,
 } from '@ng-icons/bootstrap-icons';
 
 const URL_PATTERN = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w\-./?%&=]*)?$/;
@@ -38,7 +39,7 @@ function passwordsDifferentValidator(control: AbstractControl): ValidationErrors
     ButtonComponent,
     InputComponent,
   ],
-  providers: [provideIcons({ bootstrapEye, bootstrapEyeSlash })],
+  providers: [provideIcons({ bootstrapEye, bootstrapEyeSlash, bootstrapPersonGear })],
   templateUrl: './tenantSettings.html',
   styleUrl: './tenantSettings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

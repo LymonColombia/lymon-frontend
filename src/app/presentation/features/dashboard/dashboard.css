@@ -5,11 +5,9 @@
 }
 
 .main-content {
-  margin-left: var(--layout-sidebar-width);
-  width: calc(100% - var(--layout-sidebar-width));
+  width: 100%;
   min-height: 100vh;
   background-color: var(--color-bg-secondary);
-  transition: margin-left 280ms ease, width 280ms ease;
 }
 
 .dashboard-container {
