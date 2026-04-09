@@ -26,8 +26,12 @@ import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCr
 import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
 import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
-import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
-import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
+import { adminGuard } from '@/infrastructure/guards/admin.guard';
+import { adminPublicGuard } from '@/infrastructure/guards/admin-public.guard';
+import { guestPublicGuard } from '@/infrastructure/guards/guest-public.guard';
+import { guestGuard } from '@/infrastructure/guards/guest.guard';
+import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/guest-checkout/guest-checkout';
+import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -52,6 +56,13 @@ export const routes: Routes = [
 
   // Booking — authenticated but no sidebar (Provitional route, will be changed on other branch)
   { path: 'booking', component: BookingComponent, canActivate: [authGuard] },
+
+  // Guest flow
+  { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/reservations', component: GuestReservationsComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
 
   // Authenticated hotel shell
   {
