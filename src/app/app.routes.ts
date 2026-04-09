@@ -12,6 +12,7 @@ import { BookingComponent } from '@/presentation/features/hotel/pages/booking/bo
 import { CheckinComponent } from '@/presentation/features/hotel/pages/checkin/checkin';
 import { PropertiesComponent } from '@/presentation/features/hotel/pages/properties/properties';
 import { RegisterEmployeeComponent } from '@/presentation/features/hotel/pages/registerEmployee/registerEmployee';
+import { StaffManagementComponent } from '@/presentation/features/hotel/pages/staffManagement/staffManagement';
 import { RoomDetailsComponent } from '@/presentation/features/hotel/pages/roomDetails/roomDetails';
 import { SalesSummaryComponent } from '@/presentation/features/hotel/pages/salesSummary/salesSummary';
 import { CalendarSyncComponent } from '@/presentation/features/hotel/pages/calendarSync/calendarSync';
@@ -25,6 +26,7 @@ import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/prop
 import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCrm/guestsCrm';
 import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
+import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
 import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { adminGuard } from '@/infrastructure/guards/admin.guard';
 import { adminPublicGuard } from '@/infrastructure/guards/admin-public.guard';
@@ -34,28 +36,37 @@ import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/gues
 import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
   { path: 'lyhost', component: LyhostPageComponent },
+  { path: 'room-details', component: RoomDetailsComponent },
+  { path: 'room-details/:unitId', component: RoomDetailsComponent },
 
-  // Auth routes — only accessible when NOT authenticated
-  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
-  { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
-  { path: 'recover-password', component: RecoverPasswordComponent, canActivate: [guestGuard] },
+  // Auth routes — only accessible when NOT authenticated as admin
+  { path: 'login', component: LoginComponent, canActivate: [adminPublicGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [adminPublicGuard] },
+  { path: 'recover-password', component: RecoverPasswordComponent, canActivate: [adminPublicGuard] },
   {
     path: 'recover-password/confirm',
     component: ConfirmRecoverPasswordComponent,
-    canActivate: [guestGuard],
+    canActivate: [adminPublicGuard],
   },
-  
-  // Guest auth routes — separate flow for hotel guests
-  { path: 'guest/login', component: GuestLoginComponent },
-  { path: 'guest/register', component: GuestRegisterComponent },
-  { path: 'guest/verify-email', component: GuestVerifyEmailComponent },
-  { path: 'guest/forgot-password', component: GuestForgotPasswordComponent },
-  { path: 'guest/reset-password', component: GuestResetPasswordComponent },
 
-  // Booking — authenticated but no sidebar (Provitional route, will be changed on other branch)
-  { path: 'booking', component: BookingComponent, canActivate: [authGuard] },
+  // Guest auth routes — only accessible when NOT authenticated as guest
+  { path: 'guest/login', component: GuestLoginComponent, canActivate: [guestPublicGuard] },
+  { path: 'guest/register', component: GuestRegisterComponent, canActivate: [guestPublicGuard] },
+  { path: 'guest/verify-email', component: GuestVerifyEmailComponent, canActivate: [guestPublicGuard] },
+  { path: 'guest/forgot-password', component: GuestForgotPasswordComponent, canActivate: [guestPublicGuard] },
+  { path: 'guest/reset-password', component: GuestResetPasswordComponent, canActivate: [guestPublicGuard] },
+
+  // Booking — public route (no auth required)
+  { path: 'booking', component: BookingComponent },
+
+  // Guest flow
+  { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/reservations', component: GuestReservationsComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
 
   // Guest flow
   { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
@@ -68,12 +79,13 @@ export const routes: Routes = [
   {
     path: '',
     component: HotelShellComponent,
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'checkin', component: CheckinComponent },
       { path: 'properties', component: PropertiesComponent },
       { path: 'register-employee', component: RegisterEmployeeComponent },
+      { path: 'employee-management', component: StaffManagementComponent },
       { path: 'room-details/:unitId', component: RoomDetailsComponent },
       { path: 'room-details', component: RoomDetailsComponent },
       { path: 'sales-summary', component: SalesSummaryComponent },
@@ -92,5 +104,5 @@ export const routes: Routes = [
     ],
   },
 
-  { path: '**', redirectTo: '/login' },
+  { path: '**', redirectTo: '/lyhost' },
 ];

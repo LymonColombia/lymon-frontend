@@ -37,9 +37,25 @@ export interface Bed {
   count: number;
 }
 
+export interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PublicUnitsParams {
+  page: number;
+  limit: number;
+  checkIn?: string;
+  checkOut?: string;
+  guests?: number;
+}
+
 export interface UnitsResponse {
   data: {
     units: Unit[];
+    pagination?: Pagination;
   };
 }
 
@@ -68,4 +84,22 @@ export interface InviteStaffDto {
   email: string;
   password: string;
   roleAssignments: RoleAssignmentDto[];
+}
+
+export interface StaffMember {
+  id?: string;
+  email: string;
+  fullName?: string;
+  name?: string;
+  role?: 'ADMIN' | 'STAFF';
+  createdAt?: string;
+  roleAssignments?: RoleAssignmentDto[];
+}
+
+export interface StaffListResponse {
+  data?: StaffMember[];
+  items?: StaffMember[];
+  results?: StaffMember[];
+  staff?: StaffMember[];
+  users?: StaffMember[];
 }
