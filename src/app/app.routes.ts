@@ -12,6 +12,7 @@ import { BookingComponent } from '@/presentation/features/hotel/pages/booking/bo
 import { CheckinComponent } from '@/presentation/features/hotel/pages/checkin/checkin';
 import { PropertiesComponent } from '@/presentation/features/hotel/pages/properties/properties';
 import { RegisterEmployeeComponent } from '@/presentation/features/hotel/pages/registerEmployee/registerEmployee';
+import { StaffManagementComponent } from '@/presentation/features/hotel/pages/staffManagement/staffManagement';
 import { RoomDetailsComponent } from '@/presentation/features/hotel/pages/roomDetails/roomDetails';
 import { SalesSummaryComponent } from '@/presentation/features/hotel/pages/salesSummary/salesSummary';
 import { CalendarSyncComponent } from '@/presentation/features/hotel/pages/calendarSync/calendarSync';
@@ -25,6 +26,7 @@ import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/prop
 import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCrm/guestsCrm';
 import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
+import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
 import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { adminGuard } from '@/infrastructure/guards/admin.guard';
@@ -67,6 +69,9 @@ export const routes: Routes = [
       { path: 'checkin', component: CheckinComponent },
       { path: 'properties', component: PropertiesComponent },
       { path: 'register-employee', component: RegisterEmployeeComponent },
+      { path: 'employee-management', component: StaffManagementComponent },
+      { path: 'room-details/:unitId', component: RoomDetailsComponent },
+      { path: 'room-details', component: RoomDetailsComponent },
       { path: 'sales-summary', component: SalesSummaryComponent },
       { path: 'calendar-sync', component: CalendarSyncComponent },
       { path: 'email-config', component: EmailConfigComponent },
