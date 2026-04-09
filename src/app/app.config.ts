@@ -10,6 +10,7 @@ import { IncidentReportRepositoryImpl } from '@/infrastructure/repositories/inci
 import { TenantRepository } from '@/domain/repositories/tenant.repository';
 import { TenantRepositoryImpl } from '@/infrastructure/repositories/tenant.repository.impl';
 import { authInterceptor } from '@/infrastructure/interceptors/auth.interceptor';
+import { guestAuthInterceptor } from '@/infrastructure/interceptors/guest-auth.interceptor';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffRepositoryImpl } from '@/infrastructure/repositories/staff.repository.impl';
 import { PropertyRepository } from '@/domain/repositories/property.repository';
@@ -22,13 +23,15 @@ import { ReservationRepository } from '@/domain/repositories/reservation.reposit
 import { ReservationRepositoryImpl } from '@/infrastructure/repositories/reservation.repository.impl';
 import { CrmRepository } from '@/domain/repositories/crm.repository';
 import { CrmRepositoryImpl } from '@/infrastructure/repositories/crm.repository.impl';
+import { GuestReservationRepository } from '@/domain/repositories/guest-reservation.repository';
+import { GuestReservationRepositoryImpl } from '@/infrastructure/repositories/guest-reservation.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([guestAuthInterceptor, authInterceptor])),
     { provide: AuthRepository, useClass: AuthRepositoryImpl },
     { provide: UserRepository, useClass: UserRepositoryImpl },
     { provide: IncidentReportRepository, useClass: IncidentReportRepositoryImpl },
@@ -39,5 +42,6 @@ export const appConfig: ApplicationConfig = {
     { provide: AuditLogRepository, useClass: AuditLogRepositoryImpl },
     { provide: ReservationRepository, useClass: ReservationRepositoryImpl },
     { provide: CrmRepository, useClass: CrmRepositoryImpl },
+    { provide: GuestReservationRepository, useClass: GuestReservationRepositoryImpl },
   ],
 };
