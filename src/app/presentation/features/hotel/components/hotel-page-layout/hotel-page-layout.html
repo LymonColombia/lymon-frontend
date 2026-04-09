@@ -11,9 +11,13 @@
 
     <div class="page-title-row">
       <div class="page-title-content">
-        @if (iconName()) {
+        @if (hasCustomIcon() || iconName()) {
           <div class="page-icon">
-            <ng-icon [name]="iconName()!" size="28px" aria-hidden="true"></ng-icon>
+            @if (hasCustomIcon()) {
+              <ng-content select="[hotelPageIcon]"></ng-content>
+            } @else {
+              <ng-icon [name]="iconName()!" size="28px" aria-hidden="true"></ng-icon>
+            }
           </div>
         }
 
