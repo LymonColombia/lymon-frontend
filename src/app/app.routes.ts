@@ -31,6 +31,9 @@ import { HotelShellComponent } from '@/presentation/features/hotel/components/ho
 import { adminGuard } from '@/infrastructure/guards/admin.guard';
 import { adminPublicGuard } from '@/infrastructure/guards/admin-public.guard';
 import { guestPublicGuard } from '@/infrastructure/guards/guest-public.guard';
+import { guestGuard } from '@/infrastructure/guards/guest.guard';
+import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/guest-checkout/guest-checkout';
+import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
@@ -57,6 +60,13 @@ export const routes: Routes = [
 
   // Booking — public route (no auth required)
   { path: 'booking', component: BookingComponent },
+
+  // Guest flow
+  { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/reservations', component: GuestReservationsComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
 
   // Authenticated hotel shell
   {
