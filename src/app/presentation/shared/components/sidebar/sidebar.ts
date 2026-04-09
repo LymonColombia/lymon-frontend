@@ -137,6 +137,11 @@ export class SidebarComponent implements OnInit {
     void this.router.navigateByUrl('/settings');
   }
 
+  goToPlans(): void {
+    this.closeProfileMenu();
+    void this.router.navigateByUrl('/plans');
+  }
+
   openLogoutConfirm(): void {
     this.closeProfileMenu();
     this.isLogoutConfirmOpen.set(true);

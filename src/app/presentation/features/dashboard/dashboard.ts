@@ -36,6 +36,52 @@ import {
   templateUrl: './dashboard.html'
 })
 export class DashboardComponent implements OnInit {
+    private normalizeReservationStatus(status: Reservation['status'] | string): string {
+      return String(status ?? '').trim().toLowerCase();
+    }
+
+    private isActiveReservation(status: Reservation['status'] | string): boolean {
+      return this.normalizeReservationStatus(status) === 'active';
+    }
+
+    private isInCurrentMonth(dateValue: string): boolean {
+      const reservationDate = new Date(dateValue);
+      if (Number.isNaN(reservationDate.getTime())) {
+        return false;
+      }
+
+      const now = new Date();
+      return reservationDate.getMonth() === now.getMonth() && reservationDate.getFullYear() === now.getFullYear();
+    }
+
+    private normalizeAmount(value: unknown): number {
+      const parsedValue = Number(value);
+      return Number.isFinite(parsedValue) ? parsedValue : 0;
+    }
+
+    getStatusLabel(status: Reservation['status'] | string): string {
+      const normalizedStatus = this.normalizeReservationStatus(status);
+
+      switch (normalizedStatus) {
+        case 'active':
+          return 'Activo';
+        case 'pending':
+          return 'Pendiente';
+        case 'finished':
+          return 'Finalizada';
+        case 'confirmed':
+          return 'Confirmada';
+        case 'cancelled':
+          return 'Cancelada';
+        default:
+          return String(status ?? 'Sin estado');
+      }
+    }
+
+    getStatusClass(status: Reservation['status'] | string): string {
+      return this.normalizeReservationStatus(status);
+    }
+
     private normalizeReservations(payload: unknown): Reservation[] {
       if (Array.isArray(payload)) {
         return payload as Reservation[];
@@ -58,25 +104,18 @@ export class DashboardComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly loadError = signal<string | null>(null);
   
-  readonly occupiedRooms = computed(() => this.reservations().filter(r => r.status === 'active').length);
+  readonly occupiedRooms = computed(() => this.reservations().filter(r => this.isActiveReservation(r.status)).length);
   
   readonly activeGuests = computed(() => 
     this.reservations()
-      .filter(r => r.status === 'active')
+      .filter(r => this.isActiveReservation(r.status))
       .reduce((total, r) => total + (r.guestsCount || 0), 0)
   );
 
   readonly monthlyRevenue = computed(() => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    
     return this.reservations()
-      .filter(r => {
-        const checkIn = new Date(r.checkIn);
-        return checkIn.getMonth() === currentMonth && checkIn.getFullYear() === currentYear && r.status !== 'cancelled';
-      })
-      .reduce((total, r) => total + (r.totalPrice || 0), 0);
+      .filter(r => this.isInCurrentMonth(r.checkIn))
+      .reduce((total, r) => total + this.normalizeAmount(r.totalPrice), 0);
   });
 
   readonly occupancyRate = computed(() => {
