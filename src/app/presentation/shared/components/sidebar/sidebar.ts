@@ -26,6 +26,7 @@ import {
   bootstrapPeople,
   bootstrapPersonAdd,
   bootstrapPersonGear,
+  bootstrapStar,
   bootstrapThreeDotsVertical,
 } from '@ng-icons/bootstrap-icons';
 
@@ -62,6 +63,7 @@ interface MenuItem {
       bootstrapPeople,
       bootstrapPersonAdd,
       bootstrapPersonGear,
+      bootstrapStar,
       bootstrapThreeDotsVertical,
     }),
   ],
@@ -109,12 +111,14 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
     { icon: 'bootstrapHouseDoor', label: 'Propiedades y Unidades', route: '/properties' },
     { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/register-employee' },
+    { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/employee-management' },
     { icon: 'bootstrapCurrencyDollar', label: 'Resumen de Ventas', route: '/sales-summary' },
     { icon: 'bootstrapCalendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
     { icon: 'bootstrapEnvelopeAt', label: 'Configuración de Correos', route: '/email-config' },
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/audit-log' },
     { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/crm/guests' },
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
+    { icon: 'bootstrapStar', label: 'Planes', route: '/plans' },
     { icon: 'bootstrapPersonGear', label: 'Configuración', route: '/settings' },
   ];
 
@@ -135,6 +139,11 @@ export class SidebarComponent implements OnInit {
   goToSettings(): void {
     this.closeProfileMenu();
     void this.router.navigateByUrl('/settings');
+  }
+
+  goToPlans(): void {
+    this.closeProfileMenu();
+    void this.router.navigateByUrl('/plans');
   }
 
   openLogoutConfirm(): void {
