@@ -6,6 +6,7 @@ import {
   InviteStaffDto,
   PropertiesResponse,
   RolesResponse,
+  StaffListResponse,
   UnitResponse,
   UnitsResponse,
 } from '@/domain/entities/staff.model';
@@ -33,6 +34,12 @@ export class StaffRepositoryImpl extends StaffRepository {
 
   getRoles(): Observable<RolesResponse> {
     return this.http.get<RolesResponse>(`${environment.apiUrl}/roles`, {
+      headers: this.authHeaders,
+    });
+  }
+
+  getStaff(): Observable<StaffListResponse | unknown[]> {
+    return this.http.get<StaffListResponse | unknown[]>(`${USER_BASE}/staff`, {
       headers: this.authHeaders,
     });
   }

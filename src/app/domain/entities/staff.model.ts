@@ -67,3 +67,21 @@ export interface InviteStaffDto {
   password: string;
   roleAssignments: RoleAssignmentDto[];
 }
+
+export interface StaffMember {
+  id?: string;
+  email: string;
+  fullName?: string;
+  name?: string;
+  role?: 'ADMIN' | 'STAFF';
+  createdAt?: string;
+  roleAssignments?: RoleAssignmentDto[];
+}
+
+export interface StaffListResponse {
+  data?: StaffMember[];
+  items?: StaffMember[];
+  results?: StaffMember[];
+  staff?: StaffMember[];
+  users?: StaffMember[];
+}
