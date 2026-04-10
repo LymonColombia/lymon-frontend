@@ -26,12 +26,17 @@ import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/prop
 import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCrm/guestsCrm';
 import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
-import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
 import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { adminGuard } from '@/infrastructure/guards/admin.guard';
 import { adminPublicGuard } from '@/infrastructure/guards/admin-public.guard';
 import { guestPublicGuard } from '@/infrastructure/guards/guest-public.guard';
+<<<<<<< LYMON-419-FE-Build-properties-units-marketplace-view
+import { guestGuard } from '@/infrastructure/guards/guest.guard';
+import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/guest-checkout/guest-checkout';
+import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
+=======
+>>>>>>> staging
 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
@@ -58,6 +63,23 @@ export const routes: Routes = [
 
   // Booking — public route (no auth required)
   { path: 'booking', component: BookingComponent },
+<<<<<<< LYMON-419-FE-Build-properties-units-marketplace-view
+
+  // Guest flow
+  { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/reservations', component: GuestReservationsComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
+
+  // Guest flow
+  { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/reservations', component: GuestReservationsComponent, canActivate: [guestGuard] },
+
+  { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
+=======
+>>>>>>> staging
 
   // Authenticated hotel shell
   {

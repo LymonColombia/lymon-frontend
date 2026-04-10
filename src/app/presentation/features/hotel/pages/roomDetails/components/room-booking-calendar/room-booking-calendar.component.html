@@ -1,0 +1,50 @@
+<div class="calendar">
+  <div class="cal-header">
+    <button class="cal-nav-btn" type="button" (click)="prevMonth()" aria-label="Mes anterior">
+      <ng-icon name="bootstrapChevronLeft" size="14px" aria-hidden="true"></ng-icon>
+    </button>
+    <span class="cal-month-label">{{ monthLabel() }}</span>
+    <button class="cal-nav-btn" type="button" (click)="nextMonth()" aria-label="Mes siguiente">
+      <ng-icon name="bootstrapChevronRight" size="14px" aria-hidden="true"></ng-icon>
+    </button>
+  </div>
+
+  <div class="cal-weekdays">
+    @for (wd of weekdays; track wd) {
+      <span class="cal-weekday">{{ wd }}</span>
+    }
+  </div>
+
+  <div class="cal-days">
+    @for (day of calendarDays(); track day.date.getTime()) {
+      <button
+        type="button"
+        class="cal-day"
+        [class.other-month]="!day.isCurrentMonth"
+        [class.is-today]="day.isToday"
+        [class.is-past]="day.isPast"
+        [class.is-start]="day.isStart"
+        [class.is-end]="day.isEnd"
+        [class.in-range]="day.isInRange"
+        [disabled]="!day.isCurrentMonth || day.isPast"
+        (click)="onDayClick(day)">
+        {{ day.day }}
+      </button>
+    }
+  </div>
+
+  <div class="cal-legend">
+    <div class="legend-item">
+      <span class="legend-dot dot-selected"></span>
+      <span>Seleccionado</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot dot-range"></span>
+      <span>Rango</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot dot-today"></span>
+      <span>Hoy</span>
+    </div>
+  </div>
+</div>
