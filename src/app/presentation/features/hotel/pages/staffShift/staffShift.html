@@ -1,0 +1,118 @@
+<app-hotel-page-layout
+  title="Gestion de Turnos"
+  subtitle="Crea turnos fijos y asignalos a empleados por propiedad y fecha"
+>
+  <section class="tabs" aria-label="Navegacion de secciones de turnos">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab() === 'calendar'"
+      (click)="showCalendarTab()"
+    >
+      Calendario de Asignaciones
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab() === 'fixed'"
+      (click)="showFixedTab()"
+    >
+      Turnos Fijos
+    </button>
+  </section>
+
+  @if (activeTab() === 'calendar') {
+    <section class="section-block">
+      <header class="section-header">
+        <h2>Calendario de Turnos</h2>
+        <p>Visualiza y gestiona las asignaciones de turnos por fecha</p>
+      </header>
+
+      <div class="toolbar-row">
+        <div class="search-placeholder">Buscar por empleado, propiedad o turno...</div>
+        <button type="button" class="btn-primary">+ Nueva asignacion</button>
+      </div>
+
+      @for (day of assignmentDays; track day.dateLabel) {
+        <article class="day-card">
+          <header class="day-card-header">{{ day.dateLabel }}</header>
+
+          <div class="day-list">
+            @for (assignment of day.assignments; track assignment.employeeName) {
+              <article class="assignment-row">
+                <div class="assignment-left">
+                  <span class="avatar">{{ assignment.employeeInitials }}</span>
+
+                  <div class="assignment-info">
+                    <p class="employee-name">{{ assignment.employeeName }}</p>
+                    <p class="assignment-meta">
+                      {{ assignment.propertyName }}
+                      <span class="chip">{{ assignment.shiftName }}</span>
+                      {{ assignment.shiftTime }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="assignment-actions">
+                  <button type="button" class="icon-btn" aria-label="Editar turno">Editar</button>
+                  <button type="button" class="icon-btn" aria-label="Eliminar turno">Eliminar</button>
+                </div>
+              </article>
+            }
+          </div>
+        </article>
+      }
+    </section>
+  } @else {
+    <section class="section-block">
+      <header class="section-header">
+        <h2>Turnos Fijos</h2>
+        <p>Crea turnos fijos y reutilizalos para diferentes empleados y propiedades</p>
+      </header>
+
+      <section class="summary-grid" aria-label="Resumen de turnos fijos">
+        <article class="summary-card">
+          <p class="summary-label">Turnos fijos</p>
+          <p class="summary-value">3</p>
+          <p class="summary-hint">Plantillas disponibles para asignar</p>
+        </article>
+
+        <article class="summary-card">
+          <p class="summary-label">Turnos activos</p>
+          <p class="summary-value summary-value--ok">3</p>
+          <p class="summary-hint">En uso actualmente</p>
+        </article>
+
+        <article class="summary-card">
+          <p class="summary-label">Turnos inactivos</p>
+          <p class="summary-value">0</p>
+          <p class="summary-hint">Desactivados temporalmente</p>
+        </article>
+      </section>
+
+      <div class="toolbar-row">
+        <div class="search-placeholder">Buscar turnos fijos...</div>
+        <button type="button" class="btn-primary">+ Crear turno fijo</button>
+      </div>
+
+      <section class="fixed-grid" aria-label="Lista de turnos fijos">
+        @for (shift of fixedShifts; track shift.name) {
+          <article class="fixed-card">
+            <header class="fixed-card-header">
+              <h3>{{ shift.name }}</h3>
+              <span class="status-badge">{{ shift.status }}</span>
+            </header>
+
+            <p class="fixed-time">{{ shift.timeRange }}</p>
+
+            <footer class="fixed-card-actions">
+              <button type="button" class="btn-ghost">Desactivar</button>
+              <button type="button" class="icon-btn" aria-label="Editar turno fijo">Editar</button>
+              <button type="button" class="icon-btn" aria-label="Eliminar turno fijo">Eliminar</button>
+            </footer>
+          </article>
+        }
+      </section>
+    </section>
+  }
+</app-hotel-page-layout>

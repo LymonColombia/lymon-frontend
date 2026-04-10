@@ -29,6 +29,7 @@ import { DashboardComponent } from '@/presentation/features/dashboard/dashboard'
 import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
 import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
+import { StaffShiftComponent } from '@/presentation/features/hotel/pages/staffShift/staffShift';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -80,6 +81,7 @@ export const routes: Routes = [
       { path: 'audit-log', component: AuditLogComponent },
       { path: 'property-units', component: PropertyUnitsComponent },
       { path: 'crm/guests', component: GuestsCrmComponent },
+      {path: 'staff-shift', component: StaffShiftComponent}
     ],
   },
 
