@@ -28,7 +28,6 @@ import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCr
 import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
 import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
-import { authGuard, guestGuard } from '@/infrastructure/guards/auth.guard';
 import { StaffShiftComponent } from '@/presentation/features/hotel/pages/staffShift/staffShift';
 import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { adminGuard } from '@/infrastructure/guards/admin.guard';
@@ -71,13 +70,6 @@ export const routes: Routes = [
 
   { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
 
-  // Guest flow
-  { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
-
-  { path: 'guest/reservations', component: GuestReservationsComponent, canActivate: [guestGuard] },
-
-  { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
-
   // Authenticated hotel shell
   {
     path: '',
@@ -105,7 +97,7 @@ export const routes: Routes = [
       { path: 'property-units', component: PropertyUnitsComponent },
       { path: 'crm/guests', component: GuestsCrmComponent },
       { path: 'crm/guests/:guestId', component: GuestProfileComponent },
-      {path: 'staff-shift', component: StaffShiftComponent}
+      { path: 'staff-shift', component: StaffShiftComponent },
     ],
   },
 
