@@ -14,7 +14,7 @@ import { ModalComponent } from '@/presentation/shared/components/modal/modal.com
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { PlanType } from '@/domain/entities/auth.model';
-import { normalizePlanType, PLANS, type PlanCard, isPlanType } from './plans.data';
+import { normalizePlanType, LYHOST_PLANS, type LyhostPlan, isPlanType } from '@/domain/entities/lyhost-plan.model';
 
 @Component({
   selector: 'app-plans',
@@ -29,7 +29,7 @@ export class PlansComponent {
   private readonly tokenService = inject(TokenService);
   private readonly userSession = inject(UserSessionService);
 
-  readonly selectedPlan = signal<PlanCard | null>(null);
+  readonly selectedPlan = signal<LyhostPlan | null>(null);
 
   readonly currentPlanType = computed<PlanType | null>(() => {
     const fromSession = this.userSession.currentUser()?.planType;
@@ -45,7 +45,7 @@ export class PlansComponent {
     return normalizePlanType(fromToken);
   });
 
-  readonly plans = PLANS;
+  readonly plans = LYHOST_PLANS;
 
   readonly currentPlanLabel = computed(() => {
     const current = this.currentPlanType();
@@ -59,7 +59,7 @@ export class PlansComponent {
     return this.currentPlanType() === planType;
   }
 
-  openPlanDetails(plan: PlanCard): void {
+  openPlanDetails(plan: LyhostPlan): void {
     this.selectedPlan.set(plan);
   }
 

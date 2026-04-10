@@ -26,6 +26,7 @@ import {
   bootstrapPeople,
   bootstrapPersonAdd,
   bootstrapPersonGear,
+  bootstrapStar,
   bootstrapThreeDotsVertical,
 } from '@ng-icons/bootstrap-icons';
 
@@ -62,6 +63,7 @@ interface MenuItem {
       bootstrapPeople,
       bootstrapPersonAdd,
       bootstrapPersonGear,
+      bootstrapStar,
       bootstrapThreeDotsVertical,
     }),
   ],
@@ -116,6 +118,7 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/audit-log' },
     { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/crm/guests' },
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
+    { icon: 'bootstrapStar', label: 'Planes', route: '/plans' },
     { icon: 'bootstrapPersonGear', label: 'Configuración', route: '/settings' },
   ];
 

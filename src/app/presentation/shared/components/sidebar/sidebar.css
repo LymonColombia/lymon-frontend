@@ -75,6 +75,12 @@
   padding: var(--spacing-lg) 0;
 }
 
+.sidebar-logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .sidebar-header {
   position: relative;
   padding: 0 var(--spacing-2xl);
