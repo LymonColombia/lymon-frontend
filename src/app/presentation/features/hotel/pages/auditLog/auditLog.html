@@ -1,13 +1,22 @@
-<app-hotel-page-layout
-  title="Registros de Auditoría"
-  subtitle="Historial de acciones realizadas en tu organización."
-  iconName="bootstrapInfoCircle"
->
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+    <!-- Header -->
+    <div class="page-header">
+      <h1 class="page-title">Registros de Auditoría</h1>
+      <p class="page-subtitle">
+        Historial de acciones realizadas en tu organización.
+      </p>
+    </div>
 
     <!-- Forbidden -->
     @if (forbiddenError()) {
       <div class="alert alert-forbidden">
-        <ng-icon name="bootstrapInfoCircle" class="icon-forbidden" size="20px"></ng-icon>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="9" stroke="#92400e" stroke-width="1.5" fill="none" />
+          <path d="M10 6v4M10 13h.01" stroke="#92400e" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
         No tienes permiso para ver los registros de auditoría. Se requiere el permiso
         <strong>AUDIT_VIEW</strong>.
       </div>
@@ -62,7 +71,10 @@
 
         <div class="filter-actions">
           <button class="btn-search" (click)="applyFilters()">
-            <ng-icon name="bootstrapSearch" size="14px"></ng-icon>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="6.5" cy="6.5" r="5" stroke="white" stroke-width="1.5" fill="none" />
+              <path d="M10 10l3.5 3.5" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
             Buscar
           </button>
           @if (hasFilters()) {
@@ -89,12 +101,10 @@
         <!-- Table -->
         @if (items().length === 0) {
           <div class="empty-state">
-            <ng-icon
-              name="bootstrapFileEarmarkText"
-              size="48px"
-              class="icon-empty"
-              style="color: #ccc"
-            ></ng-icon>
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <rect x="8" y="12" width="32" height="28" rx="3" stroke="#ccc" stroke-width="2" fill="none" />
+              <path d="M16 20h16M16 27h10" stroke="#ccc" stroke-width="2" stroke-linecap="round" />
+            </svg>
             <p>No se encontraron registros con los filtros aplicados.</p>
           </div>
         } @else {
@@ -158,7 +168,11 @@
               }
 
               @for (p of pageNumbers(); track p) {
-                <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">
+                <button
+                  class="page-btn"
+                  [class.active]="p === currentPage()"
+                  (click)="goToPage(p)"
+                >
                   {{ p }}
                 </button>
               }
@@ -184,4 +198,5 @@
         }
       }
     }
-</app-hotel-page-layout>
+  </div>
+</div>

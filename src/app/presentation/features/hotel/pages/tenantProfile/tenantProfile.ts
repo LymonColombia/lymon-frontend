@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { UpdateTenantProfileUseCase } from '@/domain/use-cases/tenant/update-tenant-profile.use-case';
 
@@ -15,9 +15,8 @@ const URL_PATTERN = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w\-./?%&=]*)?$/;
 
 @Component({
   selector: 'app-tenant-profile',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, HotelPageLayoutComponent],
+  imports: [ReactiveFormsModule, SidebarComponent],
   templateUrl: './tenantProfile.html',
   styleUrl: './tenantProfile.css',
 })

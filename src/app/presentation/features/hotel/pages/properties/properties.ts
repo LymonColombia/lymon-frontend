@@ -2,37 +2,17 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  HotelPageLayoutComponent,
-  HotelPageMetaDirective,
-} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { SelectOption } from '@/presentation/shared/components/select/select.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { PropertyFormComponent } from './components/property-form/property-form.component';
-import { PropertyCardComponent } from './components/property-card/property-card.component';
+import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-property.use-case';
 import { Property } from '@/domain/entities/staff.model';
 import { CancellationPolicy, PropertyType } from '@/domain/entities/property.model';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    HotelPageLayoutComponent,
-    HotelPageMetaDirective,
-    ButtonComponent,
-    ModalComponent,
-    PropertyFormComponent,
-    PropertyCardComponent,
-    NgIcon,
-  ],
-  providers: [provideIcons({ bootstrapHouseDoorFill, bootstrapPlus })],
+  imports: [ReactiveFormsModule, SidebarComponent],
   templateUrl: './properties.html',
   styleUrls: ['./properties.css'],
 })
@@ -49,16 +29,8 @@ export class PropertiesComponent implements OnInit {
   readonly successMessage = signal<string | null>(null);
   readonly properties = signal<Property[]>([]);
 
-  readonly PROPERTY_TYPES: PropertyType[] = ['HOTEL', 'CASA', 'APARTAMENTO', 'VILLA', 'HOSTAL', 'GLAMPING'];
-  readonly CANCELLATION_POLICIES: CancellationPolicy[] = ['FLEXIBLE', 'STANDARD', 'STRICT'];
-  readonly propertyTypeOptions: SelectOption[] = this.PROPERTY_TYPES.map((type) => ({
-    value: type,
-    label: type,
-  }));
-  readonly cancellationPolicyOptions: SelectOption[] = this.CANCELLATION_POLICIES.map((policy) => ({
-    value: policy,
-    label: policy,
-  }));
+  readonly PROPERTY_TYPES: PropertyType[] = ['HOTEL', 'HOSTEL', 'APARTMENT', 'RESORT', 'VILLA'];
+  readonly CANCELLATION_POLICIES: CancellationPolicy[] = ['FLEXIBLE', 'MODERATE', 'STRICT'];
 
   readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -96,21 +68,13 @@ export class PropertiesComponent implements OnInit {
     });
   }
 
-  openForm(): void {
-    this.showForm.set(true);
+  toggleForm(): void {
+    this.showForm.update((v) => !v);
     this.errorMessage.set(null);
     this.successMessage.set(null);
-  }
-
-  closeForm(): void {
-    this.showForm.set(false);
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
-  }
-
-  cancelForm(): void {
-    this.closeForm();
-    this.form.reset({ propertyType: 'HOTEL', cancellationPolicy: 'FLEXIBLE' });
+    if (!this.showForm()) {
+      this.form.reset({ propertyType: 'HOTEL', cancellationPolicy: 'FLEXIBLE' });
+    }
   }
 
   navigateToUnits(propertyId: string): void {

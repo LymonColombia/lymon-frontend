@@ -1,6 +1,5 @@
 export interface TenantProfile {
   name: string;
-  email?: string | null;
   contactPhone?: string | null;
   address?: string | null;
   website?: string | null;

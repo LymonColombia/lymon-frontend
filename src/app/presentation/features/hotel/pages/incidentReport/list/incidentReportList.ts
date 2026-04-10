@@ -1,18 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapFileEarmarkText,
-  bootstrapFileEarmarkPlus,
-  bootstrapPencilSquare,
-  bootstrapPlusLg,
-} from '@ng-icons/bootstrap-icons';
-import {
-  HotelPageLayoutComponent,
-  HotelPageMetaDirective,
-  HotelPageActionsDirective,
-} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident/get-incident-reports.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
@@ -20,22 +14,7 @@ import { IncidentReport } from '@/domain/entities/incident-report.model';
 @Component({
   selector: 'app-incident-report-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    NgIcon,
-    HotelPageLayoutComponent,
-    HotelPageMetaDirective,
-    HotelPageActionsDirective,
-    ButtonComponent,
-  ],
-  providers: [
-    provideIcons({
-      bootstrapFileEarmarkText,
-      bootstrapFileEarmarkPlus,
-      bootstrapPencilSquare,
-      bootstrapPlusLg,
-    }),
-  ],
+  imports: [SidebarComponent, RouterLink],
   templateUrl: './incidentReportList.html',
   styleUrl: './incidentReportList.css',
 })
@@ -78,11 +57,9 @@ export class IncidentReportListComponent implements OnInit {
     });
   }
 
-  navigateToCreate(): void {
-    this.router.navigate(['/incident-report/create']);
-  }
-
   navigateToEdit(report: IncidentReport): void {
-    this.router.navigate(['/incident-report/edit', report.id], { state: { report } });
+    this.router.navigate(['/incident-report/edit', report.id], {
+      state: { report },
+    });
   }
 }

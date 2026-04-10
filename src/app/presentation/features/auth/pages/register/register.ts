@@ -10,14 +10,6 @@ import { Router, RouterLink } from '@angular/router';
 import { RegisterUseCase } from '@/domain/use-cases/auth/register.use-case';
 import { PlanType } from '@/domain/entities/auth.model';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapArrowRightCircleFill,
-  bootstrapEnvelope,
-  bootstrapLock,
-  bootstrapQuestionCircleFill,
-  bootstrapBuilding,
-} from '@ng-icons/bootstrap-icons';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -27,18 +19,8 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 
 @Component({
   selector: 'app-register',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon],
-  providers: [
-    provideIcons({
-      bootstrapArrowRightCircleFill,
-      bootstrapEnvelope,
-      bootstrapLock,
-      bootstrapQuestionCircleFill,
-      bootstrapBuilding,
-    }),
-  ],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './register.html',
   styleUrls: ['../../auth-form.css'],
 })
@@ -51,10 +33,10 @@ export class RegisterComponent {
   readonly errorMessage = signal<string | null>(null);
 
   readonly planOptions: { label: string; value: PlanType }[] = [
-    { label: 'Plan Básico (Trial)', value: 'TRIAL' },
-    { label: 'Lymon one', value: 'LYMON_ONE' },
-    { label: 'Lymon plus', value: 'PLUS' },
-    { label: 'Lymon prime', value: 'PRIME' },
+    { label: 'Trial (gratis)', value: 'TRIAL' },
+    { label: 'Lymon One', value: 'LYMON_ONE' },
+    { label: 'Plus', value: 'PLUS' },
+    { label: 'Prime', value: 'PRIME' },
   ];
 
   readonly form = this.fb.group(
@@ -85,7 +67,7 @@ export class RegisterComponent {
       .subscribe({
         next: () => {
           this.isLoading.set(false);
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/booking']);
         },
         error: (err: HttpErrorResponse) => {
           this.isLoading.set(false);

@@ -1,0 +1,393 @@
+<app-sidebar></app-sidebar>
+
+<div class="main-content">
+  <div class="unit-container">
+    <!-- Back link -->
+    <div class="page-back">
+      <a routerLink="/properties" class="back-link">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 12L6 8L10 4"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Volver a Propiedades
+      </a>
+    </div>
+
+    <!-- Page title -->
+    <div class="page-title-row">
+      <div class="page-icon">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <path d="M8 21h8M12 17v4" />
+          <path d="M7 8h.01M7 12h.01" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="page-title">Nueva Unidad</h1>
+        <p class="page-subtitle">
+          @if (propertyName()) {
+            Propiedad: <strong>{{ propertyName() }}</strong>
+          } @else {
+            Completa los datos de la nueva unidad
+          }
+        </p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Alerts -->
+      @if (errorMessage()) {
+        <div class="alert alert-error">{{ errorMessage() }}</div>
+      }
+      @if (successMessage()) {
+        <div class="alert alert-success">{{ successMessage() }}</div>
+      }
+
+      <!-- ─── Basic info ─────────────────────────── -->
+      <div class="form-card">
+        <div class="section-title">
+          <span class="section-icon">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </span>
+          Información Básica
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre de la Unidad <span class="required">*</span></label>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="Deluxe Ocean View Suite"
+              [class.input-invalid]="form.controls.name.invalid && form.controls.name.touched"
+            />
+            @if (form.controls.name.invalid && form.controls.name.touched) {
+              <span class="field-error">Campo requerido</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Precio por Noche <span class="required">*</span></label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">$</span>
+              <input
+                type="number"
+                formControlName="pricePerNight"
+                placeholder="150"
+                min="0"
+                step="0.01"
+                [class.input-invalid]="
+                  form.controls.pricePerNight.invalid && form.controls.pricePerNight.touched
+                "
+              />
+            </div>
+            @if (form.controls.pricePerNight.invalid && form.controls.pricePerNight.touched) {
+              <span class="field-error">Ingresa un precio válido</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Descripción <span class="required">*</span></label>
+          <textarea
+            formControlName="description"
+            rows="3"
+            placeholder="Spacious suite with private balcony..."
+            [class.input-invalid]="
+              form.controls.description.invalid && form.controls.description.touched
+            "
+          ></textarea>
+          @if (form.controls.description.invalid && form.controls.description.touched) {
+            <span class="field-error">Campo requerido</span>
+          }
+        </div>
+
+        <div class="form-row four-col">
+          <div class="form-group">
+            <label>Inventario <span class="required">*</span></label>
+            <input
+              type="number"
+              formControlName="inventoryCount"
+              min="1"
+              [class.input-invalid]="
+                form.controls.inventoryCount.invalid && form.controls.inventoryCount.touched
+              "
+            />
+            @if (form.controls.inventoryCount.invalid && form.controls.inventoryCount.touched) {
+              <span class="field-error">Mín. 1</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Máx. Huéspedes <span class="required">*</span></label>
+            <input
+              type="number"
+              formControlName="maxGuests"
+              min="1"
+              [class.input-invalid]="
+                form.controls.maxGuests.invalid && form.controls.maxGuests.touched
+              "
+            />
+            @if (form.controls.maxGuests.invalid && form.controls.maxGuests.touched) {
+              <span class="field-error">Mín. 1</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Huéspedes Estándar <span class="required">*</span></label>
+            <input
+              type="number"
+              formControlName="standardGuests"
+              min="1"
+              [class.input-invalid]="
+                form.controls.standardGuests.invalid && form.controls.standardGuests.touched
+              "
+            />
+            @if (form.controls.standardGuests.invalid && form.controls.standardGuests.touched) {
+              <span class="field-error">Mín. 1</span>
+            }
+          </div>
+          <div class="form-group">
+            <label>Baños <span class="required">*</span></label>
+            <input
+              type="number"
+              formControlName="bathroomsCount"
+              min="1"
+              [class.input-invalid]="
+                form.controls.bathroomsCount.invalid && form.controls.bathroomsCount.touched
+              "
+            />
+            @if (form.controls.bathroomsCount.invalid && form.controls.bathroomsCount.touched) {
+              <span class="field-error">Mín. 1</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="isShared" />
+            <span class="checkbox-text">Unidad compartida</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ─── Bedrooms ───────────────────────────── -->
+      <div class="form-card">
+        <div class="section-title">
+          <span class="section-icon">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M2 4v16M22 4v16M2 8h20M2 16h20" />
+            </svg>
+          </span>
+          Habitaciones y Camas
+        </div>
+
+        <div formArrayName="bedrooms">
+          @for (br of bedrooms.controls; track $index; let bi = $index) {
+            <div [formGroupName]="bi" class="bedroom-section">
+              <div class="bedroom-header">
+                <span class="bedroom-label">Habitación #{{ bi + 1 }}</span>
+                @if (bedrooms.length > 1) {
+                  <button type="button" class="btn-remove" (click)="removeBedroom(bi)">
+                    Eliminar
+                  </button>
+                }
+              </div>
+
+              <div class="form-group">
+                <label>Nombre de la Habitación <span class="required">*</span></label>
+                <input
+                  type="text"
+                  formControlName="roomName"
+                  placeholder="Master Bedroom"
+                  [class.input-invalid]="
+                    getBedroomAt(bi).get('roomName')!.invalid &&
+                    getBedroomAt(bi).get('roomName')!.touched
+                  "
+                />
+                @if (
+                  getBedroomAt(bi).get('roomName')!.invalid &&
+                  getBedroomAt(bi).get('roomName')!.touched
+                ) {
+                  <span class="field-error">Campo requerido</span>
+                }
+              </div>
+
+              <div formArrayName="beds">
+                @for (bed of getBedsOf(bi).controls; track $index; let bdi = $index) {
+                  <div [formGroupName]="bdi" class="bed-row">
+                    <div class="form-group">
+                      <label>Tipo de Cama</label>
+                      <select formControlName="type">
+                        @for (t of BED_TYPES; track t) {
+                          <option [value]="t">{{ t }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Cantidad</label>
+                      <input type="number" formControlName="count" min="1" />
+                    </div>
+                    @if (getBedsOf(bi).length > 1) {
+                      <button
+                        type="button"
+                        class="btn-remove-bed"
+                        (click)="removeBed(bi, bdi)"
+                        aria-label="Eliminar cama"
+                      >
+                        ✕
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+
+              <button type="button" class="btn-add-secondary" (click)="addBed(bi)">
+                + Agregar cama
+              </button>
+            </div>
+          }
+        </div>
+
+        <button type="button" class="btn-add-role" (click)="addBedroom()">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Agregar habitación
+        </button>
+      </div>
+
+      <!-- ─── Amenities ──────────────────────────── -->
+      <div class="form-card">
+        <div class="section-title">
+          <span class="section-icon">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"
+              />
+            </svg>
+          </span>
+          Amenidades
+        </div>
+        <div class="amenities-grid">
+          @for (amenity of AMENITY_OPTIONS; track amenity) {
+            <button
+              type="button"
+              class="amenity-chip"
+              [class.selected]="isAmenitySelected(amenity)"
+              (click)="toggleAmenity(amenity)"
+            >
+              {{ amenity }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- ─── External IDs (optional) ───────────── -->
+      <div class="form-card">
+        <div class="section-title">
+          <span class="section-icon">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </svg>
+          </span>
+          Identificadores Externos <span class="optional-label">(Opcional)</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Airbnb ID</label>
+            <input type="text" formControlName="airbnbId" placeholder="airbnb123456" />
+          </div>
+          <div class="form-group">
+            <label>Booking.com ID</label>
+            <input type="text" formControlName="bookingId" placeholder="booking789012" />
+          </div>
+          <div class="form-group">
+            <label>VRBO ID</label>
+            <input type="text" formControlName="vrboId" placeholder="vrbo345678" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Actions ────────────────────────────── -->
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="onCancel()">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
+          @if (isLoading()) {
+            Guardando...
+          } @else {
+            Crear Unidad
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

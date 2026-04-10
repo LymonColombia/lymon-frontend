@@ -1,17 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormArray,
-  Validators,
-  AbstractControl,
-} from '@angular/forms';
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapPlusLg, bootstrapXLg, bootstrapPencilSquare } from '@ng-icons/bootstrap-icons';
-import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { UpdateIncidentReportUseCase } from '@/domain/use-cases/update-incident-report.use-case';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
 
@@ -20,15 +17,7 @@ const URL_PATTERN = /^https?:\/\/.+/;
 @Component({
   selector: 'app-edit-incident-report',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    NgIcon,
-    HotelPageLayoutComponent,
-    ButtonComponent,
-  ],
-  providers: [provideIcons({ bootstrapPlusLg, bootstrapXLg, bootstrapPencilSquare })],
+  imports: [ReactiveFormsModule, SidebarComponent, RouterLink],
   templateUrl: './editIncidentReport.html',
   styleUrl: './editIncidentReport.css',
 })
@@ -55,15 +44,25 @@ export class EditIncidentReportComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (!id) { this.notFound.set(true); return; }
+    if (!id) {
+      this.notFound.set(true);
+      return;
+    }
     this.reportId.set(id);
 
-    const state = this.router.currentNavigation()?.extras.state as { report?: IncidentReport } | undefined;
+    const state = this.router.getCurrentNavigation()?.extras.state as { report?: IncidentReport } | undefined;
     const report = state?.report ?? (history.state as { report?: IncidentReport })?.report;
 
-    if (!report) { this.notFound.set(true); return; }
+    if (!report) {
+      this.notFound.set(true);
+      return;
+    }
 
-    this.form.patchValue({ title: report.title, description: report.description });
+    this.form.patchValue({
+      title: report.title,
+      description: report.description,
+    });
+
     (report.attachmentUrls ?? []).forEach((url) => this.addAttachmentUrl(url));
   }
 

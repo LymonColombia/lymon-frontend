@@ -1,21 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  HotelPageActionsDirective,
-  HotelPageLayoutComponent,
-} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
-import {
-  bootstrapCalendar,
-  bootstrapCurrencyDollar,
-  bootstrapDownload,
-  bootstrapEye,
-  bootstrapFilter,
-  bootstrapGraphUpArrow,
-  bootstrapReceipt,
-  bootstrapSearch,
-} from '@ng-icons/bootstrap-icons';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 
 interface SaleMetric {
   label: string;
@@ -39,28 +24,10 @@ interface Invoice {
 
 @Component({
   selector: 'app-sales-summary',
-  imports: [
-    HotelPageLayoutComponent,
-    HotelPageActionsDirective,
-    NgIcon,
-    ButtonComponent,
-    InputComponent,
-  ],
-  providers: [
-    provideIcons({
-      bootstrapCalendar,
-      bootstrapCurrencyDollar,
-      bootstrapDownload,
-      bootstrapEye,
-      bootstrapFilter,
-      bootstrapGraphUpArrow,
-      bootstrapReceipt,
-      bootstrapSearch,
-    }),
-  ],
+  standalone: true,
+  imports: [CommonModule, SidebarComponent],
   templateUrl: './salesSummary.html',
-  styleUrl: './salesSummary.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './salesSummary.css'
 })
 export class SalesSummaryComponent {
   metrics: SaleMetric[] = [
@@ -98,9 +65,9 @@ export class SalesSummaryComponent {
   ];
 
   paymentMethods = [
-    { label: 'Tarjeta', percentage: 45, color: 'var(--color-primary-dark)' },
-    { label: 'Efectivo', percentage: 30, color: 'var(--color-primary)' },
-    { label: 'Transferencia', percentage: 25, color: 'var(--color-primary-light)' }
+    { label: 'Tarjeta', percentage: 45, color: '#009A44' },
+    { label: 'Efectivo', percentage: 30, color: '#6CC24A' },
+    { label: 'Transferencia', percentage: 25, color: '#B8E986' }
   ];
 
   invoices: Invoice[] = [
@@ -113,7 +80,7 @@ export class SalesSummaryComponent {
       total: '$450.00',
       method: 'Tarjeta',
       status: 'Pagada',
-      statusColor: 'color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary))'
+      statusColor: '#E8F5E9'
     },
     {
       id: 'F-002',
@@ -124,7 +91,7 @@ export class SalesSummaryComponent {
       total: '$400.00',
       method: 'Efectivo',
       status: 'Pagada',
-      statusColor: 'color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary))'
+      statusColor: '#E8F5E9'
     },
     {
       id: 'F-003',
@@ -135,7 +102,7 @@ export class SalesSummaryComponent {
       total: '$180.00',
       method: 'Transferencia',
       status: 'Pendiente',
-      statusColor: 'color-mix(in srgb, var(--color-warning) 22%, var(--color-bg-primary))'
+      statusColor: '#FFF3E0'
     },
     {
       id: 'F-004',
@@ -146,7 +113,7 @@ export class SalesSummaryComponent {
       total: '$600.00',
       method: 'Tarjeta',
       status: 'Pagada',
-      statusColor: 'color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary))'
+      statusColor: '#E8F5E9'
     },
     {
       id: 'F-005',
@@ -157,7 +124,7 @@ export class SalesSummaryComponent {
       total: '$350.00',
       method: 'Efectivo',
       status: 'Pagada',
-      statusColor: 'color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary))'
+      statusColor: '#E8F5E9'
     }
   ];
 

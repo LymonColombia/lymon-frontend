@@ -8,7 +8,6 @@ import { vi } from 'vitest';
 
 import { CreateIncidentReportComponent } from './createIncidentReport';
 import { CreateIncidentReportUseCase } from '@/domain/use-cases/incident/create-incident-report.use-case';
-import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
@@ -36,16 +35,7 @@ describe('CreateIncidentReportComponent — Registrar Novedad Laboral', () => {
       providers: [
         provideRouter([]),
         { provide: CreateIncidentReportUseCase, useValue: { execute: createMock } },
-        { provide: GetTenantProfileUseCase, useValue: { execute: () => of({ data: {} }) } },
-        {
-          provide: UserSessionService,
-          useValue: {
-            get tenantId() {
-              return PROPERTY_ID;
-            },
-            currentUser: () => null,
-          },
-        },
+        { provide: UserSessionService, useValue: { tenantId: PROPERTY_ID } },
       ],
     }).compileComponents();
 
