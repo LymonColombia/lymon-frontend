@@ -102,7 +102,7 @@ describe('TenantProfileComponent — Obtener y Editar Perfil del Negocio', () =>
     it('llama al use-case exactamente una vez al inicializar', () => {
       fixture.detectChanges();
 
-      expect(getTenantProfileMock).toHaveBeenCalledTimes(2);
+      expect(getTenantProfileMock).toHaveBeenCalledTimes(1);
     });
   });
 

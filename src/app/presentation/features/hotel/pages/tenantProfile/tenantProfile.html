@@ -1,7 +1,11 @@
-<app-hotel-page-layout
-  title="Perfil del Negocio"
-  subtitle="Actualiza la información pública de tu establecimiento."
->
+<div class="page-layout">
+  <app-sidebar />
+
+  <main class="page-content">
+    <div class="page-header">
+      <h1 class="page-title">Perfil del Negocio</h1>
+      <p class="page-subtitle">Actualiza la información pública de tu establecimiento.</p>
+    </div>
 
     @if (isLoadingProfile()) {
       <div class="loading-state">
@@ -115,4 +119,5 @@
         </form>
       </div>
     }
-</app-hotel-page-layout>
+  </main>
+</div>

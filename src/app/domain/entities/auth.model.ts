@@ -1,6 +1,6 @@
-export type PlanType = 'TRIAL' | 'LYMON_ONE' | 'PLUS' | 'PRIME';
+export type PlanType = 'LYMON_ONE' | 'PLUS' | 'PRIME' | 'TRIAL';
 
-export type UserRole = 'ADMIN' | 'STAFF';
+export type UserRole = 'OWNER' | 'EMPLOYEE';
 
 export interface LoginRequest {
   email: string;
@@ -23,7 +23,6 @@ export interface AuthUser {
   userId: string;
   email: string;
   tenantId: string;
-  planType?: PlanType;
   role?: UserRole;
   emailVerified?: boolean;
 }

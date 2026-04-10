@@ -32,8 +32,6 @@
   text-decoration: none;
   
   width: 100%;
-  box-sizing: border-box;
-  border: 2px solid transparent;
 }
 
 .btn-inner:focus-visible {
@@ -66,7 +64,7 @@
 :host.btn-primary .btn-inner {
   color: var(--color-bg-primary);
   background: var(--color-primary-gradient);
-  border-color: transparent;
+  border: none;
   box-shadow: var(--shadow-sm);
 }
 
@@ -102,25 +100,17 @@
 :host.btn-outline .btn-inner {
   color: var(--color-primary-dark);
   background: transparent;
-  border-color: transparent;
-  box-shadow: inset 0 0 0 2px var(--color-primary);
+  border: 2px solid var(--color-primary);
 }
 
 :host.btn-outline .btn-inner:hover:not(:disabled) {
   background: var(--color-primary);
   color: var(--color-bg-primary);
-  box-shadow: inset 0 0 0 2px var(--color-primary);
 }
 
 :host.btn-outline .btn-inner:active:not(:disabled) {
   background: var(--color-primary-dark);
-  box-shadow: inset 0 0 0 2px var(--color-primary-dark);
-}
-
-:host(.outline-emphasis).btn-outline .btn-inner {
-  box-shadow:
-    inset 0 0 0 2px var(--color-primary),
-    0 0 0 1px color-mix(in srgb, var(--color-primary) 40%, transparent);
+  border-color: var(--color-primary-dark);
 }
 
 /* ===== VARIANT: GHOST ===== */

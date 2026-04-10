@@ -1,6 +1,6 @@
-export type PropertyType = 'HOTEL' | 'CASA' | 'APARTAMENTO' | 'VILLA' | 'HOSTAL' | 'GLAMPING';
+export type PropertyType = 'HOTEL' | 'HOSTEL' | 'APARTMENT' | 'RESORT' | 'VILLA';
 
-export type CancellationPolicy = 'FLEXIBLE' | 'STANDARD' | 'STRICT';
+export type CancellationPolicy = 'FLEXIBLE' | 'MODERATE' | 'STRICT';
 
 export type BedType = 'SINGLE' | 'DOUBLE' | 'QUEEN' | 'KING' | 'TWIN' | 'BUNK';
 

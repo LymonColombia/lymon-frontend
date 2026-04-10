@@ -1,138 +1,58 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  signal,
-  inject,
-  OnInit,
-  computed,
-  DestroyRef,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
 import { Reservation } from '@/domain/entities/reservation.model';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapBuilding,
-  bootstrapPeople,
-  bootstrapCurrencyDollar,
-  bootstrapGraphUpArrow,
-} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgIcon],
-  providers: [
-    provideIcons({
-      bootstrapBuilding,
-      bootstrapPeople,
-      bootstrapCurrencyDollar,
-      bootstrapGraphUpArrow,
-    }),
-  ],
+  imports: [CommonModule, SidebarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./dashboard.css'],
   templateUrl: './dashboard.html'
 })
 export class DashboardComponent implements OnInit {
-    private normalizeReservationStatus(status: Reservation['status'] | string): string {
-      return String(status ?? '').trim().toLowerCase();
-    }
-
-    private isActiveReservation(status: Reservation['status'] | string): boolean {
-      return this.normalizeReservationStatus(status) === 'active';
-    }
-
-    private isInCurrentMonth(dateValue: string): boolean {
-      const reservationDate = new Date(dateValue);
-      if (Number.isNaN(reservationDate.getTime())) {
-        return false;
-      }
-
-      const now = new Date();
-      return reservationDate.getMonth() === now.getMonth() && reservationDate.getFullYear() === now.getFullYear();
-    }
-
-    private normalizeAmount(value: unknown): number {
-      const parsedValue = Number(value);
-      return Number.isFinite(parsedValue) ? parsedValue : 0;
-    }
-
-    getStatusLabel(status: Reservation['status'] | string): string {
-      const normalizedStatus = this.normalizeReservationStatus(status);
-
-      switch (normalizedStatus) {
-        case 'active':
-          return 'Activo';
-        case 'pending':
-          return 'Pendiente';
-        case 'finished':
-          return 'Finalizada';
-        case 'confirmed':
-          return 'Confirmada';
-        case 'cancelled':
-          return 'Cancelada';
-        default:
-          return String(status ?? 'Sin estado');
-      }
-    }
-
-    getStatusClass(status: Reservation['status'] | string): string {
-      return this.normalizeReservationStatus(status);
-    }
-
-    private normalizeReservations(payload: unknown): Reservation[] {
-      if (Array.isArray(payload)) {
-        return payload as Reservation[];
-      }
-
-      if (payload && typeof payload === 'object' && 'data' in payload) {
-        const data = (payload as { data?: unknown }).data;
-        if (Array.isArray(data)) {
-          return data as Reservation[];
-        }
-      }
-
-      return [];
-    }
-
-  private readonly getReservationsUseCase = inject(GetReservationsUseCase);
-  private readonly destroyRef = inject(DestroyRef);
+  private getReservationsUseCase = inject(GetReservationsUseCase);
   
-  readonly reservations = signal<Reservation[]>([]);
-  readonly isLoading = signal(false);
-  readonly loadError = signal<string | null>(null);
+  reservations = signal<Reservation[]>([]);
   
-  readonly occupiedRooms = computed(() => this.reservations().filter(r => this.isActiveReservation(r.status)).length);
+  occupiedRooms = computed(() => this.reservations().filter(r => r.status === 'active').length);
   
-  readonly activeGuests = computed(() => 
+  activeGuests = computed(() => 
     this.reservations()
-      .filter(r => this.isActiveReservation(r.status))
+      .filter(r => r.status === 'active')
       .reduce((total, r) => total + (r.guestsCount || 0), 0)
   );
 
-  readonly monthlyRevenue = computed(() => {
+  monthlyRevenue = computed(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
     return this.reservations()
-      .filter(r => this.isInCurrentMonth(r.checkIn))
-      .reduce((total, r) => total + this.normalizeAmount(r.totalPrice), 0);
+      .filter(r => {
+        const checkIn = new Date(r.checkIn);
+        return checkIn.getMonth() === currentMonth && checkIn.getFullYear() === currentYear && r.status !== 'cancelled';
+      })
+      .reduce((total, r) => total + (r.totalPrice || 0), 0);
   });
 
-  readonly occupancyRate = computed(() => {
+  occupancyRate = computed(() => {
     const totalCapacity = 120;
     const occupied = this.occupiedRooms();
     return totalCapacity > 0 ? Math.round((occupied / totalCapacity) * 100) : 0;
   });
 
-  readonly recentReservations = computed(() => 
+  recentReservations = computed(() => 
     [...this.reservations()]
       .sort((a, b) => new Date(b.checkIn).getTime() - new Date(a.checkIn).getTime())
       .slice(0, 5)
   );
 
-  readonly reservationStats = computed(() => {
+  reservationStats = computed(() => {
     const reservations = this.reservations();
-    const stats: Array<{ monthLabel: string; count: number; revenue: number }> = [];
+    const stats = [];
     const today = new Date();
     
     for (let i = 5; i >= 0; i--) {
@@ -160,11 +80,32 @@ export class DashboardComponent implements OnInit {
     return stats.map(s => ({
       ...s,
       countHeight: (s.count / maxCount) * 100, 
-      revenueHeight: (s.revenue / maxRevenue) * 100,
+      revenueY: 130 - ((s.revenue / maxRevenue) * 80)
     }));
   });
 
-  readonly revenueAxisLabels = computed(() => {
+  revenueChartPath = computed(() => {
+    const stats = this.reservationStats();
+    if (stats.length === 0) return '';
+    
+
+    return 'M ' + stats.map((s, i) => {
+      const x = 40 + (i * 48); 
+      return `${x} ${s.revenueY}`;
+    }).join(' L ');
+  });
+
+  revenueChartPoints = computed(() => {
+    const stats = this.reservationStats();
+    return stats.map((s, i) => ({
+      x: 40 + (i * 48),
+      y: s.revenueY,
+      value: s.revenue,
+      label: s.monthLabel
+    }));
+  });
+
+  revenueAxisLabels = computed(() => {
     const stats = this.reservationStats();
     const maxRevenue = Math.max(...stats.map(s => s.revenue), 100);
     return [
@@ -174,42 +115,16 @@ export class DashboardComponent implements OnInit {
     ];
   });
 
-  readonly revenueSummary = computed(() => {
-    const stats = this.reservationStats();
-    const current = stats.at(-1);
-    const previous = stats.at(-2);
-
-    if (!current || !previous) {
-      return {
-        delta: 0,
-        trend: 'stable' as 'up' | 'down' | 'stable',
-      };
-    }
-
-    const delta = current.revenue - previous.revenue;
-    const trend: 'up' | 'down' | 'stable' = delta > 0 ? 'up' : delta < 0 ? 'down' : 'stable';
-
-    return { delta, trend };
-  });
-
-  ngOnInit(): void {
+  ngOnInit() {
     this.loadReservations();
   }
 
-  loadReservations(): void {
-    this.isLoading.set(true);
-    this.loadError.set(null);
-
-    this.getReservationsUseCase.execute().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+  loadReservations() {
+    this.getReservationsUseCase.execute().subscribe({
       next: (data) => {
-        this.reservations.set(this.normalizeReservations(data));
-        this.isLoading.set(false);
+        this.reservations.set(data);
       },
-      error: (err) => {
-        this.loadError.set('No se pudo cargar la información del dashboard.');
-        this.isLoading.set(false);
-        console.error('Error loading reservations', err);
-      }
+      error: (err) => console.error('Error loading reservations', err)
     });
   }
 }

@@ -3,26 +3,11 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapArrowRightCircleFill,
-  bootstrapEnvelope,
-  bootstrapLock,
-  bootstrapQuestionCircleFill,
-} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon],
-  providers: [
-    provideIcons({
-      bootstrapEnvelope,
-      bootstrapLock,
-      bootstrapQuestionCircleFill,
-      bootstrapArrowRightCircleFill,
-    }),
-  ],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrls: ['../../auth-form.css'],
 })
@@ -53,7 +38,7 @@ export class LoginComponent {
     this.loginUseCase.execute({ email: email!, password: password! }).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/booking']);
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
