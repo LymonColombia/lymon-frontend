@@ -28,6 +28,12 @@ export class HotelPageMetaDirective {}
 })
 export class HotelPageActionsDirective {}
 
+@Directive({
+  selector: '[hotelPageIcon]',
+  standalone: true,
+})
+export class HotelPageIconDirective {}
+
 @Component({
   selector: 'app-hotel-page-layout',
   standalone: true,
@@ -52,8 +58,10 @@ export class HotelPageLayoutComponent {
 
   private readonly metaSlot = contentChild(HotelPageMetaDirective);
   private readonly actionsSlot = contentChild(HotelPageActionsDirective);
+  private readonly iconSlot = contentChild(HotelPageIconDirective);
 
   readonly hasMeta = computed(() => Boolean(this.metaSlot()));
   readonly hasActions = computed(() => Boolean(this.actionsSlot()));
   readonly hasRightContent = computed(() => this.hasMeta() || this.hasActions());
+  readonly hasCustomIcon = computed(() => Boolean(this.iconSlot()));
 }

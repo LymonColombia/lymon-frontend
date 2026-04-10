@@ -1,0 +1,716 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--color-bg-secondary);
+  font-family: var(--font-primary);
+}
+
+/* ---- Initials avatar ---- */
+
+.guest-initials-avatar {
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+/* ---- Feedback states ---- */
+
+.page-feedback {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.alert {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+}
+
+.alert-error {
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* ---- Contact strip ---- */
+
+.profile-contact-strip {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 18px 24px;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 32px;
+}
+
+/* ---- Shared section layout ---- */
+
+.profile-section {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.profile-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: var(--font-weight-bold);
+}
+
+.profile-section-title-icon {
+  color: var(--color-primary-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Contact items (reused from guestsCrm) ---- */
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact-icon {
+  color: var(--color-primary-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-value {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.contact-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.contact-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-success) 12%, var(--color-bg-primary));
+  border: 1px solid color-mix(in srgb, var(--color-success) 34%, var(--color-bg-primary));
+  color: var(--color-primary-dark);
+  font-size: 14px;
+  line-height: 1;
+  font-weight: var(--font-weight-medium);
+}
+
+/* ---- Status pill (reused from guestsCrm) ---- */
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  border-radius: 18px;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid transparent;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.status-active {
+  color: var(--color-primary-dark);
+  background: color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary));
+  border-color: color-mix(in srgb, var(--color-success) 40%, var(--color-bg-primary));
+}
+
+.status-inactive {
+  color: var(--color-text-secondary);
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-border-light);
+}
+
+/* ---- Stats grid (5-column) ---- */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.stats-grid--rich {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--color-success) 34%, var(--color-bg-primary));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-success) 8%, var(--color-bg-primary)) 0%,
+    color-mix(in srgb, var(--color-success) 14%, var(--color-bg-primary)) 100%
+  );
+  min-height: 104px;
+}
+
+.stat-card-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.stat-card-icon {
+  color: var(--color-primary-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-card-value {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 20px;
+  line-height: 1.15;
+  font-weight: var(--font-weight-bold);
+}
+
+/* ---- Notes section header ---- */
+
+.notes-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ---- Note filter tabs ---- */
+
+.note-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--color-border-light);
+  padding-bottom: 0;
+}
+
+.note-filter-tab {
+  padding: 8px 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition:
+    color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.note-filter-tab:hover {
+  color: var(--color-text-primary);
+}
+
+.note-filter-tab--active {
+  color: var(--color-primary-dark);
+  border-bottom-color: var(--color-primary-dark);
+}
+
+.note-filter-tab:focus-visible {
+  outline: 2px solid rgba(36, 87, 214, 0.28);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Note form card (reused from guestsCrm) ---- */
+
+.guest-note-card {
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid #9ad9b0;
+  background: linear-gradient(180deg, #f6fcf8 0%, #eef8f2 100%);
+}
+
+.guest-note-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.guest-note-icon {
+  color: var(--color-primary-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guest-note-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: var(--font-weight-semibold);
+}
+
+.guest-note-field {
+  display: grid;
+  gap: 10px;
+}
+
+.guest-note-label {
+  color: var(--color-text-primary);
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: var(--font-weight-semibold);
+}
+
+.guest-note-textarea {
+  width: 100%;
+  min-height: 124px;
+  resize: vertical;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-primary);
+  font-size: 15px;
+  line-height: 1.5;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.guest-note-textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.guest-note-textarea:focus {
+  border-color: #9ad9b0;
+  box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.12);
+}
+
+.guest-note-counter {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.guest-note-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ---- Notes list (reused from guestsCrm) ---- */
+
+.guest-notes-list {
+  display: grid;
+  gap: 14px;
+}
+
+.guest-note-history-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1px solid #d7e3db;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.guest-note-history-card-pinned {
+  border-color: #9ad9b0;
+  background: linear-gradient(180deg, #f7fdf9 0%, #f3fbf6 100%);
+}
+
+.guest-note-history-main {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.guest-note-history-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-dark);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.guest-note-history-content {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.guest-note-history-text {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 16px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.guest-note-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #667085;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.guest-note-category-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid #d0d5dd;
+  color: #475467;
+  background: #f8fafc;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: var(--font-weight-medium);
+}
+
+.guest-note-category-chip-preference {
+  border-color: #b3c8ff;
+  color: #2457d6;
+  background: #eef4ff;
+}
+
+.guest-note-category-chip-behavior {
+  border-color: #f5c7a1;
+  color: #c25b12;
+  background: #fff4ea;
+}
+
+.guest-note-category-chip-incident {
+  border-color: #f7b2b7;
+  color: #c01048;
+  background: #fff0f3;
+}
+
+.guest-note-category-chip-general {
+  border-color: #d0d5dd;
+  color: #475467;
+  background: #f8fafc;
+}
+
+.guest-note-history-side {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.guest-note-pin-badge {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: none;
+  background: #f2f4f7;
+  color: #98a2b3;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.guest-note-pin-badge-active {
+  background: var(--color-primary-dark);
+  color: #ffffff;
+}
+
+.guest-note-pin-badge:focus-visible {
+  outline: 2px solid rgba(36, 87, 214, 0.28);
+  outline-offset: 2px;
+}
+
+.notes-feedback {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.notes-feedback-error {
+  color: var(--color-danger);
+}
+
+/* ---- Booking list (reused from guestsCrm) ---- */
+
+.booking-list {
+  display: grid;
+  gap: 16px;
+}
+
+.booking-card {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  background: var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: 12px;
+}
+
+.booking-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.booking-property {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.booking-property-icon {
+  color: var(--color-primary-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.booking-property-text {
+  display: grid;
+  gap: 2px;
+}
+
+.booking-property-name {
+  color: var(--color-text-primary);
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-primary);
+}
+
+.booking-unit-name {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+  font-family: var(--font-secondary);
+}
+
+.booking-card-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.booking-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1;
+  font-weight: var(--font-weight-semibold);
+}
+
+.booking-status-info {
+  background: color-mix(in srgb, var(--color-info) 14%, var(--color-bg-primary));
+  color: color-mix(in srgb, var(--color-info) 72%, var(--color-text-primary));
+}
+
+.booking-status-success {
+  background: #e8f7ef;
+  color: var(--color-primary-dark);
+}
+
+.booking-status-warning {
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-primary));
+  color: color-mix(in srgb, var(--color-warning) 72%, var(--color-text-primary));
+}
+
+.booking-status-danger {
+  background: color-mix(in srgb, var(--color-danger) 14%, var(--color-bg-primary));
+  color: color-mix(in srgb, var(--color-danger) 72%, var(--color-text-primary));
+}
+
+/* ---- Source badge (new) ---- */
+
+.booking-source-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: var(--font-weight-semibold);
+  /* default (fallback) */
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+}
+
+.booking-source-badge--airbnb {
+  background: #fff0ee;
+  color: #c13515;
+  border: 1px solid #f5c4bb;
+}
+
+.booking-source-badge--booking {
+  background: #eef2ff;
+  color: #1a3fa3;
+  border: 1px solid #b3c5f7;
+}
+
+.booking-source-badge--vrbo {
+  background: #e6f7f5;
+  color: #0b6e65;
+  border: 1px solid #9dd4cf;
+}
+
+.booking-source-badge--direct {
+  background: #e8f7ef;
+  color: var(--color-primary-dark);
+  border: 1px solid color-mix(in srgb, var(--color-success) 40%, var(--color-bg-primary));
+}
+
+.booking-source-badge--manual {
+  background: #f8fafc;
+  color: #475467;
+  border: 1px solid #d0d5dd;
+}
+
+/* ---- Booking card meta/details ---- */
+
+.booking-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.booking-card-meta strong {
+  color: var(--color-primary-dark);
+  font-weight: var(--font-weight-bold);
+}
+
+.booking-card-details {
+  display: grid;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.booking-feedback {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.booking-feedback-error {
+  color: var(--color-danger);
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 1280px) {
+  .stats-grid--rich {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .stats-grid--rich {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-contact-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid--rich {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-card-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .notes-section-header,
+  .guest-note-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .guest-note-history-card,
+  .guest-note-history-side {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .note-filter-tabs {
+    gap: 2px;
+  }
+}

@@ -24,6 +24,7 @@
 
 .page-back {
   margin-bottom: var(--spacing-md);
+  margin-left: -8px;
 }
 
 .back-link {
@@ -31,13 +32,22 @@
   align-items: center;
   gap: var(--spacing-xs);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  padding: 6px 12px 6px 8px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .back-link:hover {
   color: var(--color-primary-dark);
+  background-color: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-primary));
+  border-color: color-mix(in srgb, var(--color-success) 30%, var(--color-bg-primary));
 }
 
 .page-title-row {

@@ -3,421 +3,137 @@
   subtitle="Visualiza y gestiona la información de los huéspedes que han realizado reservas en tus propiedades."
   iconName="bootstrapPeopleFill"
 >
-
-    <section class="search-section">
-      <app-select
-        class="filter-select"
-        id="crm-search-field"
-        name="crm-search-field"
-        size="medium"
-        placeholder=""
-        [options]="selectOptions"
-        [hasIcon]="true"
-        [value]="searchField()"
-        (valueChange)="selectSearchField($event)"
-      >
-        <span icon class="filter-icon" aria-hidden="true">
-          @switch (selectedFilterOption().icon) {
-            @case ('user') {
-              <ng-icon name="bootstrapPerson" size="20px"></ng-icon>
-            }
-            @case ('mail') {
-              <ng-icon name="bootstrapEnvelope" size="20px"></ng-icon>
-            }
-            @case ('phone') {
-              <ng-icon name="bootstrapTelephone" size="20px"></ng-icon>
-            }
+  <section class="search-section">
+    <app-select
+      class="filter-select"
+      id="crm-search-field"
+      name="crm-search-field"
+      size="medium"
+      placeholder=""
+      [options]="selectOptions"
+      [hasIcon]="true"
+      [value]="searchField()"
+      (valueChange)="selectSearchField($event)"
+    >
+      <span icon class="filter-icon" aria-hidden="true">
+        @switch (selectedFilterOption().icon) {
+          @case ('user') {
+            <ng-icon name="bootstrapPerson" size="20px"></ng-icon>
           }
-        </span>
-      </app-select>
-
-      <label class="sr-only" for="searchInput">Buscar huésped</label>
-      <app-input
-        id="searchInput"
-        class="search-input"
-        type="text"
-        [placeholder]="searchPlaceholder()"
-        (valueChange)="onSearchTermChange(($event ?? '').toString())"
-      ></app-input>
-    </section>
-
-    @if (errorMessage()) {
-      <div class="alert alert-error">{{ errorMessage() }}</div>
-    }
-
-    <section class="table-card">
-      <table class="guests-table">
-        <thead>
-          <tr>
-            <th>Nombre del huésped</th>
-            <th>Correo electrónico</th>
-            <th>Teléfono</th>
-            <th>Última reserva</th>
-            <th>Estado</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (isLoading()) {
-            <tr>
-              <td class="empty-state" colspan="6">Cargando huéspedes...</td>
-            </tr>
-          } @else {
-            @for (guest of paginatedGuests(); track guest.email) {
-              <tr>
-                <td class="guest-name">{{ guest.name }}</td>
-                <td>{{ guest.email }}</td>
-                <td>{{ formatPhone(guest.phone) }}</td>
-                <td>{{ getLatestReservationLabel(guest) }}</td>
-                <td>
-                  <span
-                    class="status-pill"
-                    [class.status-active]="guest.status === 'active'"
-                    [class.status-inactive]="guest.status === 'inactive'"
-                  >
-                    {{ guest.status === 'active' ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </td>
-                <td>
-                  <app-button
-                    class="btn-view-profile"
-                    variant="primary"
-                    size="medium"
-                    (clicked)="openGuestPanel(guest)"
-                  >
-                    Ver perfil
-                  </app-button>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td class="empty-state" colspan="6">No se encontraron huéspedes con ese filtro.</td>
-              </tr>
-            }
+          @case ('mail') {
+            <ng-icon name="bootstrapEnvelope" size="20px"></ng-icon>
           }
-        </tbody>
-      </table>
-
-      @if (!isLoading() && pageNumbers().length > 0) {
-        <nav class="pagination" aria-label="Paginación de huéspedes">
-          <app-button
-            class="page-btn icon-btn"
-            variant="secondary"
-            size="medium"
-            [disabled]="currentPage() === 1"
-            (clicked)="goToPreviousPage()"
-            aria-label="Página anterior"
-          >
-            <ng-icon name="bootstrapChevronLeft" size="18px"></ng-icon>
-          </app-button>
-
-          @for (page of pageNumbers(); track page) {
-            <app-button
-              class="page-btn"
-              variant="secondary"
-              size="medium"
-              [disabled]="page === currentPage()"
-              (clicked)="goToPage(page)"
-            >
-              {{ page }}
-            </app-button>
+          @case ('phone') {
+            <ng-icon name="bootstrapTelephone" size="20px"></ng-icon>
           }
-
-          <app-button
-            class="page-btn icon-btn"
-            variant="secondary"
-            size="medium"
-            [disabled]="currentPage() === totalPages()"
-            (clicked)="goToNextPage()"
-            aria-label="Página siguiente"
-          >
-            <ng-icon name="bootstrapChevronRight" size="18px"></ng-icon>
-          </app-button>
-        </nav>
-      }
-    </section>
-
-  <div
-    class="guest-panel-backdrop"
-    [class.is-open]="isGuestPanelOpen()"
-    [attr.aria-hidden]="!isGuestPanelOpen()"
-    (click)="closeGuestPanel()"
-  ></div>
-
-  <aside
-    class="guest-panel"
-    [class.is-open]="isGuestPanelOpen()"
-    [attr.aria-hidden]="!isGuestPanelOpen()"
-    [attr.inert]="isGuestPanelOpen() ? null : ''"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="guest-panel-title"
-  >
-    @if (selectedGuest(); as guest) {
-      <header class="guest-panel-header">
-        <div>
-          <h2 id="guest-panel-title" class="guest-panel-title">{{ guest.name }}</h2>
-          <p class="guest-panel-subtitle">{{ selectedGuestPreview()?.subtitle }}</p>
-        </div>
-
-        <button
-          class="guest-panel-close"
-          type="button"
-          aria-label="Cerrar panel del huésped"
-          (click)="closeGuestPanel()"
-        >
-          <ng-icon name="bootstrapXLg" size="18px"></ng-icon>
-        </button>
-      </header>
-
-      <div class="guest-panel-body">
-        <section class="guest-panel-section">
-          <h3 class="guest-panel-section-title">Información de contacto</h3>
-
-          <div class="contact-list">
-            <div class="contact-item">
-              <span class="contact-icon" aria-hidden="true">
-                <ng-icon name="bootstrapEnvelope" size="20px"></ng-icon>
-              </span>
-              <span class="contact-value">{{ guest.email }}</span>
-            </div>
-
-            <div class="contact-item">
-              <span class="contact-icon" aria-hidden="true">
-                <ng-icon name="bootstrapTelephone" size="20px"></ng-icon>
-              </span>
-              <span class="contact-value">{{ formatPhone(guest.phone) }}</span>
-            </div>
-
-            <div class="contact-item">
-              <span class="contact-icon" aria-hidden="true">
-                <ng-icon name="bootstrapTags" size="20px"></ng-icon>
-              </span>
-              <div class="contact-tags">
-                @if (selectedGuestTags().length > 0) {
-                  @for (tag of selectedGuestTags(); track tag) {
-                    <span class="contact-tag-chip">{{ tag }}</span>
-                  }
-                } @else {
-                  <span class="contact-value">Sin etiquetas asignadas</span>
-                }
-              </div>
-            </div>
-          </div>
-        </section>
-
-        @if (selectedGuestPreview(); as preview) {
-          <section class="guest-panel-section">
-            <h3 class="guest-panel-section-title">Estadísticas</h3>
-
-            <div class="stats-grid">
-              @for (stat of preview.stats; track stat.label) {
-                <article class="stat-card">
-                  <div class="stat-card-label">
-                    <span class="stat-card-icon" aria-hidden="true">
-                      @switch (stat.icon) {
-                        @case ('calendar') {
-                          <ng-icon name="bootstrapCalendarCheck" size="18px"></ng-icon>
-                        }
-                        @case ('wallet') {
-                          <ng-icon name="bootstrapWallet2" size="18px"></ng-icon>
-                        }
-                        @case ('status') {
-                          <ng-icon name="bootstrapPersonCheck" size="18px"></ng-icon>
-                        }
-                      }
-                    </span>
-                    <span>{{ stat.label }}</span>
-                  </div>
-
-                  <p
-                    class="stat-card-value"
-                    [class.stat-card-value-success]="stat.tone === 'success'"
-                  >
-                    {{ stat.value }}
-                  </p>
-                </article>
-              }
-            </div>
-          </section>
-
-          <section class="guest-panel-section">
-            <h3 class="guest-panel-section-title">Historial de reservas</h3>
-            @if (isBookingsLoading()) {
-              <p class="booking-feedback">Cargando historial de reservas...</p>
-            } @else if (bookingsErrorMessage()) {
-              <p class="booking-feedback booking-feedback-error">{{ bookingsErrorMessage() }}</p>
-            } @else if (selectedGuestBookingPreview().length === 0) {
-              <p class="booking-feedback">Este huésped todavía no tiene reservas registradas.</p>
-            } @else {
-              <div class="booking-list">
-                @for (booking of selectedGuestBookingPreview(); track booking.id) {
-                  <article class="booking-card">
-                    <div class="booking-card-top">
-                      <div class="booking-property">
-                        <span class="booking-property-icon" aria-hidden="true">
-                          <ng-icon name="bootstrapHouseDoor" size="18px"></ng-icon>
-                        </span>
-                        <div class="booking-property-text">
-                          <span class="booking-property-name">{{ booking.propertyLabel }}</span>
-                          <span class="booking-unit-name">{{ booking.unitLabel }}</span>
-                        </div>
-                      </div>
-
-                      <span
-                        class="booking-status"
-                        [class.booking-status-info]="booking.statusTone === 'info'"
-                        [class.booking-status-success]="booking.statusTone === 'success'"
-                        [class.booking-status-warning]="booking.statusTone === 'warning'"
-                        [class.booking-status-danger]="booking.statusTone === 'danger'"
-                      >
-                        {{ booking.statusLabel }}
-                      </span>
-                    </div>
-
-                    <div class="booking-card-meta">
-                      <span>{{ booking.dateRange }}</span>
-                      <strong>{{ booking.amount }}</strong>
-                    </div>
-
-                    <div class="booking-card-details">
-                      <span>Día de la reservación: {{ booking.bookingDateLabel }}</span>
-                    </div>
-                  </article>
-                }
-              </div>
-            }
-          </section>
-
-          <section class="guest-panel-section">
-            <div class="notes-section-header">
-              <h3 class="guest-panel-section-title">Notas</h3>
-
-              @if (!isGuestNoteFormVisible()) {
-                <app-button variant="primary" size="medium" (clicked)="openGuestNoteForm()">
-                  <ng-icon name="bootstrapPlus" size="18px"></ng-icon>
-                  Añadir nota
-                </app-button>
-              }
-            </div>
-
-            @if (guestNoteErrorMessage()) {
-              <p class="notes-feedback notes-feedback-error">{{ guestNoteErrorMessage() }}</p>
-            }
-
-            @if (isGuestNoteFormVisible()) {
-              <article class="guest-note-card">
-                <div class="guest-note-header">
-                  <span class="guest-note-icon" aria-hidden="true">
-                    <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
-                  </span>
-                  <h4 class="guest-note-title">Nueva nota</h4>
-                </div>
-
-                <div class="guest-note-field">
-                  <label class="guest-note-label" for="guest-note-category">Categoría</label>
-                  <app-select
-                    id="guest-note-category"
-                    name="guest-note-category"
-                    size="medium"
-                    placeholder=""
-                    [options]="guestNoteSelectOptions"
-                    [value]="guestNoteCategory()"
-                    (valueChange)="setGuestNoteCategory($event)"
-                  >
-                  </app-select>
-                </div>
-
-                <div class="guest-note-field">
-                  <label class="sr-only" for="guest-note-content">Contenido de la nota</label>
-                  <textarea
-                    id="guest-note-content"
-                    class="guest-note-textarea"
-                    rows="5"
-                    maxlength="280"
-                    placeholder="Escribe una nueva nota..."
-                    [value]="guestNoteContent()"
-                    (input)="onGuestNoteContentChange(($any($event.target).value ?? '').toString())"
-                  ></textarea>
-                  <p class="guest-note-counter">
-                    {{ guestNoteCharacterCount() }}/280
-                  </p>
-                </div>
-
-                <div class="guest-note-actions">
-                  <app-button variant="secondary" size="medium" (clicked)="cancelGuestNoteForm()">
-                    Cancelar
-                  </app-button>
-                  <app-button
-                    variant="primary"
-                    size="medium"
-                    [loading]="isSavingGuestNote()"
-                    [disabled]="isSavingGuestNote()"
-                    (clicked)="saveGuestNote()"
-                  >
-                    Guardar
-                  </app-button>
-                </div>
-              </article>
-            }
-
-            @if (selectedGuestNotePreview().length > 0) {
-              <div class="guest-notes-list">
-                @for (note of selectedGuestNotePreview(); track note.id) {
-                  <article
-                    class="guest-note-history-card"
-                    [class.guest-note-history-card-pinned]="note.isPinned"
-                  >
-                    <div class="guest-note-history-main">
-                      <span class="guest-note-history-icon" aria-hidden="true">
-                        <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
-                      </span>
-
-                      <div class="guest-note-history-content">
-                        <p class="guest-note-history-text">{{ note.note }}</p>
-
-                        <div class="guest-note-history-meta">
-                          <span>{{ note.dateLabel }}</span>
-                          <span aria-hidden="true">•</span>
-                          <span
-                            class="guest-note-category-chip"
-                            [class.guest-note-category-chip-preference]="
-                              note.categoryLabel === 'Preferencias'
-                            "
-                            [class.guest-note-category-chip-behavior]="
-                              note.categoryLabel === 'Comportamiento'
-                            "
-                            [class.guest-note-category-chip-incident]="
-                              note.categoryLabel === 'Incidente'
-                            "
-                            [class.guest-note-category-chip-general]="
-                              note.categoryLabel === 'General'
-                            "
-                          >
-                            {{ note.categoryLabel }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="guest-note-history-side">
-                      <button
-                        type="button"
-                        class="guest-note-pin-badge"
-                        [class.guest-note-pin-badge-active]="note.isPinned"
-                        aria-label="Fijar nota"
-                        (click)="toggleGuestNotePin(note.id)"
-                      >
-                        <ng-icon name="bootstrapPinAngleFill" size="15px"></ng-icon>
-                      </button>
-                    </div>
-                  </article>
-                }
-              </div>
-            }
-          </section>
         }
-      </div>
+      </span>
+    </app-select>
+
+    <label class="sr-only" for="searchInput">Buscar huésped</label>
+    <app-input
+      id="searchInput"
+      class="search-input"
+      type="text"
+      [placeholder]="searchPlaceholder()"
+      (valueChange)="onSearchTermChange(($event ?? '').toString())"
+    ></app-input>
+  </section>
+
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+
+  <section class="table-card">
+    <table class="guests-table">
+      <thead>
+        <tr>
+          <th>Nombre del huésped</th>
+          <th>Correo electrónico</th>
+          <th>Teléfono</th>
+          <th>Última reserva</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (isLoading()) {
+          <tr>
+            <td class="empty-state" colspan="6">Cargando huéspedes...</td>
+          </tr>
+        } @else {
+          @for (guest of paginatedGuests(); track guest.email) {
+            <tr>
+              <td class="guest-name">{{ guest.name }}</td>
+              <td>{{ guest.email }}</td>
+              <td>{{ formatPhone(guest.phone) }}</td>
+              <td>{{ getLatestReservationLabel(guest) }}</td>
+              <td>
+                <span
+                  class="status-pill"
+                  [class.status-active]="guest.status === 'active'"
+                  [class.status-inactive]="guest.status === 'inactive'"
+                >
+                  {{ guest.status === 'active' ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <app-button
+                  class="btn-view-profile"
+                  variant="primary"
+                  size="medium"
+                  (clicked)="navigateToFullProfile(guest)"
+                >
+                  Ver perfil
+                </app-button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty-state" colspan="6">No se encontraron huéspedes con ese filtro.</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+
+    @if (!isLoading() && pageNumbers().length > 0) {
+      <nav class="pagination" aria-label="Paginación de huéspedes">
+        <app-button
+          class="page-btn icon-btn"
+          variant="secondary"
+          size="medium"
+          [disabled]="currentPage() === 1"
+          (clicked)="goToPreviousPage()"
+          aria-label="Página anterior"
+        >
+          <ng-icon name="bootstrapChevronLeft" size="18px"></ng-icon>
+        </app-button>
+
+        @for (page of pageNumbers(); track page) {
+          <app-button
+            class="page-btn"
+            variant="secondary"
+            size="medium"
+            [disabled]="page === currentPage()"
+            (clicked)="goToPage(page)"
+          >
+            {{ page }}
+          </app-button>
+        }
+
+        <app-button
+          class="page-btn icon-btn"
+          variant="secondary"
+          size="medium"
+          [disabled]="currentPage() === totalPages()"
+          (clicked)="goToNextPage()"
+          aria-label="Página siguiente"
+        >
+          <ng-icon name="bootstrapChevronRight" size="18px"></ng-icon>
+        </app-button>
+      </nav>
     }
-  </aside>
+  </section>
+
 </app-hotel-page-layout>
