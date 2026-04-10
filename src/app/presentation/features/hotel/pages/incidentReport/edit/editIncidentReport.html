@@ -1,33 +1,39 @@
-<div class="page-layout">
-  <app-sidebar activeRoute="/incident-report/list" />
+<app-hotel-page-layout
+  title="Editar Novedad"
+  subtitle="Modifica el título, descripción o archivos adjuntos."
+  iconName="bootstrapPencilSquare"
+  backLink="/incident-report/list"
+  backLabel="Volver al listado"
+>
+  <div class="form-container">
 
-  <main class="page-content">
     @if (notFound()) {
-      <div class="not-found">
-        <p>No se encontró la novedad o accediste directamente a esta URL.</p>
-        <a routerLink="/incident-report/list" class="btn btn-primary">Volver al listado</a>
+      <div class="not-found-card">
+        <p class="not-found-text">No se encontró la novedad o accediste directamente a esta URL.</p>
+        <app-button variant="primary" size="medium" routerLink="/incident-report/list">
+          Volver al listado
+        </app-button>
       </div>
     } @else {
-      <div class="page-header">
-        <h1 class="page-title">Editar Novedad</h1>
-        <p class="page-subtitle">Modifica el título, descripción o archivos adjuntos.</p>
-      </div>
+
+      @if (errorMessage()) {
+        <div class="alert alert-error">{{ errorMessage() }}</div>
+      }
 
       <div class="form-card">
-        @if (errorMessage()) {
-          <div class="alert alert-error">{{ errorMessage() }}</div>
-        }
-
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <!-- Título -->
+
           <div class="form-group">
-            <label for="title">Título <span class="required">*</span></label>
+            <label class="form-label" for="title">
+              Título <span class="required">*</span>
+            </label>
             <input
+              class="form-input"
               type="text"
               id="title"
               formControlName="title"
               placeholder="Ej: Daño general, Ausencia de empleado..."
-              [class.input-error]="titleControl.invalid && titleControl.touched"
+              [class.form-input--error]="titleControl.invalid && titleControl.touched"
             />
             @if (titleControl.invalid && titleControl.touched) {
               <span class="field-error">
@@ -37,15 +43,17 @@
             }
           </div>
 
-          <!-- Descripción -->
           <div class="form-group">
-            <label for="description">Descripción <span class="required">*</span></label>
+            <label class="form-label" for="description">
+              Descripción <span class="required">*</span>
+            </label>
             <textarea
+              class="form-input form-textarea"
               id="description"
               formControlName="description"
               placeholder="Describe detalladamente la novedad..."
               rows="5"
-              [class.input-error]="descriptionControl.invalid && descriptionControl.touched"
+              [class.form-input--error]="descriptionControl.invalid && descriptionControl.touched"
             ></textarea>
             @if (descriptionControl.invalid && descriptionControl.touched) {
               <span class="field-error">
@@ -55,26 +63,31 @@
             }
           </div>
 
-          <!-- Archivos adjuntos -->
           <div class="form-group">
             <div class="attachments-header">
-              <label>Archivos adjuntos</label>
-              <button type="button" class="btn-add-url" (click)="addAttachmentUrl()">
-                <ng-icon name="bootstrapPlusLg" class="icon-plus"></ng-icon>
+              <label class="form-label">Archivos adjuntos</label>
+              <app-button type="button" variant="secondary" size="small" (clicked)="addAttachmentUrl()">
+                <ng-icon name="bootstrapPlusLg" size="14px" aria-hidden="true"></ng-icon>
                 Agregar URL
-              </button>
+              </app-button>
             </div>
 
             @for (ctrl of attachmentUrlsArray.controls; track $index) {
               <div class="url-row">
                 <input
+                  class="form-input"
                   type="text"
                   [formControl]="$any(ctrl)"
                   placeholder="https://storage.ejemplo.com/foto.jpg"
-                  [class.input-error]="ctrl.invalid && ctrl.touched"
+                  [class.form-input--error]="ctrl.invalid && ctrl.touched"
                 />
-                <button type="button" class="btn-remove" (click)="removeAttachmentUrl($index)" title="Eliminar">
-                  <ng-icon name="bootstrapXLg" class="icon-remove" size="16"></ng-icon>
+                <button
+                  type="button"
+                  class="btn-remove"
+                  (click)="removeAttachmentUrl($index)"
+                  title="Eliminar"
+                >
+                  <ng-icon name="bootstrapXLg" size="14px" aria-hidden="true"></ng-icon>
                 </button>
               </div>
               @if (ctrl.invalid && ctrl.touched) {
@@ -84,13 +97,17 @@
           </div>
 
           <div class="form-actions">
-            <a routerLink="/incident-report/list" class="btn btn-secondary">Cancelar</a>
-            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
-              @if (isSubmitting()) { Guardando... } @else { Guardar Cambios }
-            </button>
+            <app-button type="button" variant="secondary" routerLink="/incident-report/list">
+              Cancelar
+            </app-button>
+            <app-button type="submit" variant="primary" [loading]="isSubmitting()" [disabled]="isSubmitting()">
+              Guardar Cambios
+            </app-button>
           </div>
+
         </form>
       </div>
+
     }
-  </main>
-</div>
+  </div>
+</app-hotel-page-layout>

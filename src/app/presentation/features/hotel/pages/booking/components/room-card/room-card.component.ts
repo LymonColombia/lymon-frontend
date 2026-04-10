@@ -2,8 +2,12 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapDoorOpenFill,
+  bootstrapGeoAlt,
+  bootstrapHeart,
+  bootstrapHeartFill,
   bootstrapHouseDoorFill,
   bootstrapPeopleFill,
+  bootstrapStarFill,
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 
@@ -25,12 +29,17 @@ export interface BookingRoomCard {
   readonly features: readonly BookingRoomFeature[];
   readonly amenities: readonly string[];
   readonly badgeLabel: string;
-  readonly badgeVariant?: 'default' | 'popular';
+  readonly badgeVariant?: 'available' | 'shared' | 'last';
   readonly featured?: boolean;
+  readonly imageUrl?: string;
+  readonly rating?: number;
+  readonly reviews?: number;
+  readonly location?: string;
+  readonly maxGuests?: number;
 }
 
 @Component({
-  selector: 'app-room-card',
+  selector: 'booking-room-card',
   standalone: true,
   imports: [ButtonComponent, NgIcon],
   providers: [
@@ -38,6 +47,10 @@ export interface BookingRoomCard {
       bootstrapDoorOpenFill,
       bootstrapHouseDoorFill,
       bootstrapPeopleFill,
+      bootstrapStarFill,
+      bootstrapGeoAlt,
+      bootstrapHeart,
+      bootstrapHeartFill,
     }),
   ],
   templateUrl: './room-card.component.html',
@@ -46,9 +59,15 @@ export interface BookingRoomCard {
 })
 export class RoomCardComponent {
   readonly room = input.required<BookingRoomCard>();
+  readonly isLiked = input<boolean>(false);
   readonly viewDetails = output<string>();
+  readonly toggleLike = output<string>();
 
   onViewDetails(): void {
     this.viewDetails.emit(this.room().id);
+  }
+
+  onToggleLike(): void {
+    this.toggleLike.emit(this.room().id);
   }
 }

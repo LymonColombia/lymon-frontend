@@ -1,66 +1,45 @@
-<section class="hero">
-    <div class="back-button-container">
-        <app-button type="button" variant="secondary" size="medium" (clicked)="goBack()">
-            <ng-icon name="bootstrapChevronLeft" size="20px" aria-hidden="true"></ng-icon>
-            Volver
-        </app-button>
-    </div>
-    <div class="hero-content">
-        <h1 class="hero-title">Encuentra tu habitación perfecta</h1>
-        <p class="hero-subtitle">Reserva directamente sin intermediarios</p>
-    </div>
-</section>
+<booking-nav
+  [isAuthenticated]="guestTokenService.isAuthenticated()"
+  [guestName]="guestName"
+  (loginClicked)="onGuestLogin()"
+  (logoutClicked)="onGuestLogout()"
+  (myReservationsClicked)="onMyReservations()">
+</booking-nav>
 
-<section class="search-section">
-    <div class="container">
-        <div class="search-card">
-            <div class="search-form">
-                <div class="form-group">
-                    <label for="checkin">Fecha de Entrada</label>
-                    <div class="input-with-icon">
-                        <app-input type="date" id="checkin" name="checkin" [hasIcon]="true">
-                            <ng-icon icon class="input-icon" name="bootstrapCalendar" size="20px" aria-hidden="true"></ng-icon>
-                        </app-input>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="checkout">Fecha de Salida</label>
-                    <div class="input-with-icon">
-                        <app-input type="date" id="checkout" name="checkout" [hasIcon]="true">
-                            <ng-icon icon class="input-icon" name="bootstrapCalendar" size="20px" aria-hidden="true"></ng-icon>
-                        </app-input>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="guests">Huéspedes</label>
-                    <div class="input-with-icon">
-                        <app-select id="guests" name="guests" [hasIcon]="true" [options]="guestOptions">
-                            <ng-icon icon class="input-icon" name="bootstrapPeopleFill" size="20px" aria-hidden="true"></ng-icon>
-                        </app-select>
-                    </div>
-                </div>
-                <app-button class="btn-search" type="button" variant="primary" size="medium">
-                    <ng-icon name="bootstrapSearch" size="20px" aria-hidden="true"></ng-icon>
-                    Buscar
-                </app-button>
-            </div>
-        </div>
-    </div>
-</section>
+<booking-hero (search)="onHeroSearch($event)"></booking-hero>
 
-<section class="rooms-section">
-    <div class="container">
-        <h2 class="section-title">Habitaciones Disponibles</h2>
-        <p class="section-subtitle">Todas nuestras habitaciones están disponibles para las fechas seleccionadas</p>
+<section class="results-section">
+  <div class="results-container">
+    <booking-toolbar
+      [resultsCount]="displayedRooms().length"
+      [sortBy]="sortBy()"
+      (searchQueryChange)="onSearchQueryChange($event)"
+      (sortChange)="onSortChange($event)">
+    </booking-toolbar>
 
-        <div class="rooms-grid">
-            @for (room of rooms(); track room.id) {
-                <app-room-card [room]="room" (viewDetails)="goToRoomDetails($event)"></app-room-card>
-            } @empty {
-                <p class="empty-rooms-message">No hay habitaciones disponibles en este momento.</p>
-            }
-        </div>
-    </div>
+    @if (isRoomsLoading()) {
+      <div class="rooms-loading">Cargando habitaciones...</div>
+    } @else if (displayedRooms().length === 0) {
+      <booking-empty-state></booking-empty-state>
+    } @else {
+      <div class="rooms-grid">
+        @for (room of displayedRooms(); track room.id) {
+          <booking-room-card
+            [room]="room"
+            [isLiked]="likedRoomIds().has(room.id)"
+            (viewDetails)="goToRoomDetails($event)"
+            (toggleLike)="onToggleLike($event)">
+          </booking-room-card>
+        }
+      </div>
+
+      <booking-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChange)="onPageChange($event)">
+      </booking-pagination>
+    }
+  </div>
 </section>
 
 <app-footer></app-footer>

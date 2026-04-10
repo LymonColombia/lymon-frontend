@@ -10,13 +10,15 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { Reservation } from '@/domain/entities/reservation.model';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
 import { GetReservationByIdUseCase } from '@/domain/use-cases/reservation/get-reservation-by-id.use-case';
+import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/reservation/get-guest-reservation-by-id.use-case';
+import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 import {
   bootstrapEnvelope,
   bootstrapTelephone,
@@ -55,9 +57,11 @@ import {
 })
 export class CheckinComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly getReservationsUseCase = inject(GetReservationsUseCase);
   private readonly getReservationByIdUseCase = inject(GetReservationByIdUseCase);
+  private readonly getGuestReservationByIdUseCase = inject(GetGuestReservationByIdUseCase);
 
   @ViewChild('signatureCanvas')
   private readonly signatureCanvas?: ElementRef<HTMLCanvasElement>;
@@ -233,6 +237,18 @@ export class CheckinComponent implements AfterViewInit {
 
   private fetchReservation(reservationId: string | null): Observable<Reservation | null> {
     if (reservationId?.trim()) {
+      const isGuestRoute = this.router.url.startsWith('/guest/');
+
+      if (isGuestRoute) {
+        return this.getGuestReservationByIdUseCase.execute(reservationId).pipe(
+          map((r) => this.mapGuestReservation(r)),
+          catchError(() => {
+            this.summaryError.set('No se encontro la reservacion indicada.');
+            return of(null);
+          }),
+        );
+      }
+
       return this.getReservationByIdUseCase.execute(reservationId).pipe(
         catchError(() => {
           this.summaryError.set('No se encontro la reservacion indicada.');
@@ -245,6 +261,29 @@ export class CheckinComponent implements AfterViewInit {
       map((reservations) => this.selectFallbackReservation(reservations)),
       catchError(() => of(null)),
     );
+  }
+
+  private mapGuestReservation(r: GuestReservationResponse): Reservation {
+    return {
+      id: r.id,
+      unitId: r.unitId,
+      room: r.unitName,
+      checkIn: r.checkIn,
+      checkOut: r.checkOut,
+      nights: r.nights ?? 0,
+      guestsCount: r.guestsCount,
+      pricePerNight: r.pricePerNight ?? 0,
+      totalPrice: r.totalPrice ?? 0,
+      notes: r.notes ?? undefined,
+      status: r.status as Reservation['status'],
+      // Fields not available from guest endpoint
+      tenantId: '',
+      propertyId: '',
+      guestId: '',
+      source: '',
+      createdAt: '',
+      updatedAt: '',
+    };
   }
 
   private selectFallbackReservation(reservations: Reservation[]): Reservation | null {

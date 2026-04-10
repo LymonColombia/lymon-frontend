@@ -1,0 +1,31 @@
+<div class="toolbar">
+  <div class="toolbar-info">
+    <h2 class="toolbar-title">Habitaciones Disponibles</h2>
+    <p class="toolbar-count">{{ resultsCount() }} alojamientos encontrados</p>
+  </div>
+
+  <div class="toolbar-controls">
+    <div class="search-input-wrapper">
+      <ng-icon name="bootstrapSearch" size="14px" class="search-icon" aria-hidden="true"></ng-icon>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar..."
+        [value]="internalQuery()"
+        (input)="onQueryInput($event)"
+        aria-label="Buscar habitaciones" />
+      @if (internalQuery()) {
+        <button class="clear-btn" type="button" (click)="clearQuery()" aria-label="Limpiar búsqueda">
+          <ng-icon name="bootstrapX" size="12px" aria-hidden="true"></ng-icon>
+        </button>
+      }
+    </div>
+
+    <app-select
+      [options]="sortOptions"
+      [value]="sortBy()"
+      placeholder="Ordenar por"
+      (valueChange)="onSortChange($event)">
+    </app-select>
+  </div>
+</div>

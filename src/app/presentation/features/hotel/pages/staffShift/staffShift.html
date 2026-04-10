@@ -1,0 +1,344 @@
+<app-hotel-page-layout
+  title="Gestion de Turnos"
+  subtitle="Crea turnos fijos y asignalos a empleados por propiedad y fecha"
+  iconName="bootstrapClockHistory"
+>
+  <section class="tabs" aria-label="Navegacion de secciones de turnos">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab() === 'calendar'"
+      (click)="showCalendarTab()"
+    >
+      Calendario de Asignaciones
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-btn--active]="activeTab() === 'fixed'"
+      (click)="showFixedTab()"
+    >
+      Turnos Fijos
+    </button>
+  </section>
+
+  @if (activeTab() === 'calendar') {
+    <section class="section-block">
+      <header class="section-header">
+        <h2>Calendario de Turnos</h2>
+        <p>Visualiza y gestiona las asignaciones de turnos por fecha</p>
+      </header>
+
+      <div class="toolbar-row toolbar-row--calendar">
+        <label class="search-field">
+          <input
+            type="search"
+            class="search-input"
+            [value]="calendarSearch()"
+            (input)="onCalendarSearch($event)"
+            placeholder="Buscar por empleado, propiedad o turno..."
+            aria-label="Buscar por empleado, propiedad o turno"
+          />
+        </label>
+
+        <label class="search-field">
+          <input
+            type="date"
+            class="search-input"
+            [value]="calendarDateFilter()"
+            (input)="onCalendarDateFilterInput($event)"
+            aria-label="Filtrar asignaciones por fecha"
+          />
+        </label>
+
+        @if (calendarDateFilter()) {
+          <button type="button" class="btn-ghost" (click)="clearCalendarDateFilter()">
+            Limpiar fecha
+          </button>
+        }
+
+        <button type="button" class="btn-primary" (click)="openCreateAssignmentModal()">
+          + Nueva asignacion
+        </button>
+      </div>
+
+      @if (filteredAssignmentDays().length === 0) {
+        <article class="empty-state-card">
+          <p>No se encontraron asignaciones con ese criterio de busqueda.</p>
+        </article>
+      } @else {
+        @for (day of filteredAssignmentDays(); track day.dateLabel) {
+          <article class="day-card">
+            <header class="day-card-header">{{ day.dateLabel }}</header>
+
+            <div class="day-list">
+              @for (assignment of day.assignments; track assignment.employeeName) {
+                <article class="assignment-row">
+                  <div class="assignment-left">
+                    <span class="avatar">{{ assignment.employeeInitials }}</span>
+
+                    <div class="assignment-info">
+                      <p class="employee-name">{{ assignment.employeeName }}</p>
+                      <p class="assignment-meta">
+                        {{ assignment.propertyName }}
+                        <span class="chip">{{ assignment.shiftName }}</span>
+                        {{ assignment.shiftTime }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="assignment-actions">
+                    <button type="button" class="icon-btn" aria-label="Editar turno">Editar</button>
+                    <button type="button" class="icon-btn" aria-label="Eliminar turno">Eliminar</button>
+                  </div>
+                </article>
+              }
+            </div>
+          </article>
+        }
+      }
+    </section>
+  } @else {
+    <section class="section-block">
+      <header class="section-header">
+        <h2>Turnos Fijos</h2>
+        <p>Crea turnos fijos y reutilizalos para diferentes empleados y propiedades</p>
+      </header>
+
+      <section class="summary-grid" aria-label="Resumen de turnos fijos">
+        <article class="summary-card">
+          <p class="summary-label">Turnos fijos</p>
+          <p class="summary-value">{{ fixedShiftCount() }}</p>
+          <p class="summary-hint">Plantillas disponibles para asignar</p>
+        </article>
+
+        <article class="summary-card">
+          <p class="summary-label">Turnos activos</p>
+          <p class="summary-value summary-value--ok">{{ activeFixedShiftCount() }}</p>
+          <p class="summary-hint">En uso actualmente</p>
+        </article>
+
+        <article class="summary-card">
+          <p class="summary-label">Turnos inactivos</p>
+          <p class="summary-value">{{ inactiveFixedShiftCount() }}</p>
+          <p class="summary-hint">Desactivados temporalmente</p>
+        </article>
+      </section>
+
+      <div class="toolbar-row">
+        <label class="search-field">
+          <input
+            type="search"
+            class="search-input"
+            [value]="fixedSearch()"
+            (input)="onFixedSearch($event)"
+            placeholder="Buscar turnos fijos..."
+            aria-label="Buscar turnos fijos"
+          />
+        </label>
+        <button type="button" class="btn-primary" (click)="openCreateShiftModal()">
+          + Crear turno fijo
+        </button>
+      </div>
+
+      @if (filteredFixedShifts().length === 0) {
+        <article class="empty-state-card">
+          <p>No se encontraron turnos con ese criterio de busqueda.</p>
+        </article>
+      } @else {
+        <section class="fixed-grid" aria-label="Lista de turnos fijos">
+          @for (shift of filteredFixedShifts(); track shift.id) {
+            <article class="fixed-card">
+              <header class="fixed-card-header">
+                <h3>{{ shift.name }}</h3>
+                <span
+                  class="status-badge"
+                  [class.status-badge--active]="shift.status === 'Activo'"
+                  [class.status-badge--inactive]="shift.status === 'Inactivo'"
+                >
+                  {{ shift.status }}
+                </span>
+              </header>
+
+              <p class="fixed-time">{{ shift.timeRange }}</p>
+
+              <footer class="fixed-card-actions">
+                <button type="button" class="btn-ghost" (click)="toggleShiftStatus(shift.id)">
+                  {{ shift.status === 'Activo' ? 'Desactivar' : 'Activar' }}
+                </button>
+                <button type="button" class="icon-btn" aria-label="Editar turno fijo">Editar</button>
+                <button type="button" class="icon-btn" aria-label="Eliminar turno fijo">Eliminar</button>
+              </footer>
+            </article>
+          }
+        </section>
+      }
+    </section>
+  }
+
+  @if (isCreateModalOpen()) {
+    <div class="modal-backdrop" (click)="closeCreateShiftModal()"></div>
+
+    <section
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-shift-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <h2 id="create-shift-title">Crear turno fijo</h2>
+        <button
+          type="button"
+          class="icon-btn"
+          aria-label="Cerrar modal"
+          (click)="closeCreateShiftModal()"
+        >
+          Cerrar
+        </button>
+      </header>
+
+      <div class="modal-form-grid">
+        <label class="field-group">
+          <span class="field-label">Nombre del turno</span>
+          <input
+            type="text"
+            class="field-input"
+            [value]="newShiftName()"
+            (input)="onNewShiftNameInput($event)"
+            placeholder="Ejemplo: Turno Madrugada"
+          />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">Horario de inicio</span>
+          <input
+            type="time"
+            class="field-input"
+            [value]="newShiftStart()"
+            (input)="onNewShiftStartInput($event)"
+          />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">Horario de salida</span>
+          <input
+            type="time"
+            class="field-input"
+            [value]="newShiftEnd()"
+            (input)="onNewShiftEndInput($event)"
+          />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">Estado inicial</span>
+          <select
+            class="field-input"
+            [value]="newShiftStatus()"
+            (change)="onNewShiftStatusChange($event)"
+          >
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </label>
+      </div>
+
+      @if (createShiftError()) {
+        <p class="form-error">{{ createShiftError() }}</p>
+      }
+
+      <footer class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="closeCreateShiftModal()">Cancelar</button>
+        <button type="button" class="btn-primary" (click)="createShift()">Guardar turno</button>
+      </footer>
+    </section>
+  }
+
+  @if (isCreateAssignmentModalOpen()) {
+    <div class="modal-backdrop" (click)="closeCreateAssignmentModal()"></div>
+
+    <section
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-assignment-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <h2 id="create-assignment-title">Nueva asignacion</h2>
+        <button
+          type="button"
+          class="icon-btn"
+          aria-label="Cerrar modal"
+          (click)="closeCreateAssignmentModal()"
+        >
+          Cerrar
+        </button>
+      </header>
+
+      <div class="modal-form-grid modal-form-grid--single">
+        <label class="field-group">
+          <span class="field-label">Fecha de asignacion</span>
+          <input
+            type="date"
+            class="field-input"
+            [value]="assignmentDate()"
+            (input)="onAssignmentDateInput($event)"
+          />
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">Propiedad</span>
+          <select
+            class="field-input"
+            [value]="assignmentProperty()"
+            (change)="onAssignmentPropertyChange($event)"
+          >
+            @for (property of assignmentPropertyOptions(); track property) {
+              <option [value]="property">{{ property }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">Nombre del empleado</span>
+          <select
+            class="field-input"
+            [value]="assignmentEmployee()"
+            (change)="onAssignmentEmployeeChange($event)"
+          >
+            @for (employee of assignmentEmployeeOptions(); track employee) {
+              <option [value]="employee">{{ employee }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field-group">
+          <span class="field-label">Turno</span>
+          <select
+            class="field-input"
+            [value]="assignmentShiftId() ?? ''"
+            (change)="onAssignmentShiftChange($event)"
+          >
+            @for (shift of assignmentShiftOptions(); track shift.id) {
+              <option [value]="shift.id">{{ shift.name }} ({{ shift.timeRange }})</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      @if (createAssignmentError()) {
+        <p class="form-error">{{ createAssignmentError() }}</p>
+      }
+
+      <footer class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="closeCreateAssignmentModal()">
+          Cancelar
+        </button>
+        <button type="button" class="btn-primary" (click)="createAssignment()">
+          Guardar asignacion
+        </button>
+      </footer>
+    </section>
+  }
+</app-hotel-page-layout>

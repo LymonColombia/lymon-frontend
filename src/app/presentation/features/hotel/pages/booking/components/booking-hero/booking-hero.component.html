@@ -1,0 +1,57 @@
+<section class="hero">
+  <div class="hero-decorations" aria-hidden="true">
+    <div class="hero-decoration hero-decoration--top-right"></div>
+    <div class="hero-decoration hero-decoration--bottom-left"></div>
+  </div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Explora alojamientos únicos</p>
+    <h1 class="hero-title">
+      Encuentra tu habitación<br />
+      <span class="hero-title-accent">perfecta</span>
+    </h1>
+  </div>
+
+  <div class="search-bar">
+    <div class="search-field">
+      <app-input
+        type="date"
+        id="checkin"
+        name="checkin"
+        [hasIcon]="true"
+        (valueChange)="onCheckInChange($event)">
+        <ng-icon icon class="field-icon" name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
+      </app-input>
+      <label for="checkin" class="search-label">Fecha de Entrada</label>
+    </div>
+
+    <div class="search-field">
+      <app-input
+        type="date"
+        id="checkout"
+        name="checkout"
+        [hasIcon]="true"
+        (valueChange)="onCheckOutChange($event)">
+        <ng-icon icon class="field-icon" name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
+      </app-input>
+      <label for="checkout" class="search-label">Fecha de Salida</label>
+    </div>
+
+    <div class="search-field">
+      <app-select
+        id="guests"
+        name="guests"
+        [hasIcon]="true"
+        [options]="guestOptions"
+        (valueChange)="onGuestsChange($event)">
+        <ng-icon icon class="field-icon" name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
+      </app-select>
+      <label for="guests" class="search-label">Huéspedes</label>
+    </div>
+
+    <button class="btn-search" type="button" (click)="onSearch()">
+      <ng-icon name="bootstrapSearch" size="16px" aria-hidden="true"></ng-icon>
+      Buscar
+    </button>
+  </div>
+</section>

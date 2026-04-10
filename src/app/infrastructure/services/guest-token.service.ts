@@ -37,6 +37,17 @@ export class GuestTokenService {
     this._isAuthenticated.set(false);
   }
 
+  getGuestName(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1])) as { email?: string };
+      return payload.email ?? null;
+    } catch {
+      return null;
+    }
+  }
+
   private hasStoredToken(): boolean {
     return !!localStorage.getItem(GUEST_ACCESS_TOKEN_KEY);
   }

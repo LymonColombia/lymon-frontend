@@ -66,29 +66,11 @@
       Mejor precio, mejor experiencia, mejor servicio.
     </p>
 
-    <div class="search-shell" [class.search-shell-focused]="searchFocused()">
-      <div class="search-grid">
-        <label class="search-field" aria-label="Destino">
-          <ng-icon name="bootstrapGeoAlt" size="18" color="var(--color-primary)" />
-          <input type="text" placeholder="¿A dónde vas?" (focus)="setSearchFocused(true)" (blur)="setSearchFocused(false)" />
-        </label>
-
-        <span class="search-divider"></span>
-
-        <label class="search-field" aria-label="Fechas">
-          <ng-icon name="bootstrapCalendar3" size="18" color="var(--color-primary)" />
-          <input type="text" placeholder="Fechas" (focus)="setSearchFocused(true)" (blur)="setSearchFocused(false)" />
-        </label>
-
-        <span class="search-divider"></span>
-
-        <label class="search-field" aria-label="Huéspedes">
-          <ng-icon name="bootstrapPeople" size="18" color="var(--color-primary)" />
-          <input type="text" placeholder="Huéspedes" (focus)="setSearchFocused(true)" (blur)="setSearchFocused(false)" />
-        </label>
-
-        <app-button variant="primary" size="medium">Buscar</app-button>
-      </div>
+    <div class="hero-cta">
+      <app-button variant="primary" size="large" (clicked)="goToBooking()">
+        <ng-icon name="bootstrapSearch" size="18px" aria-hidden="true"></ng-icon>
+        Explorar Habitaciones
+      </app-button>
     </div>
 
     <div class="trust-list">

@@ -2,37 +2,71 @@
   <div class="room-image">
     <img
       class="room-image-photo"
-      src="/images/suite2.avif"
-      [alt]="'Imagen de ' + room().title"
-    />
-    <div class="room-badge" [class.popular]="room().badgeVariant === 'popular'">
+      [src]="room().imageUrl ?? 'images/suite2.avif'"
+      [alt]="'Imagen de ' + room().title" />
+
+    <div class="image-gradient" aria-hidden="true"></div>
+
+    <div class="room-badge" [class]="'room-badge--' + (room().badgeVariant ?? 'available')">
       {{ room().badgeLabel }}
+    </div>
+
+    <button
+      class="like-btn"
+      type="button"
+      [class.liked]="isLiked()"
+      (click)="onToggleLike()"
+      [attr.aria-label]="isLiked() ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+      @if (isLiked()) {
+        <ng-icon name="bootstrapHeartFill" size="14px" aria-hidden="true"></ng-icon>
+      } @else {
+        <ng-icon name="bootstrapHeart" size="14px" aria-hidden="true"></ng-icon>
+      }
+    </button>
+
+    <div class="price-overlay">
+      <span class="price-amount">${{ room().price }}</span>
+      <span class="price-period">/noche</span>
     </div>
   </div>
 
   <div class="room-content">
-    <div class="room-header">
-      <h3 class="room-title">{{ room().title }}</h3>
-      <div class="room-price">
-        <span class="price-amount">${{ room().price }}</span>
-        <span class="price-period">/ noche</span>
-      </div>
+    <div class="room-meta">
+      @if (room().location) {
+        <span class="room-location">
+          <ng-icon name="bootstrapGeoAlt" size="12px" aria-hidden="true"></ng-icon>
+          {{ room().location }}
+        </span>
+      }
+      @if (room().rating) {
+        <span class="room-rating">
+          <ng-icon name="bootstrapStarFill" size="12px" class="star-icon" aria-hidden="true"></ng-icon>
+          <span class="rating-value">{{ room().rating }}</span>
+          @if (room().reviews) {
+            <span class="rating-reviews">({{ room().reviews }})</span>
+          }
+        </span>
+      }
     </div>
 
+    <h3 class="room-title">{{ room().title }}</h3>
     <p class="room-description">{{ room().description }}</p>
 
     <div class="room-features">
       @for (feature of room().features; track feature.label) {
         <div class="feature">
-          <ng-icon class="feature-icon" [name]="feature.icon" size="18px" aria-hidden="true"></ng-icon>
+          <ng-icon class="feature-icon" [name]="feature.icon" size="14px" aria-hidden="true"></ng-icon>
           <span>{{ feature.label }}</span>
         </div>
       }
     </div>
 
     <div class="room-amenities">
-      @for (amenity of room().amenities; track amenity) {
+      @for (amenity of room().amenities.slice(0, 4); track amenity) {
         <span class="amenity">{{ amenity }}</span>
+      }
+      @if (room().amenities.length > 4) {
+        <span class="amenity-more">+{{ room().amenities.length - 4 }}</span>
       }
     </div>
 

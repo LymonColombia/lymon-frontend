@@ -15,22 +15,24 @@
 
 <nav class="sidebar" [class.sidebar--collapsed]="!isExpanded()" [class.sidebar--ready]="transitionsReady()">
   <div class="sidebar-header">
-    <img
-      class="sidebar-logo-image"
-      [class.sidebar-logo-image--hidden]="!isExpanded()"
-      src="/images/LyHost.svg"
-      alt="LyHost"
-      width="140"
-      height="38"
-    />
-    <img
-      class="sidebar-logo-image--collapsed"
-      [class.sidebar-logo-image--collapsed-visible]="!isExpanded()"
-      src="/images/LyHostLogo.svg"
-      alt="LyHost"
-      width="48"
-      height="48"
-    />
+    <a routerLink="/lyhost" class="sidebar-logo-link">
+      <img
+        class="sidebar-logo-image"
+        [class.sidebar-logo-image--hidden]="!isExpanded()"
+        src="/images/LyHost.svg"
+        alt="LyHost"
+        width="140"
+        height="38"
+      />
+      <img
+        class="sidebar-logo-image--collapsed"
+        [class.sidebar-logo-image--collapsed-visible]="!isExpanded()"
+        src="/images/LyHostLogo.svg"
+        alt="LyHost"
+        width="48"
+        height="48"
+      />
+    </a>
   </div>
 
   <ul class="sidebar-menu">
@@ -71,6 +73,8 @@
             <button type="button" class="profile-menu-item" role="menuitem" (click)="goToSettings()">
               Configuración
             </button>
+            <button type="button" class="profile-menu-item" role="menuitem" (click)="goToPlans()">Planes</button>
+
             <button
               type="button"
               class="profile-menu-item profile-menu-item--danger"

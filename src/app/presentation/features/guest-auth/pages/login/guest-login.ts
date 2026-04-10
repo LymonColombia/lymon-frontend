@@ -50,7 +50,7 @@ export class GuestLoginComponent {
         if (!res.emailVerified) {
           this.emailNotVerified.set(true);
         }
-        this.router.navigate(['/guest/dashboard']);
+        this.router.navigate(['/booking']);
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
