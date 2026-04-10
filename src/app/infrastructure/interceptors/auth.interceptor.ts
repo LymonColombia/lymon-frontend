@@ -23,7 +23,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const http = inject(HttpClient);
   const accessToken = tokenService.getAccessToken();
 
-  if (!accessToken || isRefreshRequest(req.url)) {
+  if (!accessToken || isRefreshRequest(req.url) || req.headers.has('Authorization')) {
     return next(req);
   }
 

@@ -1,19 +1,20 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapCalendar3, bootstrapGeoAlt, bootstrapPeople } from '@ng-icons/bootstrap-icons';
+import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 
 @Component({
   selector: 'app-lyhost-hero',
   standalone: true,
   imports: [ButtonComponent, NgIcon],
-  viewProviders: [provideIcons({ bootstrapGeoAlt, bootstrapCalendar3, bootstrapPeople })],
+  viewProviders: [provideIcons({ bootstrapSearch })],
   templateUrl: './lyhost-hero.component.html',
   styleUrl: './lyhost-hero.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LyhostHeroComponent {
-  readonly searchFocused = signal(false);
+  private readonly router = inject(Router);
 
   readonly trustItems = [
     'Reserva directa',
@@ -22,7 +23,7 @@ export class LyhostHeroComponent {
     'Mejor precio garantizado',
   ];
 
-  setSearchFocused(value: boolean): void {
-    this.searchFocused.set(value);
+  goToBooking(): void {
+    this.router.navigate(['/booking']);
   }
 }

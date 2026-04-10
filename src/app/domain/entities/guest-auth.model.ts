@@ -48,3 +48,9 @@ export interface GuestConfirmRecoverPasswordRequest {
 export interface GuestConfirmRecoverPasswordResponse {
   message: string;
 }
+
+export interface GuestProfile {
+  id: string;
+  fullName: string;
+  email: string;
+}

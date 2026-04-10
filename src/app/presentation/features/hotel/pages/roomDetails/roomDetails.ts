@@ -23,6 +23,7 @@ import { RoomHeroComponent } from './components/room-hero/room-hero.component';
 import { RoomGeneralInfoComponent } from './components/room-general-info/room-general-info.component';
 import { RoomAmenitiesComponent } from './components/room-amenities/room-amenities.component';
 import { RoomPoliciesComponent } from './components/room-policies/room-policies.component';
+import { RoomBookingCalendarComponent, BookingDateRange } from './components/room-booking-calendar/room-booking-calendar.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCalendar,
@@ -32,6 +33,9 @@ import {
   bootstrapPeopleFill,
   bootstrapSearch,
 } from '@ng-icons/bootstrap-icons';
+import { CheckoutState } from '../guest-checkout/guest-checkout';
+// Known arch violation: direct infra import for auth check — pending GetGuestSessionUseCase
+import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
 @Component({
   selector: 'app-room-details',
@@ -49,6 +53,7 @@ import {
     RoomGeneralInfoComponent,
     RoomAmenitiesComponent,
     RoomPoliciesComponent,
+    RoomBookingCalendarComponent,
     NgIconComponent,
   ],
   providers: [
@@ -63,36 +68,66 @@ import {
   ],
   templateUrl: './roomDetails.html',
   styleUrl: './roomDetails.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomDetailsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly router = inject(Router);
+  readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitUseCase = inject(GetPublicUnitUseCase);
+  private readonly guestTokenService = inject(GuestTokenService);
 
+  // Header search form (navigates back to booking list)
   readonly searchForm: FormGroup = this.fb.group({
     checkIn: [''],
     checkOut: [''],
     guests: [2],
   });
+
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly unit = signal<Unit | null>(null);
 
-  // Select options for guests
-  readonly guestOptions: SelectOption[] = [
-    { value: 1, label: '1 Huésped' },
-    { value: 2, label: '2 Huéspedes' },
-    { value: 3, label: '3 Huéspedes' },
-    { value: 4, label: '4 Huéspedes' },
-  ];
+  // Booking card signals
+  readonly checkIn = signal<string | null>(null);
+  readonly checkOut = signal<string | null>(null);
+  readonly guestsCount = signal(1);
+
+  readonly nights = computed(() => {
+    const ci = this.checkIn();
+    const co = this.checkOut();
+    if (!ci || !co) return 0;
+    const [cy, cm, cd] = ci.split('-').map(Number);
+    const [oy, om, od] = co.split('-').map(Number);
+    return Math.round(
+      (new Date(oy, om - 1, od).getTime() - new Date(cy, cm - 1, cd).getTime()) / 86_400_000,
+    );
+  });
+
+  readonly totalPrice = computed(() => this.nights() * (this.unit()?.pricePerNight ?? 0));
+
+  readonly canReserve = computed(() => !!this.checkIn() && !!this.checkOut() && this.nights() > 0);
+
+  readonly guestOptions = computed<SelectOption[]>(() => {
+    const max = this.unit()?.maxGuests ?? 4;
+    return Array.from({ length: max }, (_, i) => ({
+      value: i + 1,
+      label: i + 1 === 1 ? '1 Huésped' : `${i + 1} Huéspedes`,
+    }));
+  });
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'Habitaciones', route: '/booking' },
     { label: this.unit()?.name ?? 'Detalle de Habitación' },
   ]);
+
+  readonly headerGuestOptions: SelectOption[] = [
+    { value: 1, label: '1 Huésped' },
+    { value: 2, label: '2 Huéspedes' },
+    { value: 3, label: '3 Huéspedes' },
+    { value: 4, label: '4 Huéspedes' },
+  ];
 
   ngOnInit(): void {
     this.route.paramMap
@@ -105,10 +140,8 @@ export class RoomDetailsComponent implements OnInit {
         if (!unitId) {
           this.isLoading.set(false);
           this.errorMessage.set('No se recibió el identificador de la unidad.');
-          this.unit.set(null);
           return;
         }
-
         this.loadUnitDetails(unitId);
       });
   }
@@ -133,14 +166,45 @@ export class RoomDetailsComponent implements OnInit {
       });
   }
 
+  onDateRangeChange(range: BookingDateRange): void {
+    this.checkIn.set(range.checkIn);
+    this.checkOut.set(range.checkOut);
+  }
+
+  onGuestChange(value: string | number): void {
+    this.guestsCount.set(Number(value));
+  }
+
+  onReserveNow(unit: Unit): void {
+    if (!this.canReserve()) return;
+
+    if (!this.guestTokenService.isAuthenticated()) {
+      this.router.navigate(['/guest/login'], {
+        queryParams: { returnUrl: `/room-details/${unit.id}` },
+      });
+      return;
+    }
+
+    const state: CheckoutState = {
+      unitId: unit.id,
+      tenantId: unit.tenantId,
+      propertyId: unit.propertyId,
+      unitName: unit.name,
+      checkIn: this.checkIn()!,
+      checkOut: this.checkOut()!,
+      guestsCount: this.guestsCount(),
+      pricePerNight: unit.pricePerNight ?? 0,
+      nights: this.nights(),
+      total: this.totalPrice(),
+    };
+
+    this.router.navigate(['/guest/checkout'], { state });
+  }
+
   onSearch(): void {
-    const formValue = this.searchForm.value;
+    const v = this.searchForm.value;
     this.router.navigate(['/booking'], {
-      queryParams: {
-        checkIn: formValue.checkIn,
-        checkOut: formValue.checkOut,
-        guests: formValue.guests,
-      },
+      queryParams: { checkIn: v.checkIn, checkOut: v.checkOut, guests: v.guests },
     });
   }
 

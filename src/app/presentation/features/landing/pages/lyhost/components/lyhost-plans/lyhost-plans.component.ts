@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { LyhostPlan, LYHOST_PLANS } from '@/domain/entities/lyhost-plan.model';
 
@@ -11,25 +11,17 @@ import { LyhostPlan, LYHOST_PLANS } from '@/domain/entities/lyhost-plan.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LyhostPlansComponent {
-  readonly annual = signal(true);
+  readonly plans: readonly LyhostPlan[] = LYHOST_PLANS;
 
-  readonly plans: LyhostPlan[] = LYHOST_PLANS;
-
-  setAnnual(value: boolean): void {
-    this.annual.set(value);
+  isHighlighted(plan: LyhostPlan): boolean {
+    return plan.type === 'PLUS';
   }
 
-  getDisplayedPrice(price: string): string {
-    if (price === 'Custom') {
-      return 'Custom';
-    }
+  allFeatures(plan: LyhostPlan): string[] {
+    return plan.detailsSections.flatMap((s) => s.items);
+  }
 
-    const numericPrice = Number(price);
-    if (Number.isNaN(numericPrice)) {
-      return price;
-    }
-
-    const adjustedPrice = this.annual() ? Math.round(numericPrice * 0.8) : numericPrice;
-    return `€${adjustedPrice}`;
+  isCustomPrice(plan: LyhostPlan): boolean {
+    return plan.price === 'Custom' || !plan.priceSuffix;
   }
 }
