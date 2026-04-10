@@ -7,14 +7,21 @@ import {
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { CreateIncidentReportUseCase } from '@/domain/use-cases/incident/create-incident-report.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 
 @Component({
   selector: 'app-create-incident-report',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, SidebarComponent, RouterLink],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    HotelPageLayoutComponent,
+    ButtonComponent,
+  ],
   templateUrl: './createIncidentReport.html',
   styleUrl: './createIncidentReport.css',
 })
@@ -25,7 +32,6 @@ export class CreateIncidentReportComponent {
   private readonly router = inject(Router);
 
   readonly isLoading = signal(false);
-  readonly successMessage = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
 
   readonly form = this.fb.group({
@@ -47,7 +53,6 @@ export class CreateIncidentReportComponent {
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     const { title, description } = this.form.getRawValue();
 
@@ -71,11 +76,6 @@ export class CreateIncidentReportComponent {
       });
   }
 
-  get titleControl() {
-    return this.form.controls.title;
-  }
-
-  get descriptionControl() {
-    return this.form.controls.description;
-  }
+  get titleControl() { return this.form.controls.title; }
+  get descriptionControl() { return this.form.controls.description; }
 }
