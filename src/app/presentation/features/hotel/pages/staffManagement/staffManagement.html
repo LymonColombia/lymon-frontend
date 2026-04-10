@@ -1,0 +1,82 @@
+<app-hotel-page-layout
+  title="Gestión de Empleados"
+  subtitle="Visualiza todos los usuarios registrados por tu tenant"
+  iconName="bootstrapPeople"
+>
+  <section class="summary-grid" aria-label="Resumen de empleados">
+    <article class="summary-card">
+      <p class="summary-label">Total de usuarios</p>
+      <p class="summary-value">{{ totalEmployees() }}</p>
+      <p class="summary-hint">Registros creados por el tenant</p>
+    </article>
+
+    <article class="summary-card">
+      <p class="summary-label">Usuarios activos</p>
+      <p class="summary-value">{{ activeEmployees() }}</p>
+      <p class="summary-hint">Con acceso vigente al sistema</p>
+    </article>
+  </section>
+
+  <section class="list-card" aria-label="Listado de empleados registrados">
+    <header class="list-header">
+      <h2 class="list-title">Usuarios registrados</h2>
+      <p class="list-subtitle">Listado obtenido desde el endpoint del tenant</p>
+    </header>
+
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    } @else if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Cargando empleados...</p>
+      </div>
+    } @else if (employees().length === 0) {
+      <div class="empty-state">
+        <p class="empty-title">Aún no hay empleados registrados</p>
+        <p class="empty-subtitle">Cuando se creen usuarios del tenant aparecerán en este listado.</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="employees-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Fecha de registro</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (employee of employees(); track employee.id) {
+              <tr>
+                <td>
+                  <div class="name-cell">
+                    <span class="avatar">{{ employee.fullName.charAt(0) }}</span>
+                    <span>{{ employee.fullName }}</span>
+                  </div>
+                </td>
+                <td>{{ employee.email }}</td>
+                <td>
+                  <span class="role-pill" [class.role-pill--admin]="employee.role === 'ADMIN'">
+                    {{ employee.role }}
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="status-pill"
+                    [class.status-pill--active]="employee.status === 'ACTIVO'"
+                    [class.status-pill--inactive]="employee.status === 'INACTIVO'"
+                  >
+                    {{ employee.status }}
+                  </span>
+                </td>
+                <td>{{ formatDate(employee.createdAt) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</app-hotel-page-layout>

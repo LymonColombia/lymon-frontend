@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:cov:scope": "ng test --watch=false --coverage --coverage-reporters lcov --coverage-reporters text --coverage-reporters text-summary --include \"src/app/domain/use-cases/**/*.spec.ts\" --include \"src/app/presentation/features/hotel/pages/tenantProfile/tenantProfile.spec.ts\" --include \"src/app/presentation/features/hotel/pages/incidentReport/**/*.spec.ts\" --include \"src/app/infrastructure/repositories/tenant.repository.impl.spec.ts\" --include \"src/app/infrastructure/repositories/incident-report.repository.impl.spec.ts\" --coverage-include \"src/app/domain/**/*.ts\" --coverage-include \"src/app/infrastructure/repositories/**/*.ts\" --coverage-include \"src/app/infrastructure/mappers/**/*.ts\" --coverage-include \"src/app/infrastructure/services/**/*.ts\" --coverage-include \"src/app/infrastructure/guards/**/*.ts\" --coverage-include \"src/app/presentation/store/**/*.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/tenantProfile/tenantProfile.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/create/createIncidentReport.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/edit/editIncidentReport.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/list/incidentReportList.ts\""
   },
   "prettier": {
     "printWidth": 100,
@@ -21,7 +22,7 @@
     ]
   },
   "private": true,
-  "packageManager": "npm@11.6.2",
+  "packageManager": "pnpm@10.0.0",
   "dependencies": {
     "@angular/common": "^21.1.0",
     "@angular/compiler": "^21.1.0",

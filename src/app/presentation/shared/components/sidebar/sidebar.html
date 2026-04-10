@@ -1,90 +1,109 @@
-<nav class="sidebar">
+@if (isExpanded()) {
+  <div class="sidebar-backdrop" (click)="toggleExpanded()" (keydown)="toggleExpanded()" aria-hidden="true"></div>
+}
+
+<button
+  class="sidebar-float-toggle"
+  type="button"
+  (click)="toggleExpanded()"
+  [title]="isExpanded() ? 'Contraer menú' : 'Expandir menú'"
+  [attr.aria-label]="isExpanded() ? 'Contraer menú lateral' : 'Expandir menú lateral'"
+  [attr.aria-expanded]="isExpanded()"
+>
+  <ng-icon name="bootstrapLayoutSidebar" size="20px" aria-hidden="true"></ng-icon>
+</button>
+
+<nav class="sidebar" [class.sidebar--collapsed]="!isExpanded()" [class.sidebar--ready]="transitionsReady()">
   <div class="sidebar-header">
-    <div class="sidebar-logo">LYMON</div>
-    <div class="sidebar-subtitle">Gestión Hotelera</div>
+    <a routerLink="/lyhost" class="sidebar-logo-link">
+      <img
+        class="sidebar-logo-image"
+        [class.sidebar-logo-image--hidden]="!isExpanded()"
+        src="/images/LyHost.svg"
+        alt="LyHost"
+        width="140"
+        height="38"
+      />
+      <img
+        class="sidebar-logo-image--collapsed"
+        [class.sidebar-logo-image--collapsed-visible]="!isExpanded()"
+        src="/images/LyHostLogo.svg"
+        alt="LyHost"
+        width="48"
+        height="48"
+      />
+    </a>
   </div>
 
   <ul class="sidebar-menu">
     @for (item of menuItems; track item.route) {
       <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <a [routerLink]="item.route" class="menu-link">
-          @switch (item.icon) {
-            @case ('dashboard') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
-            }
-            @case ('calendar') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
-            }
-            @case ('hotel') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9h18v12H3z"/>
-                <path d="M9 21V9"/>
-                <path d="M3 9V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/>
-              </svg>
-            }
-            @case ('inventory') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
-              </svg>
-            }
-            @case ('services') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 2v2l-2 1.5L5 7v4l2 1.5L9 14v2h6v-2l2-1.5L19 11V7l-2-1.5L15 4V2H9z"/>
-                <circle cx="12" cy="9" r="3"/>
-              </svg>
-            }
-            @case ('people') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            }
-            @case ('reports') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="20" x2="18" y2="10"/>
-                <line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/>
-              </svg>
-            }
-            @case ('receipt') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
-              </svg>
-            }
-            @case ('settings') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6m9.66-9H16.5m-9 0H1.34m17.32-4.24l-4.24 4.24m-6.36 6.36L3.82 20.6m16.36 0l-4.24-4.24M8.06 8.06 3.82 3.82"/>
-              </svg>
-            }
-            @case ('lock') {
-              <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            }
-          }
-          <span class="menu-label">{{ item.label }}</span>
+        <a [routerLink]="item.route" class="menu-link" [title]="!isExpanded() ? item.label : null">
+          <ng-icon [name]="item.icon" size="20px" class="menu-icon" aria-hidden="true"></ng-icon>
+          <span class="menu-label" [class.menu-label--hidden]="!isExpanded()">{{ item.label }}</span>
         </a>
       </li>
     }
   </ul>
+
+  <div class="sidebar-footer" aria-label="Perfil">
+    <div class="profile" [class.profile--collapsed]="!isExpanded()">
+      <div class="profile-avatar" aria-hidden="true" [title]="!isExpanded() ? tenantNameDisplay() : null">{{ tenantInitials() }}</div>
+      <div class="profile-text" [class.profile-text--hidden]="!isExpanded()">
+        <div class="profile-name" [title]="tenantNameDisplay()">{{ tenantNameDisplay() }}</div>
+        <div class="profile-email" [title]="tenantEmailDisplay()">{{ tenantEmailDisplay() }}</div>
+      </div>
+    </div>
+
+    @if (isExpanded()) {
+      <div class="profile-menu-container" #profileMenuContainer>
+        <button
+          type="button"
+          class="profile-menu-trigger"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="isProfileMenuOpen()"
+          aria-label="Opciones de perfil"
+          (click)="toggleProfileMenu()"
+        >
+          <ng-icon name="bootstrapThreeDotsVertical" size="18px" aria-hidden="true"></ng-icon>
+        </button>
+
+        @if (isProfileMenuOpen()) {
+          <div class="profile-menu" role="menu" aria-label="Opciones">
+            <button type="button" class="profile-menu-item" role="menuitem" (click)="goToSettings()">
+              Configuración
+            </button>
+            <button type="button" class="profile-menu-item" role="menuitem" (click)="goToPlans()">Planes</button>
+
+            <button
+              type="button"
+              class="profile-menu-item profile-menu-item--danger"
+              role="menuitem"
+              (click)="openLogoutConfirm()"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <app-modal
+    [open]="isLogoutConfirmOpen()"
+    title="Cerrar sesión"
+    size="small"
+    (closed)="closeLogoutConfirm()"
+  >
+    <p>¿Seguro que deseas cerrar sesión?</p>
+
+    <div modal-footer style="display: flex; justify-content: flex-end; gap: 10px;">
+      <app-button variant="secondary" size="medium" type="button" (clicked)="closeLogoutConfirm()">
+        Cancelar
+      </app-button>
+      <app-button variant="primary" size="medium" type="button" (clicked)="confirmLogout()">
+        Cerrar sesión
+      </app-button>
+    </div>
+  </app-modal>
 </nav>

@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { BedType } from '@/domain/entities/property.model';
 
 const AMENITY_OPTIONS = [
@@ -28,29 +28,27 @@ const AMENITY_OPTIONS = [
 const BED_TYPES: BedType[] = ['SINGLE', 'DOUBLE', 'QUEEN', 'KING', 'TWIN', 'BUNK'];
 
 @Component({
-  selector: 'app-create-room',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-unit-form-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, SidebarComponent],
-  templateUrl: './createRoom.html',
-  styleUrls: ['./createRoom.css'],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent],
+  templateUrl: './unit-form-modal.component.html',
+  styleUrl: './unit-form-modal.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateRoomComponent implements OnInit {
+export class UnitFormModalComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly createUnitUseCase = inject(CreateUnitUseCase);
-  private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
 
-  readonly propertyId = signal<string | null>(null);
-  readonly propertyName = signal<string | null>(null);
-  readonly isLoading = signal(false);
+  readonly propertyId = input.required<string>();
+  readonly isSubmitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly successMessage = signal<string | null>(null);
   readonly selectedAmenities = signal<Set<string>>(new Set());
 
+  readonly created = output<void>();
+  readonly cancelled = output<void>();
+
   readonly AMENITY_OPTIONS = AMENITY_OPTIONS;
-  readonly BED_TYPES = BED_TYPES;
+  readonly bedTypeOptions: SelectOption[] = BED_TYPES.map((type) => ({ value: type, label: type }));
 
   readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -67,28 +65,12 @@ export class CreateRoomComponent implements OnInit {
     vrboId: [''],
   });
 
-  ngOnInit(): void {
-    const pid = this.route.snapshot.queryParamMap.get('propertyId');
-    if (!pid) {
-      this.router.navigate(['/properties']);
-      return;
-    }
-    this.propertyId.set(pid);
-    this.getPropertiesUseCase.execute().subscribe({
-      next: (props) => {
-        const found = props.find((p) => p.id === pid);
-        this.propertyName.set(found?.name ?? null);
-      },
-      error: () => {},
-    });
-  }
-
   get bedrooms(): FormArray {
     return this.form.controls.bedrooms;
   }
 
-  getBedroomAt(i: number): FormGroup {
-    return this.bedrooms.at(i) as FormGroup;
+  getBedroomAt(index: number): FormGroup {
+    return this.bedrooms.at(index) as FormGroup;
   }
 
   getBedsOf(bedroomIndex: number): FormArray {
@@ -113,8 +95,8 @@ export class CreateRoomComponent implements OnInit {
     this.bedrooms.push(this.buildBedroom());
   }
 
-  removeBedroom(i: number): void {
-    this.bedrooms.removeAt(i);
+  removeBedroom(index: number): void {
+    this.bedrooms.removeAt(index);
   }
 
   addBed(bedroomIndex: number): void {
@@ -138,11 +120,7 @@ export class CreateRoomComponent implements OnInit {
   }
 
   onCancel(): void {
-    if (this.propertyId()) {
-      this.router.navigate(['/property-units'], { queryParams: { propertyId: this.propertyId() } });
-    } else {
-      this.router.navigate(['/properties']);
-    }
+    this.cancelled.emit();
   }
 
   onSubmit(): void {
@@ -150,13 +128,13 @@ export class CreateRoomComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    this.isLoading.set(true);
+
+    this.isSubmitting.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     const raw = this.form.getRawValue();
     const dto = {
-      propertyId: this.propertyId()!,
+      propertyId: this.propertyId(),
       name: raw.name!,
       description: raw.description!,
       inventoryCount: raw.inventoryCount!,
@@ -179,28 +157,12 @@ export class CreateRoomComponent implements OnInit {
 
     this.createUnitUseCase.execute(dto).subscribe({
       next: () => {
-        this.isLoading.set(false);
-        this.successMessage.set('Unidad creada correctamente.');
-        this.form.reset({
-          inventoryCount: 1,
-          maxGuests: 2,
-          standardGuests: 1,
-          bathroomsCount: 1,
-          isShared: false,
-          pricePerNight: null,
-        });
-        while (this.bedrooms.length > 1) this.bedrooms.removeAt(1);
-        const firstBeds = this.getBedsOf(0);
-        firstBeds.clear();
-        firstBeds.push(this.buildBed());
-        this.getBedroomAt(0).patchValue({ roomName: '' });
-        this.selectedAmenities.set(new Set());
+        this.isSubmitting.set(false);
+        this.created.emit();
       },
       error: (err: HttpErrorResponse) => {
-        this.isLoading.set(false);
-        this.errorMessage.set(
-          err.error?.message ?? 'Error al crear la unidad. Inténtalo de nuevo.',
-        );
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err.error?.message ?? 'Error al crear la unidad. Inténtalo de nuevo.');
       },
     });
   }

@@ -11,9 +11,11 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ChangePasswordUseCase } from '@/domain/use-cases/user/change-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
+import { provideIcons } from '@ng-icons/core';
+import { bootstrapPersonLock } from '@ng-icons/bootstrap-icons';
 
 function passwordsDifferentValidator(control: AbstractControl): ValidationErrors | null {
   const current = control.get('currentPassword')?.value;
@@ -24,8 +26,10 @@ function passwordsDifferentValidator(control: AbstractControl): ValidationErrors
 
 @Component({
   selector: 'app-change-password',
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, SidebarComponent],
+  imports: [ReactiveFormsModule, HotelPageLayoutComponent],
+  providers: [provideIcons({ bootstrapPersonLock })],
   templateUrl: './changePassword.html',
   styleUrl: './changePassword.css',
 })

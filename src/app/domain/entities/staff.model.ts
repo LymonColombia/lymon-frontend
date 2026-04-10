@@ -17,6 +17,7 @@ export interface Unit {
   description?: string;
   maxGuests?: number;
   standardGuests?: number;
+  bedrooms?: Bedroom[];
   inventoryCount?: number;
   pricePerNight?: number;
   isShared?: boolean;
@@ -24,9 +25,25 @@ export interface Unit {
   bathroomsCount?: number;
 }
 
+export interface Bedroom {
+  roomName: string;
+  beds: Bed[];
+}
+
+export interface Bed {
+  type: string;
+  count: number;
+}
+
 export interface UnitsResponse {
   data: {
     units: Unit[];
+  };
+}
+
+export interface UnitResponse {
+  data: {
+    unit: Unit;
   };
 }
 
@@ -49,4 +66,22 @@ export interface InviteStaffDto {
   email: string;
   password: string;
   roleAssignments: RoleAssignmentDto[];
+}
+
+export interface StaffMember {
+  id?: string;
+  email: string;
+  fullName?: string;
+  name?: string;
+  role?: 'ADMIN' | 'STAFF';
+  createdAt?: string;
+  roleAssignments?: RoleAssignmentDto[];
+}
+
+export interface StaffListResponse {
+  data?: StaffMember[];
+  items?: StaffMember[];
+  results?: StaffMember[];
+  staff?: StaffMember[];
+  users?: StaffMember[];
 }

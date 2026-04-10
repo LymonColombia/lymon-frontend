@@ -7,21 +7,27 @@ import {
   signal,
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { SidebarComponent } from '@/presentation/shared/components/sidebar/sidebar';
+import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { GetAuditLogsUseCase } from '@/domain/use-cases/audit/get-audit-logs.use-case';
-import {
-  AuditAction,
-  AuditEntityType,
-  AuditLogEntry,
-} from '@/domain/entities/audit-log.model';
+import { AuditAction, AuditEntityType, AuditLogEntry } from '@/domain/entities/audit-log.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapInfoCircle, bootstrapSearch, bootstrapFileEarmarkText } from '@ng-icons/bootstrap-icons';
 
 const LIMIT = 20;
 
 @Component({
   selector: 'app-audit-log',
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SidebarComponent, ReactiveFormsModule],
+  imports: [HotelPageLayoutComponent, ReactiveFormsModule, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapInfoCircle,
+      bootstrapSearch,
+      bootstrapFileEarmarkText,
+    }),
+  ],
   templateUrl: './auditLog.html',
   styleUrl: './auditLog.css',
 })

@@ -1,248 +1,216 @@
-<app-sidebar></app-sidebar>
-
-<div class="main-content">
-    <div class="email-container">
-        <div class="page-header">
-            <button class="back-button">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"/>
-                </svg>
-                Volver
-            </button>
-
-            <div class="header-content">
-                <div class="header-left">
-                    <div class="header-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                    </div>
-                    <div class="header-text">
-                        <h1 class="page-title">Configuración de Correos</h1>
-                        <p class="page-subtitle">Configura correos automáticos para mejorar la atención al cliente</p>
-                    </div>
-                </div>
-
-                <div class="header-actions">
-                    <button class="btn-new-template" (click)="openModal()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Nueva Plantilla
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="metrics-grid">
-            @for (metric of metrics; track metric.label) {
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <span class="metric-label">{{ metric.label }}</span>
-                        @if (metric.icon === 'mail') {
-                            <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" [attr.stroke]="metric.color" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
-                            </svg>
-                        }
-                        @if (metric.icon === 'check') {
-                            <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" [attr.stroke]="metric.color" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                        }
-                        @if (metric.icon === 'send') {
-                            <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" [attr.stroke]="metric.color" stroke-width="2">
-                                <line x1="22" y1="2" x2="11" y2="13"/>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                            </svg>
-                        }
-                    </div>
-                    <div class="metric-value">{{ metric.value }}</div>
-                    <div class="metric-subtitle">{{ metric.subtitle }}</div>
-                </div>
-            }
-        </div>
-
-        <div class="templates-section">
-            <h3 class="section-title">Plantillas de Correo</h3>
-
-            <div class="templates-list">
-                @for (template of templates; track template.id) {
-                    <div class="template-card">
-                        <div class="template-main">
-                            <div class="template-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="2">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                    <polyline points="22,6 12,13 2,6"/>
-                                </svg>
-                            </div>
-                            <div class="template-info">
-                                <div class="template-header-row">
-                                    <h4 class="template-name">{{ template.name }}</h4>
-                                    <span class="status-badge active">Activo</span>
-                                </div>
-                                <p class="template-subject">{{ template.subject }}</p>
-                                <div class="template-trigger">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                        <line x1="16" y1="2" x2="16" y2="6"/>
-                                        <line x1="8" y1="2" x2="8" y2="6"/>
-                                        <line x1="3" y1="10" x2="21" y2="10"/>
-                                    </svg>
-                                    <span>Se envía: {{ template.trigger }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="template-actions">
-                            <button class="action-btn" (click)="viewTemplate(template.id)" title="Ver">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn" (click)="sendTestEmail(template.id)" title="Enviar prueba">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                                    <line x1="22" y1="2" x2="11" y2="13"/>
-                                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn" (click)="editTemplate(template.id)" title="Editar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn delete" (click)="deleteTemplate(template.id)" title="Eliminar">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D32F2F" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"/>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                </svg>
-                            </button>
-                            <label class="toggle-switch">
-                                <input type="checkbox" [checked]="template.active" (change)="toggleTemplate(template)">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
+<app-hotel-page-layout
+  title="Configuración de Correos"
+  subtitle="Configura correos automáticos para mejorar la atención al cliente"
+  iconName="bootstrapEnvelopeAt"
+>
+    <div hotelPageActions class="email-header-actions">
+      <button class="btn-new-template" (click)="openModal()">
+        <ng-icon name="bootstrapPlusLg" size="18px" style="color: white"></ng-icon>
+        Nueva Plantilla
+      </button>
     </div>
-</div>
+
+    <div class="metrics-grid">
+      @for (metric of metrics; track metric.label) {
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">{{ metric.label }}</span>
+            @if (metric.icon === 'mail') {
+              <ng-icon
+                name="bootstrapEnvelope"
+                size="20px"
+                class="metric-icon"
+                [style.color]="metric.color"
+              ></ng-icon>
+            }
+            @if (metric.icon === 'check') {
+              <ng-icon
+                name="bootstrapCheckLg"
+                size="20px"
+                class="metric-icon"
+                [style.color]="metric.color"
+              ></ng-icon>
+            }
+            @if (metric.icon === 'send') {
+              <ng-icon
+                name="bootstrapSend"
+                size="20px"
+                class="metric-icon"
+                [style.color]="metric.color"
+              ></ng-icon>
+            }
+          </div>
+          <div class="metric-value">{{ metric.value }}</div>
+          <div class="metric-subtitle">{{ metric.subtitle }}</div>
+        </div>
+      }
+    </div>
+
+    <div class="templates-section">
+      <h3 class="section-title">Plantillas de Correo</h3>
+
+      <div class="templates-list">
+        @for (template of templates; track template.id) {
+          <div class="template-card">
+            <div class="template-main">
+              <div class="template-icon">
+                <ng-icon name="bootstrapEnvelope" size="24px" style="color: #009a44"></ng-icon>
+              </div>
+              <div class="template-info">
+                <div class="template-header-row">
+                  <h4 class="template-name">{{ template.name }}</h4>
+                  <span class="status-badge active">Activo</span>
+                </div>
+                <p class="template-subject">{{ template.subject }}</p>
+                <div class="template-trigger">
+                  <ng-icon name="bootstrapCalendar" size="16px" style="color: #666"></ng-icon>
+                  <span>Se envía: {{ template.trigger }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="template-actions">
+              <button class="action-btn" (click)="viewTemplate(template.id)" title="Ver">
+                <ng-icon name="bootstrapEye" size="20px" style="color: #666"></ng-icon>
+              </button>
+              <button class="action-btn" (click)="sendTestEmail(template.id)" title="Enviar prueba">
+                <ng-icon name="bootstrapSend" size="20px" style="color: #666"></ng-icon>
+              </button>
+              <button class="action-btn" (click)="editTemplate(template.id)" title="Editar">
+                <ng-icon name="bootstrapPencilSquare" size="20px" style="color: #666"></ng-icon>
+              </button>
+              <button
+                class="action-btn delete"
+                (click)="deleteTemplate(template.id)"
+                title="Eliminar"
+              >
+                <ng-icon name="bootstrapTrash3" size="20px" style="color: red"></ng-icon>
+              </button>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  [checked]="template.active"
+                  (change)="toggleTemplate(template)"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+</app-hotel-page-layout>
 
 @if (showModal) {
-    <div class="modal-overlay" (click)="closeModal()">
-        <div class="modal-container" (click)="$event.stopPropagation()">
-            <div class="modal-header">
-                <div class="modal-title-row">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M12 1v6m0 6v6m9.66-9H16.5m-9 0H1.34m17.32-4.24l-4.24 4.24m-6.36 6.36L3.82 20.6m16.36 0l-4.24-4.24M8.06 8.06 3.82 3.82"/>
-                    </svg>
-                    <h2 class="modal-title">Nueva Plantilla</h2>
-                </div>
-                <button class="modal-close" (click)="closeModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <div class="modal-form">
-                    <div class="form-section">
-                        <div class="form-group">
-                            <label for="template-name">Nombre de la Plantilla *</label>
-                            <input type="text" id="template-name" placeholder="Ej: Correo de Bienvenida">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="template-subject">Asunto del Correo *</label>
-                            <input type="text" id="template-subject" placeholder="Ej: ¡Bienvenido a {NOMBRE_HOTEL}!">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="template-trigger">Momento de Envío *</label>
-                            <select id="template-trigger">
-                                <option value="">Seleccionar...</option>
-                                <option value="on-booking">Al confirmar la reserva</option>
-                                <option value="before-checkin">24 horas antes del check-in</option>
-                                <option value="on-checkin">Al realizar check-in</option>
-                                <option value="after-checkout">Después del check-out</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="template-content">Contenido del Correo *</label>
-                            <textarea id="template-content" rows="12" placeholder="Escribe el contenido del correo aquí..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="variables-panel">
-                        <h3 class="panel-title">Variables Disponibles</h3>
-                        <p class="panel-subtitle">Haz clic en una variable para insertarla en el contenido</p>
-
-                        <div class="variables-list">
-                            @for (variable of variables; track variable.code) {
-                                <button class="variable-btn" (click)="insertVariable(variable.code)">
-                                    {{ variable.code }}
-                                </button>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
-                <button class="btn-save" (click)="saveTemplate()">Guardar Plantilla</button>
-            </div>
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-row">
+          <ng-icon name="bootstrapPlusLg" size="24px" style="color: #009a44"></ng-icon>
+          <h2 class="modal-title">Nueva Plantilla</h2>
         </div>
+        <button class="modal-close" (click)="closeModal()">
+          <ng-icon name="bootstrapXCircleFill" size="24px" style="color: #666"></ng-icon>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-form">
+          <div class="form-section">
+            <div class="form-group">
+              <label for="template-name">Nombre de la Plantilla *</label>
+              <input type="text" id="template-name" placeholder="Ej: Correo de Bienvenida" />
+            </div>
+
+            <div class="form-group">
+              <label for="template-subject">Asunto del Correo *</label>
+              <input
+                type="text"
+                id="template-subject"
+                placeholder="Ej: ¡Bienvenido a {NOMBRE_HOTEL}!"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="template-trigger">Momento de Envío *</label>
+              <select id="template-trigger">
+                <option value="">Seleccionar...</option>
+                <option value="on-booking">Al confirmar la reserva</option>
+                <option value="before-checkin">24 horas antes del check-in</option>
+                <option value="on-checkin">Al realizar check-in</option>
+                <option value="after-checkout">Después del check-out</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="template-content">Contenido del Correo *</label>
+              <textarea
+                id="template-content"
+                rows="12"
+                placeholder="Escribe el contenido del correo aquí..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="variables-panel">
+            <h3 class="panel-title">Variables Disponibles</h3>
+            <p class="panel-subtitle">Haz clic en una variable para insertarla en el contenido</p>
+
+            <div class="variables-list">
+              @for (variable of variables; track variable.code) {
+                <button class="variable-btn" (click)="insertVariable(variable.code)">
+                  {{ variable.code }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
+        <button class="btn-save" (click)="saveTemplate()">Guardar Plantilla</button>
+      </div>
     </div>
+  </div>
 }
 
 @if (showPreviewModal && selectedTemplate) {
-    <div class="modal-overlay" (click)="closePreviewModal()">
-        <div class="preview-modal-container" (click)="$event.stopPropagation()">
-            <div class="modal-header">
-                <h2 class="modal-title">Vista Previa</h2>
-                <button class="modal-close" (click)="closePreviewModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
+  <div class="modal-overlay" (click)="closePreviewModal()">
+    <div class="preview-modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Vista Previa</h2>
+        <button class="modal-close" (click)="closePreviewModal()">
+          <ng-icon name="bootstrapXCircleFill" size="24px" style="color: #666"></ng-icon>
+        </button>
+      </div>
 
-            <div class="preview-body">
-                <div class="email-preview">
-                    <div class="preview-field">
-                        <span class="field-label">Asunto:</span>
-                        <span class="field-value">{{ selectedTemplate.subject }}</span>
-                    </div>
+      <div class="preview-body">
+        <div class="email-preview">
+          <div class="preview-field">
+            <span class="field-label">Asunto:</span>
+            <span class="field-value">{{ selectedTemplate.subject }}</span>
+          </div>
 
-                    <div class="preview-content">
-                        <p [innerHTML]="getFormattedContent(selectedTemplate.content)"></p>
-                    </div>
+          <div class="preview-content">
+            <p [innerHTML]="getFormattedContent(selectedTemplate.content)"></p>
+          </div>
 
-                    <div class="preview-note">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066CC" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="16" x2="12" y2="12"/>
-                            <line x1="12" y1="8" x2="12.01" y2="8"/>
-                        </svg>
-                        <span>Las variables entre llaves se reemplazarán automáticamente con la información del huésped y la reserva al enviar el correo.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn-cancel" (click)="closePreviewModal()">Cerrar</button>
-                <button class="btn-save" (click)="sendTestEmail(selectedTemplate.id)">Enviar Correo de Prueba</button>
-            </div>
+          <div class="preview-note">
+            <ng-icon name="bootstrapInfoCircle" size="20px" style="color: #0066CC"></ng-icon>
+            <span
+              >Las variables entre llaves se reemplazarán automáticamente con la información del
+              huésped y la reserva al enviar el correo.</span
+            >
+          </div>
         </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closePreviewModal()">Cerrar</button>
+        <button class="btn-save" (click)="sendTestEmail(selectedTemplate.id)">
+          Enviar Correo de Prueba
+        </button>
+      </div>
     </div>
+  </div>
 }

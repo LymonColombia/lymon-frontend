@@ -1,47 +1,17 @@
-<app-sidebar></app-sidebar>
+<app-hotel-page-layout
+  title="Mis Propiedades"
+  subtitle="Gestiona tus propiedades y crea nuevas unidades"
+  iconName="bootstrapHouseDoorFill"
+>
+  <span hotelPageMeta class="properties-count">
+    @if (isLoading()) {
+      Cargando propiedades...
+    } @else {
+      {{ properties().length }} propiedades registradas
+    }
+  </span>
 
-<div class="main-content">
   <div class="properties-container">
-    <!-- Page header -->
-    <div class="page-title-row">
-      <div class="page-icon">
-        <svg
-          width="28"
-          height="28"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
-      </div>
-      <div class="title-text">
-        <h1 class="page-title">Mis Propiedades</h1>
-        <p class="page-subtitle">Gestiona tus propiedades y crea nuevas unidades</p>
-      </div>
-      <button type="button" class="btn-primary" (click)="toggleForm()">
-        @if (showForm()) {
-          Cancelar
-        } @else {
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Nueva Propiedad
-        }
-      </button>
-    </div>
-
     <!-- Alerts -->
     @if (errorMessage()) {
       <div class="alert alert-error">{{ errorMessage() }}</div>
@@ -50,248 +20,28 @@
       <div class="alert alert-success">{{ successMessage() }}</div>
     }
 
-    <!-- Create Property Form -->
     @if (showForm()) {
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div class="form-card">
-          <div class="section-title">
-            <span class="section-icon">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              </svg>
-            </span>
-            Información de la Propiedad
-          </div>
+      <app-modal
+        [open]="true"
+        title="Nueva Propiedad"
+        size="large"
+        (closed)="closeForm()"
+      >
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <app-property-form
+            [form]="form"
+            [propertyTypeOptions]="propertyTypeOptions"
+            [cancellationPolicyOptions]="cancellationPolicyOptions"
+          />
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nombre <span class="required">*</span></label>
-              <input
-                type="text"
-                formControlName="name"
-                placeholder="Hotel Paraíso"
-                [class.input-invalid]="form.controls.name.invalid && form.controls.name.touched"
-              />
-              @if (form.controls.name.invalid && form.controls.name.touched) {
-                <span class="field-error">Campo requerido</span>
-              }
-            </div>
-            <div class="form-group">
-              <label>Tipo <span class="required">*</span></label>
-              <select formControlName="propertyType">
-                @for (type of PROPERTY_TYPES; track type) {
-                  <option [value]="type">{{ type }}</option>
-                }
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Descripción <span class="required">*</span></label>
-            <textarea
-              formControlName="description"
-              rows="3"
-              placeholder="Describe tu propiedad..."
-              [class.input-invalid]="
-                form.controls.description.invalid && form.controls.description.touched
-              "
-            ></textarea>
-            @if (form.controls.description.invalid && form.controls.description.touched) {
-              <span class="field-error">Campo requerido</span>
-            }
-          </div>
-
-          <div class="section-separator">Dirección</div>
-
-          <div class="form-group">
-            <label>Dirección <span class="required">*</span></label>
-            <input
-              type="text"
-              formControlName="address"
-              placeholder="Calle 123 #45-67"
-              [class.input-invalid]="form.controls.address.invalid && form.controls.address.touched"
-            />
-            @if (form.controls.address.invalid && form.controls.address.touched) {
-              <span class="field-error">Campo requerido</span>
-            }
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Ciudad <span class="required">*</span></label>
-              <input
-                type="text"
-                formControlName="city"
-                placeholder="Bogotá"
-                [class.input-invalid]="form.controls.city.invalid && form.controls.city.touched"
-              />
-              @if (form.controls.city.invalid && form.controls.city.touched) {
-                <span class="field-error">Campo requerido</span>
-              }
-            </div>
-            <div class="form-group">
-              <label>Departamento / Estado <span class="required">*</span></label>
-              <input
-                type="text"
-                formControlName="state"
-                placeholder="Cundinamarca"
-                [class.input-invalid]="form.controls.state.invalid && form.controls.state.touched"
-              />
-              @if (form.controls.state.invalid && form.controls.state.touched) {
-                <span class="field-error">Campo requerido</span>
-              }
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>País <span class="required">*</span></label>
-              <input
-                type="text"
-                formControlName="country"
-                placeholder="Colombia"
-                [class.input-invalid]="
-                  form.controls.country.invalid && form.controls.country.touched
-                "
-              />
-              @if (form.controls.country.invalid && form.controls.country.touched) {
-                <span class="field-error">Campo requerido</span>
-              }
-            </div>
-            <div class="form-group">
-              <label>Código Postal <span class="required">*</span></label>
-              <input
-                type="text"
-                formControlName="zipCode"
-                placeholder="110111"
-                [class.input-invalid]="
-                  form.controls.zipCode.invalid && form.controls.zipCode.touched
-                "
-              />
-              @if (form.controls.zipCode.invalid && form.controls.zipCode.touched) {
-                <span class="field-error">Campo requerido</span>
-              }
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Latitud <span class="required">*</span></label>
-              <input
-                type="number"
-                formControlName="lat"
-                placeholder="4.7110"
-                step="any"
-                [class.input-invalid]="form.controls.lat.invalid && form.controls.lat.touched"
-              />
-              @if (form.controls.lat.invalid && form.controls.lat.touched) {
-                <span class="field-error">Valor entre -90 y 90</span>
-              }
-            </div>
-            <div class="form-group">
-              <label>Longitud <span class="required">*</span></label>
-              <input
-                type="number"
-                formControlName="lng"
-                placeholder="-74.0721"
-                step="any"
-                [class.input-invalid]="form.controls.lng.invalid && form.controls.lng.touched"
-              />
-              @if (form.controls.lng.invalid && form.controls.lng.touched) {
-                <span class="field-error">Valor entre -180 y 180</span>
-              }
-            </div>
-          </div>
-
-          <div class="section-separator">Políticas y Contacto</div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Check-in <span class="required">*</span></label>
-              <input
-                type="time"
-                formControlName="checkInTime"
-                [class.input-invalid]="
-                  form.controls.checkInTime.invalid && form.controls.checkInTime.touched
-                "
-              />
-              @if (form.controls.checkInTime.invalid && form.controls.checkInTime.touched) {
-                <span class="field-error">Campo requerido</span>
-              }
-            </div>
-            <div class="form-group">
-              <label>Check-out <span class="required">*</span></label>
-              <input
-                type="time"
-                formControlName="checkOutTime"
-                [class.input-invalid]="
-                  form.controls.checkOutTime.invalid && form.controls.checkOutTime.touched
-                "
-              />
-              @if (form.controls.checkOutTime.invalid && form.controls.checkOutTime.touched) {
-                <span class="field-error">Campo requerido</span>
-              }
-            </div>
-            <div class="form-group">
-              <label>Política de Cancelación <span class="required">*</span></label>
-              <select formControlName="cancellationPolicy">
-                @for (policy of CANCELLATION_POLICIES; track policy) {
-                  <option [value]="policy">{{ policy }}</option>
-                }
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Teléfono del Anfitrión <span class="required">*</span></label>
-              <input
-                type="tel"
-                formControlName="hostPhone"
-                placeholder="+57 300 000 0000"
-                [class.input-invalid]="
-                  form.controls.hostPhone.invalid && form.controls.hostPhone.touched
-                "
-              />
-              @if (form.controls.hostPhone.invalid && form.controls.hostPhone.touched) {
-                <span class="field-error">Campo requerido</span>
-              }
-            </div>
-            <div class="form-group">
-              <label>Correo del Anfitrión <span class="required">*</span></label>
-              <input
-                type="email"
-                formControlName="hostEmail"
-                placeholder="host@hotel.com"
-                [class.input-invalid]="
-                  form.controls.hostEmail.invalid && form.controls.hostEmail.touched
-                "
-              />
-              @if (form.controls.hostEmail.invalid && form.controls.hostEmail.touched) {
-                <span class="field-error">Correo inválido</span>
-              }
-            </div>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn-secondary" (click)="toggleForm()">Cancelar</button>
-          <button type="submit" class="btn-primary" [disabled]="isSaving()">
-            @if (isSaving()) {
-              Guardando...
-            } @else {
+          <div modal-footer class="form-actions">
+            <app-button type="button" variant="secondary" (clicked)="cancelForm()">Cancelar</app-button>
+            <app-button type="submit" variant="primary" [disabled]="isSaving()" [loading]="isSaving()">
               Crear Propiedad
-            }
-          </button>
-        </div>
-      </form>
+            </app-button>
+          </div>
+        </form>
+      </app-modal>
     }
 
     <!-- Properties list -->
@@ -302,63 +52,27 @@
       </div>
     } @else if (properties().length === 0) {
       <div class="empty-state">
-        <svg
-          width="64"
-          height="64"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#ccc"
-          stroke-width="1.2"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
+        <ng-icon class="empty-state-icon" name="bootstrapHouseDoorFill" size="64px"></ng-icon>
         <p class="empty-title">Aún no tienes propiedades</p>
         <p class="empty-subtitle">Crea tu primera propiedad para empezar a gestionar unidades</p>
-        <button type="button" class="btn-primary" (click)="toggleForm()">
+        <app-button type="button" variant="primary" (clicked)="openForm()">
           Crear primera propiedad
-        </button>
+        </app-button>
       </div>
     } @else {
       <div class="property-grid">
         @for (prop of properties(); track prop.id) {
-          <div class="property-card">
-            <div class="property-card-header">
-              <span class="property-badge">{{ prop.propertyType }}</span>
-            </div>
-            <h3 class="property-name">{{ prop.name }}</h3>
-            <p class="property-city">
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              {{ prop.city }}
-            </p>
-            <button type="button" class="btn-add-unit" (click)="navigateToUnits(prop.id)">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="1" y="3" width="15" height="13" rx="2"/>
-                <path d="M16 8h4l3 3v5h-7V8z"/>
-              </svg>
-              Ver Unidades
-            </button>
-          </div>
+          <app-property-card [property]="prop" (viewUnits)="navigateToUnits($event)" />
         }
+        
+        <button class="create-property-card" type="button" (click)="openForm()">
+          <span class="create-property-icon" aria-hidden="true">
+            <ng-icon name="bootstrapPlus" size="20px"></ng-icon>
+          </span>
+          <span class="create-property-title">Nueva Propiedad</span>
+          <span class="create-property-subtitle">Haz clic para agregar una propiedad</span>
+        </button>
       </div>
     }
   </div>
-</div>
+</app-hotel-page-layout>

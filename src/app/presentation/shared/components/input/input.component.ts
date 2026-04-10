@@ -48,7 +48,7 @@ export class InputComponent implements ControlValueAccessor {
   readonly id = input<string>('');
 
   // Signal Outputs
-  readonly valueChange = output<string>();
+  readonly valueChange = output<string | number | null>();
   readonly focused = output<void>();
   readonly blurred = output<void>();
 
@@ -67,14 +67,14 @@ export class InputComponent implements ControlValueAccessor {
   });
 
   // ControlValueAccessor implementation
-  private onChange: (value: string) => void = () => {};
+  private onChange: (value: string | number | null) => void = () => {};
   private onTouched: () => void = () => {};
 
-  writeValue(value: string | null): void {
-    this.value.set(value ?? '');
+  writeValue(value: string | number | null): void {
+    this.value.set(value === null ? '' : String(value));
   }
 
-  registerOnChange(fn: (value: string) => void): void {
+  registerOnChange(fn: (value: string | number | null) => void): void {
     this.onChange = fn;
   }
 
@@ -82,14 +82,19 @@ export class InputComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
-    // Disabled state is handled through the signal input
-  }
-
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     const newValue = target.value;
     this.value.set(newValue);
+
+    if (this.type() === 'number') {
+      const parsedValue = newValue === '' ? null : Number(newValue);
+      const normalizedValue = Number.isNaN(parsedValue) ? null : parsedValue;
+      this.onChange(normalizedValue);
+      this.valueChange.emit(normalizedValue);
+      return;
+    }
+
     this.onChange(newValue);
     this.valueChange.emit(newValue);
   }
