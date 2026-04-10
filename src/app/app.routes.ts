@@ -36,6 +36,7 @@ import { guestPublicGuard } from '@/infrastructure/guards/guest-public.guard';
 import { guestGuard } from '@/infrastructure/guards/guest.guard';
 import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/guest-checkout/guest-checkout';
 import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
+import { InventoryComponent } from '@/presentation/features/hotel/pages/inventory/inventory';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
@@ -98,6 +99,7 @@ export const routes: Routes = [
       { path: 'crm/guests', component: GuestsCrmComponent },
       { path: 'crm/guests/:guestId', component: GuestProfileComponent },
       { path: 'staff-shift', component: StaffShiftComponent },
+      { path: 'inventory', component: InventoryComponent },
     ],
   },
 

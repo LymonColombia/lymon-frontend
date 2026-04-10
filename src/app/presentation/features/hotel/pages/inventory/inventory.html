@@ -1,0 +1,339 @@
+<app-hotel-page-layout
+  title="Gestion de Inventario"
+  subtitle="Administra insumos y proveedores del hotel"
+  iconName="bootstrapBoxSeam"
+>
+  <section class="inventory-view" aria-label="Gestion de inventario">
+    <div class="inventory-tabs" role="tablist" aria-label="Secciones de inventario">
+      <button
+        type="button"
+        class="tab-btn"
+        role="tab"
+        [class.tab-btn--active]="activeTab() === 'supplies'"
+        [attr.aria-selected]="activeTab() === 'supplies'"
+        (click)="setActiveTab('supplies')"
+      >
+        <ng-icon name="bootstrapBoxSeam" size="16px" aria-hidden="true"></ng-icon>
+        Insumos
+      </button>
+
+      <button
+        type="button"
+        class="tab-btn"
+        role="tab"
+        [class.tab-btn--active]="activeTab() === 'providers'"
+        [attr.aria-selected]="activeTab() === 'providers'"
+        (click)="setActiveTab('providers')"
+      >
+        <ng-icon name="bootstrapBuilding" size="16px" aria-hidden="true"></ng-icon>
+        Proveedores
+      </button>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-field">
+        <app-input
+          id="inventory-search"
+          [placeholder]="searchPlaceholder()"
+          [hasIcon]="true"
+          (valueChange)="updateSearch($event)"
+        >
+          <ng-icon icon name="bootstrapSearch" size="18px" aria-hidden="true"></ng-icon>
+        </app-input>
+      </div>
+
+      @if (activeTab() === 'supplies') {
+        <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()">
+          <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+          Agregar Insumo
+        </app-button>
+      } @else {
+        <app-button type="button" variant="primary" (clicked)="openCreateProviderModal()">
+          <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+          Agregar Proveedor
+        </app-button>
+      }
+    </div>
+
+    @if (activeTab() === 'supplies') {
+      <div class="table-card">
+        @if (filteredSupplies().length === 0) {
+          <div class="empty-state">No hay insumos que coincidan con la busqueda.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table class="inventory-table" aria-label="Listado de insumos">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Categoria</th>
+                  <th>Cantidad</th>
+                  <th>Proveedor</th>
+                  <th>Stock minimo</th>
+                  <th>Stock</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of filteredSupplies(); track item.id) {
+                  <tr>
+                    <td>{{ item.name }}</td>
+                    <td>
+                      <span class="category-pill" [class]="'category-pill category-pill--' + getCategoryClass(item.category)">
+                        {{ item.category }}
+                      </span>
+                    </td>
+                    <td>{{ item.quantity }} {{ item.unit }}</td>
+                    <td>{{ item.provider }}</td>
+                    <td>{{ item.minimumStock }} {{ item.unit }}</td>
+                    <td>
+                      <span
+                        class="stock-pill"
+                        [class.stock-pill--normal]="getStockState(item) === 'NORMAL'"
+                        [class.stock-pill--low]="getStockState(item) === 'BAJO'"
+                        [class.stock-pill--critical]="getStockState(item) === 'CRITICO'"
+                      >
+                        {{ getStockLabel(item) }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="actions-cell">
+                        <button
+                          type="button"
+                          class="icon-action"
+                          (click)="openEditSupplyModal(item)"
+                          aria-label="Editar insumo"
+                          title="Editar"
+                        >
+                          <ng-icon name="bootstrapPencilSquare" size="15px" aria-hidden="true"></ng-icon>
+                        </button>
+                        <button
+                          type="button"
+                          class="icon-action icon-action--danger"
+                          (click)="removeSupply(item.id)"
+                          aria-label="Eliminar insumo"
+                          title="Eliminar"
+                        >
+                          <ng-icon name="bootstrapXCircleFill" size="15px" aria-hidden="true"></ng-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="providers-grid">
+        @if (filteredProviders().length === 0) {
+          <div class="table-card empty-state">No hay proveedores que coincidan con la busqueda.</div>
+        } @else {
+          @for (provider of filteredProviders(); track provider.id) {
+            <article class="provider-card" aria-label="Proveedor {{ provider.name }}">
+              <div class="provider-head">
+                <div class="provider-title-wrap">
+                  <span class="provider-icon" aria-hidden="true">
+                    <ng-icon name="bootstrapBuilding" size="16px"></ng-icon>
+                  </span>
+                  <div class="provider-main">
+                    <h3 class="provider-name">{{ provider.name }}</h3>
+                    <p class="provider-rif">{{ provider.rif }}</p>
+                  </div>
+                </div>
+
+                <div class="actions-cell">
+                  <button
+                    type="button"
+                    class="icon-action"
+                    (click)="openEditProviderModal(provider)"
+                    aria-label="Editar proveedor"
+                    title="Editar"
+                  >
+                    <ng-icon name="bootstrapPencilSquare" size="15px" aria-hidden="true"></ng-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-action icon-action--danger"
+                    (click)="removeProvider(provider.id)"
+                    aria-label="Eliminar proveedor"
+                    title="Eliminar"
+                  >
+                    <ng-icon name="bootstrapXCircleFill" size="15px" aria-hidden="true"></ng-icon>
+                  </button>
+                </div>
+              </div>
+
+              <ul class="provider-meta">
+                <li><span>Direccion:</span> {{ provider.address }}</li>
+                <li><span>Email:</span> {{ provider.contactEmail }}</li>
+                <li><span>Telefono:</span> {{ provider.phone }}</li>
+              </ul>
+
+              <div class="provider-footer">
+                <app-button type="button" variant="outline" size="small" (clicked)="openProviderDetails(provider.id)">
+                  Detalles
+                </app-button>
+              </div>
+            </article>
+          }
+        }
+      </div>
+    }
+  </section>
+</app-hotel-page-layout>
+
+<app-modal [open]="isSupplyModalOpen()" [title]="modalTitle()" size="medium" (closed)="closeSupplyModal()">
+  <form id="inventory-supply-form" class="supply-form" [formGroup]="supplyForm" (ngSubmit)="saveSupply()">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="supply-name">Nombre *</label>
+        <app-input id="supply-name" formControlName="name" placeholder="Ej. Jabon liquido"></app-input>
+      </div>
+
+      <div class="form-group">
+        <label for="supply-category">Categoria *</label>
+        <app-select id="supply-category" formControlName="category" [options]="categoryOptions"></app-select>
+      </div>
+
+      <div class="form-group">
+        <label for="supply-quantity">Cantidad *</label>
+        <app-input id="supply-quantity" type="number" formControlName="quantity" placeholder="0"></app-input>
+      </div>
+
+      <div class="form-group">
+        <label for="supply-unit">Unidad *</label>
+        <app-select id="supply-unit" formControlName="unit" [options]="unitOptions"></app-select>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="supply-provider">Proveedor *</label>
+        <app-select id="supply-provider" formControlName="provider" [options]="providerOptions()"></app-select>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="supply-minimum-stock">Stock minimo *</label>
+        <app-input
+          id="supply-minimum-stock"
+          type="number"
+          formControlName="minimumStock"
+          placeholder="Ej. 20"
+        ></app-input>
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeSupplyModal()">Cancelar</app-button>
+    <app-button type="button" variant="primary" (clicked)="saveSupply()">{{ modalSubmitLabel() }}</app-button>
+  </div>
+</app-modal>
+
+<app-modal
+  [open]="isProviderModalOpen()"
+  [title]="providerModalTitle()"
+  size="medium"
+  (closed)="closeProviderModal()"
+>
+  <form id="inventory-provider-form" class="provider-form" [formGroup]="providerForm" (ngSubmit)="saveProvider()">
+    <div class="form-grid">
+      <div class="form-group form-group--full">
+        <label for="provider-name">Nombre *</label>
+        <app-input id="provider-name" formControlName="name" [readonly]="providerNameReadonly()"></app-input>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="provider-rif">RIF/NIT *</label>
+        <app-input id="provider-rif" formControlName="rif" placeholder="J-12345678-9"></app-input>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="provider-address">Direccion *</label>
+        <app-input id="provider-address" formControlName="address" placeholder="Av. Principal 123"></app-input>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="provider-email">Email</label>
+        <app-input id="provider-email" type="email" formControlName="contactEmail"></app-input>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="provider-phone">Telefono</label>
+        <app-input id="provider-phone" formControlName="phone"></app-input>
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeProviderModal()">Cancelar</app-button>
+    <app-button type="button" variant="primary" (clicked)="saveProvider()">
+      {{ providerModalSubmitLabel() }}
+    </app-button>
+  </div>
+</app-modal>
+
+@if (selectedProvider()) {
+  <div
+    class="provider-drawer-backdrop"
+    (click)="closeProviderDetails()"
+    (keydown.escape)="closeProviderDetails()"
+    tabindex="0"
+    aria-label="Cerrar panel de detalles"
+  ></div>
+
+  <aside class="provider-drawer" role="dialog" aria-modal="true" aria-label="Detalles del proveedor">
+    <header class="drawer-header">
+      <div>
+        <h2>{{ selectedProvider()!.name }}</h2>
+        <p>{{ selectedProvider()!.rif }}</p>
+      </div>
+
+      <button
+        type="button"
+        class="drawer-close"
+        (click)="closeProviderDetails()"
+        aria-label="Cerrar detalles"
+      >
+        <ng-icon name="bootstrapX" size="18px" aria-hidden="true"></ng-icon>
+      </button>
+    </header>
+
+    <section class="drawer-section">
+      <h3>Informacion de contacto</h3>
+      <ul class="drawer-contact-list">
+        <li>
+          <ng-icon name="bootstrapGeoAlt" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.address }}</span>
+        </li>
+        <li>
+          <ng-icon name="bootstrapEnvelope" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.contactEmail }}</span>
+        </li>
+        <li>
+          <ng-icon name="bootstrapTelephone" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.phone }}</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="drawer-section">
+      <h3>Insumos asociados</h3>
+
+      @if (selectedProviderSupplies().length === 0) {
+        <p class="drawer-empty">Este proveedor aun no tiene insumos asignados.</p>
+      } @else {
+        <ul class="drawer-supply-list">
+          @for (supply of selectedProviderSupplies(); track supply.id) {
+            <li>
+              <div>
+                <p class="supply-name">{{ supply.name }}</p>
+                <p class="supply-meta">Categoria: {{ supply.category }}</p>
+              </div>
+              <span class="supply-qty">{{ supply.quantity }} {{ supply.unit }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </aside>
+}
