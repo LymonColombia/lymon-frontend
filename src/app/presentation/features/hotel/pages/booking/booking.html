@@ -1,6 +1,6 @@
 <booking-nav
   [isAuthenticated]="guestTokenService.isAuthenticated()"
-  [guestName]="guestName"
+  [guestEmail]="guestEmail"
   (loginClicked)="onGuestLogin()"
   (logoutClicked)="onGuestLogout()"
   (myReservationsClicked)="onMyReservations()">

@@ -1,39 +1,63 @@
-.booking-nav {
-    position: sticky;
-    top: 0;
-    z-index: var(--z-sticky);
-    background-color: var(--color-bg-primary);
-    border-bottom: 1px solid var(--color-border-light);
-    box-shadow: var(--shadow-sm);
+:host {
+  display: block;
 }
 
-.nav-inner {
-    max-width: var(--max-width-xl);
-    margin: 0 auto;
-    padding: var(--spacing-md) var(--spacing-xl);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.guest-nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
-.brand-group {
-    display: flex;
-    align-items: center;
+.guest-nav-inner {
+  max-width: var(--max-width-2xl);
+  margin: 0 auto;
+  padding: 0 var(--spacing-4xl);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xl);
 }
 
-.brand-link {
-    display: flex;
-    align-items: center;
+/* ===== EXPLORE BTN ===== */
+
+.nav-explore-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast), background var(--transition-fast);
+  white-space: nowrap;
 }
 
-.brand-logo {
-    display: block;
+.nav-explore-btn:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
 }
 
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
+/* ===== LOGO ===== */
+
+.nav-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-logo img {
+  height: 40px;
+  width: auto;
+  display: block;
 }
 
 /* ===== PROFILE ===== */
@@ -52,8 +76,7 @@
   transition: background var(--transition-fast);
 }
 
-.nav-profile:hover,
-.nav-profile--open {
+.nav-profile:hover {
   background: var(--color-bg-secondary);
 }
 
@@ -92,6 +115,10 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-tertiary);
   line-height: var(--line-height-tight);
+}
+
+.nav-profile--open {
+  background: var(--color-bg-secondary);
 }
 
 .profile-chevron {
@@ -159,12 +186,6 @@
   color: var(--color-error);
 }
 
-.dropdown-divider {
-  height: 1px;
-  background: var(--color-border-light);
-  margin: var(--spacing-xs) 0;
-}
-
 @keyframes profile-dropdown-open {
   from {
     opacity: 0;
@@ -173,5 +194,22 @@
   to {
     opacity: 1;
     transform: translateY(0) scaleY(1);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 640px) {
+  .guest-nav-inner {
+    padding: 0 var(--spacing-lg);
+    height: 52px;
+  }
+
+  .profile-info {
+    display: none;
+  }
+
+  .profile-chevron {
+    display: none;
   }
 }

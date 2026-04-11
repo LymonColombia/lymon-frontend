@@ -8,50 +8,46 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapBoxArrowInRight,
   bootstrapBoxArrowRight,
   bootstrapCalendar2Check,
   bootstrapChevronDown,
+  bootstrapChevronLeft,
 } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 
 @Component({
-  selector: 'booking-nav',
+  selector: 'app-guest-nav',
   standalone: true,
-  imports: [ButtonComponent, NgOptimizedImage, NgIcon, RouterModule],
+  imports: [NgIcon, RouterLink],
   providers: [
     provideIcons({
-      bootstrapBoxArrowInRight,
       bootstrapBoxArrowRight,
       bootstrapCalendar2Check,
       bootstrapChevronDown,
+      bootstrapChevronLeft,
     }),
   ],
-  templateUrl: './booking-nav.component.html',
-  styleUrl: './booking-nav.component.css',
+  templateUrl: './guest-nav.html',
+  styleUrl: './guest-nav.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:click)': 'onDocumentClick($event)',
   },
 })
-export class BookingNavComponent {
+export class GuestNavComponent {
   private readonly elementRef = inject(ElementRef);
 
-  readonly isAuthenticated = input.required<boolean>();
-  readonly guestEmail = input<string | null>(null);
+  readonly guestEmail = input<string>('');
 
-  readonly loginClicked = output<void>();
-  readonly logoutClicked = output<void>();
-  readonly myReservationsClicked = output<void>();
+  readonly explore = output<void>();
+  readonly logout = output<void>();
 
   readonly isDropdownOpen = signal(false);
 
   readonly initials = computed(() => {
-    const email = (this.guestEmail() ?? '').trim();
+    const email = this.guestEmail().trim();
     if (!email) return '?';
 
     const [localPart] = email.split('@');
@@ -61,7 +57,7 @@ export class BookingNavComponent {
   });
 
   readonly profileLabel = computed(() => {
-    const email = (this.guestEmail() ?? '').trim();
+    const email = this.guestEmail().trim();
     if (!email) {
       return 'Guest';
     }
@@ -74,18 +70,17 @@ export class BookingNavComponent {
     return localPart;
   });
 
+  onExplore(): void {
+    this.explore.emit();
+  }
+
   toggleDropdown(): void {
     this.isDropdownOpen.update((v) => !v);
   }
 
-  onMyReservations(): void {
-    this.isDropdownOpen.set(false);
-    this.myReservationsClicked.emit();
-  }
-
   onLogout(): void {
     this.isDropdownOpen.set(false);
-    this.logoutClicked.emit();
+    this.logout.emit();
   }
 
   onDocumentClick(event: MouseEvent): void {

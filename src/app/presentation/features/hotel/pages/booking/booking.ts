@@ -125,7 +125,7 @@ export class BookingComponent implements OnInit {
     return this.likedRoomIds().has(roomId);
   }
 
-  readonly guestName = this.guestTokenService.getGuestName();
+  readonly guestEmail = this.guestTokenService.getGuestEmail();
 
   onGuestLogin(): void {
     this.router.navigate(['/guest/login']);
