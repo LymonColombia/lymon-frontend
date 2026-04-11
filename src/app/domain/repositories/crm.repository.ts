@@ -4,6 +4,7 @@ import {
   GetCrmGuestBookingsResponse,
   GetCrmGuestNotesResponse,
   GetCrmGuestsResponse,
+  SendCrmGuestMessageRequest,
 } from '@/domain/entities/crm-guest.model';
 
 export abstract class CrmRepository {
@@ -11,4 +12,5 @@ export abstract class CrmRepository {
   abstract getGuestBookings(guestId: string): Observable<GetCrmGuestBookingsResponse>;
   abstract getGuestNotes(guestId: string): Observable<GetCrmGuestNotesResponse>;
   abstract createGuestNote(guestId: string, data: CreateCrmGuestNoteRequest): Observable<void>;
+  abstract sendGuestMessage(guestId: string, data: SendCrmGuestMessageRequest): Observable<void>;
 }

@@ -51,6 +51,135 @@
       }
     </section>
 
+    <!-- Send message -->
+    <section class="profile-section">
+      <div class="notes-section-header">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapEnvelopeFill" size="18px"></ng-icon>
+          </span>
+          Enviar mensaje
+        </h2>
+        @if (!isMessageFormVisible()) {
+          <app-button variant="primary" size="medium" (clicked)="openMessageForm()">
+            Redactar
+          </app-button>
+        }
+      </div>
+
+      @if (messageSentSuccess()) {
+        <p class="message-feedback message-feedback-success">Mensaje enviado correctamente.</p>
+      }
+
+      @if (messageErrorMessage()) {
+        <p class="message-feedback message-feedback-error">{{ messageErrorMessage() }}</p>
+      }
+
+      @if (isMessageFormVisible()) {
+        <article class="guest-note-card">
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-subject">Asunto</label>
+            <input
+              id="message-subject"
+              class="message-form-input"
+              type="text"
+              placeholder="Asunto del correo..."
+              [value]="messageSubject()"
+              (input)="onMessageSubjectChange(($any($event.target).value ?? '').toString())"
+            />
+          </div>
+
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-template">Plantilla</label>
+            <app-select
+              id="message-template"
+              name="message-template"
+              size="medium"
+              placeholder=""
+              [options]="messageTemplateSelectOptions"
+              [value]="messageTemplateId()"
+              (valueChange)="setMessageTemplateId($event)"
+            ></app-select>
+          </div>
+
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-body">Mensaje</label>
+            <textarea
+              id="message-body"
+              class="guest-note-textarea"
+              rows="6"
+              placeholder="Escribe el contenido del correo..."
+              [value]="messageBody()"
+              (input)="onMessageBodyChange(($any($event.target).value ?? '').toString())"
+            ></textarea>
+          </div>
+
+          <div class="message-form-field">
+            <div class="message-attachments-header">
+              <span class="guest-note-label">Adjuntos</span>
+              <button type="button" class="message-attachment-add" (click)="addMessageAttachment()">
+                <ng-icon name="bootstrapPlus" size="15px"></ng-icon>
+                Añadir adjunto
+              </button>
+            </div>
+
+            @if (messageAttachments().length > 0) {
+              <div class="message-attachments-list">
+                @for (attachment of messageAttachments(); track $index) {
+                  <div class="message-attachment-row">
+                    <input
+                      class="message-form-input"
+                      type="url"
+                      placeholder="URL del archivo"
+                      [value]="attachment.url"
+                      (input)="updateAttachmentField($index, 'url', ($any($event.target).value ?? '').toString())"
+                    />
+                    <input
+                      class="message-form-input"
+                      type="text"
+                      placeholder="Nombre"
+                      [value]="attachment.name"
+                      (input)="updateAttachmentField($index, 'name', ($any($event.target).value ?? '').toString())"
+                    />
+                    <input
+                      class="message-form-input"
+                      type="text"
+                      placeholder="Tipo (ej. PDF)"
+                      [value]="attachment.type"
+                      (input)="updateAttachmentField($index, 'type', ($any($event.target).value ?? '').toString())"
+                    />
+                    <button
+                      type="button"
+                      class="message-attachment-remove"
+                      aria-label="Eliminar adjunto"
+                      (click)="removeMessageAttachment($index)"
+                    >
+                      <ng-icon name="bootstrapTrash" size="15px"></ng-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="guest-note-actions">
+            <app-button variant="secondary" size="medium" (clicked)="cancelMessageForm()">
+              Cancelar
+            </app-button>
+            <app-button
+              variant="primary"
+              size="medium"
+              [loading]="isSendingMessage()"
+              [disabled]="isSendingMessage()"
+              (clicked)="sendMessage()"
+            >
+              Enviar
+            </app-button>
+          </div>
+        </article>
+      }
+    </section>
+
     <!-- Rich statistics -->
     <section class="profile-section">
       <h2 class="profile-section-title">Estadísticas</h2>

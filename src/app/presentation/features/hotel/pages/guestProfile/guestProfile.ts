@@ -9,14 +9,18 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  CreateCrmGuestNoteRequest,
   CrmGuest,
   CrmGuestBooking,
   CrmGuestBookingSource,
+  CrmGuestMessageAttachment,
+  CrmGuestMessageTemplateId,
   CrmGuestNote,
   CrmGuestNoteCategory,
+  CreateCrmGuestNoteRequest,
+  SendCrmGuestMessageRequest,
 } from '@/domain/entities/crm-guest.model';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
+import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
@@ -46,6 +50,8 @@ import {
   bootstrapMoonStars,
   bootstrapSun,
   bootstrapChevronLeft,
+  bootstrapEnvelopeFill,
+  bootstrapTrash,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -84,6 +90,8 @@ const NOTE_MAX_LENGTH = 280;
       bootstrapMoonStars,
       bootstrapSun,
       bootstrapChevronLeft,
+      bootstrapEnvelopeFill,
+      bootstrapTrash,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -96,6 +104,7 @@ export class GuestProfileComponent implements OnInit {
   private readonly getCrmGuestBookingsUseCase = inject(GetCrmGuestBookingsUseCase);
   private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
   private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
+  private readonly sendCrmGuestMessageUseCase = inject(SendCrmGuestMessageUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
 
@@ -204,6 +213,20 @@ export class GuestProfileComponent implements OnInit {
 
   readonly noteCharCount = computed(() => this.noteContent().length);
 
+  readonly isMessageFormVisible = signal(false);
+  readonly isSendingMessage = signal(false);
+  readonly messageSubject = signal('');
+  readonly messageBody = signal('');
+  readonly messageTemplateId = signal<CrmGuestMessageTemplateId>('guest-message');
+  readonly messageAttachments = signal<CrmGuestMessageAttachment[]>([]);
+  readonly messageErrorMessage = signal<string | null>(null);
+  readonly messageSentSuccess = signal(false);
+
+  readonly messageTemplateSelectOptions: SelectOption[] = [
+    { value: 'guest-message', label: 'Mensaje general' },
+    { value: 'GUEST_WELCOME', label: 'Bienvenida al huésped' },
+  ];
+
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'CRM de Huéspedes', route: '/crm/guests' },
     { label: this.guest()?.name ?? 'Perfil del huésped' },
@@ -247,6 +270,86 @@ export class GuestProfileComponent implements OnInit {
 
   cancelNoteForm(): void {
     this.resetNoteForm();
+  }
+
+  openMessageForm(): void {
+    this.isMessageFormVisible.set(true);
+    this.messageErrorMessage.set(null);
+    this.messageSentSuccess.set(false);
+  }
+
+  cancelMessageForm(): void {
+    this.resetMessageForm();
+  }
+
+  setMessageTemplateId(value: string | number | null): void {
+    if (value !== 'GUEST_WELCOME' && value !== 'guest-message') return;
+    this.messageTemplateId.set(value);
+  }
+
+  onMessageSubjectChange(value: string): void {
+    this.messageSubject.set(value);
+  }
+
+  onMessageBodyChange(value: string): void {
+    this.messageBody.set(value);
+  }
+
+  addMessageAttachment(): void {
+    this.messageAttachments.update((list) => [...list, { url: '', name: '', type: '' }]);
+  }
+
+  removeMessageAttachment(index: number): void {
+    this.messageAttachments.update((list) => list.filter((_, i) => i !== index));
+  }
+
+  updateAttachmentField(index: number, field: keyof CrmGuestMessageAttachment, value: string): void {
+    this.messageAttachments.update((list) =>
+      list.map((attachment, i) => (i === index ? { ...attachment, [field]: value } : attachment)),
+    );
+  }
+
+  sendMessage(): void {
+    const guestId = this.guest()?.id?.trim();
+    const subject = this.messageSubject().trim();
+    const body = this.messageBody().trim();
+
+    if (!guestId) {
+      this.messageErrorMessage.set('No se pudo identificar al huésped para enviar el mensaje.');
+      return;
+    }
+
+    if (!subject) {
+      this.messageErrorMessage.set('El asunto del mensaje es obligatorio.');
+      return;
+    }
+
+    if (!body) {
+      this.messageErrorMessage.set('El cuerpo del mensaje es obligatorio.');
+      return;
+    }
+
+    const payload: SendCrmGuestMessageRequest = {
+      subject,
+      body,
+      templateId: this.messageTemplateId(),
+      attachments: this.messageAttachments().filter((a) => a.url.trim()),
+    };
+
+    this.isSendingMessage.set(true);
+    this.messageErrorMessage.set(null);
+
+    this.sendCrmGuestMessageUseCase.execute(guestId, payload).subscribe({
+      next: () => {
+        this.isSendingMessage.set(false);
+        this.messageSentSuccess.set(true);
+        this.resetMessageForm(true);
+      },
+      error: () => {
+        this.isSendingMessage.set(false);
+        this.messageErrorMessage.set('No se pudo enviar el mensaje. Inténtalo de nuevo.');
+      },
+    });
   }
 
   saveNote(): void {
@@ -567,6 +670,17 @@ export class GuestProfileComponent implements OnInit {
     if (month >= 5 && month <= 7) return 'Verano';
     if (month >= 8 && month <= 10) return 'Otoño';
     return 'Invierno';
+  }
+
+  private resetMessageForm(keepSuccess = false): void {
+    this.isMessageFormVisible.set(false);
+    this.isSendingMessage.set(false);
+    this.messageSubject.set('');
+    this.messageBody.set('');
+    this.messageTemplateId.set('guest-message');
+    this.messageAttachments.set([]);
+    this.messageErrorMessage.set(null);
+    if (!keepSuccess) this.messageSentSuccess.set(false);
   }
 
   private resetNoteForm(): void {
