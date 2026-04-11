@@ -70,12 +70,25 @@
 
 /* ===== FILTER TABS ===== */
 
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-3xl);
+  flex-wrap: wrap;
+}
+
 .filter-tabs {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-3xl);
   flex-wrap: wrap;
+}
+
+.sort-control {
+  width: 220px;
+  max-width: 100%;
 }
 
 .filter-tab {
@@ -301,7 +314,12 @@
     font-size: var(--font-size-2xl);
   }
 
+  .controls-row,
   .filter-tabs {
     gap: var(--spacing-xs);
+  }
+
+  .sort-control {
+    width: 100%;
   }
 }

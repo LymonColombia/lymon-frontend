@@ -41,22 +41,35 @@
       }
     </div>
 
-    <!-- Filter tabs -->
+    <!-- Filter and sort controls -->
     @if (!isLoading() && !errorMessage() && reservations().length > 0) {
-      <div class="filter-tabs" role="tablist" aria-label="Filtrar reservas">
-        @for (tab of filterTabs; track tab.key) {
-          <button
-            class="filter-tab"
-            [class.filter-tab--active]="activeFilter() === tab.key"
-            type="button"
-            role="tab"
-            [attr.aria-selected]="activeFilter() === tab.key"
-            (click)="setFilter(tab.key)"
-          >
-            {{ tab.label }}
-            <span class="tab-count">{{ countFor(tab.key) }}</span>
-          </button>
-        }
+      <div class="controls-row">
+        <div class="filter-tabs" role="tablist" aria-label="Filtrar reservas">
+          @for (tab of filterTabs; track tab.key) {
+            <button
+              class="filter-tab"
+              [class.filter-tab--active]="activeFilter() === tab.key"
+              type="button"
+              role="tab"
+              [attr.aria-selected]="activeFilter() === tab.key"
+              (click)="setFilter(tab.key)"
+            >
+              {{ tab.label }}
+              <span class="tab-count">{{ countFor(tab.key) }}</span>
+            </button>
+          }
+        </div>
+
+        <div class="sort-control">
+          <app-select
+            [id]="'bookings-sort'"
+            [name]="'bookings-sort'"
+            [options]="sortOptions"
+            [value]="activeSort()"
+            [size]="'small'"
+            (valueChange)="onSortChange($event)"
+          />
+        </div>
       </div>
     }
 
