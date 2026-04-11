@@ -12,6 +12,8 @@ import {
   bootstrapArrowRight,
   bootstrapCalendar,
   bootstrapCalendarCheck,
+  bootstrapChevronLeft,
+  bootstrapChevronRight,
   bootstrapExclamationTriangle,
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
@@ -63,6 +65,8 @@ const SORT_OPTIONS: SelectOption[] = [
       bootstrapArrowRight,
       bootstrapCalendar,
       bootstrapCalendarCheck,
+      bootstrapChevronLeft,
+      bootstrapChevronRight,
       bootstrapExclamationTriangle,
     }),
   ],
@@ -123,6 +127,10 @@ export class GuestReservationsComponent implements OnInit {
     Math.max(1, Math.ceil(this.sortedReservations().length / ITEMS_PER_PAGE)),
   );
 
+  readonly pageNumbers = computed(() =>
+    Array.from({ length: this.totalPages() }, (_, index) => index + 1),
+  );
+
   readonly safeCurrentPage = computed(() => {
     const page = this.currentPage();
     const maxPage = this.totalPages();
@@ -178,6 +186,22 @@ export class GuestReservationsComponent implements OnInit {
 
   onNextPage(): void {
     this.currentPage.set(Math.min(this.totalPages(), this.safeCurrentPage() + 1));
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages()) {
+      return;
+    }
+
+    this.currentPage.set(page);
+  }
+
+  goToPreviousPage(): void {
+    this.goToPage(this.safeCurrentPage() - 1);
+  }
+
+  goToNextPage(): void {
+    this.goToPage(this.safeCurrentPage() + 1);
   }
 
   countFor(key: FilterKey): number {
