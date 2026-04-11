@@ -25,6 +25,8 @@ import { CrmRepository } from '@/domain/repositories/crm.repository';
 import { CrmRepositoryImpl } from '@/infrastructure/repositories/crm.repository.impl';
 import { GuestReservationRepository } from '@/domain/repositories/guest-reservation.repository';
 import { GuestReservationRepositoryImpl } from '@/infrastructure/repositories/guest-reservation.repository.impl';
+import { SupplierRepository } from '@/domain/repositories/supplier.repository';
+import { SupplierRepositoryImpl } from '@/infrastructure/repositories/supplier.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -43,5 +45,6 @@ export const appConfig: ApplicationConfig = {
     { provide: ReservationRepository, useClass: ReservationRepositoryImpl },
     { provide: CrmRepository, useClass: CrmRepositoryImpl },
     { provide: GuestReservationRepository, useClass: GuestReservationRepositoryImpl },
+    { provide: SupplierRepository, useClass: SupplierRepositoryImpl },
   ],
 };
