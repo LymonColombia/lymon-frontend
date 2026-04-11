@@ -138,7 +138,7 @@
                   </span>
                   <div class="provider-main">
                     <h3 class="provider-name">{{ provider.name }}</h3>
-                    <p class="provider-rif">{{ provider.rif }}</p>
+                    <p class="provider-rif">{{ provider.nit }}</p>
                   </div>
                 </div>
 
@@ -165,9 +165,9 @@
               </div>
 
               <ul class="provider-meta">
-                <li><span>Direccion:</span> {{ provider.address }}</li>
+                <li><span>Ubicacion:</span> {{ provider.city }}, {{ provider.country }}</li>
                 <li><span>Email:</span> {{ provider.contactEmail }}</li>
-                <li><span>Telefono:</span> {{ provider.phone }}</li>
+                <li><span>Telefono:</span> {{ provider.contactPhone }}</li>
               </ul>
 
               <div class="provider-footer">
@@ -243,23 +243,28 @@
       </div>
 
       <div class="form-group form-group--full">
-        <label for="provider-rif">RIF/NIT *</label>
-        <app-input id="provider-rif" formControlName="rif" placeholder="J-12345678-9"></app-input>
+        <label for="provider-nit">NIT *</label>
+        <app-input id="provider-nit" formControlName="nit" placeholder="NIT-123-456-789"></app-input>
+      </div>
+
+      <div class="form-group">
+        <label for="provider-city">Ciudad *</label>
+        <app-select id="provider-city" formControlName="city" [options]="cityOptions"></app-select>
+      </div>
+
+      <div class="form-group">
+        <label for="provider-country">Pais *</label>
+        <app-select id="provider-country" formControlName="country" [options]="countryOptions"></app-select>
       </div>
 
       <div class="form-group form-group--full">
-        <label for="provider-address">Direccion *</label>
-        <app-input id="provider-address" formControlName="address" placeholder="Av. Principal 123"></app-input>
-      </div>
-
-      <div class="form-group form-group--full">
-        <label for="provider-email">Email</label>
+        <label for="provider-email">Email *</label>
         <app-input id="provider-email" type="email" formControlName="contactEmail"></app-input>
       </div>
 
       <div class="form-group form-group--full">
-        <label for="provider-phone">Telefono</label>
-        <app-input id="provider-phone" formControlName="phone"></app-input>
+        <label for="provider-phone">Telefono *</label>
+        <app-input id="provider-phone" formControlName="contactPhone"></app-input>
       </div>
     </div>
   </form>
@@ -285,7 +290,7 @@
     <header class="drawer-header">
       <div>
         <h2>{{ selectedProvider()!.name }}</h2>
-        <p>{{ selectedProvider()!.rif }}</p>
+        <p>{{ selectedProvider()!.nit }}</p>
       </div>
 
       <button
@@ -303,7 +308,7 @@
       <ul class="drawer-contact-list">
         <li>
           <ng-icon name="bootstrapGeoAlt" size="14px" aria-hidden="true"></ng-icon>
-          <span>{{ selectedProvider()!.address }}</span>
+          <span>{{ selectedProvider()!.city }}, {{ selectedProvider()!.country }}</span>
         </li>
         <li>
           <ng-icon name="bootstrapEnvelope" size="14px" aria-hidden="true"></ng-icon>
@@ -311,7 +316,7 @@
         </li>
         <li>
           <ng-icon name="bootstrapTelephone" size="14px" aria-hidden="true"></ng-icon>
-          <span>{{ selectedProvider()!.phone }}</span>
+          <span>{{ selectedProvider()!.contactPhone }}</span>
         </li>
       </ul>
     </section>
