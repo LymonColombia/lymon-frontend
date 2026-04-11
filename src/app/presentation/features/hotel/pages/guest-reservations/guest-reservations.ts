@@ -196,4 +196,8 @@ export class GuestReservationsComponent implements OnInit {
   goToCheckin(reservationId: string): void {
     void this.router.navigate(['/guest/checkin'], { queryParams: { reservationId } });
   }
+
+  goToReservationDetails(reservationId: string): void {
+    void this.router.navigate(['/guest/reservations', reservationId]);
+  }
 }
