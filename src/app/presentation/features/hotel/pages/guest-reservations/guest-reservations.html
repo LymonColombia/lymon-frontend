@@ -132,16 +132,16 @@
         <app-button
           variant="outline"
           size="small"
-          [disabled]="currentPage() <= 1"
+          [disabled]="safeCurrentPage() <= 1"
           (clicked)="onPrevPage()"
         >
           ‹ Anterior
         </app-button>
-        <span class="pagination-info">{{ currentPage() }} / {{ totalPages() }}</span>
+        <span class="pagination-info">{{ safeCurrentPage() }} / {{ totalPages() }}</span>
         <app-button
           variant="outline"
           size="small"
-          [disabled]="currentPage() >= totalPages()"
+          [disabled]="safeCurrentPage() >= totalPages()"
           (clicked)="onNextPage()"
         >
           Siguiente ›

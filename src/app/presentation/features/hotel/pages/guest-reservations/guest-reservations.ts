@@ -29,7 +29,7 @@ interface FilterTab {
   label: string;
 }
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 6;
 
 const FILTER_TABS: FilterTab[] = [
   { key: 'all', label: 'Todas' },
@@ -93,8 +93,16 @@ export class GuestReservationsComponent implements OnInit {
     Math.max(1, Math.ceil(this.filteredReservations().length / ITEMS_PER_PAGE)),
   );
 
-  readonly pagedReservations = computed(() => {
+  readonly safeCurrentPage = computed(() => {
     const page = this.currentPage();
+    const maxPage = this.totalPages();
+    if (page < 1) return 1;
+    if (page > maxPage) return maxPage;
+    return page;
+  });
+
+  readonly pagedReservations = computed(() => {
+    const page = this.safeCurrentPage();
     const start = (page - 1) * ITEMS_PER_PAGE;
     return this.filteredReservations().slice(start, start + ITEMS_PER_PAGE);
   });
@@ -106,6 +114,7 @@ export class GuestReservationsComponent implements OnInit {
   loadReservations(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    this.currentPage.set(1);
 
     this.getReservationsUseCase.execute({ page: 1, limit: 200 }).subscribe({
       next: ({ reservations }) => {
@@ -125,11 +134,11 @@ export class GuestReservationsComponent implements OnInit {
   }
 
   onPrevPage(): void {
-    this.currentPage.update((p) => Math.max(1, p - 1));
+    this.currentPage.set(Math.max(1, this.safeCurrentPage() - 1));
   }
 
   onNextPage(): void {
-    this.currentPage.update((p) => Math.min(this.totalPages(), p + 1));
+    this.currentPage.set(Math.min(this.totalPages(), this.safeCurrentPage() + 1));
   }
 
   countFor(key: FilterKey): number {
