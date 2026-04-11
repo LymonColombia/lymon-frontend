@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { CrmGuest, CrmGuestBooking, CrmGuestSortBy, CrmGuestSortDirection } from '@/domain/entities/crm-guest.model';
+import { CrmGuest, CrmGuestBooking, CrmGuestSortBy, CrmGuestSortDirection, CrmGuestStatus } from '@/domain/entities/crm-guest.model';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';

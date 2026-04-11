@@ -68,6 +68,21 @@
     </button>
   </section>
 
+  @if (availableTags().length > 0) {
+    <div class="tags-filter-row">
+      @for (tag of availableTags(); track tag) {
+        <button
+          class="tag-chip"
+          [class.tag-chip--active]="isTagActive(tag)"
+          (click)="toggleTag(tag)"
+          type="button"
+        >
+          {{ tag }}
+        </button>
+      }
+    </div>
+  }
+
   @if (errorMessage()) {
     <div class="alert alert-error">{{ errorMessage() }}</div>
   }
