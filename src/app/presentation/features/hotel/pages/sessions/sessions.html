@@ -1,0 +1,87 @@
+<app-hotel-page-layout
+  title="Sesiones"
+  subtitle="Gestiona las sesiones activas en diferentes dispositivos"
+  iconName="bootstrapPersonLinesFill"
+>
+  <div class="sessions-stack">
+    <section class="security-alert" role="status" aria-live="polite">
+      <ng-icon name="bootstrapExclamationTriangle" size="16px" aria-hidden="true"></ng-icon>
+      <div>
+        <p class="security-title">Seguridad de tu cuenta</p>
+        <p class="security-subtitle">Si detectas alguna sesión sospechosa, ciérrala inmediatamente y cambia tu contraseña.</p>
+      </div>
+    </section>
+
+    <div class="bulk-actions">
+      <button type="button" class="btn-close-all">
+        <ng-icon name="bootstrapBoxArrowRight" size="14px" aria-hidden="true"></ng-icon>
+        Cerrar todas las demas sesiones
+      </button>
+    </div>
+
+    <section class="session-list" aria-label="Lista de sesiones">
+      @for (session of sessions(); track session.id) {
+        <article class="session-card" [class.session-card--current]="session.state === 'current'">
+          <div class="session-main">
+            <div class="session-device-icon" [class.session-device-icon--current]="session.state === 'current'">
+              <ng-icon [name]="getDeviceIcon(session.deviceType)" size="20px" aria-hidden="true"></ng-icon>
+            </div>
+
+            <div class="session-details">
+              <div class="session-title-row">
+                <h2>{{ session.deviceName }}</h2>
+                @if (session.state === 'current') {
+                  <span class="chip-current">Sesión actual</span>
+                }
+              </div>
+
+              <p class="session-meta-line">
+                <ng-icon name="bootstrapGlobe" size="13px" aria-hidden="true"></ng-icon>
+                {{ session.browser }}
+              </p>
+
+              <p class="session-meta-line">
+                <ng-icon name="bootstrapGeoAlt" size="13px" aria-hidden="true"></ng-icon>
+                {{ session.location }}
+                <span class="dot">•</span>
+                {{ session.ipAddress }}
+              </p>
+
+              <p class="session-last-active" [class.session-last-active--current]="session.state === 'current'" [class.session-last-active--recent]="session.state === 'recent'">
+                Última actividad: {{ session.lastActiveLabel }}
+              </p>
+            </div>
+          </div>
+
+          @if (session.state !== 'current') {
+            <button type="button" class="btn-close-session">
+              <ng-icon name="bootstrapBoxArrowRight" size="13px" aria-hidden="true"></ng-icon>
+              Cerrar sesión
+            </button>
+          }
+        </article>
+      }
+    </section>
+
+    <section class="stats-card" aria-label="Estadisticas de sesiones">
+      <h3>Estadísticas de Sesiones</h3>
+
+      <div class="stats-grid">
+        <article class="stat-item">
+          <p>Total de sesiones</p>
+          <strong>{{ totalSessions() }}</strong>
+        </article>
+
+        <article class="stat-item">
+          <p>Sesiones activas</p>
+          <strong class="stat-item--success">{{ activeSessions() }}</strong>
+        </article>
+
+        <article class="stat-item">
+          <p>Dispositivos diferentes</p>
+          <strong>{{ differentDevices() }}</strong>
+        </article>
+      </div>
+    </section>
+  </div>
+</app-hotel-page-layout>
