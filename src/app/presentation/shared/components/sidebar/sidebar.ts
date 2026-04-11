@@ -124,8 +124,6 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/audit-log' },
     { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/crm/guests' },
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
-    { icon: 'bootstrapStar', label: 'Planes', route: '/plans' },
-    { icon: 'bootstrapPersonGear', label: 'Configuración', route: '/settings' },
   ];
 
   toggleExpanded(): void {
@@ -150,6 +148,11 @@ export class SidebarComponent implements OnInit {
   goToPlans(): void {
     this.closeProfileMenu();
     void this.router.navigateByUrl('/plans');
+  }
+
+  goToSessions(): void {
+    this.closeProfileMenu();
+    void this.router.navigateByUrl('/sessions');
   }
 
   openLogoutConfirm(): void {
