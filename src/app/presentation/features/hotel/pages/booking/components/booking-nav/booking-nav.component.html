@@ -1,5 +1,6 @@
 <nav class="booking-nav">
   <div class="nav-inner">
+
     <div class="brand-group">
       <a routerLink="/lyhost" class="brand-link">
         <img
@@ -7,7 +8,7 @@
           width="180"
           height="42"
           priority
-          alt="Lymon"
+          alt="LyHost"
           class="brand-logo"
         />
       </a>
@@ -15,23 +16,49 @@
 
     <div class="nav-actions">
       @if (isAuthenticated()) {
-        @if (guestName()) {
-          <span class="guest-name">{{ guestName() }}</span>
-        }
-        <app-button variant="secondary" size="medium" (clicked)="myReservationsClicked.emit()">
-          <ng-icon name="bootstrapCalendar2Check" size="18px" aria-hidden="true"></ng-icon>
-          Mis reservas
-        </app-button>
-        <app-button variant="secondary" size="medium" (clicked)="logoutClicked.emit()">
-          <ng-icon name="bootstrapBoxArrowRight" size="18px" aria-hidden="true"></ng-icon>
-          Cerrar sesión
-        </app-button>
+        <div class="nav-profile-wrapper">
+          <div
+            class="nav-profile"
+            [class.nav-profile--open]="isDropdownOpen()"
+            (click)="toggleDropdown()"
+          >
+            <div class="profile-avatar" aria-hidden="true">{{ initials() }}</div>
+            <div class="profile-info">
+              <span class="profile-name">{{ profileLabel() }}</span>
+              @if (guestEmail()) {
+                <span class="profile-email">{{ guestEmail() }}</span>
+              }
+            </div>
+            <ng-icon
+              name="bootstrapChevronDown"
+              size="13px"
+              class="profile-chevron"
+              [class.profile-chevron--open]="isDropdownOpen()"
+              aria-hidden="true"
+            />
+          </div>
+
+          @if (isDropdownOpen()) {
+            <div class="profile-dropdown" role="menu" aria-label="Profile actions">
+              <button class="profile-dropdown-option" type="button" role="menuitem" (click)="onMyReservations()">
+                <ng-icon name="bootstrapCalendar2Check" size="15px" aria-hidden="true" />
+                Mis reservas
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="profile-dropdown-option profile-dropdown-option--danger" type="button" role="menuitem" (click)="onLogout()">
+                <ng-icon name="bootstrapBoxArrowRight" size="15px" aria-hidden="true" />
+                Cerrar sesión
+              </button>
+            </div>
+          }
+        </div>
       } @else {
         <app-button variant="primary" size="medium" (clicked)="loginClicked.emit()">
-          <ng-icon name="bootstrapBoxArrowInRight" size="18px" aria-hidden="true"></ng-icon>
+          <ng-icon name="bootstrapBoxArrowInRight" size="18px" aria-hidden="true" />
           Iniciar sesión
         </app-button>
       }
     </div>
+
   </div>
 </nav>
