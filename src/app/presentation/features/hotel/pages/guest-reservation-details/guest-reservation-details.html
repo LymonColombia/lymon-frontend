@@ -7,7 +7,7 @@
   />
 
   @if (isLoading()) {
-    <div class="detail-container detail-container--state">
+    <div class="detail-container detail-container--state fade-section fade-delay-1">
       <div class="state-center">
         <div class="spinner"></div>
         <p class="state-text">Cargando detalle de la reserva...</p>
@@ -16,7 +16,7 @@
   }
 
   @if (!isLoading() && errorMessage()) {
-    <div class="detail-container detail-container--state">
+    <div class="detail-container detail-container--state fade-section fade-delay-1">
       <div class="state-card">
         <div class="state-icon state-icon--error">
           <ng-icon name="bootstrapExclamationTriangle" size="28px" aria-hidden="true" />
@@ -30,7 +30,7 @@
   }
 
   @if (!isLoading() && !errorMessage() && reservation(); as currentReservation) {
-    <section class="hero" [class]="'hero ' + statusClass()">
+    <section class="hero fade-section fade-delay-1" [class]="'hero fade-section fade-delay-1 ' + statusClass()">
       <div class="hero-container">
         <div class="hero-status-row">
           <span class="hero-status-pill" [class]="'hero-status-pill ' + statusClass()">
@@ -53,7 +53,7 @@
     </section>
 
     <div class="detail-container">
-      <section class="panel panel--dates">
+      <section class="panel panel--dates fade-section fade-delay-2">
         <header class="panel-header">
           <ng-icon name="bootstrapCalendar" size="14px" aria-hidden="true" />
           <span>Fechas de estadia</span>
@@ -94,7 +94,7 @@
         </div>
       </section>
 
-      <div class="detail-grid-columns">
+      <div class="detail-grid-columns fade-section fade-delay-3">
         <section class="panel">
           <header class="panel-header">
             <ng-icon name="bootstrapBuilding" size="14px" aria-hidden="true" />
@@ -138,7 +138,7 @@
         </section>
       </div>
 
-      <div class="detail-actions">
+      <div class="detail-actions fade-section fade-delay-4">
         @if (hasPendingStatus()) {
           <app-button variant="primary" size="medium" (clicked)="goToCheckin()">
             <ng-icon name="bootstrapCheckCircle" size="14px" aria-hidden="true" class="action-icon" />
