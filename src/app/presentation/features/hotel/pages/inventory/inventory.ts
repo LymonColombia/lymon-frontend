@@ -20,6 +20,8 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button.
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { SupplierRepository } from '@/domain/repositories/supplier.repository';
+import { CreateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -36,10 +38,11 @@ interface SupplyRow {
 interface ProviderRow {
   id: string;
   name: string;
-  rif: string;
-  address: string;
+  nit: string;
+  city: string;
+  country: string;
   contactEmail: string;
-  phone: string;
+  contactPhone: string;
 }
 
 @Component({
@@ -75,6 +78,7 @@ interface ProviderRow {
 })
 export class InventoryComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly supplierRepository = inject(SupplierRepository);
 
   readonly activeTab = signal<'supplies' | 'providers'>('supplies');
   readonly searchTerm = signal('');
@@ -98,30 +102,47 @@ export class InventoryComponent {
     { value: 'cajas', label: 'cajas' },
   ];
 
+  readonly countryOptions: SelectOption[] = [
+    { value: 'Colombia', label: 'Colombia' },
+    { value: 'Venezuela', label: 'Venezuela' },
+    { value: 'Ecuador', label: 'Ecuador' },
+    { value: 'Perú', label: 'Perú' },
+  ];
+
+  readonly cityOptions: SelectOption[] = [
+    { value: 'Bogotá', label: 'Bogotá' },
+    { value: 'Medellín', label: 'Medellín' },
+    { value: 'Cali', label: 'Cali' },
+    { value: 'Barranquilla', label: 'Barranquilla' },
+  ];
+
   readonly providers = signal<ProviderRow[]>([
     {
       id: 'prov-1',
       name: 'Distribuidora Clean Pro',
-      rif: 'J-12345678-9',
-      address: 'Av. Principal 123',
+      nit: 'NIT-123-456-789',
+      city: 'Bogotá',
+      country: 'Colombia',
       contactEmail: 'ventas@cleanpro.com',
-      phone: '+58 212 555-0101',
+      contactPhone: '+57 301 555-0101',
     },
     {
       id: 'prov-2',
       name: 'Alimentos Frescos CA',
-      rif: 'J-98765432-1',
-      address: 'Calle Comercio 456',
+      nit: 'NIT-987-654-321',
+      city: 'Medellín',
+      country: 'Colombia',
       contactEmail: 'info@alimentosfrescos.com',
-      phone: '+58 212 555-0202',
+      contactPhone: '+57 301 555-0202',
     },
     {
       id: 'prov-3',
       name: 'Textiles Premium',
-      rif: 'J-55544433-2',
-      address: 'Zona Industrial 789',
+      nit: 'NIT-555-444-333',
+      city: 'Cali',
+      country: 'Colombia',
       contactEmail: 'contacto@textilespremium.com',
-      phone: '+58 212 555-0303',
+      contactPhone: '+57 301 555-0303',
     },
   ]);
 
@@ -165,11 +186,12 @@ export class InventoryComponent {
   });
 
   readonly providerForm = this.fb.nonNullable.group({
-    name: ['', [Validators.required]],
-    rif: ['', [Validators.required]],
-    address: ['', [Validators.required]],
-    contactEmail: ['', [Validators.email]],
-    phone: [''],
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    nit: ['', [Validators.required, Validators.minLength(5)]],
+    city: ['Bogotá', [Validators.required]],
+    country: ['Colombia', [Validators.required]],
+    contactEmail: ['', [Validators.required, Validators.email]],
+    contactPhone: ['', [Validators.required, Validators.minLength(10)]],
   });
 
   readonly providerOptions = computed<SelectOption[]>(() =>
@@ -200,7 +222,7 @@ export class InventoryComponent {
     return this.providers().filter((provider) => {
       return (
         provider.name.toLowerCase().includes(term) ||
-        provider.rif.toLowerCase().includes(term) ||
+        provider.nit.toLowerCase().includes(term) ||
         provider.contactEmail.toLowerCase().includes(term)
       );
     });
@@ -208,7 +230,7 @@ export class InventoryComponent {
 
   readonly searchPlaceholder = computed(() => {
     if (this.activeTab() === 'providers') {
-      return 'Buscar proveedores por nombre, RIF o email...';
+      return 'Buscar proveedores por nombre, NIT o email...';
     }
 
     return 'Buscar insumos por nombre, categoria o proveedor...';
@@ -354,10 +376,11 @@ export class InventoryComponent {
     this.editingProviderId.set(provider.id);
     this.providerForm.reset({
       name: provider.name,
-      rif: provider.rif,
-      address: provider.address,
+      nit: provider.nit,
+      city: provider.city,
+      country: provider.country,
       contactEmail: provider.contactEmail,
-      phone: provider.phone,
+      contactPhone: provider.contactPhone,
     });
     this.isProviderModalOpen.set(true);
   }
@@ -366,10 +389,11 @@ export class InventoryComponent {
     this.editingProviderId.set(null);
     this.providerForm.reset({
       name: '',
-      rif: '',
-      address: '',
+      nit: '',
+      city: 'Bogotá',
+      country: 'Colombia',
       contactEmail: '',
-      phone: '',
+      contactPhone: '',
     });
     this.isProviderModalOpen.set(true);
   }
@@ -389,17 +413,30 @@ export class InventoryComponent {
     const formValue = this.providerForm.getRawValue();
 
     if (!providerId) {
-      const nextProvider: ProviderRow = {
-        id: `prov-${Date.now()}`,
+      const payload: CreateSupplierDto = {
         name: formValue.name.trim(),
-        rif: formValue.rif.trim(),
-        address: formValue.address.trim(),
+        nit: formValue.nit.trim(),
+        city: formValue.city.trim(),
+        country: formValue.country.trim(),
         contactEmail: formValue.contactEmail.trim(),
-        phone: formValue.phone.trim(),
+        contactPhone: formValue.contactPhone.trim(),
       };
 
-      this.providers.update((items) => [nextProvider, ...items]);
-      this.closeProviderModal();
+      this.supplierRepository.createSupplier(payload).subscribe({
+        next: () => {
+          const nextProvider: ProviderRow = {
+            id: `prov-${Date.now()}`,
+            name: payload.name,
+            nit: payload.nit,
+            city: payload.city,
+            country: payload.country,
+            contactEmail: payload.contactEmail,
+            contactPhone: payload.contactPhone,
+          };
+          this.providers.update((items) => [nextProvider, ...items]);
+          this.closeProviderModal();
+        },
+      });
       return;
     }
 
@@ -411,10 +448,11 @@ export class InventoryComponent {
 
         return {
           ...item,
-          rif: formValue.rif.trim(),
-          address: formValue.address.trim(),
+          nit: formValue.nit.trim(),
+          city: formValue.city.trim(),
+          country: formValue.country.trim(),
           contactEmail: formValue.contactEmail.trim(),
-          phone: formValue.phone.trim(),
+          contactPhone: formValue.contactPhone.trim(),
         };
       }),
     );
