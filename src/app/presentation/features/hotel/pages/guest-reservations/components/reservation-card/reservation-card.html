@@ -39,6 +39,7 @@
     <div class="date-col">
       <span class="date-label">Check-in</span>
       <span class="date-main">{{ formatDay(reservation().checkIn) }}</span>
+      <span class="date-time">{{ formatTime(reservation().checkIn) }}</span>
       <span class="date-year">{{ formatYear(reservation().checkIn) }}</span>
     </div>
 
@@ -50,13 +51,14 @@
     <div class="date-col date-col--right">
       <span class="date-label">Check-out</span>
       <span class="date-main">{{ formatDay(reservation().checkOut) }}</span>
+      <span class="date-time">{{ formatTime(reservation().checkOut) }}</span>
       <span class="date-year">{{ formatYear(reservation().checkOut) }}</span>
     </div>
   </div>
 
   <!-- Footer -->
   <div class="card-footer">
-    <span class="booking-ref"># {{ shortId() }}</span>
+    <span class="booking-ref">Ref: {{ bookingReference() }}</span>
 
     <div class="card-actions">
       @if (status() === 'pending') {

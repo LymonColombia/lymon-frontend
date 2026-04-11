@@ -16,6 +16,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { GetGuestReservationsUseCase } from '@/domain/use-cases/reservation/get-guest-reservations.use-case';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
@@ -29,6 +30,8 @@ interface FilterTab {
   label: string;
 }
 
+type SortKey = 'date-desc' | 'date-asc';
+
 const ITEMS_PER_PAGE = 6;
 
 const FILTER_TABS: FilterTab[] = [
@@ -39,10 +42,22 @@ const FILTER_TABS: FilterTab[] = [
   { key: 'cancelled', label: 'Canceladas' },
 ];
 
+const SORT_OPTIONS: SelectOption[] = [
+  { value: 'date-desc', label: 'Fecha: mas reciente' },
+  { value: 'date-asc', label: 'Fecha: mas antigua' },
+];
+
 @Component({
   selector: 'app-guest-reservations',
   standalone: true,
-  imports: [ButtonComponent, FooterComponent, NgIcon, GuestNavComponent, ReservationCardComponent],
+  imports: [
+    ButtonComponent,
+    FooterComponent,
+    NgIcon,
+    GuestNavComponent,
+    ReservationCardComponent,
+    SelectComponent,
+  ],
   providers: [
     provideIcons({
       bootstrapArrowRight,
@@ -61,11 +76,13 @@ export class GuestReservationsComponent implements OnInit {
   private readonly guestTokenService = inject(GuestTokenService);
 
   readonly filterTabs = FILTER_TABS;
+  readonly sortOptions = SORT_OPTIONS;
 
   readonly reservations = signal<GuestReservationResponse[]>([]);
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly activeFilter = signal<FilterKey>('all');
+  readonly activeSort = signal<SortKey>('date-desc');
 
   readonly guestEmail = this.guestTokenService.getGuestEmail() ?? '';
 
@@ -89,8 +106,21 @@ export class GuestReservationsComponent implements OnInit {
     return all.filter((r) => r.status === filter);
   });
 
+  readonly sortedReservations = computed(() => {
+    const sort = this.activeSort();
+    const reservations = [...this.filteredReservations()];
+
+    reservations.sort((a, b) => {
+      const firstTime = new Date(a.checkIn).getTime();
+      const secondTime = new Date(b.checkIn).getTime();
+      return sort === 'date-asc' ? firstTime - secondTime : secondTime - firstTime;
+    });
+
+    return reservations;
+  });
+
   readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.filteredReservations().length / ITEMS_PER_PAGE)),
+    Math.max(1, Math.ceil(this.sortedReservations().length / ITEMS_PER_PAGE)),
   );
 
   readonly safeCurrentPage = computed(() => {
@@ -104,7 +134,7 @@ export class GuestReservationsComponent implements OnInit {
   readonly pagedReservations = computed(() => {
     const page = this.safeCurrentPage();
     const start = (page - 1) * ITEMS_PER_PAGE;
-    return this.filteredReservations().slice(start, start + ITEMS_PER_PAGE);
+    return this.sortedReservations().slice(start, start + ITEMS_PER_PAGE);
   });
 
   ngOnInit(): void {
@@ -130,6 +160,15 @@ export class GuestReservationsComponent implements OnInit {
 
   setFilter(key: FilterKey): void {
     this.activeFilter.set(key);
+    this.currentPage.set(1);
+  }
+
+  onSortChange(value: string | number): void {
+    if (value !== 'date-asc' && value !== 'date-desc') {
+      return;
+    }
+
+    this.activeSort.set(value);
     this.currentPage.set(1);
   }
 
