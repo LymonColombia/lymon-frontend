@@ -37,7 +37,7 @@ export class GuestTokenService {
     this._isAuthenticated.set(false);
   }
 
-  getGuestName(): string | null {
+  getGuestEmail(): string | null {
     const token = this.getAccessToken();
     if (!token) return null;
     try {
