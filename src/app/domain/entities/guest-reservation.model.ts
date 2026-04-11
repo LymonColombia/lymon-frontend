@@ -10,16 +10,24 @@ export interface GuestReservationRequest {
 
 export interface GuestReservationResponse {
   id: string;
-  status: string;
+  bookingReference: string;
+  propertyId: string;
+  propertyName?: string;
   unitId: string;
   unitName?: string;
+  serviceName?: string;
+  status: string;
   checkIn: string;
   checkOut: string;
   nights?: number;
   guestsCount: number;
-  pricePerNight?: number;
-  totalPrice?: number;
   notes?: string | null;
+  source?: string;
+  priceBreakdown?: {
+    pricePerNight: number;
+    nights: number;
+    totalPrice: number;
+  };
 }
 
 export interface GuestReservationsPage {

@@ -23,10 +23,9 @@ export class GuestReservationRepositoryImpl implements GuestReservationRepositor
   }
 
   getById(id: string): Observable<GuestReservationResponse> {
-    interface ApiResponse { data: GuestReservationResponse }
     return this.http
-      .get<ApiResponse>(`${BASE_URL}/${id}`, { headers: this.authHeaders() })
-      .pipe(map((res) => res.data));
+      .get<GuestReservationResponse>(`${BASE_URL}/${id}`, { headers: this.authHeaders() })
+      .pipe(map((res) => ({ ...res, status: res.status?.toLowerCase() ?? res.status })));
   }
 
   getAll(params: { page?: number; limit?: number }): Observable<GuestReservationsPage> {
@@ -35,18 +34,26 @@ export class GuestReservationRepositoryImpl implements GuestReservationRepositor
     if (params.limit != null) httpParams = httpParams.set('limit', params.limit);
 
     interface ApiResponse {
-      data: {
-        items: GuestReservationResponse[];
-        pagination: GuestReservationsPage['pagination'];
-      };
+      items: GuestReservationResponse[];
+      total: number;
+      page: number;
+      limit: number;
     }
 
     return this.http
       .get<ApiResponse>(BASE_URL, { headers: this.authHeaders(), params: httpParams })
       .pipe(
         map((response) => ({
-          reservations: response.data.items ?? [],
-          pagination: response.data.pagination ?? { page: params.page ?? 1, limit: params.limit ?? 10, total: 0, totalPages: 0 },
+          reservations: (response.items ?? []).map((item) => ({
+            ...item,
+            status: item.status?.toLowerCase() ?? item.status,
+          })),
+          pagination: {
+            page: response.page ?? params.page ?? 1,
+            limit: response.limit ?? params.limit ?? 10,
+            total: response.total ?? 0,
+            totalPages: response.total && response.limit ? Math.ceil(response.total / response.limit) : 1,
+          },
         })),
       );
   }
