@@ -50,6 +50,15 @@ export class ReservationCardComponent {
     return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
   });
 
+  readonly bookingReference = computed(() => {
+    const reference = this.reservation().bookingReference?.trim();
+    if (reference) {
+      return reference;
+    }
+
+    return this.reservation().id.slice(-8).toUpperCase();
+  });
+
   readonly shortId = computed(() => this.reservation().id.slice(-8).toUpperCase());
 
   statusLabel(): string {
@@ -87,6 +96,14 @@ export class ReservationCardComponent {
 
   formatYear(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString('es', { year: 'numeric', timeZone: 'UTC' });
+  }
+
+  formatTime(dateStr: string): string {
+    return new Date(dateStr).toLocaleTimeString('es', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
   }
 
   onConfirm(): void {
