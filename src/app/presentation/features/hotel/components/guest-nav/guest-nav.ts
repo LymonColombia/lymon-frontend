@@ -40,6 +40,7 @@ export class GuestNavComponent {
   private readonly elementRef = inject(ElementRef);
 
   readonly guestEmail = input<string>('');
+  readonly backButtonLabel = input<string>('Explorar');
 
   readonly explore = output<void>();
   readonly logout = output<void>();
