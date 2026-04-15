@@ -12,7 +12,6 @@ import {
   CrmGuest,
   CrmGuestBooking,
   CrmGuestBookingSource,
-  CrmGuestMessageAttachment,
   CrmGuestMessageTemplateId,
   CrmGuestNote,
   CrmGuestNoteCategory,
@@ -52,6 +51,9 @@ import {
   bootstrapChevronLeft,
   bootstrapEnvelopeFill,
   bootstrapTrash,
+  bootstrapPaperclip,
+  bootstrapFileEarmark,
+  bootstrapX,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -92,6 +94,9 @@ const NOTE_MAX_LENGTH = 280;
       bootstrapChevronLeft,
       bootstrapEnvelopeFill,
       bootstrapTrash,
+      bootstrapPaperclip,
+      bootstrapFileEarmark,
+      bootstrapX,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -218,7 +223,8 @@ export class GuestProfileComponent implements OnInit {
   readonly messageSubject = signal('');
   readonly messageBody = signal('');
   readonly messageTemplateId = signal<CrmGuestMessageTemplateId>('guest-message');
-  readonly messageAttachments = signal<CrmGuestMessageAttachment[]>([]);
+  readonly attachedFiles = signal<File[]>([]);
+  readonly isDragOver = signal(false);
   readonly messageErrorMessage = signal<string | null>(null);
   readonly messageSentSuccess = signal(false);
 
@@ -295,18 +301,37 @@ export class GuestProfileComponent implements OnInit {
     this.messageBody.set(value);
   }
 
-  addMessageAttachment(): void {
-    this.messageAttachments.update((list) => [...list, { url: '', name: '', type: '' }]);
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver.set(true);
   }
 
-  removeMessageAttachment(index: number): void {
-    this.messageAttachments.update((list) => list.filter((_, i) => i !== index));
+  onDragLeave(): void {
+    this.isDragOver.set(false);
   }
 
-  updateAttachmentField(index: number, field: keyof CrmGuestMessageAttachment, value: string): void {
-    this.messageAttachments.update((list) =>
-      list.map((attachment, i) => (i === index ? { ...attachment, [field]: value } : attachment)),
-    );
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver.set(false);
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (files.length) this.attachedFiles.update((list) => [...list, ...files]);
+  }
+
+  onFileInputChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    if (files.length) this.attachedFiles.update((list) => [...list, ...files]);
+    input.value = '';
+  }
+
+  removeAttachedFile(index: number): void {
+    this.attachedFiles.update((list) => list.filter((_, i) => i !== index));
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   sendMessage(): void {
@@ -333,7 +358,7 @@ export class GuestProfileComponent implements OnInit {
       subject,
       body,
       templateId: this.messageTemplateId(),
-      attachments: this.messageAttachments().filter((a) => a.url.trim()),
+      attachments: this.attachedFiles().map((f) => ({ name: f.name, type: f.type, url: '' })),
     };
 
     this.isSendingMessage.set(true);
@@ -678,7 +703,8 @@ export class GuestProfileComponent implements OnInit {
     this.messageSubject.set('');
     this.messageBody.set('');
     this.messageTemplateId.set('guest-message');
-    this.messageAttachments.set([]);
+    this.attachedFiles.set([]);
+    this.isDragOver.set(false);
     this.messageErrorMessage.set(null);
     if (!keepSuccess) this.messageSentSuccess.set(false);
   }

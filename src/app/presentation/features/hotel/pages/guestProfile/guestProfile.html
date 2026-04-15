@@ -114,53 +114,62 @@
             ></textarea>
           </div>
 
+          <!-- TODO: re-enable when file upload service (S3/storage) is ready
           <div class="message-form-field">
-            <div class="message-attachments-header">
-              <span class="guest-note-label">Adjuntos</span>
-              <button type="button" class="message-attachment-add" (click)="addMessageAttachment()">
-                <ng-icon name="bootstrapPlus" size="15px"></ng-icon>
-                Añadir adjunto
-              </button>
+            <span class="guest-note-label">Adjuntos</span>
+            <div
+              class="message-drop-zone"
+              [class.message-drop-zone-dragover]="isDragOver()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave()"
+              (drop)="onFileDrop($event)"
+              (click)="fileInput.click()"
+              role="button"
+              tabindex="0"
+              aria-label="Zona para arrastrar y soltar archivos adjuntos"
+              (keydown.enter)="fileInput.click()"
+              (keydown.space)="fileInput.click()"
+            >
+              <input
+                #fileInput
+                type="file"
+                multiple
+                class="message-drop-zone-input"
+                (change)="onFileInputChange($event)"
+                aria-hidden="true"
+                tabindex="-1"
+              />
+              <span class="message-drop-zone-icon" aria-hidden="true">
+                <ng-icon name="bootstrapPaperclip" size="22px"></ng-icon>
+              </span>
+              <span class="message-drop-zone-text">
+                Arrastra archivos aquí o haz clic para seleccionar
+              </span>
             </div>
 
-            @if (messageAttachments().length > 0) {
-              <div class="message-attachments-list">
-                @for (attachment of messageAttachments(); track $index) {
-                  <div class="message-attachment-row">
-                    <input
-                      class="message-form-input"
-                      type="url"
-                      placeholder="URL del archivo"
-                      [value]="attachment.url"
-                      (input)="updateAttachmentField($index, 'url', ($any($event.target).value ?? '').toString())"
-                    />
-                    <input
-                      class="message-form-input"
-                      type="text"
-                      placeholder="Nombre"
-                      [value]="attachment.name"
-                      (input)="updateAttachmentField($index, 'name', ($any($event.target).value ?? '').toString())"
-                    />
-                    <input
-                      class="message-form-input"
-                      type="text"
-                      placeholder="Tipo (ej. PDF)"
-                      [value]="attachment.type"
-                      (input)="updateAttachmentField($index, 'type', ($any($event.target).value ?? '').toString())"
-                    />
+            @if (attachedFiles().length > 0) {
+              <div class="message-attachment-chips">
+                @for (file of attachedFiles(); track $index) {
+                  <div class="message-attachment-chip">
+                    <span class="message-attachment-chip-icon" aria-hidden="true">
+                      <ng-icon name="bootstrapFileEarmark" size="14px"></ng-icon>
+                    </span>
+                    <span class="message-attachment-chip-name">{{ file.name }}</span>
+                    <span class="message-attachment-chip-size">{{ formatFileSize(file.size) }}</span>
                     <button
                       type="button"
-                      class="message-attachment-remove"
-                      aria-label="Eliminar adjunto"
-                      (click)="removeMessageAttachment($index)"
+                      class="message-attachment-chip-remove"
+                      [attr.aria-label]="'Eliminar ' + file.name"
+                      (click)="removeAttachedFile($index); $event.stopPropagation()"
                     >
-                      <ng-icon name="bootstrapTrash" size="15px"></ng-icon>
+                      <ng-icon name="bootstrapX" size="12px"></ng-icon>
                     </button>
                   </div>
                 }
               </div>
             }
           </div>
+          -->
 
           <div class="guest-note-actions">
             <app-button variant="secondary" size="medium" (clicked)="cancelMessageForm()">
