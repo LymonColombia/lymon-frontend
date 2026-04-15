@@ -53,6 +53,16 @@ const MOCK_NOTE: CrmGuestNote = {
   createdByName: 'Admin',
 };
 
+function setupDefaultMocks(): void {
+  vi.clearAllMocks();
+  TestBed.resetTestingModule();
+  mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
+  mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
+  mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
+  mockGetProperties.execute.mockReturnValue(of([]));
+  mockGetUnits.execute.mockReturnValue(of([]));
+}
+
 function makeActivatedRoute(guestId: string | null) {
   return {
     snapshot: {
@@ -108,13 +118,9 @@ describe('GuestProfileComponent – sin guestId en la ruta', () => {
 // ─── Carga inicial exitosa ────────────────────────────────────────────────────
 describe('GuestProfileComponent – carga inicial exitosa', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
+    setupDefaultMocks();
     mockGetCrmGuestBookings.execute.mockReturnValue(of([MOCK_BOOKING]));
     mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('carga el huésped correctamente', async () => {
@@ -241,13 +247,9 @@ describe('GuestProfileComponent – error inesperado al cargar huésped', () => 
 // ─── Señales computadas ───────────────────────────────────────────────────────
 describe('GuestProfileComponent – señales computadas', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
+    setupDefaultMocks();
     mockGetCrmGuestBookings.execute.mockReturnValue(of([MOCK_BOOKING]));
     mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('guestInitials extrae las iniciales del nombre', async () => {
@@ -290,18 +292,13 @@ describe('GuestProfileComponent – señales computadas', () => {
 // ─── Filtro de notas ──────────────────────────────────────────────────────────
 describe('GuestProfileComponent – filtro de notas', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
-    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
+    setupDefaultMocks();
     mockGetCrmGuestNotes.execute.mockReturnValue(
       of([
         { ...MOCK_NOTE, id: 'n1', type: 'preference', status: 'not_pinned' },
         { ...MOCK_NOTE, id: 'n2', type: 'incident', status: 'not_pinned' },
       ]),
     );
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('setNoteFilter filtra por categoría correctamente', async () => {
@@ -321,13 +318,7 @@ describe('GuestProfileComponent – filtro de notas', () => {
 // ─── Formulario de notas ──────────────────────────────────────────────────────
 describe('GuestProfileComponent – formulario de notas', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
-    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
-    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
+    setupDefaultMocks();
   });
 
   it('openNoteForm hace visible el formulario', async () => {
@@ -390,13 +381,8 @@ describe('GuestProfileComponent – formulario de notas', () => {
 // ─── Pin de notas ─────────────────────────────────────────────────────────────
 describe('GuestProfileComponent – pin de notas', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
-    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
+    setupDefaultMocks();
     mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
   });
 
   it('toggleNotePin cambia el estado de la nota a pinned', async () => {
@@ -416,13 +402,7 @@ describe('GuestProfileComponent – pin de notas', () => {
 // ─── Formulario de mensaje – apertura y cierre ────────────────────────────────
 describe('GuestProfileComponent – formulario de mensaje – apertura y cierre', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
-    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
-    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
+    setupDefaultMocks();
   });
 
   it('openMessageForm hace visible el formulario', async () => {
@@ -467,19 +447,12 @@ describe('GuestProfileComponent – formulario de mensaje – apertura y cierre'
     expect(component.messageSubject()).toBe('');
     expect(component.messageBody()).toBe('');
   });
-
 });
 
 // ─── Formulario de mensaje – validaciones ────────────────────────────────────
 describe('GuestProfileComponent – formulario de mensaje – validaciones', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
-    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
-    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
+    setupDefaultMocks();
   });
 
   it('sendMessage no llama al use case si el asunto está vacío', async () => {
@@ -516,13 +489,7 @@ describe('GuestProfileComponent – formulario de mensaje – validaciones', () 
 // ─── Formulario de mensaje – envío exitoso ────────────────────────────────────
 describe('GuestProfileComponent – formulario de mensaje – envío exitoso', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
-    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
-    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
+    setupDefaultMocks();
     mockSendCrmGuestMessage.execute.mockReturnValue(of({}));
   });
 
@@ -571,13 +538,7 @@ describe('GuestProfileComponent – formulario de mensaje – envío exitoso', (
 // ─── Formulario de mensaje – error al enviar ──────────────────────────────────
 describe('GuestProfileComponent – formulario de mensaje – error al enviar', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
-    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
-    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
-    mockGetProperties.execute.mockReturnValue(of([]));
-    mockGetUnits.execute.mockReturnValue(of([]));
+    setupDefaultMocks();
     mockSendCrmGuestMessage.execute.mockReturnValue(
       throwError(() => new HttpErrorResponse({ status: 500 })),
     );
@@ -612,4 +573,3 @@ describe('GuestProfileComponent – formulario de mensaje – error al enviar', 
     expect(component.isMessageFormVisible()).toBe(true);
   });
 });
-
