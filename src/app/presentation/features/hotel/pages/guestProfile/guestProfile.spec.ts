@@ -8,6 +8,7 @@ import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-c
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
+import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { CrmGuest, CrmGuestBooking, CrmGuestNote } from '@/domain/entities/crm-guest.model';
@@ -16,6 +17,7 @@ const mockGetCrmGuests = { execute: vi.fn() };
 const mockGetCrmGuestBookings = { execute: vi.fn() };
 const mockGetCrmGuestNotes = { execute: vi.fn() };
 const mockCreateCrmGuestNote = { execute: vi.fn() };
+const mockSendCrmGuestMessage = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
 const mockGetUnits = { execute: vi.fn() };
 
@@ -68,6 +70,7 @@ async function setup(guestId: string | null = 'guest-1') {
       { provide: GetCrmGuestBookingsUseCase, useValue: mockGetCrmGuestBookings },
       { provide: GetCrmGuestNotesUseCase, useValue: mockGetCrmGuestNotes },
       { provide: CreateCrmGuestNoteUseCase, useValue: mockCreateCrmGuestNote },
+      { provide: SendCrmGuestMessageUseCase, useValue: mockSendCrmGuestMessage },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
       { provide: GetUnitsUseCase, useValue: mockGetUnits },
     ],
@@ -409,3 +412,204 @@ describe('GuestProfileComponent – pin de notas', () => {
     expect(component.notes()[0].status).toBe('not_pinned');
   });
 });
+
+// ─── Formulario de mensaje – apertura y cierre ────────────────────────────────
+describe('GuestProfileComponent – formulario de mensaje – apertura y cierre', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
+    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('openMessageForm hace visible el formulario', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    expect(component.isMessageFormVisible()).toBe(true);
+  });
+
+  it('openMessageForm limpia el error previo', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('');
+    component.sendMessage();
+    component.openMessageForm();
+    expect(component.messageErrorMessage()).toBeNull();
+  });
+
+  it('openMessageForm limpia el mensaje de éxito previo', async () => {
+    mockSendCrmGuestMessage.execute.mockReturnValue(of({}));
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto');
+    component.onMessageBodyChange('Cuerpo');
+    component.sendMessage();
+    component.openMessageForm();
+    expect(component.messageSentSuccess()).toBe(false);
+  });
+
+  it('cancelMessageForm oculta el formulario', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.cancelMessageForm();
+    expect(component.isMessageFormVisible()).toBe(false);
+  });
+
+  it('cancelMessageForm limpia asunto y cuerpo', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto de prueba');
+    component.onMessageBodyChange('Cuerpo de prueba');
+    component.cancelMessageForm();
+    expect(component.messageSubject()).toBe('');
+    expect(component.messageBody()).toBe('');
+  });
+
+});
+
+// ─── Formulario de mensaje – validaciones ────────────────────────────────────
+describe('GuestProfileComponent – formulario de mensaje – validaciones', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
+    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+  });
+
+  it('sendMessage no llama al use case si el asunto está vacío', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageBodyChange('Cuerpo de prueba');
+    component.sendMessage();
+    expect(mockSendCrmGuestMessage.execute).not.toHaveBeenCalled();
+    expect(component.messageErrorMessage()).toBe('El asunto del mensaje es obligatorio.');
+  });
+
+  it('sendMessage no llama al use case si el cuerpo está vacío', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto de prueba');
+    component.sendMessage();
+    expect(mockSendCrmGuestMessage.execute).not.toHaveBeenCalled();
+    expect(component.messageErrorMessage()).toBe('El cuerpo del mensaje es obligatorio.');
+  });
+
+  it('setMessageTemplateId ignora valores inválidos', async () => {
+    const { component } = await setup();
+    component.setMessageTemplateId('invalido');
+    expect(component.messageTemplateId()).toBe('guest-message');
+  });
+
+  it('setMessageTemplateId acepta GUEST_WELCOME', async () => {
+    const { component } = await setup();
+    component.setMessageTemplateId('GUEST_WELCOME');
+    expect(component.messageTemplateId()).toBe('GUEST_WELCOME');
+  });
+});
+
+// ─── Formulario de mensaje – envío exitoso ────────────────────────────────────
+describe('GuestProfileComponent – formulario de mensaje – envío exitoso', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
+    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+    mockSendCrmGuestMessage.execute.mockReturnValue(of({}));
+  });
+
+  it('sendMessage llama al use case con el payload correcto', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Bienvenida');
+    component.onMessageBodyChange('Hola, gracias por tu reserva.');
+    component.sendMessage();
+    expect(mockSendCrmGuestMessage.execute).toHaveBeenCalledWith('guest-1', {
+      subject: 'Bienvenida',
+      body: 'Hola, gracias por tu reserva.',
+      templateId: 'guest-message',
+      attachments: [],
+    });
+  });
+
+  it('messageSentSuccess se establece en true tras envío exitoso', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto');
+    component.onMessageBodyChange('Cuerpo');
+    component.sendMessage();
+    expect(component.messageSentSuccess()).toBe(true);
+  });
+
+  it('el formulario se oculta tras envío exitoso', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto');
+    component.onMessageBodyChange('Cuerpo');
+    component.sendMessage();
+    expect(component.isMessageFormVisible()).toBe(false);
+  });
+
+  it('isSendingMessage vuelve a false tras envío exitoso', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto');
+    component.onMessageBodyChange('Cuerpo');
+    component.sendMessage();
+    expect(component.isSendingMessage()).toBe(false);
+  });
+});
+
+// ─── Formulario de mensaje – error al enviar ──────────────────────────────────
+describe('GuestProfileComponent – formulario de mensaje – error al enviar', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
+    mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
+    mockGetProperties.execute.mockReturnValue(of([]));
+    mockGetUnits.execute.mockReturnValue(of([]));
+    mockSendCrmGuestMessage.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+  });
+
+  it('muestra mensaje de error si el use case falla', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto');
+    component.onMessageBodyChange('Cuerpo');
+    component.sendMessage();
+    expect(component.messageErrorMessage()).toBe(
+      'No se pudo enviar el mensaje. Inténtalo de nuevo.',
+    );
+  });
+
+  it('isSendingMessage vuelve a false tras el error', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto');
+    component.onMessageBodyChange('Cuerpo');
+    component.sendMessage();
+    expect(component.isSendingMessage()).toBe(false);
+  });
+
+  it('el formulario permanece visible tras el error', async () => {
+    const { component } = await setup();
+    component.openMessageForm();
+    component.onMessageSubjectChange('Asunto');
+    component.onMessageBodyChange('Cuerpo');
+    component.sendMessage();
+    expect(component.isMessageFormVisible()).toBe(true);
+  });
+});
+
