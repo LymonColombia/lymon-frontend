@@ -7,6 +7,7 @@ import { GuestProfileComponent } from './guestProfile';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
+import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
 import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
@@ -16,6 +17,7 @@ import { CrmGuest, CrmGuestBooking, CrmGuestNote } from '@/domain/entities/crm-g
 const mockGetCrmGuests = { execute: vi.fn() };
 const mockGetCrmGuestBookings = { execute: vi.fn() };
 const mockGetCrmGuestNotes = { execute: vi.fn() };
+const mockGetCrmGuestEmails = { execute: vi.fn() };
 const mockCreateCrmGuestNote = { execute: vi.fn() };
 const mockSendCrmGuestMessage = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
@@ -59,6 +61,7 @@ function setupDefaultMocks(): void {
   mockGetCrmGuests.execute.mockReturnValue(of([MOCK_GUEST]));
   mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
   mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
+  mockGetCrmGuestEmails.execute.mockReturnValue(of([]));
   mockGetProperties.execute.mockReturnValue(of([]));
   mockGetUnits.execute.mockReturnValue(of([]));
 }
@@ -79,6 +82,7 @@ async function setup(guestId: string | null = 'guest-1') {
       { provide: GetCrmGuestsUseCase, useValue: mockGetCrmGuests },
       { provide: GetCrmGuestBookingsUseCase, useValue: mockGetCrmGuestBookings },
       { provide: GetCrmGuestNotesUseCase, useValue: mockGetCrmGuestNotes },
+      { provide: GetCrmGuestEmailsUseCase, useValue: mockGetCrmGuestEmails },
       { provide: CreateCrmGuestNoteUseCase, useValue: mockCreateCrmGuestNote },
       { provide: SendCrmGuestMessageUseCase, useValue: mockSendCrmGuestMessage },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
