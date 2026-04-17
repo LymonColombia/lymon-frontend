@@ -74,3 +74,15 @@ export interface SendCrmGuestMessageRequest {
   templateId: CrmGuestMessageTemplateId;
   attachments: CrmGuestMessageAttachment[];
 }
+
+export interface CrmGuestEmail {
+  id: string;
+  subject: string;
+  status: string;
+  sentById: string;
+  createdAt: string;
+}
+
+export interface GetCrmGuestEmailsResponse {
+  data: CrmGuestEmail[];
+}

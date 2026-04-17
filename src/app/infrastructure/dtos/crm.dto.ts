@@ -41,3 +41,14 @@ export interface CrmGuestNoteDto {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CrmGuestEmailDto {
+  id: string;
+  guestId: string;
+  subject: string;
+  status: string;
+  messageId: string;
+  attachments: unknown[];
+  sentById: string;
+  createdAt: string;
+}
