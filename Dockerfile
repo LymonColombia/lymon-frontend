@@ -7,7 +7,12 @@ RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-COPY . .
+COPY angular.json ./
+COPY tsconfig.json ./
+COPY tsconfig.app.json ./
+COPY tsconfig.spec.json ./
+COPY public ./public
+COPY src ./src
 RUN pnpm exec ng build --configuration production
 
 # Stage 2: nginx
