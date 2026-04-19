@@ -16,7 +16,8 @@ COPY src ./src
 RUN pnpm exec ng build --configuration production
 
 # Stage 2: nginx
-FROM nginx:alpine
-COPY --from=builder /app/dist/lymon-frontend/browser /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+FROM nginxinc/nginx-unprivileged:alpine
+COPY --chown=root:root --chmod=755 --from=builder /app/dist/lymon-frontend/browser /usr/share/nginx/html
+COPY --chown=root:root --chmod=644 nginx.conf /etc/nginx/conf.d/default.conf
+USER 101
+EXPOSE 8080
