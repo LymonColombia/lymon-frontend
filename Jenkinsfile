@@ -1,14 +1,9 @@
 pipeline {
   agent any
-
-  options {
-    timestamps()
-  }
-
+  options { timestamps() }
   environment {
-    APP_DIR = 'lymon-frontend'
+    NODE_ENV = 'test'
   }
-
   stages {
     stage('Checkout') {
       steps {
@@ -16,30 +11,69 @@ pipeline {
       }
     }
 
+    stage('Setup Environment') {
+  steps {
+    sh '''
+cat > src/environments/environment.ts << 'EOF'
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3000',
+  auth: {
+    endpoint: '/auth',
+  },
+  user: {
+    endpoint: '/user',
+  },
+  incidentReport: {
+    endpoint: '/incident-reports',
+  },
+  tenant: {
+    endpoint: '/tenant',
+  },
+  properties: {
+    endpoint: '/properties',
+  },
+  reservations: {
+    endpoint: '/reservations',
+  },
+  units: {
+    endpoint: '/units',
+  },
+  guestAuth: {
+    endpoint: '/guest/auth',
+  },
+  audit: {
+    endpoint: '/audit',
+  },
+  crm: {
+    endpoint: '/crm',
+    guestsEndpoint: '/guests',
+  },
+};
+EOF
+    '''
+  }
+}
+
     stage('Install Dependencies') {
       steps {
-        dir("${APP_DIR}") {
-          sh 'pnpm install --frozen-lockfile'
-        }
+        sh 'pnpm install --frozen-lockfile'
       }
     }
 
     stage('Run Tests') {
       steps {
-        dir("${APP_DIR}") {
-          sh 'pnpm run test -- --watch=false --coverage'
-        }
+            sh 'pnpm run test:cov:scope'
+
       }
     }
 
     stage('SonarQube Scan') {
       steps {
-        dir("${APP_DIR}") {
-          withSonarQubeEnv('SonarQube') {
-            script {
-              def scannerHome = tool 'SonarScanner'
-              sh "${scannerHome}/bin/sonar-scanner"
-            }
+        withSonarQubeEnv('SonarQube') {
+          script {
+            def scannerHome = tool 'SonarScanner'
+            sh "${scannerHome}/bin/sonar-scanner"
           }
         }
       }
@@ -47,7 +81,7 @@ pipeline {
 
     stage('Quality Gate') {
       steps {
-        timeout(time: 5, unit: 'MINUTES') {
+        timeout(time: 15, unit: 'MINUTES') {
           waitForQualityGate abortPipeline: true
         }
       }
@@ -57,7 +91,7 @@ pipeline {
   post {
     always {
       publishHTML(target: [
-        reportDir: "${APP_DIR}/coverage/lymon-frontend",
+        reportDir: 'coverage/lcov-report',
         reportFiles: 'index.html',
         reportName: 'Frontend Coverage',
         keepAll: true,
