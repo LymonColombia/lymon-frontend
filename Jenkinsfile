@@ -5,6 +5,10 @@ pipeline {
     timestamps()
   }
 
+  environment {
+    APP_DIR = 'lymon-frontend'
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -14,7 +18,7 @@ pipeline {
 
     stage('Install Dependencies') {
       steps {
-        dir('lymon-frontend') {
+        dir("${APP_DIR}") {
           sh 'corepack prepare pnpm@10.33.0 --activate'
           sh 'pnpm install --frozen-lockfile'
         }
@@ -23,7 +27,7 @@ pipeline {
 
     stage('Run Tests') {
       steps {
-        dir('lymon-frontend') {
+        dir("${APP_DIR}") {
           sh 'pnpm run test -- --watch=false --coverage'
         }
       }
@@ -31,7 +35,7 @@ pipeline {
 
     stage('SonarQube Scan') {
       steps {
-        dir('lymon-frontend') {
+        dir("${APP_DIR}") {
           withSonarQubeEnv('SonarQube') {
             script {
               def scannerHome = tool 'SonarScanner'
@@ -54,7 +58,7 @@ pipeline {
   post {
     always {
       publishHTML(target: [
-        reportDir: 'lymon-frontend/coverage/lymon-frontend',
+        reportDir: "${APP_DIR}/coverage/lymon-frontend",
         reportFiles: 'index.html',
         reportName: 'Frontend Coverage',
         keepAll: true,
