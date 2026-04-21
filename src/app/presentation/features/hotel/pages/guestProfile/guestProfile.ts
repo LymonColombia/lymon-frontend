@@ -12,6 +12,7 @@ import {
   CrmGuest,
   CrmGuestBooking,
   CrmGuestBookingSource,
+  CrmGuestEmail,
   CrmGuestMessageTemplateId,
   CrmGuestNote,
   CrmGuestNoteCategory,
@@ -23,6 +24,7 @@ import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-gues
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
+import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
@@ -50,6 +52,7 @@ import {
   bootstrapSun,
   bootstrapChevronLeft,
   bootstrapEnvelopeFill,
+  bootstrapEnvelopeOpen,
   bootstrapTrash,
   bootstrapPaperclip,
   bootstrapFileEarmark,
@@ -72,6 +75,7 @@ type UnitLookupItem = Unit & {
 type BookingStatusTone = 'info' | 'muted' | 'success' | 'warning' | 'danger';
 
 const NOTE_MAX_LENGTH = 280;
+const EMAIL_HISTORY_LIMIT = 5;
 
 @Component({
   selector: 'app-guest-profile',
@@ -93,6 +97,7 @@ const NOTE_MAX_LENGTH = 280;
       bootstrapSun,
       bootstrapChevronLeft,
       bootstrapEnvelopeFill,
+      bootstrapEnvelopeOpen,
       bootstrapTrash,
       bootstrapPaperclip,
       bootstrapFileEarmark,
@@ -110,6 +115,7 @@ export class GuestProfileComponent implements OnInit {
   private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
   private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
   private readonly sendCrmGuestMessageUseCase = inject(SendCrmGuestMessageUseCase);
+  private readonly getCrmGuestEmailsUseCase = inject(GetCrmGuestEmailsUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
 
@@ -123,6 +129,15 @@ export class GuestProfileComponent implements OnInit {
   readonly guest = signal<CrmGuest | null>(null);
   readonly bookings = signal<CrmGuestBooking[]>([]);
   readonly notes = signal<CrmGuestNote[]>([]);
+  readonly emails = signal<CrmGuestEmail[]>([]);
+  readonly isEmailsLoading = signal(false);
+  readonly emailsErrorMessage = signal<string | null>(null);
+  readonly isEmailsExpanded = signal(false);
+
+  readonly visibleEmails = computed(() =>
+    this.isEmailsExpanded() ? this.emails() : this.emails().slice(0, EMAIL_HISTORY_LIMIT),
+  );
+  readonly hasMoreEmails = computed(() => this.emails().length > EMAIL_HISTORY_LIMIT);
 
   readonly propertyNamesById = signal<Record<string, string>>({});
   readonly unitNamesById = signal<Record<string, string>>({});
@@ -521,6 +536,21 @@ export class GuestProfileComponent implements OnInit {
     return `+${countryCode} ${localNumber}`;
   }
 
+  toggleEmailsExpanded(): void {
+    this.isEmailsExpanded.update((v) => !v);
+  }
+
+  getEmailStatusLabel(status: string): string {
+    switch (status) {
+      case 'sent':
+        return 'Enviado';
+      case 'failed':
+        return 'Fallido';
+      default:
+        return 'Pendiente';
+    }
+  }
+
   getNoteIdentifier(note: CrmGuestNote): string {
     return note.id || `${note.createdAt}-${note.note}`;
   }
@@ -542,6 +572,7 @@ export class GuestProfileComponent implements OnInit {
         this.isGuestLoading.set(false);
         this.loadBookings(guestId);
         this.loadNotes(guestId);
+        this.loadEmails(guestId);
       },
       error: (error: HttpErrorResponse) => {
         this.isGuestLoading.set(false);
@@ -574,6 +605,27 @@ export class GuestProfileComponent implements OnInit {
             'No se pudo cargar el historial de reservas. Inténtalo de nuevo.',
           );
         }
+      },
+    });
+  }
+
+  private loadEmails(guestId: string): void {
+    this.isEmailsLoading.set(true);
+    this.emailsErrorMessage.set(null);
+
+    this.getCrmGuestEmailsUseCase.execute(guestId).subscribe({
+      next: (emails) => {
+        this.emails.set(
+          [...emails].sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
+        );
+        this.isEmailsLoading.set(false);
+      },
+      error: () => {
+        this.emails.set([]);
+        this.isEmailsLoading.set(false);
+        this.emailsErrorMessage.set('No se pudo cargar el historial de comunicaciones.');
       },
     });
   }
