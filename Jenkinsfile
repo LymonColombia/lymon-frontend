@@ -91,7 +91,7 @@ EOF
   post {
     always {
       publishHTML(target: [
-        reportDir: 'coverage/lcov-report',
+        reportDir: 'coverage/lymon-frontend/lcov-report',
         reportFiles: 'index.html',
         reportName: 'Frontend Coverage',
         keepAll: true,
