@@ -79,16 +79,12 @@ describe('TenantProfileComponent — Obtener y Editar Perfil del Negocio', () =>
     });
 
     it('debe mostrar error al fallar la carga', () => {
-      getTenantProfileMock.mockReturnValue(
-        throwError(() => new Error('Network error')),
-      );
+      getTenantProfileMock.mockReturnValue(throwError(() => new Error('Network error')));
 
       fixture.detectChanges();
 
       expect(component.isLoadingProfile()).toBe(false);
-      expect(component.errorMessage()).toBe(
-        'No se pudo cargar el perfil. Inténtalo de nuevo.',
-      );
+      expect(component.errorMessage()).toBe('No se pudo cargar el perfil. Inténtalo de nuevo.');
     });
 
     it('debe mantener loading en true mientras carga', () => {
@@ -102,7 +98,7 @@ describe('TenantProfileComponent — Obtener y Editar Perfil del Negocio', () =>
     it('llama al use-case exactamente una vez al inicializar', () => {
       fixture.detectChanges();
 
-      expect(getTenantProfileMock).toHaveBeenCalledTimes(2);
+      expect(getTenantProfileMock).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -130,9 +126,7 @@ describe('TenantProfileComponent — Obtener y Editar Perfil del Negocio', () =>
     });
 
     it('debe mostrar error 400 (datos inválidos)', () => {
-      updateTenantProfileMock.mockReturnValue(
-        throwError(() => httpError(400)),
-      );
+      updateTenantProfileMock.mockReturnValue(throwError(() => httpError(400)));
 
       component.form.patchValue({ name: 'Test' });
       component.onSubmit();
@@ -143,9 +137,7 @@ describe('TenantProfileComponent — Obtener y Editar Perfil del Negocio', () =>
     });
 
     it('debe mostrar error 403 (sin permiso)', () => {
-      updateTenantProfileMock.mockReturnValue(
-        throwError(() => httpError(403)),
-      );
+      updateTenantProfileMock.mockReturnValue(throwError(() => httpError(403)));
 
       component.form.patchValue({ name: 'Test' });
       component.onSubmit();
@@ -154,16 +146,12 @@ describe('TenantProfileComponent — Obtener y Editar Perfil del Negocio', () =>
     });
 
     it('debe mostrar error genérico para otros estatus', () => {
-      updateTenantProfileMock.mockReturnValue(
-        throwError(() => httpError(500)),
-      );
+      updateTenantProfileMock.mockReturnValue(throwError(() => httpError(500)));
 
       component.form.patchValue({ name: 'Test' });
       component.onSubmit();
 
-      expect(component.errorMessage()).toBe(
-        'Ocurrió un error inesperado. Inténtalo de nuevo.',
-      );
+      expect(component.errorMessage()).toBe('Ocurrió un error inesperado. Inténtalo de nuevo.');
     });
 
     it('no debe enviar si el formulario es inválido', () => {
