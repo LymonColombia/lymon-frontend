@@ -52,6 +52,7 @@ describe('CreateIncidentReportComponent — Registrar Novedad Laboral', () => {
     fixture = TestBed.createComponent(CreateIncidentReportComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
+    vi.spyOn(router, 'navigate').mockResolvedValue(true);
     userSessionService = TestBed.inject(UserSessionService);
     fixture.detectChanges();
   });
@@ -61,7 +62,6 @@ describe('CreateIncidentReportComponent — Registrar Novedad Laboral', () => {
   describe('POST /incident-reports — Crear novedad laboral', () => {
     it('debe crear una novedad exitosamente', () => {
       createMock.mockReturnValue(of({ message: 'success', data: {} }));
-      vi.spyOn(router, 'navigate');
 
       component.form.patchValue({
         title: 'Daño general',
@@ -128,9 +128,7 @@ describe('CreateIncidentReportComponent — Registrar Novedad Laboral', () => {
       });
       component.onSubmit();
 
-      expect(component.errorMessage()).toBe(
-        'Ocurrió un error inesperado. Inténtalo de nuevo.',
-      );
+      expect(component.errorMessage()).toBe('Ocurrió un error inesperado. Inténtalo de nuevo.');
     });
   });
 
