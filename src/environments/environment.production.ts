@@ -1,11 +1,6 @@
-/**
- * Environment configuration example
- * Copy this file to `environment.ts` and update with your actual values
- */
-
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:3000',
+  production: true,
+  apiUrl: 'https://lymon-backend-development.onrender.com',
   auth: {
     endpoint: '/auth',
   },
@@ -21,7 +16,7 @@ export const environment = {
   properties: {
     endpoint: '/properties',
   },
-    reservations: {
+  reservations: {
     endpoint: '/reservations',
   },
   units: {

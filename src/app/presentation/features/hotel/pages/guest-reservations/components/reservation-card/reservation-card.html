@@ -1,0 +1,86 @@
+<article
+  class="res-card"
+  [class.res-card--pending]="status() === 'pending'"
+  [class.res-card--confirmed]="status() === 'confirmed'"
+  [class.res-card--checked_in]="status() === 'checked_in'"
+  [class.res-card--checked_out]="status() === 'checked_out'"
+  [class.res-card--cancelled]="status() === 'cancelled'"
+  [class.res-card--no_show]="status() === 'no_show'"
+>
+
+  <!-- Header -->
+  <div class="card-header">
+    <div class="card-property">
+      <div class="property-icon">
+        <ng-icon name="bootstrapBuilding" size="18px" aria-hidden="true" />
+      </div>
+      <div class="property-meta">
+        <span class="property-name">{{ reservation().propertyName }}</span>
+        <span class="unit-chip">{{ reservation().unitName }}</span>
+      </div>
+    </div>
+
+    <div
+      class="status-badge"
+      [class.status-badge--pending]="status() === 'pending'"
+      [class.status-badge--confirmed]="status() === 'confirmed'"
+      [class.status-badge--checked_in]="status() === 'checked_in'"
+      [class.status-badge--checked_out]="status() === 'checked_out'"
+      [class.status-badge--cancelled]="status() === 'cancelled'"
+      [class.status-badge--no_show]="status() === 'no_show'"
+    >
+      <span class="status-dot" aria-hidden="true"></span>
+      <span>{{ statusLabel() }}</span>
+    </div>
+  </div>
+
+  <!-- Dates -->
+  <div class="card-dates">
+    <div class="date-col">
+      <span class="date-label">Check-in</span>
+      <span class="date-main">{{ formatDay(reservation().checkIn) }}</span>
+      <span class="date-time">{{ formatTime(reservation().checkIn) }}</span>
+      <span class="date-year">{{ formatYear(reservation().checkIn) }}</span>
+    </div>
+
+    <div class="nights-badge">
+      <ng-icon name="bootstrapCalendar" size="13px" aria-hidden="true" />
+      <span>{{ nights() }} noche{{ nights() !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <div class="date-col date-col--right">
+      <span class="date-label">Check-out</span>
+      <span class="date-main">{{ formatDay(reservation().checkOut) }}</span>
+      <span class="date-time">{{ formatTime(reservation().checkOut) }}</span>
+      <span class="date-year">{{ formatYear(reservation().checkOut) }}</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">
+    <span class="booking-ref">Ref: {{ bookingReference() }}</span>
+
+    <div class="card-actions">
+      @if (status() === 'pending') {
+        <app-button variant="primary" size="small" (clicked)="onConfirm()">
+          Confirmar
+        </app-button>
+      } @else {
+        <span
+          class="action-label"
+          [class.action-label--confirmed]="status() === 'confirmed'"
+          [class.action-label--checked_in]="status() === 'checked_in'"
+          [class.action-label--checked_out]="status() === 'checked_out'"
+          [class.action-label--cancelled]="status() === 'cancelled'"
+        >
+          <ng-icon [name]="statusIcon()" size="13px" aria-hidden="true" />
+          {{ statusLabel() }}
+        </span>
+      }
+      <button class="details-btn" type="button" (click)="onViewDetails()">
+        Ver detalles ›
+      </button>
+    </div>
+  </div>
+
+</article>

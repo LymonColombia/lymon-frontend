@@ -9,7 +9,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
@@ -38,7 +37,7 @@ import {
 } from 'rxjs';
 
 @Component({
-  imports: [CommonModule, HotelPageLayoutComponent, NgIcon],
+  imports: [HotelPageLayoutComponent, NgIcon],
   providers: [
     provideIcons({
       bootstrapEnvelope,
@@ -68,8 +67,6 @@ export class CheckinComponent implements AfterViewInit {
 
   private signatureContext: CanvasRenderingContext2D | null = null;
   private isDrawing = false;
-  private lastX = 0;
-  private lastY = 0;
 
   readonly steps = [
     'Informacion personal',
@@ -141,8 +138,6 @@ export class CheckinComponent implements AfterViewInit {
 
     const point = this.getCanvasPoint(event);
     this.isDrawing = true;
-    this.lastX = point.x;
-    this.lastY = point.y;
 
     this.signatureContext.beginPath();
     this.signatureContext.moveTo(point.x, point.y);
@@ -155,9 +150,6 @@ export class CheckinComponent implements AfterViewInit {
     const point = this.getCanvasPoint(event);
     this.signatureContext.lineTo(point.x, point.y);
     this.signatureContext.stroke();
-
-    this.lastX = point.x;
-    this.lastY = point.y;
   }
 
   stopDrawing(): void {
@@ -270,17 +262,16 @@ export class CheckinComponent implements AfterViewInit {
       room: r.unitName,
       checkIn: r.checkIn,
       checkOut: r.checkOut,
-      nights: r.nights ?? 0,
+      nights: r.nights ?? r.priceBreakdown?.nights ?? 0,
       guestsCount: r.guestsCount,
-      pricePerNight: r.pricePerNight ?? 0,
-      totalPrice: r.totalPrice ?? 0,
+      pricePerNight: r.priceBreakdown?.pricePerNight ?? 0,
+      totalPrice: r.priceBreakdown?.totalPrice ?? 0,
       notes: r.notes ?? undefined,
       status: r.status as Reservation['status'],
-      // Fields not available from guest endpoint
       tenantId: '',
-      propertyId: '',
+      propertyId: r.propertyId ?? '',
       guestId: '',
-      source: '',
+      source: r.source ?? '',
       createdAt: '',
       updatedAt: '',
     };

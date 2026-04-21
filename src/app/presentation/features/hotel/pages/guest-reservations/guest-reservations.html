@@ -1,45 +1,105 @@
 <div class="reservations-page">
 
-  <nav class="reservations-nav">
-    <div class="reservations-nav-inner">
-      <button class="nav-back-btn" type="button" (click)="goBack()">
-        <ng-icon name="bootstrapChevronLeft" size="18px" aria-hidden="true"></ng-icon>
-        Volver
-      </button>
-      <div class="nav-divider"></div>
-      <span class="nav-title">Mis Reservas</span>
-    </div>
-  </nav>
+  <app-guest-nav
+    [guestEmail]="guestEmail"
+    (explore)="goExplore()"
+    (logout)="onLogout()"
+  />
 
   <div class="reservations-container">
 
+    <!-- Page heading -->
+    <div class="page-heading fade-section fade-delay-1">
+      <h1 class="heading-title">Mis Reservas</h1>
+
+      <!-- Summary stats -->
+      @if (!isLoading() && !errorMessage()) {
+        <div class="stats-row">
+          <span class="stat-pill">
+            <span class="stat-value">{{ statusCounts().all }}</span>
+            Total
+          </span>
+          @if (statusCounts().pending > 0) {
+            <span class="stat-pill stat-pill--pending">
+              <span class="stat-value">{{ statusCounts().pending }}</span>
+              Pendientes
+            </span>
+          }
+          @if (statusCounts().confirmed > 0) {
+            <span class="stat-pill stat-pill--confirmed">
+              <span class="stat-value">{{ statusCounts().confirmed }}</span>
+              Confirmadas
+            </span>
+          }
+          @if (statusCounts().checked_out > 0) {
+            <span class="stat-pill stat-pill--checked_out">
+              <span class="stat-value">{{ statusCounts().checked_out }}</span>
+              Completadas
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Filter and sort controls -->
+    @if (!isLoading() && !errorMessage() && reservations().length > 0) {
+      <div class="controls-row fade-section fade-delay-2">
+        <div class="filter-tabs" role="tablist" aria-label="Filtrar reservas">
+          @for (tab of filterTabs; track tab.key) {
+            <button
+              class="filter-tab"
+              [class.filter-tab--active]="activeFilter() === tab.key"
+              type="button"
+              role="tab"
+              [attr.aria-selected]="activeFilter() === tab.key"
+              (click)="setFilter(tab.key)"
+            >
+              {{ tab.label }}
+              <span class="tab-count">{{ countFor(tab.key) }}</span>
+            </button>
+          }
+        </div>
+
+        <div class="sort-control">
+          <app-select
+            [id]="'bookings-sort'"
+            [name]="'bookings-sort'"
+            [options]="sortOptions"
+            [value]="activeSort()"
+            [size]="'small'"
+            (valueChange)="onSortChange($event)"
+          />
+        </div>
+      </div>
+    }
+
     <!-- Loading -->
     @if (isLoading()) {
-      <div class="state-message">
+      <div class="state-center fade-section fade-delay-2">
         <div class="spinner"></div>
-        <span>Cargando tus reservas...</span>
+        <span class="state-text">Cargando tus reservas...</span>
       </div>
     }
 
     <!-- Error -->
     @if (!isLoading() && errorMessage()) {
-      <div class="error-card">
-        <div class="error-icon">
-          <ng-icon name="bootstrapExclamationTriangle" size="28px" aria-hidden="true"></ng-icon>
+      <div class="state-card fade-section fade-delay-2">
+        <div class="state-icon state-icon--error">
+          <ng-icon name="bootstrapExclamationTriangle" size="28px" aria-hidden="true" />
         </div>
-        <p class="error-text">{{ errorMessage() }}</p>
-        <app-button variant="primary" size="medium" (clicked)="loadReservations(currentPage())">
+        <p class="state-text">{{ errorMessage() }}</p>
+        <app-button variant="primary" size="medium" (clicked)="loadReservations()">
           Reintentar
         </app-button>
       </div>
     }
 
-    <!-- Empty -->
+    <!-- Empty state (no reservations at all) -->
     @if (!isLoading() && !errorMessage() && reservations().length === 0) {
-      <div class="empty-card">
+      <div class="empty-card fade-section fade-delay-2">
         <div class="empty-illustration">
           <div class="empty-illustration-bg">
-            <ng-icon name="bootstrapCalendar" size="36px" aria-hidden="true"></ng-icon>
+            <ng-icon name="bootstrapCalendar" size="36px" aria-hidden="true" />
           </div>
         </div>
         <div class="empty-body">
@@ -48,107 +108,88 @@
             Cuando hagas una reserva aparecerá acá con todos los detalles de tu estadía.
           </p>
         </div>
-        <app-button variant="primary" size="medium" (clicked)="goBack()">
-          <ng-icon name="bootstrapHouseDoorFill" size="16px" aria-hidden="true"></ng-icon>
+        <app-button variant="primary" size="medium" (clicked)="goExplore()">
+          <ng-icon name="bootstrapCalendarCheck" size="16px" aria-hidden="true" />
           Explorar habitaciones
         </app-button>
-        <p class="empty-hint">
-          <ng-icon name="bootstrapCalendarCheck" size="13px" aria-hidden="true"></ng-icon>
-          Reservá en segundos, sin necesidad de tarjeta
-        </p>
+        <p class="empty-hint">Reservá en segundos, sin necesidad de tarjeta</p>
       </div>
     }
 
-    <!-- Reservation list -->
-    @if (!isLoading() && !errorMessage() && reservations().length > 0) {
-      <div class="reservations-list">
-        @for (reservation of reservations(); track reservation.id) {
-          <div class="reservation-card" [class.reservation-card--pending]="reservation.status === 'pending'" [class.reservation-card--confirmed]="reservation.status === 'confirmed'" [class.reservation-card--checked_in]="reservation.status === 'checked_in'" [class.reservation-card--checked_out]="reservation.status === 'checked_out'" [class.reservation-card--cancelled]="reservation.status === 'cancelled'">
+    <!-- Empty state (filter has no results) -->
+    @if (!isLoading() && !errorMessage() && reservations().length > 0 && filteredReservations().length === 0) {
+      <div class="state-card fade-section fade-delay-3">
+        <p class="state-text">No tenés reservas en este estado.</p>
+        <app-button variant="outline" size="small" (clicked)="setFilter('all')">
+          Ver todas
+        </app-button>
+      </div>
+    }
 
-            <!-- Status bar -->
-            <div class="card-status-bar">
-              <div class="status-badge" [class.status-badge--pending]="reservation.status === 'pending'" [class.status-badge--confirmed]="reservation.status === 'confirmed'" [class.status-badge--checked_in]="reservation.status === 'checked_in'" [class.status-badge--checked_out]="reservation.status === 'checked_out'" [class.status-badge--cancelled]="reservation.status === 'cancelled'">
-                <ng-icon [name]="statusIcon(reservation.status)" size="13px" aria-hidden="true"></ng-icon>
-                <span>{{ statusLabel(reservation.status) }}</span>
-              </div>
-              <span class="reservation-id">#{{ reservation.id.slice(-8).toUpperCase() }}</span>
-            </div>
-
-            <!-- Check-in pass -->
-            <div class="checkin-pass">
-              <div class="pass-section pass-section--checkin">
-                <span class="pass-label">Check-in</span>
-                <span class="pass-date">{{ formatDateShort(reservation.checkIn) }}</span>
-                <span class="pass-year">{{ reservation.checkIn.slice(0, 4) }}</span>
-              </div>
-
-              <div class="pass-divider">
-                <div class="pass-nights">
-                  <ng-icon name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
-                  <span>{{ reservation.nights ?? nightsBetween(reservation.checkIn, reservation.checkOut) }} noche{{ (reservation.nights ?? nightsBetween(reservation.checkIn, reservation.checkOut)) !== 1 ? 's' : '' }}</span>
-                </div>
-                <div class="pass-dots"></div>
-              </div>
-
-              <div class="pass-section pass-section--checkout">
-                <span class="pass-label">Check-out</span>
-                <span class="pass-date">{{ formatDateShort(reservation.checkOut) }}</span>
-                <span class="pass-year">{{ reservation.checkOut.slice(0, 4) }}</span>
-              </div>
-            </div>
-
-            <!-- Footer info -->
-            <div class="card-footer">
-              <div class="card-meta">
-                <div class="meta-item">
-                  <ng-icon name="bootstrapHouseDoorFill" size="13px" aria-hidden="true"></ng-icon>
-                  <span>{{ reservation.unitName ?? 'Unidad ' + reservation.unitId.slice(-6).toUpperCase() }}</span>
-                </div>
-                <div class="meta-item">
-                  <ng-icon name="bootstrapPeopleFill" size="13px" aria-hidden="true"></ng-icon>
-                  <span>{{ reservation.guestsCount }} huésped{{ reservation.guestsCount !== 1 ? 'es' : '' }}</span>
-                </div>
-              </div>
-
-              <div class="card-actions">
-                <app-button variant="primary" size="small" (clicked)="goToCheckin(reservation.id)">
-                  <ng-icon name="bootstrapPersonCheck" size="14px" aria-hidden="true"></ng-icon>
-                  Confirmar reserva
-                </app-button>
-              </div>
-            </div>
-
-          </div>
+    <!-- Reservations grid -->
+    @if (!isLoading() && !errorMessage() && pagedReservations().length > 0) {
+      <div class="reservations-grid fade-section fade-delay-3">
+        @for (reservation of pagedReservations(); track reservation.id) {
+          <app-reservation-card
+            [reservation]="reservation"
+            (confirm)="goToCheckin($event)"
+            (viewDetails)="goToReservationDetails($event)"
+          />
         }
       </div>
     }
 
     <!-- Pagination -->
     @if (!isLoading() && !errorMessage() && totalPages() > 1) {
-      <div class="pagination">
+      <nav class="pagination fade-section fade-delay-4" aria-label="Paginación de reservas">
         <app-button
-          variant="outline"
-          size="small"
-          [disabled]="currentPage() <= 1"
-          (clicked)="onPrevPage()">
-          <ng-icon name="bootstrapChevronLeft" size="14px" aria-hidden="true"></ng-icon>
-          Anterior
+          class="page-btn icon-btn"
+          variant="secondary"
+          size="medium"
+          [disabled]="safeCurrentPage() === 1"
+          (clicked)="goToPreviousPage()"
+          aria-label="Página anterior"
+        >
+          <ng-icon name="bootstrapChevronLeft" size="18px" aria-hidden="true"></ng-icon>
         </app-button>
 
-        <span class="pagination-info">{{ currentPage() }} / {{ totalPages() }}</span>
+        @for (page of pageNumbers(); track page) {
+          <app-button
+            class="page-btn"
+            variant="secondary"
+            size="medium"
+            [disabled]="page === safeCurrentPage()"
+            (clicked)="goToPage(page)"
+          >
+            {{ page }}
+          </app-button>
+        }
 
         <app-button
-          variant="outline"
-          size="small"
-          [disabled]="currentPage() >= totalPages()"
-          (clicked)="onNextPage()">
-          Siguiente
-          <ng-icon name="bootstrapChevronRight" size="14px" aria-hidden="true"></ng-icon>
+          class="page-btn icon-btn"
+          variant="secondary"
+          size="medium"
+          [disabled]="safeCurrentPage() === totalPages()"
+          (clicked)="goToNextPage()"
+          aria-label="Página siguiente"
+        >
+          <ng-icon name="bootstrapChevronRight" size="18px" aria-hidden="true"></ng-icon>
+        </app-button>
+      </nav>
+    }
+
+    <!-- Explore button -->
+    @if (!isLoading() && !errorMessage() && reservations().length > 0) {
+      <div class="explore-row fade-section fade-delay-5">
+        <app-button variant="outline" size="medium" (clicked)="goExplore()">
+          Explorar más habitaciones
+          <ng-icon name="bootstrapArrowRight" size="15px" aria-hidden="true" />
         </app-button>
       </div>
     }
 
   </div>
 
-  <app-footer></app-footer>
+  <app-footer />
+
 </div>
