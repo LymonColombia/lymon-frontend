@@ -65,8 +65,7 @@
 
 :host.btn-primary .btn-inner {
   color: var(--color-bg-primary);
-  background: var(--color-primary-gradient);
-  border-color: transparent;
+  background: var(--color-primary-gradient) border-box;
   box-shadow: var(--shadow-sm);
 }
 
