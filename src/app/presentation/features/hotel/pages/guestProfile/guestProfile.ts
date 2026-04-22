@@ -9,17 +9,22 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  CreateCrmGuestNoteRequest,
   CrmGuest,
   CrmGuestBooking,
   CrmGuestBookingSource,
+  CrmGuestEmail,
+  CrmGuestMessageTemplateId,
   CrmGuestNote,
   CrmGuestNoteCategory,
+  CreateCrmGuestNoteRequest,
+  SendCrmGuestMessageRequest,
 } from '@/domain/entities/crm-guest.model';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
+import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
+import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
@@ -46,6 +51,12 @@ import {
   bootstrapMoonStars,
   bootstrapSun,
   bootstrapChevronLeft,
+  bootstrapEnvelopeFill,
+  bootstrapEnvelopeOpen,
+  bootstrapTrash,
+  bootstrapPaperclip,
+  bootstrapFileEarmark,
+  bootstrapX,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -64,6 +75,7 @@ type UnitLookupItem = Unit & {
 type BookingStatusTone = 'info' | 'muted' | 'success' | 'warning' | 'danger';
 
 const NOTE_MAX_LENGTH = 280;
+const EMAIL_HISTORY_LIMIT = 5;
 
 @Component({
   selector: 'app-guest-profile',
@@ -84,6 +96,12 @@ const NOTE_MAX_LENGTH = 280;
       bootstrapMoonStars,
       bootstrapSun,
       bootstrapChevronLeft,
+      bootstrapEnvelopeFill,
+      bootstrapEnvelopeOpen,
+      bootstrapTrash,
+      bootstrapPaperclip,
+      bootstrapFileEarmark,
+      bootstrapX,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -96,6 +114,8 @@ export class GuestProfileComponent implements OnInit {
   private readonly getCrmGuestBookingsUseCase = inject(GetCrmGuestBookingsUseCase);
   private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
   private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
+  private readonly sendCrmGuestMessageUseCase = inject(SendCrmGuestMessageUseCase);
+  private readonly getCrmGuestEmailsUseCase = inject(GetCrmGuestEmailsUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
 
@@ -109,6 +129,15 @@ export class GuestProfileComponent implements OnInit {
   readonly guest = signal<CrmGuest | null>(null);
   readonly bookings = signal<CrmGuestBooking[]>([]);
   readonly notes = signal<CrmGuestNote[]>([]);
+  readonly emails = signal<CrmGuestEmail[]>([]);
+  readonly isEmailsLoading = signal(false);
+  readonly emailsErrorMessage = signal<string | null>(null);
+  readonly isEmailsExpanded = signal(false);
+
+  readonly visibleEmails = computed(() =>
+    this.isEmailsExpanded() ? this.emails() : this.emails().slice(0, EMAIL_HISTORY_LIMIT),
+  );
+  readonly hasMoreEmails = computed(() => this.emails().length > EMAIL_HISTORY_LIMIT);
 
   readonly propertyNamesById = signal<Record<string, string>>({});
   readonly unitNamesById = signal<Record<string, string>>({});
@@ -204,6 +233,21 @@ export class GuestProfileComponent implements OnInit {
 
   readonly noteCharCount = computed(() => this.noteContent().length);
 
+  readonly isMessageFormVisible = signal(false);
+  readonly isSendingMessage = signal(false);
+  readonly messageSubject = signal('');
+  readonly messageBody = signal('');
+  readonly messageTemplateId = signal<CrmGuestMessageTemplateId>('guest-message');
+  readonly attachedFiles = signal<File[]>([]);
+  readonly isDragOver = signal(false);
+  readonly messageErrorMessage = signal<string | null>(null);
+  readonly messageSentSuccess = signal(false);
+
+  readonly messageTemplateSelectOptions: SelectOption[] = [
+    { value: 'guest-message', label: 'Mensaje general' },
+    { value: 'GUEST_WELCOME', label: 'Bienvenida al huésped' },
+  ];
+
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'CRM de Huéspedes', route: '/crm/guests' },
     { label: this.guest()?.name ?? 'Perfil del huésped' },
@@ -247,6 +291,105 @@ export class GuestProfileComponent implements OnInit {
 
   cancelNoteForm(): void {
     this.resetNoteForm();
+  }
+
+  openMessageForm(): void {
+    this.isMessageFormVisible.set(true);
+    this.messageErrorMessage.set(null);
+    this.messageSentSuccess.set(false);
+  }
+
+  cancelMessageForm(): void {
+    this.resetMessageForm();
+  }
+
+  setMessageTemplateId(value: string | number | null): void {
+    if (value !== 'GUEST_WELCOME' && value !== 'guest-message') return;
+    this.messageTemplateId.set(value);
+  }
+
+  onMessageSubjectChange(value: string): void {
+    this.messageSubject.set(value);
+  }
+
+  onMessageBodyChange(value: string): void {
+    this.messageBody.set(value);
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver.set(true);
+  }
+
+  onDragLeave(): void {
+    this.isDragOver.set(false);
+  }
+
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver.set(false);
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (files.length) this.attachedFiles.update((list) => [...list, ...files]);
+  }
+
+  onFileInputChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    if (files.length) this.attachedFiles.update((list) => [...list, ...files]);
+    input.value = '';
+  }
+
+  removeAttachedFile(index: number): void {
+    this.attachedFiles.update((list) => list.filter((_, i) => i !== index));
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  sendMessage(): void {
+    const guestId = this.guest()?.id?.trim();
+    const subject = this.messageSubject().trim();
+    const body = this.messageBody().trim();
+
+    if (!guestId) {
+      this.messageErrorMessage.set('No se pudo identificar al huésped para enviar el mensaje.');
+      return;
+    }
+
+    if (!subject) {
+      this.messageErrorMessage.set('El asunto del mensaje es obligatorio.');
+      return;
+    }
+
+    if (!body) {
+      this.messageErrorMessage.set('El cuerpo del mensaje es obligatorio.');
+      return;
+    }
+
+    const payload: SendCrmGuestMessageRequest = {
+      subject,
+      body,
+      templateId: this.messageTemplateId(),
+      attachments: this.attachedFiles().map((f) => ({ name: f.name, type: f.type, url: '' })),
+    };
+
+    this.isSendingMessage.set(true);
+    this.messageErrorMessage.set(null);
+
+    this.sendCrmGuestMessageUseCase.execute(guestId, payload).subscribe({
+      next: () => {
+        this.isSendingMessage.set(false);
+        this.messageSentSuccess.set(true);
+        this.resetMessageForm(true);
+      },
+      error: () => {
+        this.isSendingMessage.set(false);
+        this.messageErrorMessage.set('No se pudo enviar el mensaje. Inténtalo de nuevo.');
+      },
+    });
   }
 
   saveNote(): void {
@@ -393,6 +536,21 @@ export class GuestProfileComponent implements OnInit {
     return `+${countryCode} ${localNumber}`;
   }
 
+  toggleEmailsExpanded(): void {
+    this.isEmailsExpanded.update((v) => !v);
+  }
+
+  getEmailStatusLabel(status: string): string {
+    switch (status) {
+      case 'sent':
+        return 'Enviado';
+      case 'failed':
+        return 'Fallido';
+      default:
+        return 'Pendiente';
+    }
+  }
+
   getNoteIdentifier(note: CrmGuestNote): string {
     return note.id || `${note.createdAt}-${note.note}`;
   }
@@ -414,6 +572,7 @@ export class GuestProfileComponent implements OnInit {
         this.isGuestLoading.set(false);
         this.loadBookings(guestId);
         this.loadNotes(guestId);
+        this.loadEmails(guestId);
       },
       error: (error: HttpErrorResponse) => {
         this.isGuestLoading.set(false);
@@ -446,6 +605,27 @@ export class GuestProfileComponent implements OnInit {
             'No se pudo cargar el historial de reservas. Inténtalo de nuevo.',
           );
         }
+      },
+    });
+  }
+
+  private loadEmails(guestId: string): void {
+    this.isEmailsLoading.set(true);
+    this.emailsErrorMessage.set(null);
+
+    this.getCrmGuestEmailsUseCase.execute(guestId).subscribe({
+      next: (emails) => {
+        this.emails.set(
+          [...emails].sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
+        );
+        this.isEmailsLoading.set(false);
+      },
+      error: () => {
+        this.emails.set([]);
+        this.isEmailsLoading.set(false);
+        this.emailsErrorMessage.set('No se pudo cargar el historial de comunicaciones.');
       },
     });
   }
@@ -567,6 +747,18 @@ export class GuestProfileComponent implements OnInit {
     if (month >= 5 && month <= 7) return 'Verano';
     if (month >= 8 && month <= 10) return 'Otoño';
     return 'Invierno';
+  }
+
+  private resetMessageForm(keepSuccess = false): void {
+    this.isMessageFormVisible.set(false);
+    this.isSendingMessage.set(false);
+    this.messageSubject.set('');
+    this.messageBody.set('');
+    this.messageTemplateId.set('guest-message');
+    this.attachedFiles.set([]);
+    this.isDragOver.set(false);
+    this.messageErrorMessage.set(null);
+    if (!keepSuccess) this.messageSentSuccess.set(false);
   }
 
   private resetNoteForm(): void {

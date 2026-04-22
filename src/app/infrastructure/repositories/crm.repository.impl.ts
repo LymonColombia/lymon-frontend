@@ -4,12 +4,14 @@ import { Observable, map } from 'rxjs';
 import {
   CreateCrmGuestNoteRequest,
   GetCrmGuestBookingsResponse,
+  GetCrmGuestEmailsResponse,
   GetCrmGuestNotesResponse,
   GetCrmGuestsResponse,
+  SendCrmGuestMessageRequest,
 } from '@/domain/entities/crm-guest.model';
 import { CrmRepository } from '@/domain/repositories/crm.repository';
 import { CrmMapper } from '@/infrastructure/mappers/crm.mapper';
-import { CrmGuestBookingDto, CrmGuestDto, CrmGuestNoteDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto } from '@/infrastructure/dtos/crm.dto';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.crm.endpoint}`;
@@ -39,6 +41,19 @@ export class CrmRepositoryImpl extends CrmRepository {
   createGuestNote(guestId: string, data: CreateCrmGuestNoteRequest): Observable<void> {
     return this.http.post<void>(
       `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/notes`,
+      data,
+    );
+  }
+
+  getGuestEmails(guestId: string): Observable<GetCrmGuestEmailsResponse> {
+    return this.http
+      .get<{ data: CrmGuestEmailDto[] }>(`${BASE_URL}/guests/${guestId}/emails`)
+      .pipe(map((res) => ({ data: CrmMapper.toGuestEmails(res.data) })));
+  }
+
+  sendGuestMessage(guestId: string, data: SendCrmGuestMessageRequest): Observable<void> {
+    return this.http.post<void>(
+      `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/messages`,
       data,
     );
   }

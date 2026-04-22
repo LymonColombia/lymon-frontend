@@ -51,6 +51,219 @@
       }
     </section>
 
+    <!-- Send message -->
+    <section class="profile-section">
+      <div class="notes-section-header">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapEnvelopeFill" size="18px"></ng-icon>
+          </span>
+          Enviar mensaje
+        </h2>
+        @if (!isMessageFormVisible()) {
+          <app-button variant="primary" size="medium" (clicked)="openMessageForm()">
+            Redactar
+          </app-button>
+        }
+      </div>
+
+      @if (messageSentSuccess()) {
+        <p class="message-feedback message-feedback-success">Mensaje enviado correctamente.</p>
+      }
+
+      @if (messageErrorMessage()) {
+        <p class="message-feedback message-feedback-error">{{ messageErrorMessage() }}</p>
+      }
+
+      @if (isMessageFormVisible()) {
+        <article class="guest-note-card">
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-subject">Asunto</label>
+            <input
+              id="message-subject"
+              class="message-form-input"
+              type="text"
+              placeholder="Asunto del correo..."
+              [value]="messageSubject()"
+              (input)="onMessageSubjectChange(($any($event.target).value ?? '').toString())"
+            />
+          </div>
+
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-template">Plantilla</label>
+            <app-select
+              id="message-template"
+              name="message-template"
+              size="medium"
+              placeholder=""
+              [options]="messageTemplateSelectOptions"
+              [value]="messageTemplateId()"
+              (valueChange)="setMessageTemplateId($event)"
+            ></app-select>
+          </div>
+
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-body">Mensaje</label>
+            <textarea
+              id="message-body"
+              class="guest-note-textarea"
+              rows="6"
+              placeholder="Escribe el contenido del correo..."
+              [value]="messageBody()"
+              (input)="onMessageBodyChange(($any($event.target).value ?? '').toString())"
+            ></textarea>
+          </div>
+
+          <!-- TODO: re-enable when file upload service (S3/storage) is ready
+          <div class="message-form-field">
+            <span class="guest-note-label">Adjuntos</span>
+            <div
+              class="message-drop-zone"
+              [class.message-drop-zone-dragover]="isDragOver()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave()"
+              (drop)="onFileDrop($event)"
+              (click)="fileInput.click()"
+              role="button"
+              tabindex="0"
+              aria-label="Zona para arrastrar y soltar archivos adjuntos"
+              (keydown.enter)="fileInput.click()"
+              (keydown.space)="fileInput.click()"
+            >
+              <input
+                #fileInput
+                type="file"
+                multiple
+                class="message-drop-zone-input"
+                (change)="onFileInputChange($event)"
+                aria-hidden="true"
+                tabindex="-1"
+              />
+              <span class="message-drop-zone-icon" aria-hidden="true">
+                <ng-icon name="bootstrapPaperclip" size="22px"></ng-icon>
+              </span>
+              <span class="message-drop-zone-text">
+                Arrastra archivos aquí o haz clic para seleccionar
+              </span>
+            </div>
+
+            @if (attachedFiles().length > 0) {
+              <div class="message-attachment-chips">
+                @for (file of attachedFiles(); track $index) {
+                  <div class="message-attachment-chip">
+                    <span class="message-attachment-chip-icon" aria-hidden="true">
+                      <ng-icon name="bootstrapFileEarmark" size="14px"></ng-icon>
+                    </span>
+                    <span class="message-attachment-chip-name">{{ file.name }}</span>
+                    <span class="message-attachment-chip-size">{{ formatFileSize(file.size) }}</span>
+                    <button
+                      type="button"
+                      class="message-attachment-chip-remove"
+                      [attr.aria-label]="'Eliminar ' + file.name"
+                      (click)="removeAttachedFile($index); $event.stopPropagation()"
+                    >
+                      <ng-icon name="bootstrapX" size="12px"></ng-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          -->
+
+          <div class="guest-note-actions">
+            <app-button variant="secondary" size="medium" (clicked)="cancelMessageForm()">
+              Cancelar
+            </app-button>
+            <app-button
+              variant="primary"
+              size="medium"
+              [loading]="isSendingMessage()"
+              [disabled]="isSendingMessage()"
+              (clicked)="sendMessage()"
+            >
+              Enviar
+            </app-button>
+          </div>
+        </article>
+      }
+    </section>
+
+    <!-- Communication history -->
+    <section class="profile-section">
+      <div class="notes-section-header">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapEnvelopeOpen" size="18px"></ng-icon>
+          </span>
+          Historial de comunicaciones
+        </h2>
+      </div>
+
+      @if (isEmailsLoading()) {
+        <p class="page-feedback">Cargando historial...</p>
+      } @else if (emailsErrorMessage()) {
+        <p class="message-feedback message-feedback-error">{{ emailsErrorMessage() }}</p>
+      } @else if (emails().length === 0) {
+        <div class="email-history-empty">
+          <span class="email-history-empty-icon" aria-hidden="true">
+            <ng-icon name="bootstrapEnvelopeOpen" size="28px"></ng-icon>
+          </span>
+          <p class="email-history-empty-text">Sin comunicaciones registradas.</p>
+        </div>
+      } @else {
+        <div class="email-timeline">
+          @for (email of visibleEmails(); track email.id; let last = $last) {
+            <div class="email-timeline-item">
+              <div class="email-timeline-node">
+                <span
+                  class="email-timeline-dot"
+                  [class.email-timeline-dot--sent]="email.status === 'sent'"
+                  [class.email-timeline-dot--failed]="email.status === 'failed'"
+                  [class.email-timeline-dot--pending]="email.status === 'pending'"
+                  aria-hidden="true"
+                ></span>
+                @if (!last || hasMoreEmails()) {
+                  <span class="email-timeline-connector" aria-hidden="true"></span>
+                }
+              </div>
+              <article class="email-timeline-card">
+                <p class="email-timeline-subject">{{ email.subject }}</p>
+                <div class="email-timeline-meta">
+                  <span class="email-timeline-date">{{ formatDateLabel(email.createdAt, true) }}</span>
+                  <span
+                    class="booking-status"
+                    [class.booking-status-success]="email.status === 'sent'"
+                    [class.booking-status-danger]="email.status === 'failed'"
+                    [class.booking-status-warning]="email.status === 'pending'"
+                  >{{ getEmailStatusLabel(email.status) }}</span>
+                </div>
+              </article>
+            </div>
+          }
+
+          @if (hasMoreEmails()) {
+            <div class="email-timeline-item">
+              <div class="email-timeline-node">
+                <span class="email-timeline-expand-node" aria-hidden="true"></span>
+              </div>
+              <button
+                type="button"
+                class="email-timeline-expand-btn"
+                (click)="toggleEmailsExpanded()"
+              >
+                @if (isEmailsExpanded()) {
+                  Ver menos
+                } @else {
+                  Ver {{ emails().length - 5 }} más
+                }
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
     <!-- Rich statistics -->
     <section class="profile-section">
       <h2 class="profile-section-title">Estadísticas</h2>

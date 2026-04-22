@@ -167,6 +167,16 @@ body {
 }
 
 /* ========================================
+   THIRD-PARTY OVERRIDES
+   ======================================== */
+
+/* ng-icons clamps overflow:hidden on its host by default, which clips
+   icons whose SVG paths render at the edges of the viewBox */
+ng-icon {
+  overflow: visible !important;
+}
+
+/* ========================================
    UTILITY CLASSES
    ======================================== */
 

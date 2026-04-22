@@ -59,3 +59,30 @@ export interface CrmGuestNote {
 export interface GetCrmGuestNotesResponse {
   data: CrmGuestNote[];
 }
+
+export type CrmGuestMessageTemplateId = 'GUEST_WELCOME' | 'guest-message';
+
+export interface CrmGuestMessageAttachment {
+  url: string;
+  name: string;
+  type: string;
+}
+
+export interface SendCrmGuestMessageRequest {
+  subject: string;
+  body: string;
+  templateId: CrmGuestMessageTemplateId;
+  attachments: CrmGuestMessageAttachment[];
+}
+
+export interface CrmGuestEmail {
+  id: string;
+  subject: string;
+  status: string;
+  sentById: string;
+  createdAt: string;
+}
+
+export interface GetCrmGuestEmailsResponse {
+  data: CrmGuestEmail[];
+}
