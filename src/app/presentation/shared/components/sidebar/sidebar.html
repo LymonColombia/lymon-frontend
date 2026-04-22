@@ -38,7 +38,7 @@
   <ul class="sidebar-menu">
     @for (item of menuItems; track item.route) {
       <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <a [routerLink]="item.route" class="menu-link" [title]="!isExpanded() ? item.label : null">
+        <a [routerLink]="item.route" class="menu-link" [attr.title]="!isExpanded() ? item.label : null">
           <ng-icon [name]="item.icon" size="20px" class="menu-icon" aria-hidden="true"></ng-icon>
           <span class="menu-label" [class.menu-label--hidden]="!isExpanded()">{{ item.label }}</span>
         </a>
@@ -48,7 +48,7 @@
 
   <div class="sidebar-footer" aria-label="Perfil">
     <div class="profile" [class.profile--collapsed]="!isExpanded()">
-      <div class="profile-avatar" aria-hidden="true" [title]="!isExpanded() ? tenantNameDisplay() : null">{{ tenantInitials() }}</div>
+      <div class="profile-avatar" aria-hidden="true" [attr.title]="!isExpanded() ? tenantNameDisplay() : null">{{ tenantInitials() }}</div>
       <div class="profile-text" [class.profile-text--hidden]="!isExpanded()">
         <div class="profile-name" [title]="tenantNameDisplay()">{{ tenantNameDisplay() }}</div>
         <div class="profile-email" [title]="tenantEmailDisplay()">{{ tenantEmailDisplay() }}</div>
