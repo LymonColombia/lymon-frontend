@@ -11,7 +11,7 @@ import {
 } from '@/domain/entities/crm-guest.model';
 import { CrmRepository } from '@/domain/repositories/crm.repository';
 import { CrmMapper } from '@/infrastructure/mappers/crm.mapper';
-import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto, PaginatedResponseDto } from '@/infrastructure/dtos/crm.dto';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.crm.endpoint}`;
@@ -22,8 +22,8 @@ export class CrmRepositoryImpl extends CrmRepository {
 
   getGuests(): Observable<GetCrmGuestsResponse> {
     return this.http
-      .get<{ data: CrmGuestDto[] }>(`${BASE_URL}${environment.crm.guestsEndpoint}`)
-      .pipe(map((res) => ({ data: CrmMapper.toGuests(res.data) })));
+      .get<{ data: PaginatedResponseDto<CrmGuestDto> }>(`${BASE_URL}${environment.crm.guestsEndpoint}`)
+      .pipe(map((res) => ({ data: CrmMapper.toGuests(res.data.items) })));
   }
 
   getGuestBookings(guestId: string): Observable<GetCrmGuestBookingsResponse> {
