@@ -6,7 +6,6 @@
 .shell-content {
   margin-left: 80px;
   width: calc(100% - 80px);
-  padding-left: calc(var(--spacing-sm) + 16px + var(--spacing-lg));
   display: flex;
   flex-direction: column;
   min-height: 100vh;
