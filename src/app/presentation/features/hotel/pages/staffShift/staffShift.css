@@ -387,3 +387,197 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Create-shift modal redesign ─────────────────────────────────────────── */
+
+.modal-card--wide {
+  width: min(600px, calc(100vw - 32px));
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Header (scoped to wide modal) */
+.modal-card--wide .modal-header {
+  align-items: flex-start;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.modal-subtitle {
+  margin-top: 3px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.modal-header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-close-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  line-height: 1;
+  padding: 4px 6px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+  background: var(--color-border-light);
+  color: var(--color-text-primary);
+}
+
+/* Scrollable body */
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Form sections */
+.form-section {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--spacing-md);
+  align-items: start;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.form-section--last {
+  border-bottom: none;
+}
+
+.form-section-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-top: 10px;
+}
+
+.form-section-fields {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.form-section-fields--2col {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Field loading placeholder */
+.field-loading {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-border-light);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  padding: 9px 12px;
+  opacity: 0.6;
+}
+
+/* Full-width field within a section */
+.field-group--full {
+  grid-column: 1 / -1;
+}
+
+/* Required / optional markers */
+.field-required {
+  color: #b71c1c;
+  margin-left: 2px;
+}
+
+.field-optional {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  margin-left: 4px;
+}
+
+/* Textarea */
+.field-textarea {
+  resize: vertical;
+  min-height: 76px;
+}
+
+/* Error banner */
+.form-error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.form-error-icon {
+  font-size: var(--font-size-md);
+  flex-shrink: 0;
+}
+
+/* Footer (scoped to wide modal) */
+.modal-card--wide .modal-actions {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* Spinner for loading state */
+.btn-spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Disabled state for buttons */
+.btn-primary:disabled,
+.btn-ghost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Responsive: stack section grid on small screens */
+@media (max-width: 560px) {
+  .form-section {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+
+  .form-section-fields--2col {
+    grid-template-columns: 1fr;
+  }
+
+  .form-section-label {
+    padding-top: 0;
+  }
+}
+
+

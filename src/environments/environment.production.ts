@@ -32,4 +32,7 @@ export const environment = {
     endpoint: '/crm',
     guestsEndpoint: '/guests',
   },
+  shifts: {
+    endpoint: '/shifts',
+  },
 };
