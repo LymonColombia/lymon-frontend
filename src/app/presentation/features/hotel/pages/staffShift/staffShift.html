@@ -147,8 +147,8 @@
   @if (isCreateModalOpen()) {
   <div class="modal-backdrop" (click)="closeCreateShiftModal()"></div>
 
-  <section class="modal-card modal-card--wide" role="dialog" aria-modal="true" aria-labelledby="create-shift-title"
-    (click)="$event.stopPropagation()">
+  <dialog class="modal-card modal-card--wide" open aria-modal="true" aria-labelledby="create-shift-title"
+    (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
     <!-- Modal header -->
     <header class="modal-header">
       <div class="modal-header-info">
@@ -250,15 +250,15 @@
         }
       </button>
     </footer>
-  </section>
+  </dialog>
   }
 
 
   @if (isCreateAssignmentModalOpen()) {
   <div class="modal-backdrop" (click)="closeCreateAssignmentModal()"></div>
 
-  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="create-assignment-title"
-    (click)="$event.stopPropagation()">
+  <dialog class="modal-card" open aria-modal="true" aria-labelledby="create-assignment-title"
+    (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
     <header class="modal-header">
       <h2 id="create-assignment-title">Nueva asignacion</h2>
       <button type="button" class="icon-btn" aria-label="Cerrar modal" (click)="closeCreateAssignmentModal()">
@@ -312,6 +312,6 @@
         Guardar asignacion
       </button>
     </footer>
-  </section>
+  </dialog>
   }
 </app-hotel-page-layout>
