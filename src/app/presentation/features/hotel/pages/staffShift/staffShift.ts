@@ -1,6 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { CreateShiftUseCase } from '@/domain/use-cases/shift/create-shift.use-case';
+import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
+import { StaffRepository } from '@/domain/repositories/staff.repository';
+import { StaffMember, Property } from '@/domain/entities/staff.model';
 
 type PreviewTab = 'calendar' | 'fixed';
 type ShiftStatus = 'Activo' | 'Inactivo';
@@ -35,28 +47,55 @@ interface ShiftOption {
 @Component({
   selector: 'app-staff-shift',
   standalone: true,
-  imports: [HotelPageLayoutComponent],
+  imports: [HotelPageLayoutComponent, FormsModule],
   templateUrl: './staffShift.html',
   styleUrl: './staffShift.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StaffShiftComponent {
+export class StaffShiftComponent implements OnInit {
+  private readonly createShiftUseCase = inject(CreateShiftUseCase);
+  private readonly getStaffUseCase = inject(GetStaffUseCase);
+  private readonly staffRepository = inject(StaffRepository);
+
+  // ── Tab navigation ──────────────────────────────────────────────────────────
   readonly activeTab = signal<PreviewTab>('calendar');
+
+  // ── Calendar tab ────────────────────────────────────────────────────────────
   readonly calendarSearch = signal('');
   readonly calendarDateFilter = signal('');
-  readonly fixedSearch = signal('');
   readonly isCreateAssignmentModalOpen = signal(false);
   readonly assignmentDate = signal('');
   readonly assignmentProperty = signal('');
   readonly assignmentEmployee = signal('');
   readonly assignmentShiftId = signal<number | null>(null);
   readonly createAssignmentError = signal('');
+
+  readonly fixedSearch = signal('');
   readonly isCreateModalOpen = signal(false);
-  readonly newShiftName = signal('');
+
+  readonly newShiftStaffMemberIds = signal<string[]>([]);
+  readonly newShiftPropertyId = signal('');
+  readonly newShiftStartDate = signal('');
+  readonly newShiftEndDate = signal('');
   readonly newShiftStart = signal('');
   readonly newShiftEnd = signal('');
+  readonly newShiftNotes = signal('');
+
+  readonly newShiftName = signal('');
   readonly newShiftStatus = signal<ShiftStatus>('Activo');
   readonly createShiftError = signal('');
+
+  readonly staffMembers = signal<StaffMember[]>([]);
+  readonly properties = signal<Property[]>([]);
+  readonly isCreatingShift = signal(false);
+
+  readonly todayIso = computed(() => {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  });
 
   private nextShiftId = 4;
 
@@ -179,6 +218,35 @@ export class StaffShiftComponent {
   readonly inactiveFixedShiftCount = computed(
     () => this.fixedShifts().filter((shift) => shift.status === 'Inactivo').length,
   );
+
+  isStaffMemberSelected(id: string): boolean {
+    return this.newShiftStaffMemberIds().includes(id);
+  }
+
+  ngOnInit(): void {
+    this.loadStaff();
+    this.loadProperties();
+  }
+
+  private loadStaff(): void {
+    this.getStaffUseCase.execute().subscribe({
+      next: (members) => this.staffMembers.set(members),
+      error: () => this.staffMembers.set([]),
+    });
+  }
+
+  private loadProperties(): void {
+    this.staffRepository.getProperties().subscribe({
+      next: (response) => {
+        const data = response.data ?? [];
+        this.properties.set(data);
+        if (data.length > 0 && !this.newShiftPropertyId()) {
+          this.newShiftPropertyId.set(data[0].id);
+        }
+      },
+      error: () => this.properties.set([]),
+    });
+  }
 
   showCalendarTab(): void {
     this.activeTab.set('calendar');
@@ -308,6 +376,9 @@ export class StaffShiftComponent {
   openCreateShiftModal(): void {
     this.isCreateModalOpen.set(true);
     this.createShiftError.set('');
+    if (!this.newShiftPropertyId() && this.properties().length > 0) {
+      this.newShiftPropertyId.set(this.properties()[0].id);
+    }
   }
 
   closeCreateShiftModal(): void {
@@ -330,48 +401,129 @@ export class StaffShiftComponent {
     this.newShiftEnd.set(target?.value ?? '');
   }
 
+  onNewShiftStartDateInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.newShiftStartDate.set(target?.value ?? '');
+  }
+
+  onNewShiftEndDateInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.newShiftEndDate.set(target?.value ?? '');
+  }
+
+  onNewShiftNotesInput(event: Event): void {
+    const target = event.target as HTMLTextAreaElement | null;
+    this.newShiftNotes.set(target?.value ?? '');
+  }
+
+  onNewShiftPropertyChange(event: Event): void {
+    const target = event.target as HTMLSelectElement | null;
+    this.newShiftPropertyId.set(target?.value ?? '');
+  }
+
   onNewShiftStatusChange(event: Event): void {
     const target = event.target as HTMLSelectElement | null;
     if (!target) {
       return;
     }
-
     this.newShiftStatus.set(target.value === 'Inactivo' ? 'Inactivo' : 'Activo');
   }
 
+  toggleStaffMemberSelection(memberId: string): void {
+    this.newShiftStaffMemberIds.update((ids) => {
+      if (ids.includes(memberId)) {
+        return ids.filter((id) => id !== memberId);
+      }
+      return [...ids, memberId];
+    });
+  }
+
   createShift(): void {
-    const name = this.newShiftName().trim();
-    const start = this.newShiftStart().trim();
-    const end = this.newShiftEnd().trim();
+    const staffMemberIds = this.newShiftStaffMemberIds();
+    const propertyId = this.newShiftPropertyId().trim();
+    const startDate = this.newShiftStartDate().trim();
+    const endDate = this.newShiftEndDate().trim();
+    const startHour = this.newShiftStart().trim();
+    const endHour = this.newShiftEnd().trim();
+    const notes = this.newShiftNotes().trim();
 
-    if (!name || !start || !end) {
-      this.createShiftError.set('Completa todos los campos para crear el turno.');
+    if (!propertyId) {
+      this.createShiftError.set('Selecciona una propiedad.');
+      return;
+    }
+    if (!startDate || !endDate) {
+      this.createShiftError.set('Completa las fechas de inicio y fin del turno.');
+      return;
+    }
+    const today = this.todayIso();
+    if (startDate < today) {
+      this.createShiftError.set('La fecha de inicio no puede ser una fecha pasada.');
+      return;
+    }
+    if (endDate < today) {
+      this.createShiftError.set('La fecha de fin no puede ser una fecha pasada.');
+      return;
+    }
+    if (startDate > endDate) {
+      this.createShiftError.set('La fecha de inicio no puede ser posterior a la fecha de fin.');
+      return;
+    }
+    if (!startHour || !endHour) {
+      this.createShiftError.set('Completa el horario de inicio y salida del turno.');
       return;
     }
 
-    const alreadyExists = this.fixedShifts().some(
-      (shift) => this.normalizeText(shift.name) === this.normalizeText(name),
-    );
-    if (alreadyExists) {
-      this.createShiftError.set('Ya existe un turno con ese nombre.');
-      return;
-    }
-
-    if (start === end) {
+    if (startHour === endHour) {
       this.createShiftError.set('La hora de inicio y salida no pueden ser iguales.');
       return;
     }
 
-    const newShift: FixedShiftCard = {
-      id: this.nextShiftId,
-      name,
-      timeRange: `${start} - ${end}`,
-      status: this.newShiftStatus(),
-    };
+    this.isCreatingShift.set(true);
+    this.createShiftError.set('');
 
-    this.nextShiftId += 1;
-    this.fixedShifts.update((shifts) => [...shifts, newShift]);
-    this.closeCreateShiftModal();
+    this.createShiftUseCase
+      .execute({
+        ...(staffMemberIds.length > 0 ? { staffMemberIds } : {}),
+        propertyId,
+        startDate,
+        endDate,
+        startHour,
+        endHour,
+        ...(notes ? { notes } : {}),
+      })
+      .subscribe({
+        next: () => {
+
+          const propertyName =
+            this.properties().find((p) => p.id === propertyId)?.name ?? propertyId;
+          const newCard: FixedShiftCard = {
+            id: this.nextShiftId,
+            name: `Turno ${propertyName} (${startDate})`,
+            timeRange: `${startHour} - ${endHour}`,
+            status: this.newShiftStatus(),
+          };
+          this.nextShiftId += 1;
+          this.fixedShifts.update((shifts) => [...shifts, newCard]);
+          this.isCreatingShift.set(false);
+          this.closeCreateShiftModal();
+        },
+        error: (err: unknown) => {
+          let message = 'Ocurrio un error al crear el turno. Intenta de nuevo.';
+          if (err && typeof err === 'object') {
+            const httpErr = err as Record<string, unknown>;
+            const body = httpErr['error'] as Record<string, unknown> | null;
+            if (typeof body?.['message'] === 'string' && body['message']) {
+              message = body['message'];
+            } else if (Array.isArray(body?.['message']) && body['message'].length > 0) {
+              message = (body['message'] as string[]).join(' ');
+            } else if (typeof httpErr['message'] === 'string' && httpErr['message']) {
+              message = httpErr['message'];
+            }
+          }
+          this.createShiftError.set(message);
+          this.isCreatingShift.set(false);
+        },
+      });
   }
 
   toggleShiftStatus(shiftId: number): void {
@@ -391,10 +543,16 @@ export class StaffShiftComponent {
 
   private resetCreateShiftForm(): void {
     this.newShiftName.set('');
+    this.newShiftStaffMemberIds.set([]);
+    this.newShiftPropertyId.set('');
+    this.newShiftStartDate.set('');
+    this.newShiftEndDate.set('');
     this.newShiftStart.set('');
     this.newShiftEnd.set('');
+    this.newShiftNotes.set('');
     this.newShiftStatus.set('Activo');
     this.createShiftError.set('');
+    this.isCreatingShift.set(false);
   }
 
   private resetCreateAssignmentForm(): void {
