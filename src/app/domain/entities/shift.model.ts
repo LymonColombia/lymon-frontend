@@ -1,4 +1,5 @@
 export interface CreateShiftDto {
+  name: string;
   staffMemberIds?: string[];
   propertyId: string;
   startDate: string;
@@ -10,6 +11,7 @@ export interface CreateShiftDto {
 
 export interface ShiftResponse {
   id?: string;
+  name: string;
   staffMemberIds: string[];
   propertyId: string;
   startDate: string;
