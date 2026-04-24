@@ -35,4 +35,7 @@ export const environment = {
   shifts: {
     endpoint: '/shifts',
   },
+  suppliers: {
+    endpoint: '/suppliers',
+  },
 };

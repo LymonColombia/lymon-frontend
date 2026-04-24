@@ -362,20 +362,26 @@ export class InventoryComponent implements OnInit {
   }
 
   confirmDeleteProvider(): void {
-    // Funcionalidad se implementará luego
-    this.closeDeleteProviderModal();
-  }
+    const provider = this.providerToDelete();
+    if (!provider) return;
 
-  removeProvider(id: string): void {
-    this.providers.update((items) => items.filter((item) => item.id !== id));
-
-    if (this.selectedProviderId() === id) {
-      this.selectedProviderId.set(null);
-    }
-
-    if (this.editingProviderId() === id) {
-      this.closeProviderModal();
-    }
+    this.supplierRepository.deleteSupplier(provider.id).subscribe({
+      next: () => {
+        this.providers.update((items) => items.filter((item) => item.id !== provider.id));
+        this.closeDeleteProviderModal();
+        
+        if (this.selectedProviderId() === provider.id) {
+          this.selectedProviderId.set(null);
+        }
+        if (this.editingProviderId() === provider.id) {
+          this.closeProviderModal();
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting supplier', err);
+        this.closeDeleteProviderModal();
+      }
+    });
   }
 
   openEditProviderModal(provider: ProviderRow): void {
