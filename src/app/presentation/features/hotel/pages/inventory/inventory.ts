@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -76,7 +76,7 @@ interface ProviderRow {
   styleUrl: './inventory.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InventoryComponent {
+export class InventoryComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly supplierRepository = inject(SupplierRepository);
 
@@ -116,35 +116,7 @@ export class InventoryComponent {
     { value: 'Barranquilla', label: 'Barranquilla' },
   ];
 
-  readonly providers = signal<ProviderRow[]>([
-    {
-      id: 'prov-1',
-      name: 'Distribuidora Clean Pro',
-      nit: 'NIT-123-456-789',
-      city: 'Bogotá',
-      country: 'Colombia',
-      contactEmail: 'ventas@cleanpro.com',
-      contactPhone: '+57 301 555-0101',
-    },
-    {
-      id: 'prov-2',
-      name: 'Alimentos Frescos CA',
-      nit: 'NIT-987-654-321',
-      city: 'Medellín',
-      country: 'Colombia',
-      contactEmail: 'info@alimentosfrescos.com',
-      contactPhone: '+57 301 555-0202',
-    },
-    {
-      id: 'prov-3',
-      name: 'Textiles Premium',
-      nit: 'NIT-555-444-333',
-      city: 'Cali',
-      country: 'Colombia',
-      contactEmail: 'contacto@textilespremium.com',
-      contactPhone: '+57 301 555-0303',
-    },
-  ]);
+  readonly providers = signal<ProviderRow[]>([]);
 
   readonly supplies = signal<SupplyRow[]>([
     {
@@ -274,6 +246,21 @@ export class InventoryComponent {
 
   setActiveTab(tab: 'supplies' | 'providers'): void {
     this.activeTab.set(tab);
+  }
+
+  ngOnInit(): void {
+    this.loadProviders();
+  }
+
+  private loadProviders(): void {
+    this.supplierRepository.getSuppliers().subscribe({
+      next: (suppliers) => {
+        this.providers.set(suppliers);
+      },
+      error: (err) => {
+        console.error('Error loading suppliers', err);
+      }
+    });
   }
 
   updateSearch(value: string | number | null): void {

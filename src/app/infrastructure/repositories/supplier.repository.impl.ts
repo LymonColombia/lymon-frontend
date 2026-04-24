@@ -19,8 +19,8 @@ export class SupplierRepositoryImpl extends SupplierRepository {
   }
 
   updateSupplier(data: UpdateSupplierDto): Observable<Supplier> {
-    const { id, ...updateData } = data;
-    return this.http.put<SupplierDto>(`${BASE_URL}/${id}`, updateData).pipe(
+    const { supplierId, ...updateData } = data;
+    return this.http.put<SupplierDto>(`${BASE_URL}/${supplierId}`, updateData).pipe(
       map((dto) => this.mapDtoToSupplier(dto)),
     );
   }
@@ -43,7 +43,7 @@ export class SupplierRepositoryImpl extends SupplierRepository {
 
   private mapDtoToSupplier(dto: SupplierDto): Supplier {
     return {
-      id: dto.id,
+      id: dto.supplierId,
       name: dto.name,
       nit: dto.nit,
       city: dto.city,

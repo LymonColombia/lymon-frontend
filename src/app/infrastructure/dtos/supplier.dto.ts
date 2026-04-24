@@ -1,5 +1,5 @@
 export interface SupplierDto {
-  id: string;
+  supplierId: string;
   name: string;
   nit: string;
   city: string;
@@ -18,5 +18,5 @@ export interface CreateSupplierDto {
 }
 
 export interface UpdateSupplierDto extends CreateSupplierDto {
-  id: string;
+  supplierId: string;
 }
