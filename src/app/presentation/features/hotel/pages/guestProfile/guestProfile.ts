@@ -17,9 +17,11 @@ import {
   CrmGuestNote,
   CrmGuestNoteCategory,
   CreateCrmGuestNoteRequest,
+  UpdateCrmGuestNoteRequest,
   SendCrmGuestMessageRequest,
 } from '@/domain/entities/crm-guest.model';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
+import { UpdateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/update-crm-guest-note.use-case';
 import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
@@ -34,6 +36,7 @@ import {
   SelectComponent,
   SelectOption,
 } from '@/presentation/shared/components/select/select.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { catchError, forkJoin, map, of } from 'rxjs';
@@ -57,6 +60,7 @@ import {
   bootstrapPaperclip,
   bootstrapFileEarmark,
   bootstrapX,
+  bootstrapPencil,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -80,7 +84,7 @@ const EMAIL_HISTORY_LIMIT = 5;
 @Component({
   selector: 'app-guest-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HotelPageLayoutComponent, HotelPageIconDirective, ButtonComponent, SelectComponent, NgIcon],
+  imports: [HotelPageLayoutComponent, HotelPageIconDirective, ButtonComponent, SelectComponent, NgIcon, ModalComponent],
   providers: [
     provideIcons({
       bootstrapPersonFill,
@@ -102,6 +106,7 @@ const EMAIL_HISTORY_LIMIT = 5;
       bootstrapPaperclip,
       bootstrapFileEarmark,
       bootstrapX,
+      bootstrapPencil,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -114,6 +119,7 @@ export class GuestProfileComponent implements OnInit {
   private readonly getCrmGuestBookingsUseCase = inject(GetCrmGuestBookingsUseCase);
   private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
   private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
+  private readonly updateCrmGuestNoteUseCase = inject(UpdateCrmGuestNoteUseCase);
   private readonly sendCrmGuestMessageUseCase = inject(SendCrmGuestMessageUseCase);
   private readonly getCrmGuestEmailsUseCase = inject(GetCrmGuestEmailsUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
@@ -149,6 +155,14 @@ export class GuestProfileComponent implements OnInit {
   readonly noteCategory = signal<CrmGuestNoteCategory>('general');
   readonly noteContent = signal('');
   readonly noteErrorMessage = signal<string | null>(null);
+
+  readonly isEditNoteModalOpen = signal(false);
+  readonly editingNote = signal<CrmGuestNote | null>(null);
+  readonly editNoteContent = signal('');
+  readonly editNoteCategory = signal<CrmGuestNoteCategory>('general');
+  readonly isUpdatingNote = signal(false);
+  readonly editNoteErrorMessage = signal<string | null>(null);
+  readonly editNoteCharCount = computed(() => this.editNoteContent().length);
 
   readonly noteFilterTabs: Array<{ value: CrmGuestNoteCategory | 'all'; label: string }> = [
     { value: 'all', label: 'Todas' },
@@ -440,6 +454,72 @@ export class GuestProfileComponent implements OnInit {
         return { ...note, status: note.status === 'pinned' ? 'not_pinned' : 'pinned' };
       }),
     );
+  }
+
+  openEditNoteModal(note: CrmGuestNote): void {
+    this.editingNote.set(note);
+    this.editNoteContent.set(note.note);
+    this.editNoteCategory.set(note.type);
+    this.editNoteErrorMessage.set(null);
+    this.isEditNoteModalOpen.set(true);
+  }
+
+  cancelEditNote(): void {
+    this.isEditNoteModalOpen.set(false);
+    this.editingNote.set(null);
+    this.editNoteContent.set('');
+    this.editNoteErrorMessage.set(null);
+  }
+
+  onEditNoteContentChange(value: string): void {
+    this.editNoteContent.set(value.slice(0, NOTE_MAX_LENGTH));
+  }
+
+  setEditNoteCategory(value: string | number | null): void {
+    if (
+      value !== 'general' &&
+      value !== 'preference' &&
+      value !== 'behavior' &&
+      value !== 'incident'
+    ) {
+      return;
+    }
+    this.editNoteCategory.set(value);
+  }
+
+  saveEditedNote(): void {
+    const guestId = this.guest()?.id?.trim();
+    const note = this.editingNote();
+    const content = this.editNoteContent().trim();
+
+    if (!guestId || !note) return;
+
+    if (!content) {
+      this.editNoteErrorMessage.set('Escribe una nota antes de guardarla.');
+      return;
+    }
+
+    if (content.length > NOTE_MAX_LENGTH) {
+      this.editNoteErrorMessage.set('La nota no puede superar los 280 caracteres.');
+      return;
+    }
+
+    const payload: UpdateCrmGuestNoteRequest = { note: content, type: this.editNoteCategory() };
+
+    this.isUpdatingNote.set(true);
+    this.editNoteErrorMessage.set(null);
+
+    this.updateCrmGuestNoteUseCase.execute(guestId, note.id, payload).subscribe({
+      next: () => {
+        this.isUpdatingNote.set(false);
+        this.cancelEditNote();
+        this.loadNotes(guestId, true);
+      },
+      error: () => {
+        this.isUpdatingNote.set(false);
+        this.editNoteErrorMessage.set('No se pudo actualizar la nota. Inténtalo de nuevo.');
+      },
+    });
   }
 
   getBookingStatusLabel(status: CrmGuestBooking['status']): string {

@@ -366,6 +366,14 @@
               <div class="guest-note-history-side">
                 <button
                   type="button"
+                  class="guest-note-edit-badge"
+                  aria-label="Editar nota"
+                  (click)="openEditNoteModal(note)"
+                >
+                  <ng-icon name="bootstrapPencil" size="15px"></ng-icon>
+                </button>
+                <button
+                  type="button"
                   class="guest-note-pin-badge guest-note-pin-badge-active"
                   aria-label="Desfijar nota"
                   (click)="toggleNotePin(getNoteIdentifier(note))"
@@ -497,6 +505,14 @@
               <div class="guest-note-history-side">
                 <button
                   type="button"
+                  class="guest-note-edit-badge"
+                  aria-label="Editar nota"
+                  (click)="openEditNoteModal(note)"
+                >
+                  <ng-icon name="bootstrapPencil" size="15px"></ng-icon>
+                </button>
+                <button
+                  type="button"
                   class="guest-note-pin-badge"
                   [class.guest-note-pin-badge-active]="note.status === 'pinned'"
                   [attr.aria-label]="note.status === 'pinned' ? 'Desfijar nota' : 'Fijar nota'"
@@ -510,6 +526,50 @@
         </div>
       }
     </section>
+
+    <!-- Edit note modal -->
+    <app-modal
+      [open]="isEditNoteModalOpen()"
+      title="Editar nota"
+      size="medium"
+      (closed)="cancelEditNote()"
+    >
+      <div class="guest-note-edit-modal-body">
+        <app-select
+          [options]="guestNoteSelectOptions"
+          [value]="editNoteCategory()"
+          (valueChange)="setEditNoteCategory($event)"
+        ></app-select>
+        <div class="guest-note-edit-textarea-wrapper">
+          <textarea
+            class="guest-note-edit-textarea"
+            rows="5"
+            maxlength="280"
+            placeholder="Escribe la nota aquí..."
+            [value]="editNoteContent()"
+            (input)="onEditNoteContentChange($any($event.target).value)"
+          ></textarea>
+          <span class="guest-note-edit-char-count">{{ editNoteCharCount() }}/280</span>
+        </div>
+        @if (editNoteErrorMessage()) {
+          <p class="guest-note-edit-error">{{ editNoteErrorMessage() }}</p>
+        }
+      </div>
+      <div modal-footer class="guest-note-edit-modal-footer">
+        <app-button variant="secondary" size="medium" (clicked)="cancelEditNote()">
+          Cancelar
+        </app-button>
+        <app-button
+          variant="primary"
+          size="medium"
+          [loading]="isUpdatingNote()"
+          [disabled]="isUpdatingNote()"
+          (clicked)="saveEditedNote()"
+        >
+          Guardar
+        </app-button>
+      </div>
+    </app-modal>
 
     <!-- Booking history with source badges -->
     <section class="profile-section">
