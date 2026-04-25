@@ -499,6 +499,104 @@
   outline-offset: 2px;
 }
 
+.guest-note-delete-badge {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: none;
+  background: #f2f4f7;
+  color: #98a2b3;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.guest-note-delete-badge:hover {
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-primary));
+  color: var(--color-danger);
+}
+
+.guest-note-delete-badge:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-danger) 40%, transparent);
+  outline-offset: 2px;
+}
+
+.guest-note-delete-modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.guest-note-delete-modal-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-primary));
+  color: var(--color-danger);
+  flex-shrink: 0;
+}
+
+.guest-note-delete-modal-heading {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+}
+
+.guest-note-delete-modal-preview {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 320px;
+  word-break: break-word;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  font-style: italic;
+}
+
+.guest-note-delete-modal-warning {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-size: 13px;
+}
+
+.guest-note-delete-modal-error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-danger);
+}
+
+.guest-note-delete-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-danger-override .btn-inner {
+  color: var(--color-danger) !important;
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent) !important;
+}
+
+.btn-danger-override .btn-inner:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-primary)) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-danger) !important;
+}
+
 .guest-note-edit-modal-body {
   display: flex;
   flex-direction: column;

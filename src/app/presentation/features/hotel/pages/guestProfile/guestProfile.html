@@ -374,9 +374,17 @@
                 </button>
                 <button
                   type="button"
+                  class="guest-note-delete-badge"
+                  aria-label="Eliminar nota"
+                  (click)="openDeleteNoteModal(note)"
+                >
+                  <ng-icon name="bootstrapTrash" size="15px"></ng-icon>
+                </button>
+                <button
+                  type="button"
                   class="guest-note-pin-badge guest-note-pin-badge-active"
                   aria-label="Desfijar nota"
-                  (click)="toggleNotePin(getNoteIdentifier(note))"
+                  (click)="toggleNotePin(note)"
                 >
                   <ng-icon name="bootstrapPinAngleFill" size="15px"></ng-icon>
                 </button>
@@ -513,10 +521,18 @@
                 </button>
                 <button
                   type="button"
+                  class="guest-note-delete-badge"
+                  aria-label="Eliminar nota"
+                  (click)="openDeleteNoteModal(note)"
+                >
+                  <ng-icon name="bootstrapTrash" size="15px"></ng-icon>
+                </button>
+                <button
+                  type="button"
                   class="guest-note-pin-badge"
                   [class.guest-note-pin-badge-active]="note.status === 'pinned'"
                   [attr.aria-label]="note.status === 'pinned' ? 'Desfijar nota' : 'Fijar nota'"
-                  (click)="toggleNotePin(getNoteIdentifier(note))"
+                  (click)="toggleNotePin(note)"
                 >
                   <ng-icon name="bootstrapPinAngleFill" size="15px"></ng-icon>
                 </button>
@@ -567,6 +583,48 @@
           (clicked)="saveEditedNote()"
         >
           Guardar
+        </app-button>
+      </div>
+    </app-modal>
+
+    <!-- Delete note modal -->
+    <app-modal
+      [open]="isDeleteNoteModalOpen()"
+      title="Eliminar nota"
+      size="small"
+      (closed)="cancelDeleteNote()"
+    >
+      <div class="guest-note-delete-modal-body">
+        <div class="guest-note-delete-modal-icon-wrapper" aria-hidden="true">
+          <ng-icon name="bootstrapTrash" size="28px"></ng-icon>
+        </div>
+        <p class="guest-note-delete-modal-heading">¿Eliminar nota?</p>
+        @if (deletingNote(); as note) {
+          <p class="guest-note-delete-modal-preview">{{ truncateNotePreview(note.note) }}</p>
+        }
+        <p class="guest-note-delete-modal-warning">Esta acción no se puede deshacer.</p>
+        @if (deleteNoteErrorMessage()) {
+          <p class="guest-note-delete-modal-error">{{ deleteNoteErrorMessage() }}</p>
+        }
+      </div>
+      <div modal-footer class="guest-note-delete-modal-footer">
+        <app-button
+          variant="secondary"
+          size="medium"
+          [disabled]="isDeletingNote()"
+          (clicked)="cancelDeleteNote()"
+        >
+          Cancelar
+        </app-button>
+        <app-button
+          variant="secondary"
+          size="medium"
+          class="btn-danger-override"
+          [loading]="isDeletingNote()"
+          [disabled]="isDeletingNote()"
+          (clicked)="confirmDeleteNote()"
+        >
+          Eliminar
         </app-button>
       </div>
     </app-modal>

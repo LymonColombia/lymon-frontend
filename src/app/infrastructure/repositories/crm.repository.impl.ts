@@ -53,6 +53,19 @@ export class CrmRepositoryImpl extends CrmRepository {
     );
   }
 
+  deleteGuestNote(guestId: string, noteId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/notes/${noteId}`,
+    );
+  }
+
+  pinGuestNote(guestId: string, noteId: string): Observable<void> {
+    return this.http.patch<void>(
+      `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/notes/${noteId}/pin`,
+      {},
+    );
+  }
+
   getGuestEmails(guestId: string): Observable<GetCrmGuestEmailsResponse> {
     return this.http
       .get<{ data: PaginatedResponseDto<CrmGuestEmailDto> }>(`${BASE_URL}/guests/${guestId}/emails`)

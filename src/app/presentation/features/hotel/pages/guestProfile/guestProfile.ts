@@ -22,6 +22,8 @@ import {
 } from '@/domain/entities/crm-guest.model';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
 import { UpdateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/update-crm-guest-note.use-case';
+import { DeleteCrmGuestNoteUseCase } from '@/domain/use-cases/crm/delete-crm-guest-note.use-case';
+import { PinCrmGuestNoteUseCase } from '@/domain/use-cases/crm/pin-crm-guest-note.use-case';
 import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
@@ -120,6 +122,8 @@ export class GuestProfileComponent implements OnInit {
   private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
   private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
   private readonly updateCrmGuestNoteUseCase = inject(UpdateCrmGuestNoteUseCase);
+  private readonly deleteCrmGuestNoteUseCase = inject(DeleteCrmGuestNoteUseCase);
+  private readonly pinCrmGuestNoteUseCase = inject(PinCrmGuestNoteUseCase);
   private readonly sendCrmGuestMessageUseCase = inject(SendCrmGuestMessageUseCase);
   private readonly getCrmGuestEmailsUseCase = inject(GetCrmGuestEmailsUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
@@ -163,6 +167,11 @@ export class GuestProfileComponent implements OnInit {
   readonly isUpdatingNote = signal(false);
   readonly editNoteErrorMessage = signal<string | null>(null);
   readonly editNoteCharCount = computed(() => this.editNoteContent().length);
+
+  readonly isDeleteNoteModalOpen = signal(false);
+  readonly deletingNote = signal<CrmGuestNote | null>(null);
+  readonly isDeletingNote = signal(false);
+  readonly deleteNoteErrorMessage = signal<string | null>(null);
 
   readonly noteFilterTabs: Array<{ value: CrmGuestNoteCategory | 'all'; label: string }> = [
     { value: 'all', label: 'Todas' },
@@ -520,6 +529,43 @@ export class GuestProfileComponent implements OnInit {
         this.editNoteErrorMessage.set('No se pudo actualizar la nota. Inténtalo de nuevo.');
       },
     });
+  }
+
+  openDeleteNoteModal(note: CrmGuestNote): void {
+    this.deletingNote.set(note);
+    this.deleteNoteErrorMessage.set(null);
+    this.isDeleteNoteModalOpen.set(true);
+  }
+
+  cancelDeleteNote(): void {
+    this.isDeleteNoteModalOpen.set(false);
+    this.deletingNote.set(null);
+    this.deleteNoteErrorMessage.set(null);
+  }
+
+  confirmDeleteNote(): void {
+    const guestId = this.guest()?.id?.trim();
+    const note = this.deletingNote();
+    if (!guestId || !note) return;
+
+    this.isDeletingNote.set(true);
+    this.deleteNoteErrorMessage.set(null);
+
+    this.deleteCrmGuestNoteUseCase.execute(guestId, note.id).subscribe({
+      next: () => {
+        this.isDeletingNote.set(false);
+        this.cancelDeleteNote();
+        this.loadNotes(guestId, true);
+      },
+      error: () => {
+        this.isDeletingNote.set(false);
+        this.deleteNoteErrorMessage.set('No se pudo eliminar la nota. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  truncateNotePreview(text: string): string {
+    return text.length > 60 ? `${text.slice(0, 60)}…` : text;
   }
 
   getBookingStatusLabel(status: CrmGuestBooking['status']): string {
