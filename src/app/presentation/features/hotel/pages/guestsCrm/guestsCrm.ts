@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { CrmGuest, CrmGuestBooking } from '@/domain/entities/crm-guest.model';
+import { CrmGuest, CrmGuestBooking, CrmGuestSortBy, CrmGuestSortDirection } from '@/domain/entities/crm-guest.model';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
@@ -27,6 +27,8 @@ import {
   bootstrapTelephone,
   bootstrapChevronLeft,
   bootstrapChevronRight,
+  bootstrapArrowUp,
+  bootstrapArrowDown,
 } from '@ng-icons/bootstrap-icons';
 
 type SearchField = 'name' | 'email' | 'phone';
@@ -50,6 +52,8 @@ interface FilterOption {
       bootstrapTelephone,
       bootstrapChevronLeft,
       bootstrapChevronRight,
+      bootstrapArrowUp,
+      bootstrapArrowDown,
     }),
   ],
   templateUrl: './guestsCrm.html',
@@ -67,6 +71,15 @@ export class GuestsCrmComponent implements OnInit {
   readonly searchTerm = signal('');
   readonly currentPage = signal(1);
   readonly pageSize = 5;
+  readonly sortBy = signal<CrmGuestSortBy>('createdAt');
+  readonly sortDirection = signal<CrmGuestSortDirection>('desc');
+
+  readonly sortColumns: CrmGuestSortBy[] = ['createdAt', 'fullName', 'status'];
+  readonly sortLabels: Record<CrmGuestSortBy, string> = {
+    createdAt: 'Fecha registro',
+    fullName: 'Nombre',
+    status: 'Estado',
+  };
 
   readonly filterOptions: FilterOption[] = [
     { key: 'name', label: 'Nombre', icon: 'user' },
@@ -173,6 +186,20 @@ export class GuestsCrmComponent implements OnInit {
     this.goToPage(this.currentPage() + 1);
   }
 
+  setSort(column: CrmGuestSortBy): void {
+    if (this.sortBy() === column) return;
+    this.sortBy.set(column);
+    this.sortDirection.set('desc');
+    this.currentPage.set(1);
+    this.loadGuests();
+  }
+
+  toggleSortDirection(): void {
+    this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    this.currentPage.set(1);
+    this.loadGuests();
+  }
+
   navigateToFullProfile(guest: CrmGuest): void {
     const guestId = this.getGuestRouteId(guest);
     if (!guestId) return;
@@ -207,7 +234,7 @@ export class GuestsCrmComponent implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.getCrmGuestsUseCase.execute().subscribe({
+    this.getCrmGuestsUseCase.execute({ sortBy: this.sortBy(), sortDirection: this.sortDirection() }).subscribe({
       next: (guests) => {
         this.guests.set(guests);
         this.loadLatestReservationDates(guests);

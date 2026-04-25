@@ -40,6 +40,34 @@
     ></app-input>
   </section>
 
+  <section class="sort-section">
+    <span class="sort-label">Ordenar por</span>
+    <div class="sort-chips">
+      @for (col of sortColumns; track col) {
+        <button
+          class="sort-chip"
+          [class.sort-chip--active]="sortBy() === col"
+          (click)="setSort(col)"
+          type="button"
+        >
+          {{ sortLabels[col] }}
+        </button>
+      }
+    </div>
+    <button
+      class="sort-direction-btn"
+      (click)="toggleSortDirection()"
+      type="button"
+      [attr.aria-label]="sortDirection() === 'asc' ? 'Orden ascendente' : 'Orden descendente'"
+    >
+      <ng-icon
+        [name]="sortDirection() === 'asc' ? 'bootstrapArrowUp' : 'bootstrapArrowDown'"
+        size="14px"
+      ></ng-icon>
+      {{ sortDirection() === 'asc' ? 'Ascendente' : 'Descendente' }}
+    </button>
+  </section>
+
   @if (errorMessage()) {
     <div class="alert alert-error">{{ errorMessage() }}</div>
   }
