@@ -32,6 +32,7 @@ import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-e
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
+import { NgTemplateOutlet } from '@angular/common';
 import { HotelPageLayoutComponent, HotelPageIconDirective } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import {
@@ -86,7 +87,7 @@ const EMAIL_HISTORY_LIMIT = 5;
 @Component({
   selector: 'app-guest-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HotelPageLayoutComponent, HotelPageIconDirective, ButtonComponent, SelectComponent, NgIcon, ModalComponent],
+  imports: [HotelPageLayoutComponent, HotelPageIconDirective, ButtonComponent, SelectComponent, NgIcon, ModalComponent, NgTemplateOutlet],
   providers: [
     provideIcons({
       bootstrapPersonFill,
