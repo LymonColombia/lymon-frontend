@@ -10,7 +10,7 @@
 .guest-initials-avatar {
   font-size: 20px;
   font-weight: var(--font-weight-bold);
-  color: #ffffff;
+  color: var(--color-bg-primary);
   line-height: 1;
   letter-spacing: 0.5px;
 }
@@ -263,8 +263,12 @@
   gap: 20px;
   padding: 24px;
   border-radius: var(--radius-lg);
-  border: 1px solid #9ad9b0;
-  background: linear-gradient(180deg, #f6fcf8 0%, #eef8f2 100%);
+  border: 1px solid color-mix(in srgb, var(--color-success) 60%, var(--color-bg-primary));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-success) 8%, var(--color-bg-primary)) 0%,
+    color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary)) 100%
+  );
 }
 
 .guest-note-header {
@@ -321,8 +325,8 @@
 }
 
 .guest-note-textarea:focus {
-  border-color: #9ad9b0;
-  box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.12);
+  border-color: color-mix(in srgb, var(--color-success) 60%, var(--color-bg-primary));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-dark) 12%, transparent);
 }
 
 .guest-note-counter {
@@ -353,14 +357,18 @@
   justify-content: space-between;
   gap: 18px;
   padding: 18px 20px;
-  border: 1px solid #d7e3db;
+  border: 1px solid color-mix(in srgb, var(--color-success) 25%, var(--color-bg-primary));
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--color-bg-primary);
 }
 
 .guest-note-history-card-pinned {
-  border-color: #9ad9b0;
-  background: linear-gradient(180deg, #f7fdf9 0%, #f3fbf6 100%);
+  border-color: color-mix(in srgb, var(--color-success) 60%, var(--color-bg-primary));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-success) 10%, var(--color-bg-primary)) 0%,
+    color-mix(in srgb, var(--color-success) 18%, var(--color-bg-primary)) 100%
+  );
 }
 
 .guest-note-history-main {
@@ -465,7 +473,7 @@
 
 .guest-note-pin-badge-active {
   background: var(--color-primary-dark);
-  color: #ffffff;
+  color: var(--color-bg-primary);
 }
 
 .guest-note-pin-badge:focus-visible {
@@ -745,7 +753,7 @@
 }
 
 .booking-status-success {
-  background: #e8f7ef;
+  background: color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary));
   color: var(--color-primary-dark);
 }
 
@@ -795,7 +803,7 @@
 }
 
 .booking-source-badge--direct {
-  background: #e8f7ef;
+  background: color-mix(in srgb, var(--color-success) 16%, var(--color-bg-primary));
   color: var(--color-primary-dark);
   border: 1px solid color-mix(in srgb, var(--color-success) 40%, var(--color-bg-primary));
 }
@@ -1131,7 +1139,7 @@
 }
 
 .email-timeline-expand-btn:focus-visible {
-  outline: 2px solid rgba(0, 154, 68, 0.28);
+  outline: 2px solid color-mix(in srgb, var(--color-primary-dark) 28%, transparent);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
