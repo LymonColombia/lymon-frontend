@@ -6,6 +6,7 @@ import {
   GetCrmGuestBookingsResponse,
   GetCrmGuestEmailsResponse,
   GetCrmGuestNotesResponse,
+  GetCrmGuestsParams,
   GetCrmGuestsResponse,
   SendCrmGuestMessageRequest,
 } from '@/domain/entities/crm-guest.model';
@@ -20,9 +21,14 @@ const BASE_URL = `${environment.apiUrl}${environment.crm.endpoint}`;
 export class CrmRepositoryImpl extends CrmRepository {
   private readonly http = inject(HttpClient);
 
-  getGuests(): Observable<GetCrmGuestsResponse> {
+  getGuests(params?: GetCrmGuestsParams): Observable<GetCrmGuestsResponse> {
     return this.http
-      .get<{ data: PaginatedResponseDto<CrmGuestDto> }>(`${BASE_URL}${environment.crm.guestsEndpoint}`)
+      .get<{ data: PaginatedResponseDto<CrmGuestDto> }>(`${BASE_URL}${environment.crm.guestsEndpoint}`, {
+        params: {
+          ...(params?.sortBy && { sortBy: params.sortBy }),
+          ...(params?.sortDirection && { sortDirection: params.sortDirection }),
+        },
+      })
       .pipe(map((res) => ({ data: CrmMapper.toGuests(res.data.items) })));
   }
 

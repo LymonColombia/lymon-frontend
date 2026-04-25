@@ -1,4 +1,11 @@
 export type CrmGuestStatus = 'active' | 'inactive';
+export type CrmGuestSortBy = 'createdAt' | 'fullName' | 'status';
+export type CrmGuestSortDirection = 'asc' | 'desc';
+
+export interface GetCrmGuestsParams {
+  sortBy?: CrmGuestSortBy;
+  sortDirection?: CrmGuestSortDirection;
+}
 export type CrmGuestBookingStatus =
   | 'PENDING'
   | 'CONFIRMED'
