@@ -80,9 +80,16 @@ type UnitLookupItem = Unit & {
 };
 
 type BookingStatusTone = 'info' | 'muted' | 'success' | 'warning' | 'danger';
+type SelectValue = string | number | null;
 
 const NOTE_MAX_LENGTH = 280;
 const EMAIL_HISTORY_LIMIT = 5;
+
+const NOTE_CATEGORIES: readonly CrmGuestNoteCategory[] = ['general', 'preference', 'behavior', 'incident'];
+
+function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
+  return typeof value === 'string' && (NOTE_CATEGORIES as readonly string[]).includes(value);
+}
 
 @Component({
   selector: 'app-guest-profile',
@@ -292,15 +299,8 @@ export class GuestProfileComponent implements OnInit {
     this.activeNoteFilter.set(value);
   }
 
-  setNoteCategory(value: string | number | null): void {
-    if (
-      value !== 'general' &&
-      value !== 'preference' &&
-      value !== 'behavior' &&
-      value !== 'incident'
-    ) {
-      return;
-    }
+  setNoteCategory(value: SelectValue): void {
+    if (!isNoteCategory(value)) return;
     this.noteCategory.set(value);
   }
 
@@ -327,7 +327,7 @@ export class GuestProfileComponent implements OnInit {
     this.resetMessageForm();
   }
 
-  setMessageTemplateId(value: string | number | null): void {
+  setMessageTemplateId(value: SelectValue): void {
     if (value !== 'GUEST_WELCOME' && value !== 'guest-message') return;
     this.messageTemplateId.set(value);
   }
@@ -496,15 +496,8 @@ export class GuestProfileComponent implements OnInit {
     this.editNoteContent.set(value.slice(0, NOTE_MAX_LENGTH));
   }
 
-  setEditNoteCategory(value: string | number | null): void {
-    if (
-      value !== 'general' &&
-      value !== 'preference' &&
-      value !== 'behavior' &&
-      value !== 'incident'
-    ) {
-      return;
-    }
+  setEditNoteCategory(value: SelectValue): void {
+    if (!isNoteCategory(value)) return;
     this.editNoteCategory.set(value);
   }
 
