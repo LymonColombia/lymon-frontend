@@ -456,13 +456,24 @@ export class GuestProfileComponent implements OnInit {
     });
   }
 
-  toggleNotePin(noteId: string): void {
+  toggleNotePin(note: CrmGuestNote): void {
+    const guestId = this.guest()?.id?.trim();
+    if (!guestId || !note.id) return;
+
+    const previousStatus = note.status;
+    const newStatus: CrmGuestNote['status'] = previousStatus === 'pinned' ? 'not_pinned' : 'pinned';
+
     this.notes.update((notes) =>
-      notes.map((note) => {
-        if (this.getNoteIdentifier(note) !== noteId) return note;
-        return { ...note, status: note.status === 'pinned' ? 'not_pinned' : 'pinned' };
-      }),
+      notes.map((n) => (n.id === note.id ? { ...n, status: newStatus } : n)),
     );
+
+    this.pinCrmGuestNoteUseCase.execute(guestId, note.id).subscribe({
+      error: () => {
+        this.notes.update((notes) =>
+          notes.map((n) => (n.id === note.id ? { ...n, status: previousStatus } : n)),
+        );
+      },
+    });
   }
 
   openEditNoteModal(note: CrmGuestNote): void {
