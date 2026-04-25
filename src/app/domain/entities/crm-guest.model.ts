@@ -47,6 +47,11 @@ export interface CreateCrmGuestNoteRequest {
   status: CrmGuestNoteStatus;
 }
 
+export interface UpdateCrmGuestNoteRequest {
+  note: string;
+  type: CrmGuestNoteCategory;
+}
+
 export interface CrmGuestNote {
   id: string;
   note: string;
