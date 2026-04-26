@@ -351,6 +351,80 @@ describe('GuestsCrmComponent – validación de entrada en selectores', () => {
   });
 });
 
+// ─── Ordenación ──────────────────────────────────────────────────────────────
+describe('GuestsCrmComponent – ordenación', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+  });
+
+  it('estado inicial usa createdAt desc', async () => {
+    const { component } = await setup();
+    expect(component.sortBy()).toBe('createdAt');
+    expect(component.sortDirection()).toBe('desc');
+  });
+
+  it('setSort con columna nueva cambia sortBy y resetea dirección a desc', async () => {
+    const { component } = await setup();
+    component.setSort('fullName');
+    expect(component.sortBy()).toBe('fullName');
+    expect(component.sortDirection()).toBe('desc');
+  });
+
+  it('setSort con misma columna no hace nada', async () => {
+    const { component } = await setup();
+    mockGetGuests.execute.mockClear();
+    component.setSort('createdAt');
+    expect(mockGetGuests.execute).not.toHaveBeenCalled();
+    expect(component.sortBy()).toBe('createdAt');
+  });
+
+  it('setSort resetea la página actual a 1', async () => {
+    const { component } = await setup();
+    component.goToPage(2);
+    component.setSort('status');
+    expect(component.currentPage()).toBe(1);
+  });
+
+  it('setSort llama al use case con los parámetros de ordenación correctos', async () => {
+    const { component } = await setup();
+    mockGetGuests.execute.mockClear();
+    component.setSort('fullName');
+    expect(mockGetGuests.execute).toHaveBeenCalledWith({ sortBy: 'fullName', sortDirection: 'desc' });
+  });
+
+  it('carga inicial llama al use case con sortBy y sortDirection', async () => {
+    const { component } = await setup();
+    expect(mockGetGuests.execute).toHaveBeenCalledWith({ sortBy: 'createdAt', sortDirection: 'desc' });
+    expect(component.guests().length).toBe(8);
+  });
+
+  it('toggleSortDirection alterna de desc a asc', async () => {
+    const { component } = await setup();
+    expect(component.sortDirection()).toBe('desc');
+    component.toggleSortDirection();
+    expect(component.sortDirection()).toBe('asc');
+    component.toggleSortDirection();
+    expect(component.sortDirection()).toBe('desc');
+  });
+
+  it('toggleSortDirection llama al use case con la nueva dirección', async () => {
+    const { component } = await setup();
+    mockGetGuests.execute.mockClear();
+    component.toggleSortDirection();
+    expect(mockGetGuests.execute).toHaveBeenCalledWith({ sortBy: 'createdAt', sortDirection: 'asc' });
+  });
+
+  it('toggleSortDirection resetea la página actual a 1', async () => {
+    const { component } = await setup();
+    component.goToPage(2);
+    component.toggleSortDirection();
+    expect(component.currentPage()).toBe(1);
+  });
+});
+
 // ─── Placeholder de búsqueda ──────────────────────────────────────────────────
 describe('GuestsCrmComponent – placeholder de búsqueda', () => {
   beforeEach(() => {
