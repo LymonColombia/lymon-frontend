@@ -22,7 +22,7 @@ import { InputComponent } from '@/presentation/shared/components/input/input.com
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
-import { CreateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
+import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -91,6 +91,7 @@ export class InventoryComponent implements OnInit {
   readonly selectedProviderId = signal<string | null>(null);
   readonly isDeleteProviderModalOpen = signal(false);
   readonly providerToDelete = signal<ProviderRow | null>(null);
+  readonly isSavingProvider = signal(false);
 
   readonly categoryOptions: SelectOption[] = [
     { value: 'Textiles', label: 'Textiles' },
@@ -434,42 +435,66 @@ export class InventoryComponent implements OnInit {
         contactPhone: formValue.contactPhone.trim(),
       };
 
+      this.isSavingProvider.set(true);
       this.supplierRepository.createSupplier(payload).subscribe({
-        next: () => {
+        next: (createdSupplier) => {
           const nextProvider: ProviderRow = {
-            id: `prov-${Date.now()}`,
-            name: payload.name,
-            nit: payload.nit,
-            city: payload.city,
-            country: payload.country,
-            contactEmail: payload.contactEmail,
-            contactPhone: payload.contactPhone,
+            id: createdSupplier.id,
+            name: createdSupplier.name,
+            nit: createdSupplier.nit,
+            city: createdSupplier.city,
+            country: createdSupplier.country,
+            contactEmail: createdSupplier.contactEmail,
+            contactPhone: createdSupplier.contactPhone,
           };
           this.providers.update((items) => [nextProvider, ...items]);
+          this.isSavingProvider.set(false);
           this.closeProviderModal();
         },
+        error: (err) => {
+          console.error('Error creating supplier', err);
+          this.isSavingProvider.set(false);
+        }
       });
       return;
     }
 
-    this.providers.update((items) =>
-      items.map((item) => {
-        if (item.id !== providerId) {
-          return item;
-        }
+    const updatePayload: UpdateSupplierDto = {
+      supplierId: providerId,
+      name: formValue.name.trim(),
+      nit: formValue.nit.trim(),
+      city: formValue.city.trim(),
+      country: formValue.country.trim(),
+      contactEmail: formValue.contactEmail.trim(),
+      contactPhone: formValue.contactPhone.trim(),
+    };
 
-        return {
-          ...item,
-          nit: formValue.nit.trim(),
-          city: formValue.city.trim(),
-          country: formValue.country.trim(),
-          contactEmail: formValue.contactEmail.trim(),
-          contactPhone: formValue.contactPhone.trim(),
-        };
-      }),
-    );
+    this.isSavingProvider.set(true);
+    this.supplierRepository.updateSupplier(updatePayload).subscribe({
+      next: (updatedSupplier) => {
+        this.providers.update((items) =>
+          items.map((item) => {
+            if (item.id !== providerId) {
+              return item;
+            }
 
-    this.closeProviderModal();
+            return {
+              ...item,
+              city: formValue.city.trim(),
+              country: formValue.country.trim(),
+              contactEmail: formValue.contactEmail.trim(),
+              contactPhone: formValue.contactPhone.trim(),
+            };
+          }),
+        );
+        this.isSavingProvider.set(false);
+        this.closeProviderModal();
+      },
+      error: (err) => {
+        console.error('Error updating supplier', err);
+        this.isSavingProvider.set(false);
+      }
+    });
   }
 
   openProviderDetails(providerId: string): void {
