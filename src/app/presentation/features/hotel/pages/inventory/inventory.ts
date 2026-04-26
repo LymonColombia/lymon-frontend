@@ -13,6 +13,7 @@ import {
   bootstrapTelephone,
   bootstrapX,
   bootstrapXCircleFill,
+  bootstrapExclamationTriangle,
 } from '@ng-icons/bootstrap-icons';
 
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
@@ -70,6 +71,7 @@ interface ProviderRow {
       bootstrapTelephone,
       bootstrapX,
       bootstrapXCircleFill,
+      bootstrapExclamationTriangle,
     }),
   ],
   templateUrl: './inventory.html',
@@ -87,6 +89,8 @@ export class InventoryComponent implements OnInit {
   readonly editingSupplyId = signal<string | null>(null);
   readonly editingProviderId = signal<string | null>(null);
   readonly selectedProviderId = signal<string | null>(null);
+  readonly isDeleteProviderModalOpen = signal(false);
+  readonly providerToDelete = signal<ProviderRow | null>(null);
 
   readonly categoryOptions: SelectOption[] = [
     { value: 'Textiles', label: 'Textiles' },
@@ -347,16 +351,37 @@ export class InventoryComponent implements OnInit {
     this.supplies.update((items) => items.filter((item) => item.id !== id));
   }
 
-  removeProvider(id: string): void {
-    this.providers.update((items) => items.filter((item) => item.id !== id));
+  openDeleteProviderModal(provider: ProviderRow): void {
+    this.providerToDelete.set(provider);
+    this.isDeleteProviderModalOpen.set(true);
+  }
 
-    if (this.selectedProviderId() === id) {
-      this.selectedProviderId.set(null);
-    }
+  closeDeleteProviderModal(): void {
+    this.isDeleteProviderModalOpen.set(false);
+    this.providerToDelete.set(null);
+  }
 
-    if (this.editingProviderId() === id) {
-      this.closeProviderModal();
-    }
+  confirmDeleteProvider(): void {
+    const provider = this.providerToDelete();
+    if (!provider) return;
+
+    this.supplierRepository.deleteSupplier(provider.id).subscribe({
+      next: () => {
+        this.providers.update((items) => items.filter((item) => item.id !== provider.id));
+        this.closeDeleteProviderModal();
+        
+        if (this.selectedProviderId() === provider.id) {
+          this.selectedProviderId.set(null);
+        }
+        if (this.editingProviderId() === provider.id) {
+          this.closeProviderModal();
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting supplier', err);
+        this.closeDeleteProviderModal();
+      }
+    });
   }
 
   openEditProviderModal(provider: ProviderRow): void {

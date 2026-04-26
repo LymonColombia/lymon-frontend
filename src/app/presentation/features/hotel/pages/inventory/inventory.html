@@ -155,7 +155,7 @@
                   <button
                     type="button"
                     class="icon-action icon-action--danger"
-                    (click)="removeProvider(provider.id)"
+                    (click)="openDeleteProviderModal(provider)"
                     aria-label="Eliminar proveedor"
                     title="Eliminar"
                   >
@@ -342,3 +342,33 @@
     </section>
   </aside>
 }
+
+<app-modal
+  [open]="isDeleteProviderModalOpen()"
+  title="Confirmar Eliminación"
+  size="small"
+  (closed)="closeDeleteProviderModal()"
+>
+  <div class="delete-confirmation">
+    <div class="delete-icon-wrapper">
+      <ng-icon name="bootstrapExclamationTriangle" size="32px"></ng-icon>
+    </div>
+    <div class="delete-content">
+      <h3>¿Estás seguro?</h3>
+      <p>
+        Estás a punto de eliminar al proveedor
+        <strong>{{ providerToDelete()?.name }}</strong>.
+        Esta acción no se puede deshacer.
+      </p>
+    </div>
+  </div>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeDeleteProviderModal()">
+      Cancelar
+    </app-button>
+    <app-button type="button" variant="danger" (clicked)="confirmDeleteProvider()">
+      Eliminar Proveedor
+    </app-button>
+  </div>
+</app-modal>

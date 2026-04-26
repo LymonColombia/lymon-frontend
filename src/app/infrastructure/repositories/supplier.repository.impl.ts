@@ -6,7 +6,7 @@ import { CreateSupplierDto, SupplierDto, UpdateSupplierDto } from '@/infrastruct
 import { Supplier } from '@/domain/entities/supplier.model';
 import { environment } from '@env';
 
-const BASE_URL = `${environment.apiUrl}/suppliers`;
+const BASE_URL = `${environment.apiUrl}${environment.suppliers.endpoint}`;
 
 @Injectable({ providedIn: 'root' })
 export class SupplierRepositoryImpl extends SupplierRepository {
