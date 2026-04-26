@@ -9,6 +9,9 @@ import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
 import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
+import { UpdateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/update-crm-guest-note.use-case';
+import { DeleteCrmGuestNoteUseCase } from '@/domain/use-cases/crm/delete-crm-guest-note.use-case';
+import { PinCrmGuestNoteUseCase } from '@/domain/use-cases/crm/pin-crm-guest-note.use-case';
 import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
@@ -19,6 +22,9 @@ const mockGetCrmGuestBookings = { execute: vi.fn() };
 const mockGetCrmGuestNotes = { execute: vi.fn() };
 const mockGetCrmGuestEmails = { execute: vi.fn() };
 const mockCreateCrmGuestNote = { execute: vi.fn() };
+const mockUpdateCrmGuestNote = { execute: vi.fn() };
+const mockDeleteCrmGuestNote = { execute: vi.fn() };
+const mockPinCrmGuestNote = { execute: vi.fn() };
 const mockSendCrmGuestMessage = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
 const mockGetUnits = { execute: vi.fn() };
@@ -62,6 +68,8 @@ function setupDefaultMocks(): void {
   mockGetCrmGuestBookings.execute.mockReturnValue(of([]));
   mockGetCrmGuestNotes.execute.mockReturnValue(of([]));
   mockGetCrmGuestEmails.execute.mockReturnValue(of([]));
+  mockDeleteCrmGuestNote.execute.mockReturnValue(of({}));
+  mockPinCrmGuestNote.execute.mockReturnValue(of({}));
   mockGetProperties.execute.mockReturnValue(of([]));
   mockGetUnits.execute.mockReturnValue(of([]));
 }
@@ -84,6 +92,9 @@ async function setup(guestId: string | null = 'guest-1') {
       { provide: GetCrmGuestNotesUseCase, useValue: mockGetCrmGuestNotes },
       { provide: GetCrmGuestEmailsUseCase, useValue: mockGetCrmGuestEmails },
       { provide: CreateCrmGuestNoteUseCase, useValue: mockCreateCrmGuestNote },
+      { provide: UpdateCrmGuestNoteUseCase, useValue: mockUpdateCrmGuestNote },
+      { provide: DeleteCrmGuestNoteUseCase, useValue: mockDeleteCrmGuestNote },
+      { provide: PinCrmGuestNoteUseCase, useValue: mockPinCrmGuestNote },
       { provide: SendCrmGuestMessageUseCase, useValue: mockSendCrmGuestMessage },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
       { provide: GetUnitsUseCase, useValue: mockGetUnits },
@@ -391,15 +402,37 @@ describe('GuestProfileComponent – pin de notas', () => {
 
   it('toggleNotePin cambia el estado de la nota a pinned', async () => {
     const { component } = await setup();
-    component.toggleNotePin('note-1');
+    component.toggleNotePin(MOCK_NOTE);
     expect(component.notes()[0].status).toBe('pinned');
   });
 
   it('toggleNotePin vuelve a not_pinned si ya estaba fijada', async () => {
     const { component } = await setup();
-    component.toggleNotePin('note-1');
-    component.toggleNotePin('note-1');
+    component.toggleNotePin(MOCK_NOTE);
+    const pinnedNote = component.notes()[0];
+    component.toggleNotePin(pinnedNote);
     expect(component.notes()[0].status).toBe('not_pinned');
+  });
+
+  it('toggleNotePin llama al use case con los argumentos correctos', async () => {
+    const { component } = await setup();
+    component.toggleNotePin(MOCK_NOTE);
+    expect(mockPinCrmGuestNote.execute).toHaveBeenCalledWith('guest-1', 'note-1');
+  });
+
+  it('toggleNotePin revierte el estado si la API falla', async () => {
+    mockPinCrmGuestNote.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+    const { component } = await setup();
+    component.toggleNotePin(MOCK_NOTE);
+    expect(component.notes()[0].status).toBe('not_pinned');
+  });
+
+  it('toggleNotePin no llama a la API si la nota no tiene id', async () => {
+    const { component } = await setup();
+    component.toggleNotePin({ ...MOCK_NOTE, id: '' });
+    expect(mockPinCrmGuestNote.execute).not.toHaveBeenCalled();
   });
 });
 
@@ -575,5 +608,288 @@ describe('GuestProfileComponent – formulario de mensaje – error al enviar', 
     component.onMessageBodyChange('Cuerpo');
     component.sendMessage();
     expect(component.isMessageFormVisible()).toBe(true);
+  });
+});
+
+// ─── Modal de edición de nota – apertura y cierre ────────────────────────────
+describe('GuestProfileComponent – modal de edición de nota – apertura y cierre', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
+  });
+
+  it('openEditNoteModal abre el modal', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    expect(component.isEditNoteModalOpen()).toBe(true);
+  });
+
+  it('openEditNoteModal pre-rellena el contenido de la nota', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    expect(component.editNoteContent()).toBe(MOCK_NOTE.note);
+  });
+
+  it('openEditNoteModal pre-rellena la categoría de la nota', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    expect(component.editNoteCategory()).toBe(MOCK_NOTE.type);
+  });
+
+  it('openEditNoteModal limpia el error previo', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.onEditNoteContentChange('');
+    component.saveEditedNote();
+    component.openEditNoteModal(MOCK_NOTE);
+    expect(component.editNoteErrorMessage()).toBeNull();
+  });
+
+  it('cancelEditNote cierra el modal', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.cancelEditNote();
+    expect(component.isEditNoteModalOpen()).toBe(false);
+  });
+
+  it('cancelEditNote limpia el contenido y la nota en edición', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.cancelEditNote();
+    expect(component.editNoteContent()).toBe('');
+    expect(component.editingNote()).toBeNull();
+  });
+});
+
+// ─── Modal de edición de nota – validaciones ─────────────────────────────────
+describe('GuestProfileComponent – modal de edición de nota – validaciones', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
+  });
+
+  it('saveEditedNote no llama al use case si el contenido está vacío', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.onEditNoteContentChange('');
+    component.saveEditedNote();
+    expect(mockUpdateCrmGuestNote.execute).not.toHaveBeenCalled();
+    expect(component.editNoteErrorMessage()).toBe('Escribe una nota antes de guardarla.');
+  });
+
+  it('onEditNoteContentChange trunca el texto a 280 caracteres', async () => {
+    const { component } = await setup();
+    component.onEditNoteContentChange('a'.repeat(300));
+    expect(component.editNoteContent().length).toBe(280);
+  });
+
+  it('editNoteCharCount refleja la longitud actual del contenido', async () => {
+    const { component } = await setup();
+    component.onEditNoteContentChange('Hola');
+    expect(component.editNoteCharCount()).toBe(4);
+  });
+
+  it('setEditNoteCategory ignora valores inválidos', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.setEditNoteCategory('invalido');
+    expect(component.editNoteCategory()).toBe(MOCK_NOTE.type);
+  });
+
+  it('setEditNoteCategory acepta valores válidos', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.setEditNoteCategory('incident');
+    expect(component.editNoteCategory()).toBe('incident');
+  });
+});
+
+// ─── Modal de edición de nota – guardado exitoso ──────────────────────────────
+describe('GuestProfileComponent – modal de edición de nota – guardado exitoso', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
+    mockUpdateCrmGuestNote.execute.mockReturnValue(of({}));
+  });
+
+  it('saveEditedNote llama al use case con el payload correcto', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.onEditNoteContentChange('Nota editada');
+    component.setEditNoteCategory('behavior');
+    component.saveEditedNote();
+    expect(mockUpdateCrmGuestNote.execute).toHaveBeenCalledWith('guest-1', 'note-1', {
+      note: 'Nota editada',
+      type: 'behavior',
+    });
+  });
+
+  it('saveEditedNote cierra el modal tras el éxito', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.onEditNoteContentChange('Nota editada');
+    component.saveEditedNote();
+    expect(component.isEditNoteModalOpen()).toBe(false);
+  });
+
+  it('isUpdatingNote vuelve a false tras el éxito', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.onEditNoteContentChange('Nota editada');
+    component.saveEditedNote();
+    expect(component.isUpdatingNote()).toBe(false);
+  });
+});
+
+// ─── Modal de edición de nota – error al guardar ──────────────────────────────
+describe('GuestProfileComponent – modal de edición de nota – error al guardar', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
+    mockUpdateCrmGuestNote.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+  });
+
+  it('muestra mensaje de error si el use case falla', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.onEditNoteContentChange('Nota con error');
+    component.saveEditedNote();
+    expect(component.editNoteErrorMessage()).toBe(
+      'No se pudo actualizar la nota. Inténtalo de nuevo.',
+    );
+  });
+
+  it('isUpdatingNote vuelve a false tras el error', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.onEditNoteContentChange('Nota con error');
+    component.saveEditedNote();
+    expect(component.isUpdatingNote()).toBe(false);
+  });
+
+  it('el modal permanece abierto tras el error', async () => {
+    const { component } = await setup();
+    component.openEditNoteModal(MOCK_NOTE);
+    component.onEditNoteContentChange('Nota con error');
+    component.saveEditedNote();
+    expect(component.isEditNoteModalOpen()).toBe(true);
+  });
+});
+
+// ─── Modal de eliminación de nota – apertura y cierre ────────────────────────
+describe('GuestProfileComponent – modal de eliminación de nota – apertura y cierre', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
+  });
+
+  it('openDeleteNoteModal abre el modal', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    expect(component.isDeleteNoteModalOpen()).toBe(true);
+  });
+
+  it('openDeleteNoteModal establece la nota a eliminar', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    expect(component.deletingNote()).toEqual(MOCK_NOTE);
+  });
+
+  it('openDeleteNoteModal limpia el error previo', async () => {
+    mockDeleteCrmGuestNote.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.confirmDeleteNote();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    expect(component.deleteNoteErrorMessage()).toBeNull();
+  });
+
+  it('cancelDeleteNote cierra el modal', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.cancelDeleteNote();
+    expect(component.isDeleteNoteModalOpen()).toBe(false);
+  });
+
+  it('cancelDeleteNote limpia la nota en eliminación', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.cancelDeleteNote();
+    expect(component.deletingNote()).toBeNull();
+  });
+});
+
+// ─── Modal de eliminación de nota – eliminación exitosa ──────────────────────
+describe('GuestProfileComponent – modal de eliminación de nota – eliminación exitosa', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
+    mockDeleteCrmGuestNote.execute.mockReturnValue(of({}));
+  });
+
+  it('confirmDeleteNote llama al use case con los argumentos correctos', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.confirmDeleteNote();
+    expect(mockDeleteCrmGuestNote.execute).toHaveBeenCalledWith('guest-1', 'note-1');
+  });
+
+  it('confirmDeleteNote cierra el modal tras el éxito', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.confirmDeleteNote();
+    expect(component.isDeleteNoteModalOpen()).toBe(false);
+  });
+
+  it('isDeletingNote vuelve a false tras el éxito', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.confirmDeleteNote();
+    expect(component.isDeletingNote()).toBe(false);
+  });
+
+  it('confirmDeleteNote limpia la nota en eliminación tras el éxito', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.confirmDeleteNote();
+    expect(component.deletingNote()).toBeNull();
+  });
+});
+
+// ─── Modal de eliminación de nota – error al eliminar ────────────────────────
+describe('GuestProfileComponent – modal de eliminación de nota – error al eliminar', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+    mockGetCrmGuestNotes.execute.mockReturnValue(of([MOCK_NOTE]));
+    mockDeleteCrmGuestNote.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+  });
+
+  it('muestra mensaje de error si el use case falla', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.confirmDeleteNote();
+    expect(component.deleteNoteErrorMessage()).toBe(
+      'No se pudo eliminar la nota. Inténtalo de nuevo.',
+    );
+  });
+
+  it('isDeletingNote vuelve a false tras el error', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.confirmDeleteNote();
+    expect(component.isDeletingNote()).toBe(false);
+  });
+
+  it('el modal permanece abierto tras el error', async () => {
+    const { component } = await setup();
+    component.openDeleteNoteModal(MOCK_NOTE);
+    component.confirmDeleteNote();
+    expect(component.isDeleteNoteModalOpen()).toBe(true);
   });
 });

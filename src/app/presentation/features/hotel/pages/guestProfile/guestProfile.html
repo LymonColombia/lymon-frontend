@@ -339,41 +339,7 @@
 
         <div class="guest-notes-list">
           @for (note of pinnedNotes(); track getNoteIdentifier(note)) {
-            <article class="guest-note-history-card guest-note-history-card-pinned">
-              <div class="guest-note-history-main">
-                <span class="guest-note-history-icon" aria-hidden="true">
-                  <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
-                </span>
-                <div class="guest-note-history-content">
-                  <p class="guest-note-history-text">{{ note.note }}</p>
-                  <div class="guest-note-history-meta">
-                    <span>{{ formatDateLabel(note.createdAt) }}</span>
-                    <span aria-hidden="true">•</span>
-                    <span
-                      class="guest-note-category-chip"
-                      [class.guest-note-category-chip-preference]="note.type === 'preference'"
-                      [class.guest-note-category-chip-behavior]="note.type === 'behavior'"
-                      [class.guest-note-category-chip-incident]="note.type === 'incident'"
-                      [class.guest-note-category-chip-general]="note.type === 'general'"
-                    >
-                      {{ getNoteCategoryLabel(note.type) }}
-                    </span>
-                    <span aria-hidden="true">•</span>
-                    <span>{{ note.createdByName || 'Admin' }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="guest-note-history-side">
-                <button
-                  type="button"
-                  class="guest-note-pin-badge guest-note-pin-badge-active"
-                  aria-label="Desfijar nota"
-                  (click)="toggleNotePin(getNoteIdentifier(note))"
-                >
-                  <ng-icon name="bootstrapPinAngleFill" size="15px"></ng-icon>
-                </button>
-              </div>
-            </article>
+            <ng-container [ngTemplateOutlet]="noteCard" [ngTemplateOutletContext]="{ $implicit: note }"></ng-container>
           }
         </div>
       </section>
@@ -470,46 +436,97 @@
       } @else {
         <div class="guest-notes-list">
           @for (note of filteredNotes(); track getNoteIdentifier(note)) {
-            <article class="guest-note-history-card">
-              <div class="guest-note-history-main">
-                <span class="guest-note-history-icon" aria-hidden="true">
-                  <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
-                </span>
-                <div class="guest-note-history-content">
-                  <p class="guest-note-history-text">{{ note.note }}</p>
-                  <div class="guest-note-history-meta">
-                    <span>{{ formatDateLabel(note.createdAt) }}</span>
-                    <span aria-hidden="true">•</span>
-                    <span
-                      class="guest-note-category-chip"
-                      [class.guest-note-category-chip-preference]="note.type === 'preference'"
-                      [class.guest-note-category-chip-behavior]="note.type === 'behavior'"
-                      [class.guest-note-category-chip-incident]="note.type === 'incident'"
-                      [class.guest-note-category-chip-general]="note.type === 'general'"
-                    >
-                      {{ getNoteCategoryLabel(note.type) }}
-                    </span>
-                    <span aria-hidden="true">•</span>
-                    <span>{{ note.createdByName || 'Admin' }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="guest-note-history-side">
-                <button
-                  type="button"
-                  class="guest-note-pin-badge"
-                  [class.guest-note-pin-badge-active]="note.status === 'pinned'"
-                  [attr.aria-label]="note.status === 'pinned' ? 'Desfijar nota' : 'Fijar nota'"
-                  (click)="toggleNotePin(getNoteIdentifier(note))"
-                >
-                  <ng-icon name="bootstrapPinAngleFill" size="15px"></ng-icon>
-                </button>
-              </div>
-            </article>
+            <ng-container [ngTemplateOutlet]="noteCard" [ngTemplateOutletContext]="{ $implicit: note }"></ng-container>
           }
         </div>
       }
     </section>
+
+    <!-- Edit note modal -->
+    <app-modal
+      [open]="isEditNoteModalOpen()"
+      title="Editar nota"
+      size="medium"
+      (closed)="cancelEditNote()"
+    >
+      <div class="guest-note-edit-modal-body">
+        <app-select
+          [options]="guestNoteSelectOptions"
+          [value]="editNoteCategory()"
+          (valueChange)="setEditNoteCategory($event)"
+        ></app-select>
+        <div class="guest-note-edit-textarea-wrapper">
+          <textarea
+            class="guest-note-edit-textarea"
+            rows="5"
+            maxlength="280"
+            placeholder="Escribe la nota aquí..."
+            [value]="editNoteContent()"
+            (input)="onEditNoteContentChange($any($event.target).value)"
+          ></textarea>
+          <span class="guest-note-edit-char-count">{{ editNoteCharCount() }}/280</span>
+        </div>
+        @if (editNoteErrorMessage()) {
+          <p class="guest-note-edit-error">{{ editNoteErrorMessage() }}</p>
+        }
+      </div>
+      <div modal-footer class="guest-note-edit-modal-footer">
+        <app-button variant="secondary" size="medium" (clicked)="cancelEditNote()">
+          Cancelar
+        </app-button>
+        <app-button
+          variant="primary"
+          size="medium"
+          [loading]="isUpdatingNote()"
+          [disabled]="isUpdatingNote()"
+          (clicked)="saveEditedNote()"
+        >
+          Guardar
+        </app-button>
+      </div>
+    </app-modal>
+
+    <!-- Delete note modal -->
+    <app-modal
+      [open]="isDeleteNoteModalOpen()"
+      title="Eliminar nota"
+      size="small"
+      (closed)="cancelDeleteNote()"
+    >
+      <div class="guest-note-delete-modal-body">
+        <div class="guest-note-delete-modal-icon-wrapper" aria-hidden="true">
+          <ng-icon name="bootstrapTrash" size="28px"></ng-icon>
+        </div>
+        <p class="guest-note-delete-modal-heading">¿Eliminar nota?</p>
+        @if (deletingNote(); as note) {
+          <p class="guest-note-delete-modal-preview">{{ truncateNotePreview(note.note) }}</p>
+        }
+        <p class="guest-note-delete-modal-warning">Esta acción no se puede deshacer.</p>
+        @if (deleteNoteErrorMessage()) {
+          <p class="guest-note-delete-modal-error">{{ deleteNoteErrorMessage() }}</p>
+        }
+      </div>
+      <div modal-footer class="guest-note-delete-modal-footer">
+        <app-button
+          variant="secondary"
+          size="medium"
+          [disabled]="isDeletingNote()"
+          (clicked)="cancelDeleteNote()"
+        >
+          Cancelar
+        </app-button>
+        <app-button
+          variant="secondary"
+          size="medium"
+          class="btn-danger-override"
+          [loading]="isDeletingNote()"
+          [disabled]="isDeletingNote()"
+          (clicked)="confirmDeleteNote()"
+        >
+          Eliminar
+        </app-button>
+      </div>
+    </app-modal>
 
     <!-- Booking history with source badges -->
     <section class="profile-section">
@@ -589,3 +606,61 @@
   }
 
 </app-hotel-page-layout>
+
+<ng-template #noteCard let-note>
+  <article
+    class="guest-note-history-card"
+    [class.guest-note-history-card-pinned]="note.status === 'pinned'"
+  >
+    <div class="guest-note-history-main">
+      <span class="guest-note-history-icon" aria-hidden="true">
+        <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
+      </span>
+      <div class="guest-note-history-content">
+        <p class="guest-note-history-text">{{ note.note }}</p>
+        <div class="guest-note-history-meta">
+          <span>{{ formatDateLabel(note.createdAt) }}</span>
+          <span aria-hidden="true">•</span>
+          <span
+            class="guest-note-category-chip"
+            [class.guest-note-category-chip-preference]="note.type === 'preference'"
+            [class.guest-note-category-chip-behavior]="note.type === 'behavior'"
+            [class.guest-note-category-chip-incident]="note.type === 'incident'"
+            [class.guest-note-category-chip-general]="note.type === 'general'"
+          >
+            {{ getNoteCategoryLabel(note.type) }}
+          </span>
+          <span aria-hidden="true">•</span>
+          <span>{{ note.createdByName || 'Admin' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="guest-note-history-side">
+      <button
+        type="button"
+        class="guest-note-edit-badge"
+        aria-label="Editar nota"
+        (click)="openEditNoteModal(note)"
+      >
+        <ng-icon name="bootstrapPencil" size="15px"></ng-icon>
+      </button>
+      <button
+        type="button"
+        class="guest-note-delete-badge"
+        aria-label="Eliminar nota"
+        (click)="openDeleteNoteModal(note)"
+      >
+        <ng-icon name="bootstrapTrash" size="15px"></ng-icon>
+      </button>
+      <button
+        type="button"
+        class="guest-note-pin-badge"
+        [class.guest-note-pin-badge-active]="note.status === 'pinned'"
+        [attr.aria-label]="note.status === 'pinned' ? 'Desfijar nota' : 'Fijar nota'"
+        (click)="toggleNotePin(note)"
+      >
+        <ng-icon name="bootstrapPinAngleFill" size="15px"></ng-icon>
+      </button>
+    </div>
+  </article>
+</ng-template>
