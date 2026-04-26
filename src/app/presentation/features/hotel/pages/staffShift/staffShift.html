@@ -163,6 +163,16 @@
     <div class="modal-body">
 
       <div class="form-section">
+        <span class="form-section-label">Informacion general</span>
+        <div class="form-section-fields">
+          <label class="field-group field-group--full">
+            <span class="field-label">Nombre del turno <span class="field-required">*</span></span>
+            <input type="text" class="field-input" [value]="newShiftName()" (input)="onNewShiftNameInput($event)" placeholder="Ej: Turno Mañana" />
+          </label>
+        </div>
+      </div>
+
+      <div class="form-section">
         <span class="form-section-label">Propiedad</span>
         <div class="form-section-fields">
           <label class="field-group field-group--full">

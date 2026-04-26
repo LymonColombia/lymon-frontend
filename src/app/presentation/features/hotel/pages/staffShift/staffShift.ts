@@ -439,6 +439,7 @@ export class StaffShiftComponent implements OnInit {
   }
 
   createShift(): void {
+    const name = this.newShiftName().trim();
     const staffMemberIds = this.newShiftStaffMemberIds();
     const propertyId = this.newShiftPropertyId().trim();
     const startDate = this.newShiftStartDate().trim();
@@ -446,6 +447,11 @@ export class StaffShiftComponent implements OnInit {
     const startHour = this.newShiftStart().trim();
     const endHour = this.newShiftEnd().trim();
     const notes = this.newShiftNotes().trim();
+
+    if (!name) {
+      this.createShiftError.set('Ingresa un nombre para el turno.');
+      return;
+    }
 
     if (!propertyId) {
       this.createShiftError.set('Selecciona una propiedad.');
@@ -483,6 +489,7 @@ export class StaffShiftComponent implements OnInit {
 
     this.createShiftUseCase
       .execute({
+        name,
         ...(staffMemberIds.length > 0 ? { staffMemberIds } : {}),
         propertyId,
         startDate,
