@@ -400,25 +400,40 @@
   @if (selectedShiftDetail()) {
   <button type="button" class="modal-backdrop" (click)="closeShiftDetail()" aria-label="Cerrar detalle"></button>
 
-  <dialog class="modal-card modal-card--detail" open aria-modal="true" aria-labelledby="shift-detail-title"
+  <dialog class="modal-card" 
+    [class.modal-card--detail]="!isEditingDetail()"
+    [class.modal-card--detail-wide]="isEditingDetail()"
+    open aria-modal="true" aria-labelledby="shift-detail-title"
     (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
 
-    <header class="modal-header modal-header--detail">
+    <header class="modal-header" [class.modal-header--detail]="!isEditingDetail()">
       <div class="modal-header-info">
-        <h2 id="shift-detail-title" class="detail-title">{{ selectedShiftDetail()!.name }}</h2>
+        <h2 id="shift-detail-title" [class.detail-title]="!isEditingDetail()">
+          {{ isEditingDetail() ? 'Editar turno' : selectedShiftDetail()!.name }}
+        </h2>
+        @if (isEditingDetail()) {
+        <p class="modal-subtitle">Modifica los campos necesarios para actualizar el turno</p>
+        }
       </div>
 
+      @if (!isEditingDetail()) {
       <div class="detail-actions">
-        <button type="button" class="icon-btn icon-btn--edit" aria-label="Editar turno">
+        <button type="button" class="icon-btn icon-btn--edit" aria-label="Editar turno" (click)="startEditingDetail()">
           <ng-icon name="bootstrapPencil" size="16"></ng-icon>
         </button>
         <button type="button" class="icon-btn icon-btn--delete" aria-label="Eliminar turno">
           <ng-icon name="bootstrapTrash" size="16"></ng-icon>
         </button>
       </div>
+      } @else {
+      <button type="button" class="modal-close-btn" aria-label="Cerrar edicion" (click)="cancelEditingDetail()">
+        ✕
+      </button>
+      }
     </header>
 
-    <div class="modal-body modal-body--detail">
+    <div class="modal-body" [class.modal-body--detail]="!isEditingDetail()">
+      @if (!isEditingDetail()) {
       <div class="detail-grid">
         <div class="detail-item">
           <span class="detail-label">Propiedad</span>
@@ -437,11 +452,98 @@
           <span class="detail-value">{{ selectedShiftDetail()!.endDate || 'N/A' }}</span>
         </div>
       </div>
+      } @else {
+      <div class="form-section">
+        <span class="form-section-label">Informacion</span>
+        <div class="form-section-fields">
+          <label class="field-group field-group--full">
+            <span class="field-label">Nombre del turno</span>
+            <input type="text" class="field-input" [(ngModel)]="editShiftNameValue" />
+          </label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <span class="form-section-label">Rango</span>
+        <div class="form-section-fields form-section-fields--2col">
+          <label class="field-group">
+            <span class="field-label">Fecha de inicio</span>
+            <input type="date" class="field-input" [(ngModel)]="editStartDateValue"
+              [disabled]="isDateLocked(selectedShiftDetail()!.startDate)" />
+          </label>
+          <label class="field-group">
+            <span class="field-label">Fecha de fin</span>
+            <input type="date" class="field-input" [(ngModel)]="editEndDateValue" />
+          </label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <span class="form-section-label">Horario</span>
+        <div class="form-section-fields form-section-fields--2col">
+          <label class="field-group">
+            <span class="field-label">Hora inicio</span>
+            <input type="time" class="field-input" [(ngModel)]="editStartHourValue" />
+          </label>
+          <label class="field-group">
+            <span class="field-label">Hora fin</span>
+            <input type="time" class="field-input" [(ngModel)]="editEndHourValue" />
+          </label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <span class="form-section-label">Notas</span>
+        <div class="form-section-fields">
+          <label class="field-group field-group--full">
+            <span class="field-label">Observaciones (opcional)</span>
+            <textarea class="field-input field-input--textarea" [(ngModel)]="editNotesValue"
+              placeholder="Ej: Ajuste por cambios de cobertura de emergencia."></textarea>
+          </label>
+        </div>
+      </div>
+      }
     </div>
 
-    <footer class="modal-actions modal-actions--detail">
+    <footer class="modal-actions" [class.modal-actions--detail]="!isEditingDetail()">
+      @if (!isEditingDetail()) {
       <button type="button" class="btn-danger" (click)="closeShiftDetail()">
         Cerrar
+      </button>
+      } @else {
+      <button type="button" class="btn-ghost" (click)="cancelEditingDetail()" [disabled]="isUpdating()">
+        Cancelar
+      </button>
+      <button type="button" class="btn-primary" (click)="openConfirmEditModal()" [disabled]="isUpdating()">
+        Actualizar turno
+      </button>
+      }
+    </footer>
+  </dialog>
+  }
+
+  @if (isConfirmEditModalOpen()) {
+  <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmEditModal()" aria-label="Cerrar confirmación"></button>
+  <dialog class="modal-card modal-card--confirm" open aria-modal="true">
+    <header class="modal-header">
+      <div class="confirm-icon-wrapper">
+        <ng-icon name="bootstrapExclamationTriangle" size="24"></ng-icon>
+      </div>
+      <h2 id="confirm-modal-title">Confirmar edición</h2>
+    </header>
+
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas guardar los cambios realizados en este turno?</p>
+      <p class="confirm-detail">Esta accion actualizara la informacion para todas las asignaciones futuras vinculadas.
+      </p>
+    </div>
+
+    <footer class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeConfirmEditModal()" [disabled]="isUpdating()">
+        No, cancelar
+      </button>
+      <button type="button" class="btn-primary" (click)="confirmUpdateShift()" [disabled]="isUpdating()">
+        {{ isUpdating() ? 'Actualizando...' : 'Si, confirmar' }}
       </button>
     </footer>
   </dialog>

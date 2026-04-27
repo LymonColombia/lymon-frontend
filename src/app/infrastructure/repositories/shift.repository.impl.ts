@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ShiftRepository } from '@/domain/repositories/shift.repository';
-import { CreateShiftDto, ShiftResponse } from '@/domain/entities/shift.model';
+import { CreateShiftDto, ShiftResponse, UpdateShiftDto } from '@/domain/entities/shift.model';
 import { environment } from '@env';
 
 @Injectable({ providedIn: 'root' })
@@ -36,6 +36,12 @@ export class ShiftRepositoryImpl extends ShiftRepository {
         { params }
       )
       .pipe(map((res) => res.data.items));
+  }
+  updateShift(id: string, data: UpdateShiftDto): Observable<ShiftResponse> {
+    return this.http.patch<ShiftResponse>(
+      `${environment.apiUrl}${environment.shifts.endpoint}/${id}`,
+      data
+    );
   }
 }
 
