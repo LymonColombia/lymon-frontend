@@ -102,14 +102,51 @@
       </article>
     </section>
 
-    <div class="toolbar-row">
-      <label class="search-field">
-        <input type="search" class="search-input" [value]="fixedSearch()" (input)="onFixedSearch($event)"
-          placeholder="Buscar turnos fijos..." aria-label="Buscar turnos fijos" />
-      </label>
-      <button type="button" class="btn-primary" (click)="openCreateShiftModal()">
-        + Crear turno fijo
-      </button>
+    <div class="toolbar-row toolbar-row--fixed">
+      <div class="gantt-nav">
+        <button type="button" class="icon-btn" (click)="prevWeek()" aria-label="Semana anterior">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+              d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+          </svg>
+        </button>
+        <span class="gantt-nav-label">{{ weekDateRangeLabel() }}</span>
+        <button type="button" class="icon-btn" (click)="nextWeek()" aria-label="Siguiente semana">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+              d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="fixed-filters">
+        <label class="search-field">
+          <input type="search" class="search-input" [value]="fixedSearch()" (input)="onFixedSearch($event)"
+            placeholder="Buscar por nombre..." aria-label="Buscar turnos fijos" />
+        </label>
+
+        <label class="search-field">
+          <select class="search-input" [value]="fixedPropertyFilter()" (change)="onFixedPropertyFilterChange($event)">
+            <option value="">Todas las propiedades</option>
+            @for (prop of fixedPropertyOptions(); track prop) {
+            <option [value]="prop">{{ prop }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="search-field">
+          <input type="date" class="search-input" [value]="fixedDateFilter()" (input)="onFixedDateFilterInput($event)"
+            aria-label="Filtrar por fecha" />
+        </label>
+
+        @if (fixedSearch() || fixedPropertyFilter() || fixedDateFilter()) {
+        <button type="button" class="btn-ghost" (click)="clearFixedFilters()">Limpiar</button>
+        }
+
+        <button type="button" class="btn-primary" (click)="openCreateShiftModal()">
+          + Crear turno fijo
+        </button>
+      </div>
     </div>
 
     @if (filteredFixedShifts().length === 0) {
@@ -117,29 +154,55 @@
       <p>No se encontraron turnos con ese criterio de busqueda.</p>
     </article>
     } @else {
-    <section class="fixed-grid" aria-label="Lista de turnos fijos">
-      @for (shift of filteredFixedShifts(); track shift.id) {
-      <article class="fixed-card">
-        <header class="fixed-card-header">
-          <h3>{{ shift.name }}</h3>
-          <span class="status-badge" [class.status-badge--active]="shift.status === 'Activo'"
-            [class.status-badge--inactive]="shift.status === 'Inactivo'">
-            {{ shift.status }}
-          </span>
-        </header>
+    <div class="gantt-wrapper">
+      <div class="gantt-grid gantt-grid--hours">
+        <!-- Header row -->
+        <div class="gantt-row gantt-head-row">
+          <div class="gantt-cell-title">Fecha</div>
+          <div class="gantt-hours-header">
+            @for (hour of ganttHours(); track hour) {
+            <div class="gantt-hour-cell">{{ hour }}:00</div>
+            }
+          </div>
+        </div>
 
-        <p class="fixed-time">{{ shift.timeRange }}</p>
+        @for (day of ganttDays(); track day.iso) {
+        <div class="gantt-row">
+          <div class="gantt-cell-title" [class.gantt-cell-title--today]="day.isToday">
+            <span class="day-name">{{ day.name }}</span>
+            <span class="day-date">{{ day.date }}</span>
+          </div>
 
-        <footer class="fixed-card-actions">
-          <button type="button" class="btn-ghost" (click)="toggleShiftStatus(shift.id)">
-            {{ shift.status === 'Activo' ? 'Desactivar' : 'Activar' }}
-          </button>
-          <button type="button" class="icon-btn" aria-label="Editar turno fijo">Editar</button>
-          <button type="button" class="icon-btn" aria-label="Eliminar turno fijo">Eliminar</button>
-        </footer>
-      </article>
-      }
-    </section>
+          <div class="gantt-day-content">
+            <div class="gantt-hours-bg">
+              @for (hour of ganttHours(); track hour) {
+              <div class="gantt-hour-bg-line"></div>
+              }
+            </div>
+
+            <div class="gantt-day-shifts">
+              @for (segment of getShiftsForDay(day.iso); track segment.shift.id + segment.gridColumn) {
+              <div class="gantt-bar" [class]="getShiftColorClass(segment.shift.id)"
+                [style.grid-column]="segment.gridColumn"
+                title="{{ segment.shift.name }} ({{ segment.shift.propertyName }}) - {{ segment.shift.timeRange }}">
+                <div class="gantt-bar-info">
+                  <span class="gantt-bar-label">{{ segment.shift.name }}</span>
+                  <span class="gantt-bar-sub">{{ segment.shift.propertyName }} • {{ segment.shift.timeRange }}</span>
+                </div>
+                <div class="gantt-bar-actions">
+                  <button type="button" class="btn-ghost btn-ghost--small" (click)="toggleShiftStatus(segment.shift.id)"
+                    title="Alternar Estado">
+                    {{ segment.shift.status === 'Activo' ? 'Desactivar' : 'Activar' }}
+                  </button>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
     }
   </section>
   }
@@ -167,7 +230,8 @@
         <div class="form-section-fields">
           <label class="field-group field-group--full">
             <span class="field-label">Nombre del turno <span class="field-required">*</span></span>
-            <input type="text" class="field-input" [value]="newShiftName()" (input)="onNewShiftNameInput($event)" placeholder="Ej: Turno Mañana" />
+            <input type="text" class="field-input" [value]="newShiftName()" (input)="onNewShiftNameInput($event)"
+              placeholder="Ej: Turno Mañana" />
           </label>
         </div>
       </div>

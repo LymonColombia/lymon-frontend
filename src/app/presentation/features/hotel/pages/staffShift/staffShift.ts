@@ -36,6 +36,9 @@ interface FixedShiftCard {
   name: string;
   timeRange: string;
   status: ShiftStatus;
+  startDate?: string;
+  endDate?: string;
+  propertyName?: string;
 }
 
 interface ShiftOption {
@@ -71,6 +74,11 @@ export class StaffShiftComponent implements OnInit {
   readonly createAssignmentError = signal('');
 
   readonly fixedSearch = signal('');
+  readonly fixedPropertyFilter = signal('');
+  readonly fixedDateFilter = signal('');
+
+  readonly currentWeekStart = signal<Date>(this.getStartOfWeek(new Date()));
+
   readonly isCreateModalOpen = signal(false);
 
   readonly newShiftStaffMemberIds = signal<string[]>([]);
@@ -123,9 +131,9 @@ export class StaffShiftComponent implements OnInit {
   ]);
 
   readonly fixedShifts = signal<FixedShiftCard[]>([
-    { id: 1, name: 'Turno Mañana', timeRange: '07:00 - 15:00', status: 'Activo' },
-    { id: 2, name: 'Turno Tarde', timeRange: '15:00 - 23:00', status: 'Activo' },
-    { id: 3, name: 'Turno Noche', timeRange: '23:00 - 07:00', status: 'Inactivo' },
+    { id: 1, name: 'Turno Mañana', timeRange: '07:00 - 15:00', status: 'Activo', startDate: '2026-04-20', endDate: '2026-04-24', propertyName: 'Hotel Centro' },
+    { id: 2, name: 'Turno Tarde', timeRange: '15:00 - 23:00', status: 'Activo', startDate: '2026-04-22', endDate: '2026-04-26', propertyName: 'Hotel Norte' },
+    { id: 3, name: 'Turno Noche', timeRange: '23:00 - 07:00', status: 'Inactivo', startDate: '2026-04-26', endDate: '2026-04-30', propertyName: 'Hotel Sur' },
   ]);
 
   readonly filteredAssignmentDays = computed<AssignmentDay[]>(() => {
@@ -198,17 +206,57 @@ export class StaffShiftComponent implements OnInit {
 
   readonly filteredFixedShifts = computed<FixedShiftCard[]>(() => {
     const query = this.normalizeText(this.fixedSearch());
-    if (!query) {
-      return this.fixedShifts();
-    }
+    const propertyQuery = this.normalizeText(this.fixedPropertyFilter());
+    const dateQuery = this.fixedDateFilter();
 
     return this.fixedShifts().filter((shift) => {
-      const searchable = [shift.name, shift.timeRange, shift.status]
+      const matchSearch = !query || [shift.name, shift.timeRange, shift.status]
         .map((value) => this.normalizeText(value))
-        .join(' ');
+        .join(' ')
+        .includes(query);
 
-      return searchable.includes(query);
+      const matchProperty = !propertyQuery || (shift.propertyName && this.normalizeText(shift.propertyName).includes(propertyQuery));
+
+      const matchDate = !dateQuery || (shift.startDate && shift.endDate && shift.startDate <= dateQuery && shift.endDate >= dateQuery);
+
+      return matchSearch && matchProperty && matchDate;
     });
+  });
+
+  readonly fixedPropertyOptions = computed<string[]>(() => {
+    const propertySet = new Set<string>();
+    this.fixedShifts().forEach(shift => {
+      if (shift.propertyName) propertySet.add(shift.propertyName);
+    });
+    return Array.from(propertySet).sort((a, b) => a.localeCompare(b));
+  });
+
+  readonly ganttDays = computed(() => {
+    const days = [];
+    const start = new Date(this.currentWeekStart());
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const name = new Intl.DateTimeFormat('es-ES', { weekday: 'short' }).format(d);
+      const shortName = name.charAt(0).toUpperCase() + name.slice(1, 3);
+      days.push({
+        date: d.getDate(),
+        name: shortName,
+        iso,
+        isToday: iso === this.todayIso()
+      });
+    }
+    return days;
+  });
+
+  readonly weekDateRangeLabel = computed(() => {
+    const days = this.ganttDays();
+    if (days.length === 0) return '';
+    const start = new Date(`${days[0].iso}T00:00:00`);
+    const end = new Date(`${days[6].iso}T00:00:00`);
+    const formatter = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' });
+    return `Del ${formatter.format(start)} al ${formatter.format(end)}`;
   });
 
   readonly fixedShiftCount = computed(() => this.fixedShifts().length);
@@ -221,6 +269,88 @@ export class StaffShiftComponent implements OnInit {
 
   isStaffMemberSelected(id: string): boolean {
     return this.newShiftStaffMemberIds().includes(id);
+  }
+
+  private getStartOfWeek(date: Date): Date {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
+  }
+
+  nextWeek(): void {
+    const next = new Date(this.currentWeekStart());
+    next.setDate(next.getDate() + 7);
+    this.currentWeekStart.set(next);
+  }
+
+  prevWeek(): void {
+    const prev = new Date(this.currentWeekStart());
+    prev.setDate(prev.getDate() - 7);
+    this.currentWeekStart.set(prev);
+  }
+
+  isShiftActiveInDay(shift: FixedShiftCard, dateIso: string): boolean {
+    if (!shift.startDate || !shift.endDate) return false;
+    return shift.startDate <= dateIso && shift.endDate >= dateIso;
+  }
+
+  getShiftsForDay(dateIso: string) {
+    const segments: { shift: FixedShiftCard; gridColumn: string }[] = [];
+    const shifts = this.filteredFixedShifts();
+
+    const currentDay = new Date(`${dateIso}T00:00:00`);
+    const yesterday = new Date(currentDay);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayIso = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+    for (const shift of shifts) {
+      if (!shift.startDate || !shift.endDate) continue;
+
+      const [startStr, endStr] = shift.timeRange.split('-').map(s => s.trim());
+      const [startH, startM] = startStr.split(':').map(Number);
+      const [endH, endM] = endStr.split(':').map(Number);
+
+      const startQuarter = Math.round((startH * 60 + startM) / 15);
+      const endQuarter = Math.round((endH * 60 + endM) / 15);
+
+      const isStartedToday = shift.startDate <= dateIso && shift.endDate >= dateIso;
+
+      if (startQuarter < endQuarter) {
+        if (isStartedToday) {
+          segments.push({
+            shift,
+            gridColumn: `${startQuarter + 1} / ${endQuarter + 1}`
+          });
+        }
+      } else {
+        if (isStartedToday) {
+          segments.push({
+            shift,
+            gridColumn: `${startQuarter + 1} / 97`
+          });
+        }
+
+        const isStartedYesterday = shift.startDate <= yesterdayIso && shift.endDate >= yesterdayIso;
+        if (isStartedYesterday) {
+          segments.push({
+            shift,
+            gridColumn: `1 / ${endQuarter + 1}`
+          });
+        }
+      }
+    }
+
+    return segments;
+  }
+
+  readonly ganttHours = computed(() => {
+    return Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+  });
+
+  getShiftColorClass(shiftId: number): string {
+    const colors = ['gantt-bar--1', 'gantt-bar--2', 'gantt-bar--3', 'gantt-bar--4', 'gantt-bar--5'];
+    return colors[shiftId % colors.length];
   }
 
   ngOnInit(): void {
@@ -269,6 +399,22 @@ export class StaffShiftComponent implements OnInit {
   onFixedSearch(event: Event): void {
     const target = event.target as HTMLInputElement | null;
     this.fixedSearch.set(target?.value ?? '');
+  }
+
+  onFixedPropertyFilterChange(event: Event): void {
+    const target = event.target as HTMLSelectElement | null;
+    this.fixedPropertyFilter.set(target?.value ?? '');
+  }
+
+  onFixedDateFilterInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.fixedDateFilter.set(target?.value ?? '');
+  }
+
+  clearFixedFilters(): void {
+    this.fixedSearch.set('');
+    this.fixedPropertyFilter.set('');
+    this.fixedDateFilter.set('');
   }
 
   openCreateAssignmentModal(): void {
@@ -508,6 +654,9 @@ export class StaffShiftComponent implements OnInit {
             name: `Turno ${propertyName} (${startDate})`,
             timeRange: `${startHour} - ${endHour}`,
             status: this.newShiftStatus(),
+            startDate,
+            endDate,
+            propertyName,
           };
           this.nextShiftId += 1;
           this.fixedShifts.update((shifts) => [...shifts, newCard]);
