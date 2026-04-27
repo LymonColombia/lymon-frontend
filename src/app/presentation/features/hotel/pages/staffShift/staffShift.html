@@ -208,7 +208,9 @@
 
             <div class="gantt-day-shifts">
               @for (segment of getShiftsForDay(day.iso); track segment.shift.id + segment.gridColumn) {
-              <div class="gantt-bar" [class]="getShiftColorClass(segment.shift.id)"
+              <div class="gantt-bar" 
+                [class]="getShiftColorClass(segment.shift.id)"
+                [class.gantt-bar--inactive]="segment.shift.status === 'Inactivo'"
                 [style.grid-column]="segment.gridColumn"
                 title="{{ segment.shift.name }} ({{ segment.shift.propertyName }}) - {{ segment.shift.timeRange }}"
                 (click)="openShiftDetail(segment.shift)">

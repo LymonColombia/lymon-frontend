@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { CreateShiftUseCase } from '@/domain/use-cases/shift/create-shift.use-case';
+import { GetShiftsUseCase } from '@/domain/use-cases/shift/get-shifts.use-case';
 import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffMember, Property } from '@/domain/entities/staff.model';
@@ -32,7 +33,7 @@ interface AssignmentDay {
 }
 
 interface FixedShiftCard {
-  id: number;
+  id: string | number;
   name: string;
   timeRange: string;
   status: ShiftStatus;
@@ -42,7 +43,7 @@ interface FixedShiftCard {
 }
 
 interface ShiftOption {
-  id: number;
+  id: string | number;
   name: string;
   timeRange: string;
 }
@@ -57,6 +58,7 @@ interface ShiftOption {
 })
 export class StaffShiftComponent implements OnInit {
   private readonly createShiftUseCase = inject(CreateShiftUseCase);
+  private readonly getShiftsUseCase = inject(GetShiftsUseCase);
   private readonly getStaffUseCase = inject(GetStaffUseCase);
   private readonly staffRepository = inject(StaffRepository);
 
@@ -70,7 +72,7 @@ export class StaffShiftComponent implements OnInit {
   readonly assignmentDate = signal('');
   readonly assignmentProperty = signal('');
   readonly assignmentEmployee = signal('');
-  readonly assignmentShiftId = signal<number | null>(null);
+  readonly assignmentShiftId = signal<string | number | null>(null);
   readonly createAssignmentError = signal('');
 
   readonly fixedSearch = signal('');
@@ -110,7 +112,7 @@ export class StaffShiftComponent implements OnInit {
     return `${yyyy}-${mm}-${dd}`;
   });
 
-  private nextShiftId = 4;
+  private nextShiftId = 1000;
 
   readonly assignmentDays = signal<AssignmentDay[]>([
     {
@@ -135,11 +137,7 @@ export class StaffShiftComponent implements OnInit {
     },
   ]);
 
-  readonly fixedShifts = signal<FixedShiftCard[]>([
-    { id: 1, name: 'Turno Mañana', timeRange: '07:00 - 15:00', status: 'Activo', startDate: '2026-04-20', endDate: '2026-04-24', propertyName: 'Hotel Centro' },
-    { id: 2, name: 'Turno Tarde', timeRange: '15:00 - 23:00', status: 'Activo', startDate: '2026-04-22', endDate: '2026-04-26', propertyName: 'Hotel Norte' },
-    { id: 3, name: 'Turno Noche', timeRange: '23:00 - 07:00', status: 'Inactivo', startDate: '2026-04-26', endDate: '2026-04-30', propertyName: 'Hotel Sur' },
-  ]);
+  readonly fixedShifts = signal<FixedShiftCard[]>([]);
 
   readonly filteredAssignmentDays = computed<AssignmentDay[]>(() => {
     const query = this.normalizeText(this.calendarSearch());
@@ -353,9 +351,12 @@ export class StaffShiftComponent implements OnInit {
     return Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
   });
 
-  getShiftColorClass(shiftId: number): string {
+  getShiftColorClass(shiftId: string | number): string {
     const colors = ['gantt-bar--1', 'gantt-bar--2', 'gantt-bar--3', 'gantt-bar--4', 'gantt-bar--5'];
-    return colors[shiftId % colors.length];
+    const idHash = typeof shiftId === 'string'
+      ? shiftId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+      : shiftId;
+    return colors[idHash % colors.length];
   }
 
   ngOnInit(): void {
@@ -378,8 +379,30 @@ export class StaffShiftComponent implements OnInit {
         if (data.length > 0 && !this.newShiftPropertyId()) {
           this.newShiftPropertyId.set(data[0].id);
         }
+        this.loadFixedShifts(); // Load shifts after properties are ready
       },
-      error: () => this.properties.set([]),
+      error: () => {
+        this.properties.set([]);
+        this.loadFixedShifts(); // Still try to load shifts
+      }
+    });
+  }
+
+  private loadFixedShifts(): void {
+    this.getShiftsUseCase.execute().subscribe({
+      next: (shifts) => {
+        const mappedShifts: FixedShiftCard[] = shifts.map((s) => ({
+          id: s.id ?? Math.random(),
+          name: s.name,
+          timeRange: `${s.startHour} - ${s.endHour}`,
+          status: 'Activo', // Default status as it's not in the response image
+          startDate: s.startDate.split('T')[0],
+          endDate: s.endDate.split('T')[0],
+          propertyName: this.properties().find(p => p.id === s.propertyId)?.name ?? 'N/A'
+        }));
+        this.fixedShifts.set(mappedShifts);
+      },
+      error: () => this.fixedShifts.set([])
     });
   }
 
@@ -476,8 +499,8 @@ export class StaffShiftComponent implements OnInit {
 
   onAssignmentShiftChange(event: Event): void {
     const target = event.target as HTMLSelectElement | null;
-    const parsedId = Number(target?.value ?? NaN);
-    this.assignmentShiftId.set(Number.isFinite(parsedId) ? parsedId : null);
+    const value = target?.value ?? null;
+    this.assignmentShiftId.set(value);
   }
 
   createAssignment(): void {
@@ -669,20 +692,8 @@ export class StaffShiftComponent implements OnInit {
       })
       .subscribe({
         next: () => {
-
-          const propertyName =
-            this.properties().find((p) => p.id === propertyId)?.name ?? propertyId;
-          const newCard: FixedShiftCard = {
-            id: this.nextShiftId,
-            name: `Turno ${propertyName} (${startDate})`,
-            timeRange: `${startHour} - ${endHour}`,
-            status: this.newShiftStatus(),
-            startDate,
-            endDate,
-            propertyName,
-          };
-          this.nextShiftId += 1;
-          this.fixedShifts.update((shifts) => [...shifts, newCard]);
+          this.showNotification('Turno creado exitosamente.', 'success');
+          this.loadFixedShifts(); // Refresh the list from server
           this.isCreatingShift.set(false);
           this.closeCreateShiftModal();
         },
@@ -705,7 +716,7 @@ export class StaffShiftComponent implements OnInit {
       });
   }
 
-  toggleShiftStatus(shiftId: number): void {
+  toggleShiftStatus(shiftId: string | number): void {
     this.fixedShifts.update((shifts) =>
       shifts.map((shift) => {
         if (shift.id !== shiftId) {
