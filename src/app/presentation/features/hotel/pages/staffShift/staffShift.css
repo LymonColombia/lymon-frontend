@@ -877,10 +877,9 @@
   flex-direction: column;
 }
 
-.modal-card--wide {
+.modal-card--detail-wide {
   width: min(800px, calc(100vw - 32px));
 }
-
 .modal-header--detail {
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border-light);
@@ -1085,7 +1084,7 @@
   width: 56px;
   height: 56px;
   background: #fff4ed;
-  color: #fb8c00;
+  color: #e65100;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
@@ -1113,8 +1112,7 @@
 
 .confirm-detail {
   font-size: var(--font-size-sm) !important;
-  color: var(--color-text-secondary) !important;
-  opacity: 0.8;
+  color: var(--color-text-primary) !important;
 }
 
 .modal-card--confirm .modal-actions {

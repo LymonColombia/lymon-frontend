@@ -540,7 +540,7 @@ export class StaffShiftComponent implements OnInit {
 
   confirmUpdateShift(): void {
     const detail = this.selectedShiftDetail();
-    if (!detail || !detail.id || !detail.propertyId) {
+    if (!detail?.id || !detail?.propertyId) {
       this.showNotification('Error: Información del turno incompleta', 'error');
       return;
     }

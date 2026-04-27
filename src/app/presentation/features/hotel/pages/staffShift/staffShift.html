@@ -400,8 +400,10 @@
   @if (selectedShiftDetail()) {
   <button type="button" class="modal-backdrop" (click)="closeShiftDetail()" aria-label="Cerrar detalle"></button>
 
-  <dialog class="modal-card" [class.modal-card--detail]="!isEditingDetail()"
-    [class.modal-card--wide]="isEditingDetail()" open aria-modal="true" aria-labelledby="shift-detail-title"
+  <dialog class="modal-card" 
+    [class.modal-card--detail]="!isEditingDetail()"
+    [class.modal-card--detail-wide]="isEditingDetail()"
+    open aria-modal="true" aria-labelledby="shift-detail-title"
     (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
 
     <header class="modal-header" [class.modal-header--detail]="!isEditingDetail()">
@@ -521,7 +523,7 @@
   }
 
   @if (isConfirmEditModalOpen()) {
-  <div class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmEditModal()"></div>
+  <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmEditModal()" aria-label="Cerrar confirmación"></button>
   <dialog class="modal-card modal-card--confirm" open aria-modal="true">
     <header class="modal-header">
       <div class="confirm-icon-wrapper">
