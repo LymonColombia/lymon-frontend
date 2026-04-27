@@ -123,6 +123,7 @@ export class StaffShiftComponent implements OnInit {
   readonly staffMembers = signal<StaffMember[]>([]);
   readonly properties = signal<Property[]>([]);
   readonly isCreatingShift = signal(false);
+  readonly isEditingDetail = signal(false);
 
   readonly todayIso = computed(() => {
     const d = new Date();
@@ -458,6 +459,11 @@ export class StaffShiftComponent implements OnInit {
     this.calendarDateFilter.set(target?.value ?? '');
   }
 
+  isDateLocked(dateStr: string | null | undefined): boolean {
+    if (!dateStr) return false;
+    return dateStr <= this.todayIso();
+  }
+
   onFixedSearch(event: Event): void {
     const target = event.target as HTMLInputElement | null;
     this.fixedSearch.set(target?.value ?? '');
@@ -485,6 +491,15 @@ export class StaffShiftComponent implements OnInit {
 
   closeShiftDetail(): void {
     this.selectedShiftDetail.set(null);
+    this.isEditingDetail.set(false);
+  }
+
+  startEditingDetail(): void {
+    this.isEditingDetail.set(true);
+  }
+
+  cancelEditingDetail(): void {
+    this.isEditingDetail.set(false);
   }
 
   showNotification(message: string, type: 'error' | 'success' = 'error'): void {

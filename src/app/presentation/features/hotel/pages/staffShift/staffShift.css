@@ -577,6 +577,9 @@
   box-shadow: var(--shadow-lg);
   padding: var(--spacing-lg);
   z-index: 81;
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .modal-header {
@@ -629,6 +632,14 @@
   outline: none;
   border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border-light));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.field-input:disabled {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+  border-color: var(--color-border-light);
+  opacity: 0.8;
 }
 
 .form-error {
@@ -853,11 +864,15 @@
 /* ── Shift Detail Modal ──────────────────────────────────────────────────── */
 
 .modal-card--detail {
-  width: min(400px, calc(100vw - 32px));
+  width: min(420px, calc(100vw - 32px));
   padding: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.modal-card--wide {
+  width: min(800px, calc(100vw - 32px));
 }
 
 .modal-header--detail {
@@ -867,8 +882,8 @@
 }
 
 .detail-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl) !important;
+  font-weight: var(--font-weight-bold) !important;
   color: var(--color-text-primary);
   margin-bottom: 4px;
 }
@@ -904,6 +919,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-md);
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .detail-item {
@@ -927,9 +948,18 @@
 }
 
 .modal-actions--detail {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg) !important;
   border-top: 1px solid var(--color-border-light);
   background: var(--color-bg-secondary);
+}
+
+.modal-body .form-section {
+  animation: slide-up 0.4s ease;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive: stack section grid on small screens */
