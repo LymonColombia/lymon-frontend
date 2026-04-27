@@ -209,10 +209,13 @@
             <div class="gantt-day-shifts">
               @for (segment of getShiftsForDay(day.iso); track segment.shift.id + segment.gridColumn) {
               <div class="gantt-bar" 
+                role="button"
+                tabindex="0"
                 [class]="getShiftColorClass(segment.shift.id)"
                 [style.grid-column]="segment.gridColumn"
                 title="{{ segment.shift.name }} ({{ segment.shift.propertyName }}) - {{ segment.shift.timeRange }}"
-                (click)="openShiftDetail(segment.shift)">
+                (click)="openShiftDetail(segment.shift)"
+                (keydown.enter)="openShiftDetail(segment.shift)">
                 <div class="gantt-bar-info">
                   <span class="gantt-bar-label">{{ segment.shift.name }}</span>
                   <span class="gantt-bar-sub">{{ segment.shift.propertyName }} • {{ segment.shift.timeRange }}</span>
@@ -232,7 +235,7 @@
   }
 
   @if (isCreateModalOpen()) {
-  <div class="modal-backdrop" (click)="closeCreateShiftModal()"></div>
+  <button type="button" class="modal-backdrop" (click)="closeCreateShiftModal()" aria-label="Cerrar modal"></button>
 
   <dialog class="modal-card modal-card--wide" open aria-modal="true" aria-labelledby="create-shift-title"
     (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
@@ -353,7 +356,7 @@
 
 
   @if (isCreateAssignmentModalOpen()) {
-  <div class="modal-backdrop" (click)="closeCreateAssignmentModal()"></div>
+  <button type="button" class="modal-backdrop" (click)="closeCreateAssignmentModal()" aria-label="Cerrar modal"></button>
 
   <dialog class="modal-card" open aria-modal="true" aria-labelledby="create-assignment-title"
     (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
@@ -414,7 +417,7 @@
   }
 
   @if (selectedShiftDetail()) {
-  <div class="modal-backdrop" (click)="closeShiftDetail()"></div>
+  <button type="button" class="modal-backdrop" (click)="closeShiftDetail()" aria-label="Cerrar detalle"></button>
 
   <dialog class="modal-card modal-card--detail" open aria-modal="true" aria-labelledby="shift-detail-title"
     (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">

@@ -109,7 +109,7 @@ export class StaffShiftComponent implements OnInit {
     return `${yyyy}-${mm}-${dd}`;
   });
 
-  private nextShiftId = 1000;
+  private readonly nextShiftId = 1000;
 
   readonly assignmentDays = signal<AssignmentDay[]>([
     {
@@ -290,52 +290,73 @@ export class StaffShiftComponent implements OnInit {
   }
 
   getShiftsForDay(dateIso: string) {
+    const yesterdayIso = this.getYesterdayIso(dateIso);
     const segments: { shift: FixedShiftCard; gridColumn: string }[] = [];
-    const shifts = this.filteredFixedShifts();
 
-    const currentDay = new Date(`${dateIso}T00:00:00`);
-    const yesterday = new Date(currentDay);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayIso = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
-
-    for (const shift of shifts) {
-      if (!shift.startDate || !shift.endDate) continue;
-
-      const [startStr, endStr] = shift.timeRange.split('-').map(s => s.trim());
-      const [startH, startM] = startStr.split(':').map(Number);
-      const [endH, endM] = endStr.split(':').map(Number);
-
-      const startQuarter = Math.round((startH * 60 + startM) / 15);
-      const endQuarter = Math.round((endH * 60 + endM) / 15);
-
-      const isStartedToday = shift.startDate <= dateIso && shift.endDate >= dateIso;
-
-      if (startQuarter < endQuarter) {
-        if (isStartedToday) {
-          segments.push({
-            shift,
-            gridColumn: `${startQuarter + 1} / ${endQuarter + 1}`
-          });
-        }
-      } else {
-        if (isStartedToday) {
-          segments.push({
-            shift,
-            gridColumn: `${startQuarter + 1} / 97`
-          });
-        }
-
-        const isStartedYesterday = shift.startDate <= yesterdayIso && shift.endDate >= yesterdayIso;
-        if (isStartedYesterday) {
-          segments.push({
-            shift,
-            gridColumn: `1 / ${endQuarter + 1}`
-          });
-        }
+    for (const shift of this.filteredFixedShifts()) {
+      if (shift.startDate && shift.endDate) {
+        this.processShiftForDay(shift, dateIso, yesterdayIso, segments);
       }
     }
 
     return segments;
+  }
+
+  private getYesterdayIso(dateIso: string): string {
+    const currentDay = new Date(`${dateIso}T00:00:00`);
+    const yesterday = new Date(currentDay);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const y = yesterday.getFullYear();
+    const m = String(yesterday.getMonth() + 1).padStart(2, '0');
+    const d = String(yesterday.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  private processShiftForDay(
+    shift: FixedShiftCard,
+    dateIso: string,
+    yesterdayIso: string,
+    segments: { shift: FixedShiftCard; gridColumn: string }[]
+  ): void {
+    const [startH, startM, endH, endM] = this.parseTimeRange(shift.timeRange);
+    const startQuarter = Math.round((startH * 60 + startM) / 15);
+    const endQuarter = Math.round((endH * 60 + endM) / 15);
+
+    const isStartedToday = shift.startDate! <= dateIso && shift.endDate! >= dateIso;
+
+    if (startQuarter < endQuarter) {
+      if (isStartedToday) {
+        segments.push({ shift, gridColumn: `${startQuarter + 1} / ${endQuarter + 1}` });
+      }
+    } else {
+      this.handleOvernightShift(shift, dateIso, yesterdayIso, isStartedToday, startQuarter, endQuarter, segments);
+    }
+  }
+
+  private parseTimeRange(timeRange: string): number[] {
+    const [startStr, endStr] = timeRange.split('-').map(s => s.trim());
+    const [startH, startM] = startStr.split(':').map(Number);
+    const [endH, endM] = endStr.split(':').map(Number);
+    return [startH, startM, endH, endM];
+  }
+
+  private handleOvernightShift(
+    shift: FixedShiftCard,
+    dateIso: string,
+    yesterdayIso: string,
+    isStartedToday: boolean,
+    startQuarter: number,
+    endQuarter: number,
+    segments: { shift: FixedShiftCard; gridColumn: string }[]
+  ): void {
+    if (isStartedToday) {
+      segments.push({ shift, gridColumn: `${startQuarter + 1} / 97` });
+    }
+
+    const isStartedYesterday = shift.startDate! <= yesterdayIso && shift.endDate! >= yesterdayIso;
+    if (isStartedYesterday) {
+      segments.push({ shift, gridColumn: `1 / ${endQuarter + 1}` });
+    }
   }
 
   readonly ganttHours = computed(() => {
@@ -345,7 +366,7 @@ export class StaffShiftComponent implements OnInit {
   getShiftColorClass(shiftId: string | number): string {
     const colors = ['gantt-bar--1', 'gantt-bar--2', 'gantt-bar--3', 'gantt-bar--4', 'gantt-bar--5'];
     const idHash = typeof shiftId === 'string'
-      ? shiftId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+      ? Array.from(shiftId).reduce((acc, char) => acc + (char.codePointAt(0) || 0), 0)
       : shiftId;
     return colors[idHash % colors.length];
   }

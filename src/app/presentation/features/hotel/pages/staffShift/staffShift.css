@@ -528,7 +528,7 @@
 
 .gantt-bar--4 {
   background: #fff3e0;
-  color: #ef6c00;
+  color: #9a4500;
   border-left: 3px solid #fb8c00;
 }
 
@@ -556,6 +556,9 @@
   position: fixed;
   inset: 0;
   background: rgba(16, 24, 40, 0.35);
+  border: none;
+  padding: 0;
+  cursor: pointer;
   z-index: 80;
 }
 
