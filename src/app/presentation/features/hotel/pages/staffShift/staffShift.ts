@@ -77,6 +77,11 @@ export class StaffShiftComponent implements OnInit {
   readonly fixedPropertyFilter = signal('');
   readonly fixedDateFilter = signal('');
 
+  readonly selectedShiftDetail = signal<FixedShiftCard | null>(null);
+
+  readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
+  private notificationTimeout: any;
+
   readonly currentWeekStart = signal<Date>(this.getStartOfWeek(new Date()));
 
   readonly isCreateModalOpen = signal(false);
@@ -417,6 +422,24 @@ export class StaffShiftComponent implements OnInit {
     this.fixedDateFilter.set('');
   }
 
+  openShiftDetail(shift: FixedShiftCard): void {
+    this.selectedShiftDetail.set(shift);
+  }
+
+  closeShiftDetail(): void {
+    this.selectedShiftDetail.set(null);
+  }
+
+  showNotification(message: string, type: 'error' | 'success' = 'error'): void {
+    if (this.notificationTimeout) {
+      clearTimeout(this.notificationTimeout);
+    }
+    this.notification.set({ message, type });
+    this.notificationTimeout = setTimeout(() => {
+      this.notification.set(null);
+    }, 5000);
+  }
+
   openCreateAssignmentModal(): void {
     this.isCreateAssignmentModalOpen.set(true);
     this.createAssignmentError.set('');
@@ -464,15 +487,15 @@ export class StaffShiftComponent implements OnInit {
     const shiftId = this.assignmentShiftId();
 
     if (!dateIso || !propertyName || !employeeName || shiftId === null) {
-      this.createAssignmentError.set(
-        'Completa fecha, propiedad, empleado y turno para crear la asignacion.',
+      this.showNotification(
+        'Completa fecha, propiedad, empleado y turno para crear la asignacion.'
       );
       return;
     }
 
     const selectedShift = this.fixedShifts().find((shift) => shift.id === shiftId);
     if (!selectedShift) {
-      this.createAssignmentError.set('El turno seleccionado no es valido.');
+      this.showNotification('El turno seleccionado no es valido.');
       return;
     }
 
@@ -595,38 +618,38 @@ export class StaffShiftComponent implements OnInit {
     const notes = this.newShiftNotes().trim();
 
     if (!name) {
-      this.createShiftError.set('Ingresa un nombre para el turno.');
+      this.showNotification('Ingresa un nombre para el turno.');
       return;
     }
 
     if (!propertyId) {
-      this.createShiftError.set('Selecciona una propiedad.');
+      this.showNotification('Selecciona una propiedad.');
       return;
     }
     if (!startDate || !endDate) {
-      this.createShiftError.set('Completa las fechas de inicio y fin del turno.');
+      this.showNotification('Completa las fechas de inicio y fin del turno.');
       return;
     }
     const today = this.todayIso();
     if (startDate < today) {
-      this.createShiftError.set('La fecha de inicio no puede ser una fecha pasada.');
+      this.showNotification('La fecha de inicio no puede ser una fecha pasada.');
       return;
     }
     if (endDate < today) {
-      this.createShiftError.set('La fecha de fin no puede ser una fecha pasada.');
+      this.showNotification('La fecha de fin no puede ser una fecha pasada.');
       return;
     }
     if (startDate > endDate) {
-      this.createShiftError.set('La fecha de inicio no puede ser posterior a la fecha de fin.');
+      this.showNotification('La fecha de inicio no puede ser posterior a la fecha de fin.');
       return;
     }
     if (!startHour || !endHour) {
-      this.createShiftError.set('Completa el horario de inicio y salida del turno.');
+      this.showNotification('Completa el horario de inicio y salida del turno.');
       return;
     }
 
     if (startHour === endHour) {
-      this.createShiftError.set('La hora de inicio y salida no pueden ser iguales.');
+      this.showNotification('La hora de inicio y salida no pueden ser iguales.');
       return;
     }
 
@@ -676,7 +699,7 @@ export class StaffShiftComponent implements OnInit {
               message = httpErr['message'];
             }
           }
-          this.createShiftError.set(message);
+          this.showNotification(message);
           this.isCreatingShift.set(false);
         },
       });
