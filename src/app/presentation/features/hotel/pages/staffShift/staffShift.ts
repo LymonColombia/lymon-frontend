@@ -16,7 +16,6 @@ import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffMember, Property } from '@/domain/entities/staff.model';
 
 type PreviewTab = 'calendar' | 'fixed';
-type ShiftStatus = 'Activo' | 'Inactivo';
 
 interface DayAssignment {
   employeeName: string;
@@ -36,7 +35,6 @@ interface FixedShiftCard {
   id: string | number;
   name: string;
   timeRange: string;
-  status: ShiftStatus;
   startDate?: string;
   endDate?: string;
   propertyName?: string;
@@ -97,7 +95,6 @@ export class StaffShiftComponent implements OnInit {
   readonly newShiftNotes = signal('');
 
   readonly newShiftName = signal('');
-  readonly newShiftStatus = signal<ShiftStatus>('Activo');
   readonly createShiftError = signal('');
 
   readonly staffMembers = signal<StaffMember[]>([]);
@@ -213,7 +210,7 @@ export class StaffShiftComponent implements OnInit {
     const dateQuery = this.fixedDateFilter();
 
     return this.fixedShifts().filter((shift) => {
-      const matchSearch = !query || [shift.name, shift.timeRange, shift.status]
+      const matchSearch = !query || [shift.name, shift.timeRange]
         .map((value) => this.normalizeText(value))
         .join(' ')
         .includes(query);
@@ -263,12 +260,6 @@ export class StaffShiftComponent implements OnInit {
   });
 
   readonly fixedShiftCount = computed(() => this.fixedShifts().length);
-  readonly activeFixedShiftCount = computed(
-    () => this.fixedShifts().filter((shift) => shift.status === 'Activo').length,
-  );
-  readonly inactiveFixedShiftCount = computed(
-    () => this.fixedShifts().filter((shift) => shift.status === 'Inactivo').length,
-  );
 
   isStaffMemberSelected(id: string): boolean {
     return this.newShiftStaffMemberIds().includes(id);
@@ -395,7 +386,6 @@ export class StaffShiftComponent implements OnInit {
           id: s.id ?? Math.random(),
           name: s.name,
           timeRange: `${s.startHour} - ${s.endHour}`,
-          status: 'Activo', // Default status as it's not in the response image
           startDate: s.startDate.split('T')[0],
           endDate: s.endDate.split('T')[0],
           propertyName: this.properties().find(p => p.id === s.propertyId)?.name ?? 'N/A'
@@ -613,14 +603,6 @@ export class StaffShiftComponent implements OnInit {
     this.newShiftPropertyId.set(target?.value ?? '');
   }
 
-  onNewShiftStatusChange(event: Event): void {
-    const target = event.target as HTMLSelectElement | null;
-    if (!target) {
-      return;
-    }
-    this.newShiftStatus.set(target.value === 'Inactivo' ? 'Inactivo' : 'Activo');
-  }
-
   toggleStaffMemberSelection(memberId: string): void {
     this.newShiftStaffMemberIds.update((ids) => {
       if (ids.includes(memberId)) {
@@ -716,21 +698,6 @@ export class StaffShiftComponent implements OnInit {
       });
   }
 
-  toggleShiftStatus(shiftId: string | number): void {
-    this.fixedShifts.update((shifts) =>
-      shifts.map((shift) => {
-        if (shift.id !== shiftId) {
-          return shift;
-        }
-
-        return {
-          ...shift,
-          status: shift.status === 'Activo' ? 'Inactivo' : 'Activo',
-        };
-      }),
-    );
-  }
-
   private resetCreateShiftForm(): void {
     this.newShiftName.set('');
     this.newShiftStaffMemberIds.set([]);
@@ -740,7 +707,6 @@ export class StaffShiftComponent implements OnInit {
     this.newShiftStart.set('');
     this.newShiftEnd.set('');
     this.newShiftNotes.set('');
-    this.newShiftStatus.set('Activo');
     this.createShiftError.set('');
     this.isCreatingShift.set(false);
   }
