@@ -208,21 +208,18 @@
 
             <div class="gantt-day-shifts">
               @for (segment of getShiftsForDay(day.iso); track segment.shift.id + segment.gridColumn) {
-              <div class="gantt-bar" 
-                role="button"
-                tabindex="0"
+              <button type="button" class="gantt-bar" 
                 [class]="getShiftColorClass(segment.shift.id)"
                 [style.grid-column]="segment.gridColumn"
                 title="{{ segment.shift.name }} ({{ segment.shift.propertyName }}) - {{ segment.shift.timeRange }}"
-                (click)="openShiftDetail(segment.shift)"
-                (keydown.enter)="openShiftDetail(segment.shift)">
+                (click)="openShiftDetail(segment.shift)">
                 <div class="gantt-bar-info">
                   <span class="gantt-bar-label">{{ segment.shift.name }}</span>
                   <span class="gantt-bar-sub">{{ segment.shift.propertyName }} • {{ segment.shift.timeRange }}</span>
                 </div>
                 <div class="gantt-bar-actions">
                 </div>
-              </div>
+              </button>
               }
             </div>
           </div>

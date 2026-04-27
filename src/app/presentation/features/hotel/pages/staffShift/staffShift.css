@@ -432,6 +432,10 @@
 }
 
 .gantt-bar {
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: inherit;
   border-radius: var(--radius-sm);
   padding: 4px 8px;
   display: flex;
