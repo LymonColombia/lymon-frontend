@@ -14,6 +14,17 @@ import { GetShiftsUseCase } from '@/domain/use-cases/shift/get-shifts.use-case';
 import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffMember, Property } from '@/domain/entities/staff.model';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  bootstrapTrash,
+  bootstrapPencil,
+  bootstrapArrowRight,
+  bootstrapArrowLeft,
+  bootstrapClockFill,
+  bootstrapPersonCheck,
+  bootstrapExclamationTriangle,
+  bootstrapCheckCircle,
+} from '@ng-icons/bootstrap-icons';
 
 type PreviewTab = 'calendar' | 'fixed';
 
@@ -49,7 +60,19 @@ interface ShiftOption {
 @Component({
   selector: 'app-staff-shift',
   standalone: true,
-  imports: [HotelPageLayoutComponent, FormsModule],
+  imports: [HotelPageLayoutComponent, FormsModule, NgIconComponent],
+  providers: [
+    provideIcons({
+      bootstrapTrash,
+      bootstrapPencil,
+      bootstrapArrowRight,
+      bootstrapArrowLeft,
+      bootstrapClockFill,
+      bootstrapPersonCheck,
+      bootstrapExclamationTriangle,
+      bootstrapCheckCircle,
+    }),
+  ],
   templateUrl: './staffShift.html',
   styleUrl: './staffShift.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
