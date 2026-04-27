@@ -12,6 +12,7 @@ import { HotelPageLayoutComponent } from '@/presentation/features/hotel/componen
 import { CreateShiftUseCase } from '@/domain/use-cases/shift/create-shift.use-case';
 import { GetShiftsUseCase } from '@/domain/use-cases/shift/get-shifts.use-case';
 import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
+import { UpdateShiftUseCase } from '@/domain/use-cases/shift/update-shift.use-case';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffMember, Property } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -49,6 +50,8 @@ interface FixedShiftCard {
   startDate?: string;
   endDate?: string;
   propertyName?: string;
+  propertyId?: string;
+  notes?: string;
 }
 
 interface ShiftOption {
@@ -80,6 +83,7 @@ interface ShiftOption {
 export class StaffShiftComponent implements OnInit {
   private readonly createShiftUseCase = inject(CreateShiftUseCase);
   private readonly getShiftsUseCase = inject(GetShiftsUseCase);
+  private readonly updateShiftUseCase = inject(UpdateShiftUseCase);
   private readonly getStaffUseCase = inject(GetStaffUseCase);
   private readonly staffRepository = inject(StaffRepository);
 
@@ -124,6 +128,15 @@ export class StaffShiftComponent implements OnInit {
   readonly properties = signal<Property[]>([]);
   readonly isCreatingShift = signal(false);
   readonly isEditingDetail = signal(false);
+  readonly isConfirmEditModalOpen = signal(false);
+  readonly isUpdating = signal(false);
+
+  editShiftNameValue = '';
+  editStartDateValue = '';
+  editEndDateValue = '';
+  editStartHourValue = '';
+  editEndHourValue = '';
+  editNotesValue = '';
 
   readonly todayIso = computed(() => {
     const d = new Date();
@@ -433,7 +446,9 @@ export class StaffShiftComponent implements OnInit {
           timeRange: `${s.startHour} - ${s.endHour}`,
           startDate: s.startDate.split('T')[0],
           endDate: s.endDate.split('T')[0],
-          propertyName: this.properties().find(p => p.id === s.propertyId)?.name ?? 'N/A'
+          propertyName: this.properties().find(p => p.id === s.propertyId)?.name ?? 'N/A',
+          propertyId: s.propertyId,
+          notes: s.notes
         }));
         this.fixedShifts.set(mappedShifts);
       },
@@ -492,14 +507,68 @@ export class StaffShiftComponent implements OnInit {
   closeShiftDetail(): void {
     this.selectedShiftDetail.set(null);
     this.isEditingDetail.set(false);
+    this.isConfirmEditModalOpen.set(false);
   }
 
   startEditingDetail(): void {
+    const detail = this.selectedShiftDetail();
+    if (!detail) return;
+
+    this.editShiftNameValue = detail.name;
+    this.editStartDateValue = detail.startDate || '';
+    this.editEndDateValue = detail.endDate || '';
+    this.editNotesValue = detail.notes || '';
+
+    const [start, end] = detail.timeRange.split('-').map(t => t.trim());
+    this.editStartHourValue = start;
+    this.editEndHourValue = end;
+
     this.isEditingDetail.set(true);
   }
 
   cancelEditingDetail(): void {
     this.isEditingDetail.set(false);
+  }
+
+  openConfirmEditModal(): void {
+    this.isConfirmEditModalOpen.set(true);
+  }
+
+  closeConfirmEditModal(): void {
+    this.isConfirmEditModalOpen.set(false);
+  }
+
+  confirmUpdateShift(): void {
+    const detail = this.selectedShiftDetail();
+    if (!detail || !detail.id || !detail.propertyId) {
+      this.showNotification('Error: Información del turno incompleta', 'error');
+      return;
+    }
+
+    this.isUpdating.set(true);
+    const updateData = {
+      name: this.editShiftNameValue,
+      propertyId: detail.propertyId,
+      startDate: this.editStartDateValue,
+      endDate: this.editEndDateValue,
+      startHour: this.editStartHourValue,
+      endHour: this.editEndHourValue,
+      notes: this.editNotesValue
+    };
+
+    this.updateShiftUseCase.execute(detail.id.toString(), updateData).subscribe({
+      next: () => {
+        this.showNotification('Turno actualizado correctamente', 'success');
+        this.loadFixedShifts();
+        this.closeShiftDetail();
+        this.isUpdating.set(false);
+      },
+      error: () => {
+        this.showNotification('Error al actualizar el turno', 'error');
+        this.isUpdating.set(false);
+        this.closeConfirmEditModal();
+      }
+    });
   }
 
   showNotification(message: string, type: 'error' | 'success' = 'error'): void {

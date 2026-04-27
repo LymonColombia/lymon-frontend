@@ -628,6 +628,12 @@
   padding: 9px 12px;
 }
 
+.field-input--textarea {
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
 .field-input:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border-light));
@@ -1057,11 +1063,69 @@
 }
 
 @keyframes timeline-shrink {
-  from {
-    width: 100%;
-  }
+  from { width: 100%; }
+  to { width: 0%; }
+}
 
-  to {
-    width: 0%;
-  }
+/* ── Confirmation Modal ────────────────────────────────────────────────── */
+
+.modal-card--confirm {
+  width: min(440px, calc(100vw - 32px));
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-lg) !important;
+  z-index: 101;
+}
+
+.modal-backdrop--confirm {
+  z-index: 100;
+  background: rgba(16, 24, 40, 0.45);
+}
+
+.confirm-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  background: #fff4ed;
+  color: #fb8c00;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-md);
+}
+
+.modal-card--confirm .modal-header {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.modal-card--confirm h2 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.modal-card--confirm .modal-body p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-xs);
+}
+
+.confirm-detail {
+  font-size: var(--font-size-sm) !important;
+  color: var(--color-text-secondary) !important;
+  opacity: 0.8;
+}
+
+.modal-card--confirm .modal-actions {
+  margin-top: var(--spacing-xl);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+}
+
+.modal-card--confirm .btn-ghost,
+.modal-card--confirm .btn-primary {
+  width: 100%;
+  justify-content: center;
 }

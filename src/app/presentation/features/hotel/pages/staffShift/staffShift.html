@@ -456,7 +456,7 @@
         <div class="form-section-fields">
           <label class="field-group field-group--full">
             <span class="field-label">Nombre del turno</span>
-            <input type="text" class="field-input" [value]="selectedShiftDetail()!.name" />
+            <input type="text" class="field-input" [(ngModel)]="editShiftNameValue" />
           </label>
         </div>
       </div>
@@ -466,12 +466,12 @@
         <div class="form-section-fields form-section-fields--2col">
           <label class="field-group">
             <span class="field-label">Fecha de inicio</span>
-            <input type="date" class="field-input" [value]="selectedShiftDetail()!.startDate" 
+            <input type="date" class="field-input" [(ngModel)]="editStartDateValue"
               [disabled]="isDateLocked(selectedShiftDetail()!.startDate)" />
           </label>
           <label class="field-group">
             <span class="field-label">Fecha de fin</span>
-            <input type="date" class="field-input" [value]="selectedShiftDetail()!.endDate" />
+            <input type="date" class="field-input" [(ngModel)]="editEndDateValue" />
           </label>
         </div>
       </div>
@@ -481,11 +481,22 @@
         <div class="form-section-fields form-section-fields--2col">
           <label class="field-group">
             <span class="field-label">Hora inicio</span>
-            <input type="time" class="field-input" [value]="selectedShiftDetail()!.timeRange.split('-')[0].trim()" />
+            <input type="time" class="field-input" [(ngModel)]="editStartHourValue" />
           </label>
           <label class="field-group">
             <span class="field-label">Hora fin</span>
-            <input type="time" class="field-input" [value]="selectedShiftDetail()!.timeRange.split('-')[1].trim()" />
+            <input type="time" class="field-input" [(ngModel)]="editEndHourValue" />
+          </label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <span class="form-section-label">Notas</span>
+        <div class="form-section-fields">
+          <label class="field-group field-group--full">
+            <span class="field-label">Observaciones (opcional)</span>
+            <textarea class="field-input field-input--textarea" [(ngModel)]="editNotesValue"
+              placeholder="Ej: Ajuste por cambios de cobertura de emergencia."></textarea>
           </label>
         </div>
       </div>
@@ -498,13 +509,40 @@
         Cerrar
       </button>
       } @else {
-      <button type="button" class="btn-ghost" (click)="cancelEditingDetail()">
+      <button type="button" class="btn-ghost" (click)="cancelEditingDetail()" [disabled]="isUpdating()">
         Cancelar
       </button>
-      <button type="button" class="btn-primary">
+      <button type="button" class="btn-primary" (click)="openConfirmEditModal()" [disabled]="isUpdating()">
         Actualizar turno
       </button>
       }
+    </footer>
+  </dialog>
+  }
+
+  @if (isConfirmEditModalOpen()) {
+  <div class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmEditModal()"></div>
+  <dialog class="modal-card modal-card--confirm" open aria-modal="true">
+    <header class="modal-header">
+      <div class="confirm-icon-wrapper">
+        <ng-icon name="bootstrapExclamationTriangle" size="24"></ng-icon>
+      </div>
+      <h2 id="confirm-modal-title">Confirmar edición</h2>
+    </header>
+
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas guardar los cambios realizados en este turno?</p>
+      <p class="confirm-detail">Esta accion actualizara la informacion para todas las asignaciones futuras vinculadas.
+      </p>
+    </div>
+
+    <footer class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeConfirmEditModal()" [disabled]="isUpdating()">
+        No, cancelar
+      </button>
+      <button type="button" class="btn-primary" (click)="confirmUpdateShift()" [disabled]="isUpdating()">
+        {{ isUpdating() ? 'Actualizando...' : 'Si, confirmar' }}
+      </button>
     </footer>
   </dialog>
   }
