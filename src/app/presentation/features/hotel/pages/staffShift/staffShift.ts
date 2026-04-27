@@ -383,7 +383,7 @@ export class StaffShiftComponent implements OnInit {
     this.getShiftsUseCase.execute().subscribe({
       next: (shifts) => {
         const mappedShifts: FixedShiftCard[] = shifts.map((s) => ({
-          id: s.id ?? Math.random(),
+          id: s.id ?? crypto.randomUUID(),
           name: s.name,
           timeRange: `${s.startHour} - ${s.endHour}`,
           startDate: s.startDate.split('T')[0],
