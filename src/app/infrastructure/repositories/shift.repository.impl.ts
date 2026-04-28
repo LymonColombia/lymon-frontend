@@ -43,5 +43,11 @@ export class ShiftRepositoryImpl extends ShiftRepository {
       data
     );
   }
+
+  deleteShift(id: string): Observable<void> {
+    return this.http.delete<void>(
+      `${environment.apiUrl}${environment.shifts.endpoint}/${id}`
+    );
+  }
 }
 
