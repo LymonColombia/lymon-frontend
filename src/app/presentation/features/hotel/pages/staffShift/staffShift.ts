@@ -13,6 +13,7 @@ import { CreateShiftUseCase } from '@/domain/use-cases/shift/create-shift.use-ca
 import { GetShiftsUseCase } from '@/domain/use-cases/shift/get-shifts.use-case';
 import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
 import { UpdateShiftUseCase } from '@/domain/use-cases/shift/update-shift.use-case';
+import { DeleteShiftUseCase } from '@/domain/use-cases/shift/delete-shift.use-case';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffMember, Property } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -84,6 +85,7 @@ export class StaffShiftComponent implements OnInit {
   private readonly createShiftUseCase = inject(CreateShiftUseCase);
   private readonly getShiftsUseCase = inject(GetShiftsUseCase);
   private readonly updateShiftUseCase = inject(UpdateShiftUseCase);
+  private readonly deleteShiftUseCase = inject(DeleteShiftUseCase);
   private readonly getStaffUseCase = inject(GetStaffUseCase);
   private readonly staffRepository = inject(StaffRepository);
 
@@ -129,7 +131,9 @@ export class StaffShiftComponent implements OnInit {
   readonly isCreatingShift = signal(false);
   readonly isEditingDetail = signal(false);
   readonly isConfirmEditModalOpen = signal(false);
+  readonly isConfirmDeleteModalOpen = signal(false);
   readonly isUpdating = signal(false);
+  readonly isDeleting = signal(false);
 
   editShiftNameValue = '';
   editStartDateValue = '';
@@ -508,6 +512,7 @@ export class StaffShiftComponent implements OnInit {
     this.selectedShiftDetail.set(null);
     this.isEditingDetail.set(false);
     this.isConfirmEditModalOpen.set(false);
+    this.isConfirmDeleteModalOpen.set(false);
   }
 
   startEditingDetail(): void {
@@ -536,6 +541,37 @@ export class StaffShiftComponent implements OnInit {
 
   closeConfirmEditModal(): void {
     this.isConfirmEditModalOpen.set(false);
+  }
+
+  openConfirmDeleteModal(): void {
+    this.isConfirmDeleteModalOpen.set(true);
+  }
+
+  closeConfirmDeleteModal(): void {
+    this.isConfirmDeleteModalOpen.set(false);
+  }
+
+  confirmDeleteShift(): void {
+    const detail = this.selectedShiftDetail();
+    if (!detail?.id) {
+      this.showNotification('Error: ID del turno no encontrado', 'error');
+      return;
+    }
+
+    this.isDeleting.set(true);
+    this.deleteShiftUseCase.execute(detail.id.toString()).subscribe({
+      next: () => {
+        this.showNotification('Turno eliminado correctamente', 'success');
+        this.isDeleting.set(false);
+        this.closeConfirmDeleteModal();
+        this.closeShiftDetail();
+        this.loadFixedShifts();
+      },
+      error: () => {
+        this.showNotification('Error al eliminar el turno', 'error');
+        this.isDeleting.set(false);
+      }
+    });
   }
 
   confirmUpdateShift(): void {

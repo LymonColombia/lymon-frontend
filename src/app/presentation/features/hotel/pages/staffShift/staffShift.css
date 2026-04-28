@@ -577,9 +577,9 @@
   box-shadow: var(--shadow-lg);
   padding: var(--spacing-lg);
   z-index: 81;
-  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .modal-header {
@@ -880,6 +880,7 @@
 .modal-card--detail-wide {
   width: min(800px, calc(100vw - 32px));
 }
+
 .modal-header--detail {
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border-light);
@@ -928,8 +929,15 @@
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .detail-item {
@@ -963,8 +971,15 @@
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive: stack section grid on small screens */
@@ -1062,8 +1077,13 @@
 }
 
 @keyframes timeline-shrink {
-  from { width: 100%; }
-  to { width: 0%; }
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
 }
 
 /* ── Confirmation Modal ────────────────────────────────────────────────── */
@@ -1072,19 +1092,34 @@
   width: min(440px, calc(100vw - 32px));
   text-align: center;
   padding: var(--spacing-xl) var(--spacing-lg) !important;
-  z-index: 101;
+  z-index: var(--z-modal);
+  animation: modal-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .modal-backdrop--confirm {
-  z-index: 100;
+  z-index: var(--z-modal-backdrop);
   background: rgba(16, 24, 40, 0.45);
+  backdrop-filter: blur(2px);
+  animation: fade-in 0.2s ease;
 }
 
 .confirm-icon-wrapper {
   width: 56px;
   height: 56px;
-  background: #fff4ed;
-  color: #c2410c;
+  background: #fff8e1;
+  color: var(--color-warning);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
@@ -1126,4 +1161,19 @@
 .modal-card--confirm .btn-primary {
   width: 100%;
   justify-content: center;
+}
+
+.confirm-icon-wrapper--danger {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+.btn-primary--danger {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.btn-primary--danger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
 }
