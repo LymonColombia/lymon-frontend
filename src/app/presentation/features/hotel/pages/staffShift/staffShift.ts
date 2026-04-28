@@ -129,7 +129,9 @@ export class StaffShiftComponent implements OnInit {
   readonly isCreatingShift = signal(false);
   readonly isEditingDetail = signal(false);
   readonly isConfirmEditModalOpen = signal(false);
+  readonly isConfirmDeleteModalOpen = signal(false);
   readonly isUpdating = signal(false);
+  readonly isDeleting = signal(false);
 
   editShiftNameValue = '';
   editStartDateValue = '';
@@ -508,6 +510,7 @@ export class StaffShiftComponent implements OnInit {
     this.selectedShiftDetail.set(null);
     this.isEditingDetail.set(false);
     this.isConfirmEditModalOpen.set(false);
+    this.isConfirmDeleteModalOpen.set(false);
   }
 
   startEditingDetail(): void {
@@ -536,6 +539,25 @@ export class StaffShiftComponent implements OnInit {
 
   closeConfirmEditModal(): void {
     this.isConfirmEditModalOpen.set(false);
+  }
+
+  openConfirmDeleteModal(): void {
+    this.isConfirmDeleteModalOpen.set(true);
+  }
+
+  closeConfirmDeleteModal(): void {
+    this.isConfirmDeleteModalOpen.set(false);
+  }
+
+  confirmDeleteShift(): void {
+    this.isDeleting.set(true);
+    setTimeout(() => {
+      this.showNotification('Turno eliminado correctamente', 'success');
+      this.isDeleting.set(false);
+      this.closeConfirmDeleteModal();
+      this.closeShiftDetail();
+      this.loadFixedShifts();
+    }, 1500);
   }
 
   confirmUpdateShift(): void {

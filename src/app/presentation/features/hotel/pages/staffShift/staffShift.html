@@ -421,7 +421,7 @@
         <button type="button" class="icon-btn icon-btn--edit" aria-label="Editar turno" (click)="startEditingDetail()">
           <ng-icon name="bootstrapPencil" size="16"></ng-icon>
         </button>
-        <button type="button" class="icon-btn icon-btn--delete" aria-label="Eliminar turno">
+        <button type="button" class="icon-btn icon-btn--delete" aria-label="Eliminar turno" (click)="openConfirmDeleteModal()">
           <ng-icon name="bootstrapTrash" size="16"></ng-icon>
         </button>
       </div>
@@ -544,6 +544,32 @@
       </button>
       <button type="button" class="btn-primary" (click)="confirmUpdateShift()" [disabled]="isUpdating()">
         {{ isUpdating() ? 'Actualizando...' : 'Si, confirmar' }}
+      </button>
+    </footer>
+  </dialog>
+  }
+
+  @if (isConfirmDeleteModalOpen()) {
+  <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmDeleteModal()" aria-label="Cerrar confirmación"></button>
+  <dialog class="modal-card modal-card--confirm" open aria-modal="true">
+    <header class="modal-header">
+      <div class="confirm-icon-wrapper confirm-icon-wrapper--danger">
+        <ng-icon name="bootstrapTrash" size="24"></ng-icon>
+      </div>
+      <h2 id="delete-modal-title">¿Eliminar turno?</h2>
+    </header>
+
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas eliminar permanentemente el turno <strong>"{{ selectedShiftDetail()?.name }}"</strong>?</p>
+      <p class="confirm-detail">Esta acción no se puede deshacer y eliminará todas las asignaciones futuras.</p>
+    </div>
+
+    <footer class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeConfirmDeleteModal()" [disabled]="isDeleting()">
+        No, cancelar
+      </button>
+      <button type="button" class="btn-primary btn-primary--danger" (click)="confirmDeleteShift()" [disabled]="isDeleting()">
+        {{ isDeleting() ? 'Eliminando...' : 'Si, eliminar' }}
       </button>
     </footer>
   </dialog>
