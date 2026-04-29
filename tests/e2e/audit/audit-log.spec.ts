@@ -8,13 +8,13 @@
  */
 
 import { test, expect } from '../../fixtures/api.fixture';
-import { LyhostFlow } from '../../support/screenplay/lyhost-flow';
+import { ManagerFlow } from '../../support/screenplay/manager-flow';
 
 test.describe('Feature: Audit Log', () => {
-  let lyhost: LyhostFlow;
+  let manager: ManagerFlow;
 
   test.beforeEach(async ({ page }) => {
-    lyhost = new LyhostFlow(page);
+    manager = new ManagerFlow(page);
     // Session already loaded from storageState — land on dashboard.
     await page.goto('/dashboard');
   });
@@ -27,7 +27,7 @@ test.describe('Feature: Audit Log', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: audit log list is visible and contains entries', async ({ page }) => {
     // When
-    await lyhost.openAuditLogPage();
+    await manager.openAuditLogPage();
 
     // Then
     await expect(page.getByRole('heading')).toContainText('Registros de Auditoría');

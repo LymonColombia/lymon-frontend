@@ -1,25 +1,10 @@
 import { BrowseTheWeb } from '../abilities/browse-the-web.ability';
+import { Actor } from './actor';
 
-export type ActorTask = (actor: GuestActor) => Promise<void>;
-export type ActorQuestion<T> = (actor: GuestActor) => Promise<T>;
-
-export class GuestActor {
-  private constructor(
-    public readonly name: string,
-    public readonly browse: BrowseTheWeb,
-  ) {}
-
+export class GuestActor extends Actor {
   static named(name: string, browse: BrowseTheWeb): GuestActor {
     return new GuestActor(name, browse);
   }
-
-  async attemptsTo(...tasks: ActorTask[]): Promise<void> {
-    for (const task of tasks) {
-      await task(this);
-    }
-  }
-
-  async asks<T>(question: ActorQuestion<T>): Promise<T> {
-    return question(this);
-  }
 }
+
+export { ActorTask, ActorQuestion } from './actor.types';

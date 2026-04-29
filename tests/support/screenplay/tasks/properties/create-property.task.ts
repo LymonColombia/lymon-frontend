@@ -1,4 +1,5 @@
-import { ActorTask, GuestActor } from '../../actors/guest.actor';
+import { ActorTask } from '../../actors/guest.actor';
+import { Actor } from '../../actors/actor';
 
 export interface CreatePropertyData {
   name: string;
@@ -19,7 +20,7 @@ export interface CreatePropertyData {
 }
 
 /** Navigate to /properties via the sidebar link */
-export const openPropertiesPage = (): ActorTask => async (actor: GuestActor) => {
+export const openPropertiesPage = (): ActorTask => async (actor: Actor) => {
   await actor.browse.page.getByRole('link', { name: 'Propiedades y Unidades' }).click();
 };
 
@@ -28,7 +29,7 @@ export const openPropertiesPage = (): ActorTask => async (actor: GuestActor) => 
  * Handles both the empty-state ("Crear primera propiedad") and the normal
  * ("Nueva Propiedad") button.
  */
-export const openCreatePropertyForm = (): ActorTask => async (actor: GuestActor) => {
+export const openCreatePropertyForm = (): ActorTask => async (actor: Actor) => {
   const page = actor.browse.page;
 
   // 1. Wait for properties to load (either list or empty state)
@@ -51,7 +52,7 @@ export const openCreatePropertyForm = (): ActorTask => async (actor: GuestActor)
 /** Fill and submit the property creation form */
 export const fillPropertyForm =
   (data: CreatePropertyData): ActorTask =>
-  async (actor: GuestActor) => {
+  async (actor: Actor) => {
     const page = actor.browse.page;
 
     await page.getByRole('textbox', { name: 'Hotel Paraíso' }).fill(data.name);
@@ -87,14 +88,14 @@ export const fillPropertyForm =
   };
 
 /** Submit the "Crear Propiedad" button */
-export const submitPropertyForm = (): ActorTask => async (actor: GuestActor) => {
+export const submitPropertyForm = (): ActorTask => async (actor: Actor) => {
   await actor.browse.page.locator('button').filter({ hasText: 'Crear Propiedad' }).click();
 };
 
 /** Delete a property by exact name from the /properties page */
 export const deletePropertyByName =
   (propertyName: string): ActorTask =>
-  async (actor: GuestActor) => {
+  async (actor: Actor) => {
     const page = actor.browse.page;
     await page.goto('/properties');
 

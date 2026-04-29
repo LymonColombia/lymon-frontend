@@ -8,7 +8,7 @@
  */
 
 import { test, expect } from '../../fixtures/api.fixture';
-import { LyhostFlow } from '../../support/screenplay/lyhost-flow';
+import { ManagerFlow } from '../../support/screenplay/manager-flow';
 
 // ─── Test data ────────────────────────────────────────────────────────────────
 
@@ -33,10 +33,10 @@ const PROPERTY = {
 // ─── Suite ───────────────────────────────────────────────────────────────────
 
 test.describe('Feature: Property Creation', () => {
-  let lyhost: LyhostFlow;
+  let manager: ManagerFlow;
 
   test.beforeEach(async ({ page }) => {
-    lyhost = new LyhostFlow(page);
+    manager = new ManagerFlow(page);
     // Navigate to /properties — session is already loaded from storageState.
     await page.goto('/properties');
   });
@@ -54,7 +54,7 @@ test.describe('Feature: Property Creation', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: manager creates a new property', async ({ page }) => {
     // When
-    await lyhost.createProperty(PROPERTY);
+    await manager.createProperty(PROPERTY);
 
     // Then
     const layout = page.locator('app-hotel-page-layout');

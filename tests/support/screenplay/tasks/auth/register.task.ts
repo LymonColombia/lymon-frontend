@@ -1,4 +1,5 @@
-import { ActorTask, GuestActor } from '../../actors/guest.actor';
+import { ActorTask } from '../../actors/guest.actor';
+import { Actor } from '../../actors/actor';
 import { clickButtonLabeled, clickLinkLabeled } from '../../interactions/click-button.interaction';
 import { fillTextFields } from '../../interactions/fill-form.interaction';
 
@@ -28,11 +29,11 @@ export const registerGuest =
     await clickButtonLabeled(/Crear Cuenta/i)(actor);
   };
 
-export const submitGuestRegister = (): ActorTask => async (actor: GuestActor) => {
+export const submitGuestRegister = (): ActorTask => async (actor: Actor) => {
   await clickButtonLabeled(/Crear Cuenta/i)(actor);
 };
 
-export const continueToGuestLogin = (): ActorTask => async (actor: GuestActor) => {
+export const continueToGuestLogin = (): ActorTask => async (actor: Actor) => {
   const loginLink = actor.browse.page.getByRole('link', { name: /Iniciar Sesión/i });
 
   if (await loginLink.isVisible()) {

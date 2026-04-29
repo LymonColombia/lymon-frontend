@@ -7,18 +7,18 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { LyhostFlow } from '../../../support/screenplay/lyhost-flow';
+import { GuestFlow } from '../../../support/screenplay/guest-flow';
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('Feature: Guest Login', () => {
-  let lyhost: LyhostFlow;
+  let guest: GuestFlow;
 
   test.beforeEach(async ({ page }) => {
-    lyhost = new LyhostFlow(page);
+    guest = new GuestFlow(page);
     // Given — opens Lyhost landing and navigates to guest area
-    await lyhost.openHome();
-    await lyhost.openGuestArea();
+    await guest.openHome();
+    await guest.openGuestArea();
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -29,7 +29,7 @@ test.describe('Feature: Guest Login', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: guest login succeeds', async ({ page }) => {
     // When
-    await lyhost.signInAsGuest({
+    await guest.signInAsGuest({
       email: 'prueba123@prueba.com',
       password: 'SecurePass123!',
     });

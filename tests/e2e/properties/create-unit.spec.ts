@@ -9,7 +9,7 @@
  */
 
 import { test, expect } from '../../fixtures/api.fixture';
-import { LyhostFlow } from '../../support/screenplay/lyhost-flow';
+import { ManagerFlow } from '../../support/screenplay/manager-flow';
 
 // ─── Test data ────────────────────────────────────────────────────────────────
 
@@ -60,10 +60,10 @@ const UNIT = {
 // ─── Suite ───────────────────────────────────────────────────────────────────
 
 test.describe('Feature: Unit Creation', () => {
-  let lyhost: LyhostFlow;
+  let manager: ManagerFlow;
 
   test.beforeEach(async ({ page, apiClient }) => {
-    lyhost = new LyhostFlow(page);
+    manager = new ManagerFlow(page);
 
     // 1. Setup: Create property via API
     await apiClient.deleteProperty(PROPERTY_DATA.name); // Clean old runs
@@ -88,11 +88,13 @@ test.describe('Feature: Unit Creation', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: manager creates a unit from the properties page', async ({ page }) => {
     // When
-    await lyhost.openPropertyUnits(PROPERTY_DATA.name);
-    await lyhost.createUnit(UNIT);
+    await manager.openPropertyUnits(PROPERTY_DATA.name);
+    await manager.createUnit(UNIT);
 
     // Then
-    await expect(page.locator('h3')).toContainText(UNIT.name);
-    await expect(page.getByText(`${UNIT.name}`)).toBeVisible();
+    const title = await manager.page.locator('h3').textContent();
+    expect(title?.trim() ?? '').toContain(UNIT.name);
+
+    expect(await page.getByText(`${UNIT.name}`).isVisible()).toBeTruthy();
   });
 });

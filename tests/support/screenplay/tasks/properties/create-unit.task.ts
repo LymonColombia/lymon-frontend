@@ -1,20 +1,21 @@
-import { ActorTask, GuestActor } from '../../actors/guest.actor';
+import { ActorTask } from '../../actors/guest.actor';
+import { Actor } from '../../actors/actor';
 
 export interface CreateUnitData {
   name: string;
   pricePerNight: string;
   description: string;
   roomName: string;
-  amenities: string[];
+  amenities: readonly string[];
 }
 
-export const openPropertiesPage = (): ActorTask => async (actor: GuestActor) => {
+export const openPropertiesPage = (): ActorTask => async (actor: Actor) => {
   await actor.browse.page.getByRole('link', { name: 'Propiedades y Unidades' }).click();
 };
 
 export const openPropertyUnits =
   (propertyLocatorText: string): ActorTask =>
-  async (actor: GuestActor) => {
+  async (actor: Actor) => {
     await actor.browse.page
       .getByRole('article')
       .filter({ hasText: propertyLocatorText })
@@ -28,7 +29,7 @@ export const openPropertyUnits =
 
 export const createUnit =
   (data: CreateUnitData): ActorTask =>
-  async (actor: GuestActor) => {
+  async (actor: Actor) => {
     const page = actor.browse.page;
 
     await page.getByRole('textbox', { name: 'Deluxe Ocean View Suite' }).click();
@@ -55,7 +56,7 @@ export const createUnit =
  */
 export const deleteUnitByName =
   (unitName: string): ActorTask =>
-  async (actor: GuestActor) => {
+  async (actor: Actor) => {
     const page = actor.browse.page;
 
     const card = page.getByRole('article').filter({ hasText: unitName });

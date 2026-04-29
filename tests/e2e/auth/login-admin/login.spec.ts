@@ -9,18 +9,18 @@
  */
 
 import { test } from '@playwright/test';
-import { LyhostFlow } from '../../../support/screenplay/lyhost-flow';
+import { ManagerFlow } from '../../../support/screenplay/manager-flow';
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('Feature: Manager Authentication', () => {
-  let lyhost: LyhostFlow;
+  let manager: ManagerFlow;
 
   test.beforeEach(async ({ page }) => {
-    lyhost = new LyhostFlow(page);
+    manager = new ManagerFlow(page);
     // Given — manager opens the Lyhost landing page
-    await lyhost.openHome();
-    await lyhost.openManagerLogin();
+    await manager.openHome();
+    await manager.openManagerLogin();
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -31,15 +31,15 @@ test.describe('Feature: Manager Authentication', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: manager login succeeds', async () => {
     // When
-    await lyhost.signInAsManager({
+    await manager.signInAsManager({
       email: process.env.MANAGER_EMAIL ?? 'villajaramillofelipe4@gmail.com',
       password: process.env.MANAGER_PASSWORD ?? 'SecurePass123!',
     });
 
-    await lyhost.page.waitForURL(/\/dashboard/);
+    await manager.page.waitForURL(/\/dashboard/);
 
     // Then
-    await lyhost.expectManagerDashboard();
+    await manager.expectManagerDashboard();
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ test.describe('Feature: Manager Authentication', () => {
     await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
 
     // Then
-    await lyhost.expectManagerLoginError('Ingresa un correo válido.');
+    await manager.expectManagerLoginError('Ingresa un correo válido.');
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -66,13 +66,13 @@ test.describe('Feature: Manager Authentication', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: manager login rejects wrong password', async () => {
     // When
-    await lyhost.signInAsManager({
+    await manager.signInAsManager({
       email: process.env.MANAGER_EMAIL ?? 'villajaramillofelipe4@gmail.com',
       password: 'wrongpassword',
     });
 
     // Then
-    await lyhost.expectManagerLoginError('Correo o contraseña incorrectos.');
+    await manager.expectManagerLoginError('Correo o contraseña incorrectos.');
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -83,13 +83,13 @@ test.describe('Feature: Manager Authentication', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: manager login rejects wrong user', async () => {
     // When
-    await lyhost.signInAsManager({
+    await manager.signInAsManager({
       email: 'unknown.user@nonexistent.com',
       password: 'SecurePass123!',
     });
 
     // Then
-    await lyhost.expectManagerLoginError('Correo o contraseña incorrectos.');
+    await manager.expectManagerLoginError('Correo o contraseña incorrectos.');
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ test.describe('Feature: Manager Authentication', () => {
     await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
 
     // Then
-    await lyhost.expectManagerLoginError('El correo es requerido.');
+    await manager.expectManagerLoginError('El correo es requerido.');
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -121,6 +121,6 @@ test.describe('Feature: Manager Authentication', () => {
     await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
 
     // Then
-    await lyhost.expectManagerLoginError('La contraseña es requerida.');
+    await manager.expectManagerLoginError('La contraseña es requerida.');
   });
 });

@@ -35,7 +35,7 @@ export default defineConfig({
 
   use: {
     trace: 'on-first-retry',
-    baseURL: 'https://lymon.com.co',
+    baseURL: 'https://lyhost.netlify.app',
   },
 
   projects: [

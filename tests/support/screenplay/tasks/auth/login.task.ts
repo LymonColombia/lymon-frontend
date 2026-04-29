@@ -1,4 +1,5 @@
-import { GuestActor, ActorTask } from '../../actors/guest.actor';
+import { ActorTask } from '../../actors/guest.actor';
+import { Actor } from '../../actors/actor';
 import { clickButtonLabeled } from '../../interactions/click-button.interaction';
 import { fillTextFields } from '../../interactions/fill-form.interaction';
 
@@ -9,15 +10,15 @@ export interface LoginCredentials {
 
 const LYHOST_HOME_URL = '/lyhost';
 
-export const openLyhostHome = (): ActorTask => async (actor: GuestActor) => {
+export const openLyhostHome = (): ActorTask => async (actor: Actor) => {
   await actor.browse.page.goto(LYHOST_HOME_URL);
 };
 
-export const openManagerLogin = (): ActorTask => async (actor: GuestActor) => {
+export const openManagerLogin = (): ActorTask => async (actor: Actor) => {
   await actor.browse.page.locator('button').filter({ hasText: 'Acceder como gestor' }).click();
 };
 
-export const openGuestArea = (): ActorTask => async (actor: GuestActor) => {
+export const openGuestArea = (): ActorTask => async (actor: Actor) => {
   await actor.browse.page.getByText('Acceder como huésped').click();
 };
 

@@ -8,7 +8,7 @@
  */
 
 import { test, expect } from '../../fixtures/api.fixture';
-import { LyhostFlow } from '../../support/screenplay/lyhost-flow';
+import { ManagerFlow } from '../../support/screenplay/manager-flow';
 
 // ─── Test data ────────────────────────────────────────────────────────────────
 
@@ -21,19 +21,19 @@ const INCIDENT = {
 // ─── Suite ───────────────────────────────────────────────────────────────────
 
 test.describe('Feature: Incident Report Creation', () => {
-  let lyhost: LyhostFlow;
+  let manager: ManagerFlow;
 
   test.beforeEach(async ({ page }) => {
-    lyhost = new LyhostFlow(page);
+    manager = new ManagerFlow(page);
     // Land on the domain so session storage/auth state is correctly applied
     await page.goto('/');
     // Navigate to incident-report list
-    await lyhost.openIncidentReportPage();
+    await manager.openIncidentReportPage();
   });
 
   test.afterEach(async () => {
     // Clean-up: remove the incident report so the next run starts fresh.
-    await lyhost.deleteIncidentReport(INCIDENT.title);
+    await manager.deleteIncidentReport(INCIDENT.title);
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ test.describe('Feature: Incident Report Creation', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: manager creates a new incident report', async ({ page }) => {
     // When
-    await lyhost.createIncidentReport(INCIDENT);
+    await manager.createIncidentReport(INCIDENT);
 
     // Then
     const layout = page.locator('app-hotel-page-layout');

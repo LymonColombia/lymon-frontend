@@ -9,19 +9,19 @@
  */
 
 import { test } from '@playwright/test';
-import { LyhostFlow } from '../../../support/screenplay/lyhost-flow';
+import { GuestFlow } from '../../../support/screenplay/guest-flow';
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('Feature: Guest Registration', () => {
-  let lyhost: LyhostFlow;
+  let guest: GuestFlow;
 
   test.beforeEach(async ({ page }) => {
-    lyhost = new LyhostFlow(page);
+    guest = new GuestFlow(page);
     // Given — guest opens registration form
-    await lyhost.openHome();
-    await lyhost.openGuestArea();
-    await lyhost.openGuestRegister();
+    await guest.openHome();
+    await guest.openGuestArea();
+    await guest.openGuestRegister();
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ test.describe('Feature: Guest Registration', () => {
     const email = `test${Date.now()}@gmail.com`;
 
     // When
-    await lyhost.registerGuest({
+    await guest.registerGuest({
       fullName: 'Luis Pablo Goez Sepulveda',
       email,
       password: '12345678',
@@ -43,12 +43,12 @@ test.describe('Feature: Guest Registration', () => {
     });
 
     // Then
-    await lyhost.expectRegistrationNotice();
+    await guest.expectRegistrationNotice();
 
     // Continue to login and verify redirect
-    await lyhost.continueToGuestLogin();
-    await lyhost.signInAsGuest({ email, password: '12345678' });
-    await lyhost.expectBookingRedirect();
+    await guest.continueToGuestLogin();
+    await guest.signInAsGuest({ email, password: '12345678' });
+    await guest.expectBookingRedirect();
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ test.describe('Feature: Guest Registration', () => {
     await page.getByRole('button', { name: /Crear Cuenta/i }).click();
 
     // Then
-    await lyhost.expectGuestRegisterError(/requerido|required|obligatorio/i);
+    await guest.expectGuestRegisterError(/requerido|required|obligatorio/i);
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -73,7 +73,7 @@ test.describe('Feature: Guest Registration', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: guest registration rejects short password', async () => {
     // When
-    await lyhost.registerGuest({
+    await guest.registerGuest({
       fullName: 'Maria López',
       email: `test${Date.now()}@gmail.com`,
       password: '123',
@@ -82,7 +82,7 @@ test.describe('Feature: Guest Registration', () => {
     });
 
     // Then
-    await lyhost.expectGuestRegisterError(/contraseña|password|caracteres|mínimo/i);
+    await guest.expectGuestRegisterError(/contraseña|password|caracteres|mínimo/i);
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ test.describe('Feature: Guest Registration', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: guest registration rejects duplicate email', async () => {
     // When
-    await lyhost.registerGuest({
+    await guest.registerGuest({
       fullName: 'Otro Usuario',
       email: 'alsides.goez@hotmail.com',
       password: '12345678',
@@ -102,7 +102,9 @@ test.describe('Feature: Guest Registration', () => {
     });
 
     // Then
-    await lyhost.expectGuestRegisterError(/correo.*registrado|ya está registrado|duplicado|already/i);
+    await guest.expectGuestRegisterError(
+      /correo.*registrado|ya está registrado|duplicado|already/i,
+    );
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -113,7 +115,7 @@ test.describe('Feature: Guest Registration', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: guest registration rejects invalid email', async () => {
     // When
-    await lyhost.registerGuest({
+    await guest.registerGuest({
       fullName: 'Juan Pérez',
       email: 'juanperez',
       password: '12345678',
@@ -122,7 +124,7 @@ test.describe('Feature: Guest Registration', () => {
     });
 
     // Then
-    await lyhost.expectGuestRegisterError(/email|correo|inválido|válido|invalid/i);
+    await guest.expectGuestRegisterError(/email|correo|inválido|válido|invalid/i);
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -141,6 +143,6 @@ test.describe('Feature: Guest Registration', () => {
     await page.getByRole('button', { name: /Crear Cuenta/i }).click();
 
     // Then
-    await lyhost.expectGuestRegisterError(/nombre|requerido|required|obligatorio/i);
+    await guest.expectGuestRegisterError(/nombre|requerido|required|obligatorio/i);
   });
 });

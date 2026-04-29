@@ -1,4 +1,4 @@
-import { GuestActor } from '../actors/guest.actor';
+import { Actor } from '../actors/actor';
 
 export interface TextFieldInput {
   name: string | RegExp;
@@ -7,7 +7,7 @@ export interface TextFieldInput {
 
 export const fillTextFields =
   (fields: TextFieldInput[]) =>
-  async (actor: GuestActor): Promise<void> => {
+  async (actor: Actor): Promise<void> => {
     for (const field of fields) {
       await actor.browse.page.getByRole('textbox', { name: field.name }).fill(field.value);
     }
