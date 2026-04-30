@@ -32,8 +32,8 @@ test.describe('Feature: Audit Log', () => {
     // Then
     await expect(page.getByRole('heading')).toContainText('Registros de Auditoría');
     await expect(page.locator('div').filter({ hasText: 'Todos los' }).nth(3)).toBeVisible();
-    await expect(page.locator('tbody')).toMatchAriaSnapshot(
-      `- cell /\\d+ de abr de \\d+, \\d+:\\d+ p\\. m\\./`,
+    await expect(page.locator('tbody tr').first().locator('td.cell-date')).toContainText(
+      /\d{1,2} de abr de \d{4}, \d{1,2}:\d{2} [ap]\.\s*m\./i,
     );
   });
 });
