@@ -1,6 +1,6 @@
-﻿import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { ExperienceHeroComponent } from './components/experience-hero/experience-hero';
+import { ExperienceHeroComponent ,ExperienceHeroFilters} from './components/experience-hero/experience-hero';
 import {
   ExperienceToolbarComponent,
   ExperienceCategoryFilter,
@@ -108,6 +108,11 @@ export class ExperienceComponent implements OnInit {
 
   onOwnerTypeChange(ownerType: ExperienceOwnerTypeFilter): void {
     this.selectedOwnerType.set(ownerType);
+  }
+
+  onHeroFiltersApply(filters: ExperienceHeroFilters): void {
+    this.selectedCategory.set(filters.category);
+    this.selectedOwnerType.set(filters.ownerType);
   }
 
   onToggleLike(experienceId: string): void {

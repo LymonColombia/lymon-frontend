@@ -17,20 +17,32 @@
   <div class="search-bar">
     
     <div class="filters-field">
-      <app-select id="category" name="category" [hasIcon]="true" [options]="categoryOptions">
+      <app-select
+        id="category"
+        name="category"
+        [hasIcon]="true"
+        [options]="categoryOptions"
+        [value]="categoryFilter()"
+        (valueChange)="onCategoryFilterChange($event)">
         <ng-icon icon class="field-icon" name="bootstrapClipboard2Check" size="16px" aria-hidden="true"></ng-icon>
       </app-select>
       <label for="category" class="filters-field-label">Tipo de Actividad</label>
     </div>
 
     <div class="filters-field">
-      <app-select id="ownerType" name="ownerType" [hasIcon]="true" [options]="ownerTypeOptions">
+      <app-select
+        id="ownerType"
+        name="ownerType"
+        [hasIcon]="true"
+        [options]="ownerTypeOptions"
+        [value]="ownerTypeFilter()"
+        (valueChange)="onOwnerTypeFilterChange($event)">
         <ng-icon icon class="field-icon" name="bootstrapPerson" size="16px" aria-hidden="true"></ng-icon>
       </app-select>
       <label for="ownerType" class="filters-field-label">Tipo de Propietario</label>
     </div>
 
-    <button class="btn-search" type="button">
+    <button class="btn-search" type="button" (click)="onSearch()">
       <ng-icon name="bootstrapSearch" size="16px" aria-hidden="true"></ng-icon>
       Buscar
     </button>
