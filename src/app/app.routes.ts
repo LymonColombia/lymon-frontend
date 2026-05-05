@@ -40,7 +40,7 @@ import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/
 import { InventoryComponent } from '@/presentation/features/hotel/pages/inventory/inventory';
 import { SessionsComponent } from '@/presentation/features/hotel/pages/sessions/sessions';
 import { ExperienceComponent } from './presentation/features/hotel/pages/experiences/experiences';
-import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-page/experience-detail-page';
+import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },

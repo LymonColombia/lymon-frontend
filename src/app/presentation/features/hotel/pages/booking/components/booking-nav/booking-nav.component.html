@@ -14,6 +14,21 @@
       </a>
     </div>
 
+    <div class="nav-center">
+      <div class="nav-divider">
+      <a class="nav-link" routerLink="/booking" routerLinkActive="nav-link--active">
+        <ng-icon name="bootstrapHouseDoor" size="15px" aria-hidden="true" />
+          Alojamiento
+      </a>
+      </div>
+      <div class="nav-divider">
+      <a class="nav-link" routerLink="/experiences" routerLinkActive="nav-link--active">
+        <ng-icon name="bootstrapCompass" size="15px" aria-hidden="true"/>
+        Experiencia
+      </a>
+      </div>
+    </div>
+
     <div class="nav-actions">
       @if (isAuthenticated()) {
         <div class="nav-profile-wrapper">

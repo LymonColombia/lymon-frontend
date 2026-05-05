@@ -1,3 +1,10 @@
+<app-header>
+    <app-button actions type="button" variant="secondary" size="medium" (click)="onBackToExperiences()" (keydown.enter)="onBackToExperiences()">
+        <ng-icon name="bootstrapChevronLeft" size="18px" aria-hidden="true"></ng-icon>
+        Volver
+    </app-button>
+</app-header>
+
 <section class="experience-detail-page">
   @if (isLoading()) {
     <div class="detail-state">Cargando experiencia...</div>

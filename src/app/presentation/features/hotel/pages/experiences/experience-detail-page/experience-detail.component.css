@@ -7,10 +7,6 @@
   margin-right: var(--spacing-md);
 }
 
-.experience-detail-section {
-  margin-top: var(--spacing-2xl);
-}
-
 .experience-detail-card {
   padding: var(--spacing-3xl);
   display: grid;
@@ -21,15 +17,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--spacing-lg);
-}
-
-.detail-eyebrow {
-  margin: 0;
-  font-size: var(--font-size-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-secondary);
+  gap: var(--spacing-xl);
 }
 
 .detail-title {

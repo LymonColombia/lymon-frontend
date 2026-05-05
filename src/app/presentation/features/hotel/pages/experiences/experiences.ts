@@ -12,6 +12,8 @@ import { ExperienceEmptyStateComponent } from './components/experience-empty-sta
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { EXPERIENCE_CATALOG } from './experiences.data';
 import { ExperienceDetail } from '@/domain/entities/experience.model';
+import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { BookingNavComponent } from "../booking/components/booking-nav/booking-nav.component";
 
 @Component({
   selector: 'app-experiences',
@@ -22,7 +24,8 @@ import { ExperienceDetail } from '@/domain/entities/experience.model';
     ExperienceCardComponent,
     ExperienceEmptyStateComponent,
     FooterComponent,
-  ],
+    BookingNavComponent
+],
   templateUrl: './experiences.html',
   styleUrl: './experiences.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +33,7 @@ import { ExperienceDetail } from '@/domain/entities/experience.model';
 
 export class ExperienceComponent implements OnInit {
   private readonly router = inject(Router);
+   readonly guestTokenService = inject(GuestTokenService);
 
   readonly isExperienceLoading = signal(false);
 
@@ -121,4 +125,24 @@ export class ExperienceComponent implements OnInit {
   goToExperienceDetails(experienceId: string): void {
     void this.router.navigate(['/experiences', experienceId]);
   }
+
+
+  readonly guestEmail = this.guestTokenService.getGuestEmail();
+  
+   onGuestLogin(): void {
+    this.router.navigate(['/guest/login']);
+  }
+
+  onMyReservations(): void {
+    this.router.navigate(['/guest/reservations']);
+  }
+
+  onGuestLogout(): void {
+    this.guestTokenService.clear();
+  }
+
+  goToRoomDetails(unitId: string): void {
+    this.router.navigate(['/room-details', unitId]);
+  }
+
 }

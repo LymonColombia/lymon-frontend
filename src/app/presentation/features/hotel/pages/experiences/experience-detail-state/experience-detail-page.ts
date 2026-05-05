@@ -3,14 +3,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
-import { ExperienceDetailComponent } from '../experience-detail/experience-detail.component';
+import { ExperienceDetailComponent } from '../experience-detail-page/experience-detail.component';
 import { EXPERIENCE_CATALOG } from '../experiences.data';
 import { ExperienceDetail } from '@/domain/entities/experience.model';
+import { HeaderComponent } from "@/presentation/shared/components/header/header.component";
+import { ButtonComponent } from "@/presentation/shared/components/button/button.component";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { bootstrapChevronLeft } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-experience-detail-page',
   standalone: true,
-  imports: [ExperienceDetailComponent, FooterComponent],
+  imports: [ExperienceDetailComponent, FooterComponent, HeaderComponent, ButtonComponent, NgIcon],
+  providers: [provideIcons({ bootstrapChevronLeft })],
   templateUrl: './experience-detail-page.html',
   styleUrl: './experience-detail-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
