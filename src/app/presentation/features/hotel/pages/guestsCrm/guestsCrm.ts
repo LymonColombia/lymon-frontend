@@ -90,21 +90,59 @@ export class GuestsCrmComponent implements OnInit {
     value: option.key,
     label: option.label,
   }));
+  readonly statusSelectOptions: SelectOption[] = [
+    { value: 'all', label: 'Todos los estados' },
+    { value: 'active', label: 'Activo' },
+    { value: 'blocked', label: 'Bloqueado' },
+    { value: 'archived', label: 'Archivado' },
+  ];
 
   readonly guests = signal<CrmGuest[]>([]);
+  readonly statusFilter = signal<CrmGuestStatus | 'all'>('all');
+  readonly activeTags = signal<string[]>([]);
 
   ngOnInit(): void {
     this.loadGuests();
   }
 
+  readonly availableTags = [
+    'vip',
+    'family',
+    'honeymoon',
+    'business',
+    'regular',
+    'pet friendly',
+    'accessibility needs',
+    'loyalty member',
+    'early check-in',
+    'late checkout',
+  ];
+
+  readonly tagLabels: Record<string, string> = {
+    'vip': 'VIP',
+    'family': 'Familia',
+    'honeymoon': 'Luna de miel',
+    'business': 'Negocios',
+    'regular': 'Regular',
+    'pet friendly': 'Mascotas',
+    'accessibility needs': 'Necesidades de accesibilidad',
+    'loyalty member': 'Miembro de fidelidad',
+    'early check-in': 'Check-in temprano',
+    'late checkout': 'Check-out tardío',
+  };
+
   readonly filteredGuests = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
     const field = this.searchField();
-    if (!term) {
-      return this.guests();
-    }
+    const status = this.statusFilter();
+    const tags = this.activeTags();
 
-    return this.guests().filter((guest) => guest[field].toLowerCase().includes(term));
+    return this.guests().filter((guest) => {
+      if (term && !guest[field].toLowerCase().includes(term)) return false;
+      if (status !== 'all' && guest.status !== status) return false;
+      if (tags.length > 0 && !tags.every((tag) => guest.tags?.includes(tag))) return false;
+      return true;
+    });
   });
 
   readonly totalPages = computed(() =>
@@ -144,6 +182,31 @@ export class GuestsCrmComponent implements OnInit {
   onSearchTermChange(value: string): void {
     this.searchTerm.set(value);
     this.currentPage.set(1);
+  }
+
+  onStatusFilterChange(value: string | number | null): void {
+    const status = value as CrmGuestStatus | 'all';
+    this.statusFilter.set(status);
+    this.currentPage.set(1);
+  }
+
+  toggleTag(tag: string): void {
+    const current = this.activeTags();
+    if (current.includes(tag)) {
+      this.activeTags.set(current.filter((t) => t !== tag));
+    } else {
+      this.activeTags.set([...current, tag]);
+    }
+    this.currentPage.set(1);
+  }
+
+  clearTags(): void {
+    this.activeTags.set([]);
+    this.currentPage.set(1);
+  }
+
+  isTagActive(tag: string): boolean {
+    return this.activeTags().includes(tag);
   }
 
   formatPhone(phone: string): string {
