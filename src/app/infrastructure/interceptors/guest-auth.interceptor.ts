@@ -30,11 +30,18 @@ export const guestAuthInterceptor: HttpInterceptorFn = (req, next) => {
   if (!accessToken) return next(req);
 
   if (isTokenExpiringSoon(accessToken, REFRESH_THRESHOLD_SECONDS)) {
+    const refreshToken = guestTokenService.getRefreshToken();
+    if (!refreshToken || isTokenExpired(refreshToken)) {
+      guestTokenService.clear();
+      void router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
+      return throwError(() => new Error('Guest session expired'));
+    }
+
     return refreshGuestToken(http, guestTokenService).pipe(
       switchMap((newToken) => next(withToken(req, newToken))),
       catchError(() => {
         guestTokenService.clear();
-        void router.navigateByUrl('/guest/login');
+        void router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
         return throwError(() => new Error('Guest session expired'));
       }),
     );
@@ -46,11 +53,18 @@ export const guestAuthInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
+      const refreshToken = guestTokenService.getRefreshToken();
+      if (!refreshToken || isTokenExpired(refreshToken)) {
+        guestTokenService.clear();
+        void router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
+        return throwError(() => error);
+      }
+
       return refreshGuestToken(http, guestTokenService).pipe(
         switchMap((newToken) => next(withToken(req, newToken))),
         catchError(() => {
           guestTokenService.clear();
-          void router.navigateByUrl('/guest/login');
+          void router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
           return throwError(() => error);
         }),
       );
@@ -108,6 +122,20 @@ function refreshGuestToken(
     );
 
   return guestRefreshInFlight$;
+}
+
+function isTokenExpired(token: string): boolean {
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) return true;
+    const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padding = '='.repeat((4 - (normalized.length % 4)) % 4);
+    const payload = JSON.parse(atob(normalized + padding)) as { exp?: number };
+    if (!payload.exp) return true;
+    return payload.exp <= Math.floor(Date.now() / 1000);
+  } catch {
+    return true;
+  }
 }
 
 function isTokenExpiringSoon(token: string, thresholdSeconds: number): boolean {
