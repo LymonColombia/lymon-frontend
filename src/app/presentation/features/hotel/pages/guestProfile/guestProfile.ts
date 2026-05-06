@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  HostListener,
   inject,
   OnInit,
   signal,
@@ -29,11 +30,15 @@ import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
 import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
+import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
 import { NgTemplateOutlet } from '@angular/common';
-import { HotelPageLayoutComponent, HotelPageIconDirective } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import {
+  HotelPageLayoutComponent,
+  HotelPageIconDirective,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import {
   SelectComponent,
@@ -64,6 +69,8 @@ import {
   bootstrapFileEarmark,
   bootstrapX,
   bootstrapPencil,
+  bootstrapSearch,
+  bootstrapCheck,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -85,7 +92,38 @@ type SelectValue = string | number | null;
 const NOTE_MAX_LENGTH = 280;
 const EMAIL_HISTORY_LIMIT = 5;
 
-const NOTE_CATEGORIES: readonly CrmGuestNoteCategory[] = ['general', 'preference', 'behavior', 'incident'];
+const NOTE_CATEGORIES: readonly CrmGuestNoteCategory[] = [
+  'general',
+  'preference',
+  'behavior',
+  'incident',
+];
+
+const AVAILABLE_TAGS: readonly string[] = [
+  'vip',
+  'family',
+  'honeymoon',
+  'business',
+  'regular',
+  'pet friendly',
+  'accessibility needs',
+  'loyalty member',
+  'early check-in',
+  'late checkout',
+];
+
+const TAG_LABELS: Record<string, string | undefined> = {
+  vip: 'VIP',
+  family: 'Familia',
+  honeymoon: 'Luna de miel',
+  business: 'Negocios',
+  regular: 'Regular',
+  'pet friendly': 'Mascotas',
+  'accessibility needs': 'Accesibilidad',
+  'loyalty member': 'Miembro fidelidad',
+  'early check-in': 'Check-in temprano',
+  'late checkout': 'Check-out tardío',
+};
 
 function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
   return typeof value === 'string' && (NOTE_CATEGORIES as readonly string[]).includes(value);
@@ -94,7 +132,15 @@ function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
 @Component({
   selector: 'app-guest-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HotelPageLayoutComponent, HotelPageIconDirective, ButtonComponent, SelectComponent, NgIcon, ModalComponent, NgTemplateOutlet],
+  imports: [
+    HotelPageLayoutComponent,
+    HotelPageIconDirective,
+    ButtonComponent,
+    SelectComponent,
+    NgIcon,
+    ModalComponent,
+    NgTemplateOutlet,
+  ],
   providers: [
     provideIcons({
       bootstrapPersonFill,
@@ -117,6 +163,8 @@ function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
       bootstrapFileEarmark,
       bootstrapX,
       bootstrapPencil,
+      bootstrapSearch,
+      bootstrapCheck,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -136,6 +184,7 @@ export class GuestProfileComponent implements OnInit {
   private readonly getCrmGuestEmailsUseCase = inject(GetCrmGuestEmailsUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
+  private readonly updateCrmGuestTagsUseCase = inject(UpdateCrmGuestTagsUseCase);
 
   readonly isGuestLoading = signal(true);
   readonly isBookingsLoading = signal(false);
@@ -204,8 +253,8 @@ export class GuestProfileComponent implements OnInit {
       .join(''),
   );
 
-  readonly guestTags = computed(() =>
-    this.guest()?.tags?.filter((tag) => tag.trim().length > 0) ?? [],
+  readonly guestTags = computed(
+    () => this.guest()?.tags?.filter((tag) => tag.trim().length > 0) ?? [],
   );
 
   readonly pinnedNotes = computed(() => this.notes().filter((n) => n.status === 'pinned'));
@@ -225,9 +274,7 @@ export class GuestProfileComponent implements OnInit {
 
   readonly totalBookings = computed(() => this.bookings().length);
 
-  readonly totalSpend = computed(() =>
-    this.bookings().reduce((sum, b) => sum + b.totalAmount, 0),
-  );
+  readonly totalSpend = computed(() => this.bookings().reduce((sum, b) => sum + b.totalAmount, 0));
 
   readonly avgStayNights = computed(() => {
     const bks = this.bookings();
@@ -283,6 +330,55 @@ export class GuestProfileComponent implements OnInit {
     { label: 'CRM de Huéspedes', route: '/crm/guests' },
     { label: this.guest()?.name ?? 'Perfil del huésped' },
   ]);
+
+  readonly availableTags = AVAILABLE_TAGS;
+  readonly tagLabels = TAG_LABELS;
+
+  readonly isTagPopoverOpen = signal(false);
+  readonly tagSearchQuery = signal('');
+
+  readonly filteredAvailableTags = computed(() => {
+    const q = this.tagSearchQuery().toLowerCase().trim();
+    if (!q) return AVAILABLE_TAGS;
+    return AVAILABLE_TAGS.filter((t) => (TAG_LABELS[t] ?? t).toLowerCase().includes(q));
+  });
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    if (this.isTagPopoverOpen()) {
+      this.isTagPopoverOpen.set(false);
+      this.tagSearchQuery.set('');
+    }
+  }
+
+  openTagPopover(event: Event): void {
+    event.stopPropagation();
+    this.tagSearchQuery.set('');
+    this.isTagPopoverOpen.set(true);
+  }
+
+  toggleTag(tag: string): void {
+    const guestId = this.guest()?.id?.trim();
+    if (!guestId) return;
+
+    const current = this.guestTags();
+    const newTags = current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag];
+
+    this.guest.update((g) => (g ? { ...g, tags: newTags } : g));
+    this.updateCrmGuestTagsUseCase.execute(guestId, newTags).subscribe({
+      error: () => {
+        this.guest.update((g) => (g ? { ...g, tags: current } : g));
+      },
+    });
+  }
+
+  isTagAssigned(tag: string): boolean {
+    return this.guestTags().includes(tag);
+  }
+
+  onTagSearchChange(value: string): void {
+    this.tagSearchQuery.set(value);
+  }
 
   ngOnInit(): void {
     const guestId = this.route.snapshot.paramMap.get('guestId');
@@ -712,7 +808,9 @@ export class GuestProfileComponent implements OnInit {
         } else if (error.status === 403) {
           this.guestErrorMessage.set('No tienes permisos para ver este huésped.');
         } else {
-          this.guestErrorMessage.set('No se pudo cargar el perfil del huésped. Inténtalo de nuevo.');
+          this.guestErrorMessage.set(
+            'No se pudo cargar el perfil del huésped. Inténtalo de nuevo.',
+          );
         }
       },
     });
@@ -784,8 +882,7 @@ export class GuestProfileComponent implements OnInit {
 
   private enrichBookingsWithNames(bookings: CrmGuestBooking[], requestedGuestId: string): void {
     const missingPropertyNames = bookings.some(
-      (b) =>
-        b.propertyId && !b.propertyName && !this.propertyNamesById()[b.propertyId],
+      (b) => b.propertyId && !b.propertyName && !this.propertyNamesById()[b.propertyId],
     );
     const propertyIdsForUnits = [
       ...new Set(

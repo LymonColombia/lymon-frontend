@@ -2,9 +2,7 @@
   [title]="guest()?.name ?? 'Perfil del huésped'"
   subtitle="Consulta y administra la información de este huésped"
   [breadcrumbItems]="breadcrumbItems()"
-
 >
-
   <div hotelPageIcon class="guest-initials-avatar">{{ guestInitials() }}</div>
 
   @if (isGuestLoading()) {
@@ -14,7 +12,6 @@
   } @else if (notFoundError()) {
     <div class="alert alert-error">No se encontró el perfil del huésped solicitado.</div>
   } @else if (guest(); as guest) {
-
     <!-- Contact strip -->
     <section class="profile-contact-strip">
       <span
@@ -39,16 +36,61 @@
         <span class="contact-value">{{ formatPhone(guest.phone) }}</span>
       </div>
 
-      @if (guestTags().length > 0) {
-        <div class="contact-tags">
-          <span class="contact-icon" aria-hidden="true">
-            <ng-icon name="bootstrapTags" size="18px"></ng-icon>
+      <div class="contact-tags" (click)="$event.stopPropagation()">
+        <span class="contact-icon" aria-hidden="true">
+          <ng-icon name="bootstrapTags" size="18px"></ng-icon>
+        </span>
+
+        <button class="tag-add-btn" type="button" (click)="openTagPopover($event)">
+          + Añadir etiqueta
+        </button>
+
+        @for (tag of guestTags(); track tag) {
+          <span class="contact-tag-chip">
+            {{ tagLabels[tag] ?? tag }}
+            <button
+              class="tag-chip-remove"
+              type="button"
+              (click)="toggleTag(tag)"
+              [attr.aria-label]="'Eliminar etiqueta ' + (tagLabels[tag] ?? tag)"
+            >
+              <ng-icon name="bootstrapX" size="15px"></ng-icon>
+            </button>
           </span>
-          @for (tag of guestTags(); track tag) {
-            <span class="contact-tag-chip">{{ tag }}</span>
-          }
-        </div>
-      }
+        }
+
+        @if (isTagPopoverOpen()) {
+          <div class="tag-popover">
+            <div class="tag-search-wrapper">
+              <ng-icon name="bootstrapSearch" size="14px" class="tag-search-icon"></ng-icon>
+              <input
+                class="tag-search-input"
+                type="text"
+                placeholder="Buscar etiqueta..."
+                [value]="tagSearchQuery()"
+                (input)="onTagSearchChange($any($event.target).value)"
+                (click)="$event.stopPropagation()"
+              />
+            </div>
+            <div class="tag-list">
+              @for (tag of filteredAvailableTags(); track tag) {
+                <button class="tag-list-item" type="button" (click)="toggleTag(tag)">
+                  <span class="tag-list-item-label">{{ tagLabels[tag] }}</span>
+                  @if (isTagAssigned(tag)) {
+                    <ng-icon name="bootstrapCheck" size="15px" class="tag-list-check"></ng-icon>
+                  }
+                </button>
+              }
+              @if (filteredAvailableTags().length === 0) {
+                <p class="tag-list-empty">Sin resultados</p>
+              }
+            </div>
+            <div class="tag-counter">
+              {{ guestTags().length }} de {{ availableTags.length }} seleccionadas
+            </div>
+          </div>
+        }
+      </div>
     </section>
 
     <!-- Send message -->
@@ -230,13 +272,16 @@
               <article class="email-timeline-card">
                 <p class="email-timeline-subject">{{ email.subject }}</p>
                 <div class="email-timeline-meta">
-                  <span class="email-timeline-date">{{ formatDateLabel(email.createdAt, true) }}</span>
+                  <span class="email-timeline-date">{{
+                    formatDateLabel(email.createdAt, true)
+                  }}</span>
                   <span
                     class="booking-status"
                     [class.booking-status-success]="email.status === 'sent'"
                     [class.booking-status-danger]="email.status === 'failed'"
                     [class.booking-status-warning]="email.status === 'pending'"
-                  >{{ getEmailStatusLabel(email.status) }}</span>
+                    >{{ getEmailStatusLabel(email.status) }}</span
+                  >
                 </div>
               </article>
             </div>
@@ -339,7 +384,10 @@
 
         <div class="guest-notes-list">
           @for (note of pinnedNotes(); track getNoteIdentifier(note)) {
-            <ng-container [ngTemplateOutlet]="noteCard" [ngTemplateOutletContext]="{ $implicit: note }"></ng-container>
+            <ng-container
+              [ngTemplateOutlet]="noteCard"
+              [ngTemplateOutletContext]="{ $implicit: note }"
+            ></ng-container>
           }
         </div>
       </section>
@@ -436,7 +484,10 @@
       } @else {
         <div class="guest-notes-list">
           @for (note of filteredNotes(); track getNoteIdentifier(note)) {
-            <ng-container [ngTemplateOutlet]="noteCard" [ngTemplateOutletContext]="{ $implicit: note }"></ng-container>
+            <ng-container
+              [ngTemplateOutlet]="noteCard"
+              [ngTemplateOutletContext]="{ $implicit: note }"
+            ></ng-container>
           }
         </div>
       }
@@ -602,9 +653,7 @@
         </div>
       }
     </section>
-
   }
-
 </app-hotel-page-layout>
 
 <ng-template #noteCard let-note>

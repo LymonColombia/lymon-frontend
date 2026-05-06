@@ -13,6 +13,7 @@ import { UpdateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/update-crm-gue
 import { DeleteCrmGuestNoteUseCase } from '@/domain/use-cases/crm/delete-crm-guest-note.use-case';
 import { PinCrmGuestNoteUseCase } from '@/domain/use-cases/crm/pin-crm-guest-note.use-case';
 import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
+import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { CrmGuest, CrmGuestBooking, CrmGuestNote } from '@/domain/entities/crm-guest.model';
@@ -26,6 +27,7 @@ const mockUpdateCrmGuestNote = { execute: vi.fn() };
 const mockDeleteCrmGuestNote = { execute: vi.fn() };
 const mockPinCrmGuestNote = { execute: vi.fn() };
 const mockSendCrmGuestMessage = { execute: vi.fn() };
+const mockUpdateCrmGuestTags = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
 const mockGetUnits = { execute: vi.fn() };
 
@@ -70,6 +72,7 @@ function setupDefaultMocks(): void {
   mockGetCrmGuestEmails.execute.mockReturnValue(of([]));
   mockDeleteCrmGuestNote.execute.mockReturnValue(of({}));
   mockPinCrmGuestNote.execute.mockReturnValue(of({}));
+  mockUpdateCrmGuestTags.execute.mockReturnValue(of({}));
   mockGetProperties.execute.mockReturnValue(of([]));
   mockGetUnits.execute.mockReturnValue(of([]));
 }
@@ -96,6 +99,7 @@ async function setup(guestId: string | null = 'guest-1') {
       { provide: DeleteCrmGuestNoteUseCase, useValue: mockDeleteCrmGuestNote },
       { provide: PinCrmGuestNoteUseCase, useValue: mockPinCrmGuestNote },
       { provide: SendCrmGuestMessageUseCase, useValue: mockSendCrmGuestMessage },
+      { provide: UpdateCrmGuestTagsUseCase, useValue: mockUpdateCrmGuestTags },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
       { provide: GetUnitsUseCase, useValue: mockGetUnits },
     ],
@@ -891,5 +895,69 @@ describe('GuestProfileComponent – modal de eliminación de nota – error al e
     component.openDeleteNoteModal(MOCK_NOTE);
     component.confirmDeleteNote();
     expect(component.isDeleteNoteModalOpen()).toBe(true);
+  });
+});
+
+// ─── Tag popover ──────────────────────────────────────────────────────────────
+describe('GuestProfileComponent – popover de etiquetas', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+    mockUpdateCrmGuestTags.execute.mockReturnValue(of({}));
+  });
+
+  it('openTagPopover abre el popover y limpia la búsqueda', async () => {
+    const { component } = await setup();
+    const event = new MouseEvent('click');
+    vi.spyOn(event, 'stopPropagation');
+    component.openTagPopover(event);
+    expect(component.isTagPopoverOpen()).toBe(true);
+    expect(component.tagSearchQuery()).toBe('');
+    expect(event.stopPropagation).toHaveBeenCalled();
+  });
+
+  it('toggleTag agrega una etiqueta y llama al use case', async () => {
+    const { component } = await setup();
+    component.toggleTag('family');
+    expect(component.guest()?.tags).toContain('family');
+    expect(mockUpdateCrmGuestTags.execute).toHaveBeenCalledWith(
+      MOCK_GUEST.id,
+      expect.arrayContaining(['vip', 'frecuente', 'family']),
+    );
+  });
+
+  it('toggleTag elimina una etiqueta existente y llama al use case', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    expect(component.guest()?.tags).not.toContain('vip');
+    expect(mockUpdateCrmGuestTags.execute).toHaveBeenCalled();
+  });
+
+  it('isTagAssigned devuelve true para etiqueta asignada', async () => {
+    const { component } = await setup();
+    expect(component.isTagAssigned('vip')).toBe(true);
+    expect(component.isTagAssigned('family')).toBe(false);
+  });
+
+  it('filteredAvailableTags filtra por búsqueda', async () => {
+    const { component } = await setup();
+    component.onTagSearchChange('vip');
+    expect(component.filteredAvailableTags()).toContain('vip');
+    expect(component.filteredAvailableTags()).not.toContain('family');
+  });
+
+  it('filteredAvailableTags devuelve todos si búsqueda vacía', async () => {
+    const { component } = await setup();
+    component.onTagSearchChange('');
+    expect(component.filteredAvailableTags().length).toBe(component.availableTags.length);
+  });
+
+  it('toggleTag revierte la actualización optimista si el use case falla', async () => {
+    mockUpdateCrmGuestTags.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 500 })),
+    );
+    const { component } = await setup();
+    const originalTags = component.guest()?.tags ?? [];
+    component.toggleTag('family');
+    expect(component.guest()?.tags).toEqual(originalTags);
   });
 });
