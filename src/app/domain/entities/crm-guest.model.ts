@@ -59,6 +59,10 @@ export interface UpdateCrmGuestNoteRequest {
   type: CrmGuestNoteCategory;
 }
 
+export interface UpdateCrmGuestTagsRequest {
+  tags: string[];
+}
+
 export interface CrmGuestNote {
   id: string;
   note: string;
