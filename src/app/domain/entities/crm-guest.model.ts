@@ -1,4 +1,4 @@
-export type CrmGuestStatus = 'active' | 'inactive';
+export type CrmGuestStatus = 'active' | 'inactive' | 'blocked' | 'archived';
 export type CrmGuestSortBy = 'createdAt' | 'fullName' | 'status';
 export type CrmGuestSortDirection = 'asc' | 'desc';
 
