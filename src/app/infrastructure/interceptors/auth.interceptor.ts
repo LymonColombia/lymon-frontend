@@ -36,7 +36,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const refreshToken = tokenService.getRefreshToken();
   if (!refreshToken || isTokenExpired(refreshToken)) {
     tokenService.clear();
-    void router.navigate(['/login'], { queryParams: { sessionExpired: true } });
+    router.navigate(['/login'], { queryParams: { sessionExpired: true } });
     return throwError(() => new Error('Session expired'));
   }
 
@@ -44,7 +44,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     switchMap((updatedAccessToken) => next(addAuthorizationHeader(req, updatedAccessToken))),
     catchError((err) => {
       tokenService.clear();
-      void router.navigate(['/login'], { queryParams: { sessionExpired: true } });
+      router.navigate(['/login'], { queryParams: { sessionExpired: true } });
       return throwError(() => err);
     }),
   );
@@ -136,7 +136,7 @@ function getJwtPayload(token: string): { exp?: number } | null {
 }
 
 function decodeBase64Url(value: string): string {
-  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const normalized = value.replaceAll('-', '+').replaceAll('_', '/');
   const padding = '='.repeat((4 - (normalized.length % 4)) % 4);
   return atob(normalized + padding);
 }

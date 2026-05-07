@@ -33,7 +33,7 @@ export const guestAuthInterceptor: HttpInterceptorFn = (req, next) => {
     const refreshToken = guestTokenService.getRefreshToken();
     if (!refreshToken || isTokenExpired(refreshToken)) {
       guestTokenService.clear();
-      void router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
+      router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
       return throwError(() => new Error('Guest session expired'));
     }
 
@@ -41,7 +41,7 @@ export const guestAuthInterceptor: HttpInterceptorFn = (req, next) => {
       switchMap((newToken) => next(withToken(req, newToken))),
       catchError(() => {
         guestTokenService.clear();
-        void router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
+        router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
         return throwError(() => new Error('Guest session expired'));
       }),
     );
@@ -56,7 +56,7 @@ export const guestAuthInterceptor: HttpInterceptorFn = (req, next) => {
       const refreshToken = guestTokenService.getRefreshToken();
       if (!refreshToken || isTokenExpired(refreshToken)) {
         guestTokenService.clear();
-        void router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
+        router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
         return throwError(() => error);
       }
 
@@ -64,7 +64,7 @@ export const guestAuthInterceptor: HttpInterceptorFn = (req, next) => {
         switchMap((newToken) => next(withToken(req, newToken))),
         catchError(() => {
           guestTokenService.clear();
-          void router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
+          router.navigate(['/guest/login'], { queryParams: { sessionExpired: true } });
           return throwError(() => error);
         }),
       );
@@ -128,7 +128,7 @@ function isTokenExpired(token: string): boolean {
   try {
     const parts = token.split('.');
     if (parts.length < 2) return true;
-    const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const normalized = parts[1].replaceAll('-', '+').replaceAll('_', '/');
     const padding = '='.repeat((4 - (normalized.length % 4)) % 4);
     const payload = JSON.parse(atob(normalized + padding)) as { exp?: number };
     if (!payload.exp) return true;
@@ -143,7 +143,7 @@ function isTokenExpiringSoon(token: string, thresholdSeconds: number): boolean {
     const parts = token.split('.');
     if (parts.length < 2) return true;
 
-    const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const normalized = parts[1].replaceAll('-', '+').replaceAll('_', '/');
     const padding = '='.repeat((4 - (normalized.length % 4)) % 4);
     const payload = JSON.parse(atob(normalized + padding)) as { exp?: number };
 
