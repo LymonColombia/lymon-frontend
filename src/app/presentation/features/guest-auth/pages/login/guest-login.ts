@@ -22,16 +22,13 @@ export class GuestLoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly loginUseCase = inject(GuestLoginUseCase);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly emailNotVerified = signal(false);
-  readonly sessionExpired = signal(false);
-
-  constructor() {
-    this.sessionExpired.set(this.route.snapshot.queryParamMap.get('sessionExpired') === 'true');
-  }
+  readonly sessionExpired = signal(
+    inject(ActivatedRoute).snapshot.queryParamMap.get('sessionExpired') === 'true',
+  );
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
