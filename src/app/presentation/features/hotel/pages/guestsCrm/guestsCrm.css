@@ -190,6 +190,66 @@ app-select.filter-select {
   border-color: var(--color-border-light);
 }
 
+.tags-filter-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: calc(var(--spacing-2xl) + var(--spacing-xs));
+  margin-top: calc(-1 * var(--spacing-lg));
+}
+
+.tags-filter-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+.tags-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-border-light);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  line-height: 1;
+}
+
+.tag-chip:hover:not(.tag-chip--active) {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+}
+
+.tag-chip--active {
+  background: color-mix(in srgb, var(--color-primary-dark) 10%, var(--color-bg-primary));
+  border-color: color-mix(in srgb, var(--color-primary-dark) 40%, var(--color-bg-primary));
+  color: var(--color-primary-dark);
+  font-weight: var(--font-weight-semibold);
+}
+
+.tag-chip--active:hover {
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-primary));
+  border-color: color-mix(in srgb, var(--color-danger) 40%, var(--color-bg-primary));
+  color: var(--color-danger);
+}
+
 .empty-state {
   text-align: center;
   color: var(--color-text-secondary);
