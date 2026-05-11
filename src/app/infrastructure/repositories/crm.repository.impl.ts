@@ -10,6 +10,7 @@ import {
   GetCrmGuestsResponse,
   SendCrmGuestMessageRequest,
   UpdateCrmGuestNoteRequest,
+  UpdateCrmGuestTagsRequest,
 } from '@/domain/entities/crm-guest.model';
 import { CrmRepository } from '@/domain/repositories/crm.repository';
 import { CrmMapper } from '@/infrastructure/mappers/crm.mapper';
@@ -81,6 +82,13 @@ export class CrmRepositoryImpl extends CrmRepository {
   sendGuestMessage(guestId: string, data: SendCrmGuestMessageRequest): Observable<void> {
     return this.http.post<void>(
       `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/messages`,
+      data,
+    );
+  }
+
+  updateGuestTags(guestId: string, data: UpdateCrmGuestTagsRequest): Observable<void> {
+    return this.http.patch<void>(
+      `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/tags`,
       data,
     );
   }

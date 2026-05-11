@@ -106,6 +106,7 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .contact-tag-chip {
@@ -120,6 +121,139 @@
   font-size: 14px;
   line-height: 1;
   font-weight: var(--font-weight-medium);
+}
+
+.tag-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1.5px dashed var(--color-border-light);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: border-color var(--transition-base), color var(--transition-base);
+  white-space: nowrap;
+}
+
+.tag-add-btn:hover {
+  border-color: var(--color-primary-dark);
+  color: var(--color-primary-dark);
+}
+
+.tag-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--transition-base);
+  line-height: 1;
+}
+
+.tag-chip-remove:hover {
+  opacity: 1;
+}
+
+.tag-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 200;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  min-width: 260px;
+  overflow: hidden;
+}
+
+.tag-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.tag-search-icon {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tag-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.tag-search-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.tag-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.tag-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.tag-list-item:hover {
+  background: var(--color-bg-secondary);
+}
+
+.tag-list-item-label {
+  flex: 1;
+}
+
+.tag-list-check {
+  color: var(--color-success);
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.tag-list-empty {
+  padding: 12px 14px;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.tag-counter {
+  padding: 8px 14px;
+  border-top: 1px solid var(--color-border-light);
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 /* ---- Status pill (reused from guestsCrm) ---- */
