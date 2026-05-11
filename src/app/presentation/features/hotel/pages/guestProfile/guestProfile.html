@@ -36,7 +36,7 @@
         <span class="contact-value">{{ formatPhone(guest.phone) }}</span>
       </div>
 
-      <div class="contact-tags" (click)="$event.stopPropagation()">
+      <div class="contact-tags" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
         <span class="contact-icon" aria-hidden="true">
           <ng-icon name="bootstrapTags" size="18px"></ng-icon>
         </span>
