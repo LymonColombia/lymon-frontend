@@ -93,6 +93,27 @@
       </div>
     </section>
 
+    <!-- Profile nav -->
+    <nav class="profile-nav-tabs" role="tablist" aria-label="Secciones del perfil del huésped">
+      @for (tab of profileNavTabs; track tab.value) {
+        <button
+          type="button"
+          class="profile-nav-tab"
+          [class.profile-nav-tab--active]="activeTab() === tab.value"
+          role="tab"
+          [attr.aria-selected]="activeTab() === tab.value"
+          (click)="setActiveTab(tab.value)"
+        >
+          <span class="profile-nav-tab-icon" aria-hidden="true">
+            <ng-icon [name]="tab.icon" size="16px"></ng-icon>
+          </span>
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    <!-- Comunicaciones tab -->
+    @if (activeTab() === 'comunicaciones') {
     <!-- Send message -->
     <section class="profile-section">
       <div class="notes-section-header">
@@ -309,6 +330,10 @@
       }
     </section>
 
+    } <!-- /comunicaciones tab -->
+
+    <!-- Métricas tab -->
+    @if (activeTab() === 'metricas') {
     <!-- Rich statistics -->
     <section class="profile-section">
       <h2 class="profile-section-title">Estadísticas</h2>
@@ -372,6 +397,10 @@
       </div>
     </section>
 
+    } <!-- /metricas tab -->
+
+    <!-- Resumen tab -->
+    @if (activeTab() === 'resumen') {
     <!-- Pinned notes (only when there are pinned notes) -->
     @if (pinnedNotes().length > 0) {
       <section class="profile-section">
@@ -579,6 +608,10 @@
       </div>
     </app-modal>
 
+    } <!-- /resumen tab -->
+
+    <!-- Reservas tab -->
+    @if (activeTab() === 'reservas') {
     <!-- Booking history with source badges -->
     <section class="profile-section">
       <h2 class="profile-section-title">Historial de reservas</h2>
@@ -653,6 +686,20 @@
         </div>
       }
     </section>
+    } <!-- /reservas tab -->
+
+    <!-- Documentos tab -->
+    @if (activeTab() === 'documentos') {
+    <section class="profile-section">
+      <div class="profile-docs-empty">
+        <span class="profile-docs-empty-icon" aria-hidden="true">
+          <ng-icon name="bootstrapFileEarmark" size="32px"></ng-icon>
+        </span>
+        <p class="profile-docs-empty-title">Sin documentos</p>
+        <p class="profile-docs-empty-text">Próximamente podrás adjuntar documentos al perfil del huésped.</p>
+      </div>
+    </section>
+    } <!-- /documentos tab -->
   }
 </app-hotel-page-layout>
 

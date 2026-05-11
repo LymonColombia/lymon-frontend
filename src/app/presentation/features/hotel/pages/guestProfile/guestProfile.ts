@@ -50,11 +50,13 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import {
   bootstrapPersonFill,
+  bootstrapPerson,
   bootstrapEnvelope,
   bootstrapTelephone,
   bootstrapTags,
   bootstrapHouseDoor,
   bootstrapCalendarCheck,
+  bootstrapCalendar3,
   bootstrapWallet2,
   bootstrapCardText,
   bootstrapPinAngleFill,
@@ -71,6 +73,7 @@ import {
   bootstrapPencil,
   bootstrapSearch,
   bootstrapCheck,
+  bootstrapGraphUp,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -88,6 +91,7 @@ type UnitLookupItem = Unit & {
 
 type BookingStatusTone = 'info' | 'muted' | 'success' | 'warning' | 'danger';
 type SelectValue = string | number | null;
+type GuestProfileTab = 'resumen' | 'metricas' | 'reservas' | 'comunicaciones' | 'documentos';
 
 const NOTE_MAX_LENGTH = 280;
 const EMAIL_HISTORY_LIMIT = 5;
@@ -144,11 +148,13 @@ function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
   providers: [
     provideIcons({
       bootstrapPersonFill,
+      bootstrapPerson,
       bootstrapEnvelope,
       bootstrapTelephone,
       bootstrapTags,
       bootstrapHouseDoor,
       bootstrapCalendarCheck,
+      bootstrapCalendar3,
       bootstrapWallet2,
       bootstrapCardText,
       bootstrapPinAngleFill,
@@ -165,6 +171,7 @@ function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
       bootstrapPencil,
       bootstrapSearch,
       bootstrapCheck,
+      bootstrapGraphUp,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -185,6 +192,16 @@ export class GuestProfileComponent implements OnInit {
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly updateCrmGuestTagsUseCase = inject(UpdateCrmGuestTagsUseCase);
+
+  readonly activeTab = signal<GuestProfileTab>('resumen');
+
+  readonly profileNavTabs: Array<{ value: GuestProfileTab; label: string; icon: string }> = [
+    { value: 'resumen', label: 'Resumen', icon: 'bootstrapPerson' },
+    { value: 'metricas', label: 'Métricas', icon: 'bootstrapGraphUp' },
+    { value: 'reservas', label: 'Reservas', icon: 'bootstrapCalendar3' },
+    { value: 'comunicaciones', label: 'Comunicaciones', icon: 'bootstrapEnvelope' },
+    { value: 'documentos', label: 'Documentos', icon: 'bootstrapFileEarmark' },
+  ];
 
   readonly isGuestLoading = signal(true);
   readonly isBookingsLoading = signal(false);
@@ -389,6 +406,10 @@ export class GuestProfileComponent implements OnInit {
     }
 
     this.loadGuest(guestId);
+  }
+
+  setActiveTab(tab: GuestProfileTab): void {
+    this.activeTab.set(tab);
   }
 
   setNoteFilter(value: CrmGuestNoteCategory | 'all'): void {
