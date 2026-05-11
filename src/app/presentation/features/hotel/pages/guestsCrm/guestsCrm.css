@@ -18,6 +18,11 @@ app-select.filter-select {
   flex-shrink: 0;
 }
 
+app-select.status-filter-select {
+  width: 180px;
+  flex-shrink: 0;
+}
+
 .filter-icon {
   width: 20px;
   height: 20px;
