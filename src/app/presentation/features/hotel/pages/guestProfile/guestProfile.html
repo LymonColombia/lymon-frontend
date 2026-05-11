@@ -94,22 +94,24 @@
     </section>
 
     <!-- Profile nav -->
-    <nav class="profile-nav-tabs" role="tablist" aria-label="Secciones del perfil del huésped">
-      @for (tab of profileNavTabs; track tab.value) {
-        <button
-          type="button"
-          class="profile-nav-tab"
-          [class.profile-nav-tab--active]="activeTab() === tab.value"
-          role="tab"
-          [attr.aria-selected]="activeTab() === tab.value"
-          (click)="setActiveTab(tab.value)"
-        >
-          <span class="profile-nav-tab-icon" aria-hidden="true">
-            <ng-icon [name]="tab.icon" size="16px"></ng-icon>
-          </span>
-          {{ tab.label }}
-        </button>
-      }
+    <nav class="profile-nav-tabs" aria-label="Secciones del perfil del huésped">
+      <div role="tablist" class="profile-nav-tabs-inner">
+        @for (tab of profileNavTabs; track tab.value) {
+          <button
+            type="button"
+            class="profile-nav-tab"
+            [class.profile-nav-tab--active]="activeTab() === tab.value"
+            role="tab"
+            [attr.aria-selected]="activeTab() === tab.value"
+            (click)="setActiveTab(tab.value)"
+          >
+            <span class="profile-nav-tab-icon" aria-hidden="true">
+              <ng-icon [name]="tab.icon" size="16px"></ng-icon>
+            </span>
+            {{ tab.label }}
+          </button>
+        }
+      </div>
     </nav>
 
     <!-- Comunicaciones tab -->
