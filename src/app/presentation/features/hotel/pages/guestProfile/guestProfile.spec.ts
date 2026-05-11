@@ -898,6 +898,75 @@ describe('GuestProfileComponent – modal de eliminación de nota – error al e
   });
 });
 
+// ─── Navegación por pestañas ──────────────────────────────────────────────────
+describe('GuestProfileComponent – navegación por pestañas', () => {
+  beforeEach(() => {
+    setupDefaultMocks();
+  });
+
+  it('la pestaña activa por defecto es "resumen"', async () => {
+    const { component } = await setup();
+    expect(component.activeTab()).toBe('resumen');
+  });
+
+  it('profileNavTabs contiene las 5 pestañas en orden', async () => {
+    const { component } = await setup();
+    const values = component.profileNavTabs.map((t) => t.value);
+    expect(values).toEqual(['resumen', 'metricas', 'reservas', 'comunicaciones', 'documentos']);
+  });
+
+  it('profileNavTabs tiene etiquetas en español', async () => {
+    const { component } = await setup();
+    const labels = component.profileNavTabs.map((t) => t.label);
+    expect(labels).toEqual(['Resumen', 'Métricas', 'Reservas', 'Comunicaciones', 'Documentos']);
+  });
+
+  it('profileNavTabs asigna un icono a cada pestaña', async () => {
+    const { component } = await setup();
+    for (const tab of component.profileNavTabs) {
+      expect(tab.icon).toBeTruthy();
+    }
+  });
+
+  it('setActiveTab cambia la pestaña activa a "metricas"', async () => {
+    const { component } = await setup();
+    component.setActiveTab('metricas');
+    expect(component.activeTab()).toBe('metricas');
+  });
+
+  it('setActiveTab cambia la pestaña activa a "reservas"', async () => {
+    const { component } = await setup();
+    component.setActiveTab('reservas');
+    expect(component.activeTab()).toBe('reservas');
+  });
+
+  it('setActiveTab cambia la pestaña activa a "comunicaciones"', async () => {
+    const { component } = await setup();
+    component.setActiveTab('comunicaciones');
+    expect(component.activeTab()).toBe('comunicaciones');
+  });
+
+  it('setActiveTab cambia la pestaña activa a "documentos"', async () => {
+    const { component } = await setup();
+    component.setActiveTab('documentos');
+    expect(component.activeTab()).toBe('documentos');
+  });
+
+  it('setActiveTab puede volver a "resumen" desde otra pestaña', async () => {
+    const { component } = await setup();
+    component.setActiveTab('reservas');
+    component.setActiveTab('resumen');
+    expect(component.activeTab()).toBe('resumen');
+  });
+
+  it('setActiveTab no afecta otros estados del componente', async () => {
+    const { component } = await setup();
+    component.openNoteForm();
+    component.setActiveTab('metricas');
+    expect(component.isNoteFormVisible()).toBe(true);
+  });
+});
+
 // ─── Tag popover ──────────────────────────────────────────────────────────────
 describe('GuestProfileComponent – popover de etiquetas', () => {
   beforeEach(() => {
