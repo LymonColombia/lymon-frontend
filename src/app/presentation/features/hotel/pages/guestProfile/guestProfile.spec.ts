@@ -900,67 +900,50 @@ describe('GuestProfileComponent – modal de eliminación de nota – error al e
 
 // ─── Navegación por pestañas ──────────────────────────────────────────────────
 describe('GuestProfileComponent – navegación por pestañas', () => {
-  beforeEach(() => {
+  let component: GuestProfileComponent;
+
+  beforeEach(async () => {
     setupDefaultMocks();
+    ({ component } = await setup());
   });
 
-  it('la pestaña activa por defecto es "resumen"', async () => {
-    const { component } = await setup();
+  it('la pestaña activa por defecto es "resumen"', () => {
     expect(component.activeTab()).toBe('resumen');
   });
 
-  it('profileNavTabs contiene las 5 pestañas en orden', async () => {
-    const { component } = await setup();
+  it('profileNavTabs contiene las 5 pestañas en orden', () => {
     const values = component.profileNavTabs.map((t) => t.value);
     expect(values).toEqual(['resumen', 'metricas', 'reservas', 'comunicaciones', 'documentos']);
   });
 
-  it('profileNavTabs tiene etiquetas en español', async () => {
-    const { component } = await setup();
+  it('profileNavTabs tiene etiquetas en español', () => {
     const labels = component.profileNavTabs.map((t) => t.label);
     expect(labels).toEqual(['Resumen', 'Métricas', 'Reservas', 'Comunicaciones', 'Documentos']);
   });
 
-  it('profileNavTabs asigna un icono a cada pestaña', async () => {
-    const { component } = await setup();
+  it('profileNavTabs asigna un icono a cada pestaña', () => {
     for (const tab of component.profileNavTabs) {
       expect(tab.icon).toBeTruthy();
     }
   });
 
-  it('setActiveTab cambia la pestaña activa a "metricas"', async () => {
-    const { component } = await setup();
-    component.setActiveTab('metricas');
-    expect(component.activeTab()).toBe('metricas');
+  it.each([
+    ['metricas'],
+    ['reservas'],
+    ['comunicaciones'],
+    ['documentos'],
+  ] as const)('setActiveTab cambia la pestaña activa a "%s"', (tab) => {
+    component.setActiveTab(tab);
+    expect(component.activeTab()).toBe(tab);
   });
 
-  it('setActiveTab cambia la pestaña activa a "reservas"', async () => {
-    const { component } = await setup();
-    component.setActiveTab('reservas');
-    expect(component.activeTab()).toBe('reservas');
-  });
-
-  it('setActiveTab cambia la pestaña activa a "comunicaciones"', async () => {
-    const { component } = await setup();
-    component.setActiveTab('comunicaciones');
-    expect(component.activeTab()).toBe('comunicaciones');
-  });
-
-  it('setActiveTab cambia la pestaña activa a "documentos"', async () => {
-    const { component } = await setup();
-    component.setActiveTab('documentos');
-    expect(component.activeTab()).toBe('documentos');
-  });
-
-  it('setActiveTab puede volver a "resumen" desde otra pestaña', async () => {
-    const { component } = await setup();
+  it('setActiveTab puede volver a "resumen" desde otra pestaña', () => {
     component.setActiveTab('reservas');
     component.setActiveTab('resumen');
     expect(component.activeTab()).toBe('resumen');
   });
 
-  it('setActiveTab no afecta otros estados del componente', async () => {
-    const { component } = await setup();
+  it('setActiveTab no afecta otros estados del componente', () => {
     component.openNoteForm();
     component.setActiveTab('metricas');
     expect(component.isNoteFormVisible()).toBe(true);
