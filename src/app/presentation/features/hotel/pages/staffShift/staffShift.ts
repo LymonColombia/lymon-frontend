@@ -26,6 +26,15 @@ import {
   bootstrapPersonCheck,
   bootstrapExclamationTriangle,
   bootstrapCheckCircle,
+  bootstrapSearch,
+  bootstrapPersonPlusFill,
+  bootstrapCalendar3,
+  bootstrapPersonX,
+  bootstrapBuilding,
+  bootstrapCalendarEvent,
+  bootstrapCalendarX,
+  bootstrapPersonDash,
+  bootstrapChevronDown,
 } from '@ng-icons/bootstrap-icons';
 
 type PreviewTab = 'calendar' | 'fixed';
@@ -75,6 +84,15 @@ interface ShiftOption {
       bootstrapPersonCheck,
       bootstrapExclamationTriangle,
       bootstrapCheckCircle,
+      bootstrapSearch,
+      bootstrapPersonPlusFill,
+      bootstrapCalendar3,
+      bootstrapPersonX,
+      bootstrapBuilding,
+      bootstrapCalendarEvent,
+      bootstrapCalendarX,
+      bootstrapPersonDash,
+      bootstrapChevronDown,
     }),
   ],
   templateUrl: './staffShift.html',
@@ -94,8 +112,13 @@ export class StaffShiftComponent implements OnInit {
 
   // ── Calendar tab ────────────────────────────────────────────────────────────
   readonly calendarSearch = signal('');
-  readonly calendarDateFilter = signal('');
+  readonly calendarPropertyFilter = signal('');
+  readonly calendarShiftTypeFilter = signal('');
+
   readonly isCreateAssignmentModalOpen = signal(false);
+  readonly isCalendarOverviewModalOpen = signal(false);
+  readonly overviewWeekStart = signal<Date>(this.getStartOfWeek(new Date()));
+
   readonly assignmentDate = signal('');
   readonly assignmentProperty = signal('');
   readonly assignmentEmployee = signal('');
@@ -108,12 +131,24 @@ export class StaffShiftComponent implements OnInit {
 
   readonly selectedShiftDetail = signal<FixedShiftCard | null>(null);
 
+  readonly isCreateModalOpen = signal(false);
+  readonly isOverviewDatePickerOpen = signal(false);
+  
+  readonly overviewSelectedDay = signal(new Date().getDate());
+  readonly overviewSelectedMonth = signal(new Date().getMonth());
+  readonly overviewSelectedYear = signal(new Date().getFullYear());
+
+  readonly daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
+  readonly monthsArray = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  ];
+  readonly yearsArray = Array.from({ length: 11 }, (_, i) => 2020 + i);
+
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
   private notificationTimeout: any;
 
   readonly currentWeekStart = signal<Date>(this.getStartOfWeek(new Date()));
-
-  readonly isCreateModalOpen = signal(false);
 
   readonly newShiftStaffMemberIds = signal<string[]>([]);
   readonly newShiftPropertyId = signal('');
@@ -150,8 +185,6 @@ export class StaffShiftComponent implements OnInit {
     return `${yyyy}-${mm}-${dd}`;
   });
 
-  private readonly nextShiftId = 1000;
-
   readonly assignmentDays = signal<AssignmentDay[]>([
     {
       dateIso: '2026-04-11',
@@ -179,12 +212,8 @@ export class StaffShiftComponent implements OnInit {
 
   readonly filteredAssignmentDays = computed<AssignmentDay[]>(() => {
     const query = this.normalizeText(this.calendarSearch());
-    const selectedDate = this.calendarDateFilter();
 
     let filteredDays = this.assignmentDays();
-    if (selectedDate) {
-      filteredDays = filteredDays.filter((day) => day.dateIso === selectedDate);
-    }
 
     if (!query) {
       return filteredDays;
@@ -196,9 +225,7 @@ export class StaffShiftComponent implements OnInit {
         assignments: day.assignments.filter((assignment) => {
           const searchable = [
             assignment.employeeName,
-            assignment.propertyName,
             assignment.shiftName,
-            assignment.shiftTime,
           ]
             .map((value) => this.normalizeText(value))
             .join(' ');
@@ -207,6 +234,71 @@ export class StaffShiftComponent implements OnInit {
         }),
       }))
       .filter((day) => day.assignments.length > 0);
+  });
+
+  readonly calendarPropertyOptions = computed<string[]>(() => {
+    const propertySet = new Set<string>();
+    this.assignmentDays().forEach((day) => {
+      day.assignments.forEach((assignment) => {
+        if (assignment.propertyName.trim()) {
+          propertySet.add(assignment.propertyName);
+        }
+      });
+    });
+    return Array.from(propertySet).sort((a, b) => a.localeCompare(b));
+  });
+
+  readonly calendarShiftTypeOptions = computed<string[]>(() => {
+    const propFilter = this.calendarPropertyFilter();
+    const shiftSet = new Set<string>();
+    this.assignmentDays().forEach((day) => {
+      day.assignments.forEach((assignment) => {
+        if (!propFilter || assignment.propertyName === propFilter) {
+          if (assignment.shiftName.trim()) {
+            shiftSet.add(assignment.shiftName);
+          }
+        }
+      });
+    });
+    return Array.from(shiftSet).sort((a, b) => a.localeCompare(b));
+  });
+
+  readonly filteredStaffByProperty = computed(() => {
+    const propFilter = this.calendarPropertyFilter();
+    const query = this.normalizeText(this.calendarSearch());
+    const shiftFilter = this.calendarShiftTypeFilter();
+    const results: (DayAssignment & { dateLabel: string; dateIso: string; avatarColor: string })[] = [];
+
+    const colors = ['primary', 'success', 'warning', 'danger', 'info'];
+    let colorIndex = 0;
+
+    this.assignmentDays().forEach(day => {
+      day.assignments.forEach(assignment => {
+        // If property filter is active, check it
+        if (propFilter && assignment.propertyName !== propFilter) return;
+        
+        // If shift filter is active, check it
+        if (shiftFilter && assignment.shiftName !== shiftFilter) return;
+
+        const searchable = [
+          assignment.employeeName,
+          assignment.shiftName,
+        ].map(value => this.normalizeText(value)).join(' ');
+
+        if (!query || searchable.includes(query)) {
+          const avatarColor = colors[colorIndex % colors.length];
+          colorIndex++;
+          results.push({
+            ...assignment,
+            dateLabel: day.dateLabel,
+            dateIso: day.dateIso,
+            avatarColor
+          });
+        }
+      });
+    });
+
+    return results.sort((a, b) => a.employeeName.localeCompare(b.employeeName));
   });
 
   readonly assignmentPropertyOptions = computed<string[]>(() => {
@@ -404,12 +496,83 @@ export class StaffShiftComponent implements OnInit {
     return Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
   });
 
-  getShiftColorClass(shiftId: string | number): string {
+  getShiftColorClass(shiftIdOrName: string | number): string {
     const colors = ['gantt-bar--1', 'gantt-bar--2', 'gantt-bar--3', 'gantt-bar--4', 'gantt-bar--5'];
-    const idHash = typeof shiftId === 'string'
-      ? Array.from(shiftId).reduce((acc, char) => acc + (char.codePointAt(0) || 0), 0)
-      : shiftId;
+    const idHash = typeof shiftIdOrName === 'string'
+      ? Array.from(shiftIdOrName).reduce((acc, char) => acc + (char.codePointAt(0) || 0), 0)
+      : shiftIdOrName;
     return colors[idHash % colors.length];
+  }
+
+  readonly ganttDaysOverview = computed(() => {
+    const days = [];
+    const start = new Date(this.overviewWeekStart());
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const name = new Intl.DateTimeFormat('es-ES', { weekday: 'short' }).format(d);
+      const shortName = name.charAt(0).toUpperCase() + name.slice(1, 3);
+      days.push({
+        date: d.getDate(),
+        name: shortName,
+        iso,
+        isToday: iso === this.todayIso()
+      });
+    }
+    return days;
+  });
+
+  readonly weekDateRangeLabelOverview = computed(() => {
+    const days = this.ganttDaysOverview();
+    if (days.length === 0) return '';
+    const start = new Date(`${days[0].iso}T00:00:00`);
+    const end = new Date(`${days[6].iso}T00:00:00`);
+    const formatter = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' });
+    return `Del ${formatter.format(start)} al ${formatter.format(end)}`;
+  });
+
+  nextWeekOverview(): void {
+    const next = new Date(this.overviewWeekStart());
+    next.setDate(next.getDate() + 7);
+    this.overviewWeekStart.set(next);
+  }
+
+  prevWeekOverview(): void {
+    const prev = new Date(this.overviewWeekStart());
+    prev.setDate(prev.getDate() - 7);
+    this.overviewWeekStart.set(prev);
+  }
+
+  getOverviewAssignmentsForDay(dateIso: string) {
+    const segments: { id: string; employeeName: string; shiftName: string; timeRange: string; gridColumn: string, shiftId: string }[] = [];
+    const dayData = this.assignmentDays().find(d => d.dateIso === dateIso);
+
+    if (!dayData) return segments;
+
+    dayData.assignments.forEach((assignment, index) => {
+      const [startH, startM, endH, endM] = this.parseTimeRange(assignment.shiftTime);
+      const startQuarter = Math.round((startH * 60 + startM) / 15);
+      const endQuarter = Math.round((endH * 60 + endM) / 15);
+
+      let gridCol = '';
+      if (startQuarter < endQuarter) {
+        gridCol = `${startQuarter + 1} / ${endQuarter + 1}`;
+      } else {
+        gridCol = `${startQuarter + 1} / 97`;
+      }
+
+      segments.push({
+        id: `overview-${dateIso}-${index}`,
+        employeeName: assignment.employeeName,
+        shiftName: assignment.shiftName,
+        timeRange: assignment.shiftTime,
+        gridColumn: gridCol,
+        shiftId: assignment.shiftName
+      });
+    });
+
+    return segments;
   }
 
   ngOnInit(): void {
@@ -432,11 +595,11 @@ export class StaffShiftComponent implements OnInit {
         if (data.length > 0 && !this.newShiftPropertyId()) {
           this.newShiftPropertyId.set(data[0].id);
         }
-        this.loadFixedShifts(); // Load shifts after properties are ready
+        this.loadFixedShifts();
       },
       error: () => {
         this.properties.set([]);
-        this.loadFixedShifts(); // Still try to load shifts
+        this.loadFixedShifts();
       }
     });
   }
@@ -473,9 +636,37 @@ export class StaffShiftComponent implements OnInit {
     this.calendarSearch.set(target?.value ?? '');
   }
 
-  onCalendarDateFilterInput(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    this.calendarDateFilter.set(target?.value ?? '');
+  onCalendarShiftTypeFilterChange(event: Event): void {
+    const target = event.target as HTMLSelectElement | null;
+    this.calendarShiftTypeFilter.set(target?.value ?? '');
+  }
+
+  onCalendarPropertyFilterChange(event: Event): void {
+    const target = event.target as HTMLSelectElement | null;
+    this.calendarPropertyFilter.set(target?.value ?? '');
+    this.calendarShiftTypeFilter.set(''); // Reset shift filter when property changes
+  }
+
+  toggleOverviewDatePicker(): void {
+    this.isOverviewDatePickerOpen.update(v => !v);
+  }
+
+  onOverviewDaySelect(day: number): void {
+    this.overviewSelectedDay.set(day);
+  }
+
+  onOverviewMonthSelect(month: number): void {
+    this.overviewSelectedMonth.set(month);
+  }
+
+  onOverviewYearSelect(year: number): void {
+    this.overviewSelectedYear.set(year);
+  }
+
+  applyOverviewDateSelection(): void {
+    const selectedDate = new Date(this.overviewSelectedYear(), this.overviewSelectedMonth(), this.overviewSelectedDay());
+    this.overviewWeekStart.set(this.getStartOfWeek(selectedDate));
+    this.isOverviewDatePickerOpen.set(false);
   }
 
   isDateLocked(dateStr: string | null | undefined): boolean {
@@ -641,6 +832,15 @@ export class StaffShiftComponent implements OnInit {
     this.assignmentProperty.set(target?.value ?? '');
   }
 
+  openCalendarOverviewModal(): void {
+    this.isCalendarOverviewModalOpen.set(true);
+    this.overviewWeekStart.set(this.getStartOfWeek(new Date()));
+  }
+
+  closeCalendarOverviewModal(): void {
+    this.isCalendarOverviewModalOpen.set(false);
+  }
+
   onAssignmentDateInput(event: Event): void {
     const target = event.target as HTMLInputElement | null;
     this.assignmentDate.set(target?.value ?? '');
@@ -708,15 +908,7 @@ export class StaffShiftComponent implements OnInit {
       return [...days, newDay].sort((a, b) => a.dateIso.localeCompare(b.dateIso));
     });
 
-    if (!this.calendarDateFilter()) {
-      this.calendarDateFilter.set(dateIso);
-    }
-
     this.closeCreateAssignmentModal();
-  }
-
-  clearCalendarDateFilter(): void {
-    this.calendarDateFilter.set('');
   }
 
   openCreateShiftModal(): void {
