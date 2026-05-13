@@ -39,6 +39,8 @@ import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/
 import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/pages/guest-reservation-details/guest-reservation-details';
 import { InventoryComponent } from '@/presentation/features/hotel/pages/inventory/inventory';
 import { SessionsComponent } from '@/presentation/features/hotel/pages/sessions/sessions';
+import { ExperienceComponent } from './presentation/features/hotel/pages/experiences/experiences';
+import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
@@ -65,6 +67,8 @@ export const routes: Routes = [
 
   // Booking — public route (no auth required)
   { path: 'booking', component: BookingComponent },
+  { path: 'experiences', component: ExperienceComponent },
+  { path: 'experiences/:id', component: ExperienceDetailPageComponent },
 
   // Guest flow
   { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
