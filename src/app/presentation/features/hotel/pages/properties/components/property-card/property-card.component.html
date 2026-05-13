@@ -20,6 +20,41 @@
     </div>
   </div>
 
+  <div class="property-menu-wrapper">
+    <button
+      type="button"
+      class="property-menu-trigger"
+      aria-label="Opciones de propiedad"
+      [attr.aria-expanded]="menuOpen()"
+      (click)="toggleMenu($event)"
+    >
+      <ng-icon name="bootstrapThreeDotsVertical" size="18px" aria-hidden="true"></ng-icon>
+    </button>
+
+    @if (menuOpen()) {
+      <div class="property-menu-dropdown" role="menu">
+        <button
+          type="button"
+          class="property-menu-item"
+          role="menuitem"
+          (click)="onEdit()"
+        >
+          <ng-icon name="bootstrapPencilSquare" size="14px" aria-hidden="true"></ng-icon>
+          Editar
+        </button>
+        <button
+          type="button"
+          class="property-menu-item property-menu-item-danger"
+          role="menuitem"
+          (click)="onDelete()"
+        >
+          <ng-icon name="bootstrapTrashFill" size="14px" aria-hidden="true"></ng-icon>
+          Eliminar
+        </button>
+      </div>
+    }
+  </div>
+
   <div class="property-card-actions">
     <app-button type="button" variant="outline" (clicked)="onViewUnits()">
       <ng-icon name="bootstrapDoorOpenFill" size="20px" aria-hidden="true"></ng-icon>
