@@ -1542,13 +1542,6 @@
   display: flex;
   flex-direction: column;
   padding: 0;
-}
-
-.modal-backdrop--overview {
-  z-index: 90;
-}
-
-.modal-card--overview {
   z-index: 91;
 }
 

@@ -7,7 +7,7 @@ import { ShiftResponse } from '@/domain/entities/shift.model';
   providedIn: 'root'
 })
 export class AssignStaffToShiftUseCase {
-  private shiftRepository = inject(ShiftRepository);
+  private readonly shiftRepository = inject(ShiftRepository);
 
   execute(shiftId: string, staffMemberIds: string[]): Observable<ShiftResponse> {
     return this.shiftRepository.assignStaff(shiftId, staffMemberIds);

@@ -293,108 +293,80 @@ export class StaffShiftComponent implements OnInit {
     const propFilter = this.calendarPropertyFilter();
     const query = this.normalizeText(this.calendarSearch());
     const shiftFilter = this.calendarShiftTypeFilter();
-    const allStaff = this.staffMembers();
-    const allAssignments = this.assignmentDays();
-
-    const results: any[] = [];
     const colors = ['primary', 'success', 'warning', 'danger', 'info'];
-    let colorIndex = 0;
 
-    allStaff.forEach(member => {
-      const memberName = member.fullName || member.name || member.email;
-      const initials = memberName.split(' ').filter(n => n).map(n => n[0]).join('').toUpperCase().slice(0, 2);
-
-      let memberPropertyNames = 'Sin propiedad asignada';
-      if (member.roleAssignments && member.roleAssignments.length > 0) {
-        let isTenant = false;
-        const names: string[] = [];
-        member.roleAssignments.forEach((ra: any) => {
-          if (ra.scope?.type === 'TENANT') {
-            isTenant = true;
-          } else if (ra.scope?.type === 'PROPERTY') {
-            if (ra.scope.resources && Array.isArray(ra.scope.resources)) {
-              ra.scope.resources.forEach((r: any) => { if (r.name) names.push(r.name); });
-            } else if (ra.scope.resourceIds && Array.isArray(ra.scope.resourceIds)) {
-              ra.scope.resourceIds.forEach((id: string) => {
-                const p = this.properties().find(prop => prop.id === id);
-                if (p) names.push(p.name);
-              });
-            }
-          }
-        });
-
-        if (isTenant) {
-          memberPropertyNames = 'Todas las propiedades';
-        } else if (names.length > 0) {
-          memberPropertyNames = [...new Set(names)].join(', ');
+    const results = this.staffMembers()
+      .filter(member => {
+        const memberName = member.fullName || member.name || member.email;
+        if (query && !this.normalizeText(memberName).includes(query)) return false;
+        
+        if (propFilter) {
+          const propObj = this.properties().find(p => p.name === propFilter);
+          if (propObj && !this.checkStaffHasProperty(member, propObj.id)) return false;
         }
-      }
+        return true;
+      })
+      .flatMap((member, idx) => {
+        const memberName = member.fullName || member.name || member.email;
+        const initials = this.buildEmployeeInitials(memberName);
+        const propNames = this.getStaffMemberPropertyNames(member);
+        const avatarColor = colors[idx % colors.length];
 
-      if (propFilter) {
-        const propObj = this.properties().find(p => p.name === propFilter);
-        if (propObj) {
-          let hasProp = false;
-          member.roleAssignments?.forEach((ra: any) => {
-            if (ra.scope?.type === 'TENANT') hasProp = true;
-            else if (ra.scope?.type === 'PROPERTY' && Array.isArray(ra.scope.resourceIds)) {
-              if (ra.scope.resourceIds.includes(propObj.id)) hasProp = true;
-            }
-          });
-          if (!hasProp) return;
-        }
-      }
-
-      if (query && !this.normalizeText(memberName).includes(query)) return;
-
-      const memberShifts = this.fixedShifts().filter((s: any) => s.staffMemberIds?.includes(member.id || ''));
-
-      let filteredShifts = memberShifts;
-      if (shiftFilter) {
-        filteredShifts = filteredShifts.filter((s: any) => s.name === shiftFilter);
-      }
-
-      if (filteredShifts.length > 0) {
-        const s = filteredShifts[0];
-        const avatarColor = colors[colorIndex % colors.length];
-        colorIndex++;
-
-        let rangeLabel = 'Rango no definido';
-        if (s.startDate && s.endDate) {
-          const startD = new Date(`${s.startDate}T00:00:00`);
-          const endD = new Date(`${s.endDate}T00:00:00`);
-          const fmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' });
-          rangeLabel = `Del ${fmt.format(startD)} al ${fmt.format(endD)}`;
-        }
-
-        results.push({
-          employeeName: memberName,
-          employeeInitials: initials,
-          avatarColor,
-          propertyName: memberPropertyNames,
-          shiftName: s.name,
-          shiftTime: s.timeRange,
-          dateLabel: rangeLabel,
-          dateIso: s.startDate,
-          shiftId: s.id
-        });
-      } else if (!shiftFilter) {
-        const avatarColor = colors[colorIndex % colors.length];
-        colorIndex++;
-        results.push({
-          employeeName: memberName,
-          employeeInitials: initials,
-          propertyName: memberPropertyNames,
-          shiftName: 'Sin turno',
-          shiftTime: '--:-- - --:--',
-          dateLabel: 'No asignado',
-          dateIso: '',
-          avatarColor
-        });
-      }
-    });
+        return this.getStaffShiftEntries(member, memberName, initials, propNames, shiftFilter, avatarColor);
+      });
 
     return results.sort((a, b) => a.employeeName.localeCompare(b.employeeName));
   });
+
+  private getStaffShiftEntries(
+    member: StaffMember,
+    memberName: string,
+    initials: string,
+    propNames: string,
+    shiftFilter: string,
+    avatarColor: string
+  ): any[] {
+    const memberShifts = this.fixedShifts().filter(s => s.staffMemberIds?.includes(member.id || ''));
+
+    if (memberShifts.length > 0) {
+      return memberShifts
+        .filter(s => !shiftFilter || s.name === shiftFilter)
+        .map(s => ({
+          employeeName: memberName,
+          employeeInitials: initials,
+          avatarColor,
+          propertyName: propNames,
+          shiftName: s.name,
+          shiftTime: s.timeRange,
+          dateLabel: this.getShiftDateRangeLabel(s),
+          dateIso: s.startDate,
+          shiftId: s.id
+        }));
+    }
+
+    if (!shiftFilter) {
+      return [{
+        employeeName: memberName,
+        employeeInitials: initials,
+        propertyName: propNames,
+        shiftName: 'Sin turno',
+        shiftTime: '--:-- - --:--',
+        dateLabel: 'No asignado',
+        dateIso: '',
+        avatarColor
+      }];
+    }
+
+    return [];
+  }
+
+  private getShiftDateRangeLabel(shift: FixedShiftCard): string {
+    if (!shift.startDate || !shift.endDate) return 'No asignado';
+    const start = new Date(`${shift.startDate}T00:00:00`);
+    const end = new Date(`${shift.endDate}T00:00:00`);
+    const formatter = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' });
+    return `Del ${formatter.format(start)} al ${formatter.format(end)}`;
+  }
 
   readonly assignmentPropertyOptions = computed<string[]>(() => {
     const propertySet = new Set<string>();
@@ -1147,11 +1119,16 @@ export class StaffShiftComponent implements OnInit {
       return;
     }
 
-    const currentStaff = shift.staffMemberIds || [];
-    if (currentStaff.includes(employeeId)) {
-      this.showNotification('Este empleado ya tiene asignado este turno.', 'error');
+    const existingShift = this.fixedShifts().find(s => s.staffMemberIds?.includes(employeeId));
+    if (existingShift) {
+      this.showNotification(
+        `Este empleado ya tiene asignado el turno "${existingShift.name}". Debe desasignarlo primero para asignarle uno nuevo.`,
+        'error'
+      );
       return;
     }
+
+    const currentStaff = shift.staffMemberIds || [];
 
     const newStaffList = [...currentStaff, employeeId];
 
@@ -1357,6 +1334,49 @@ export class StaffShiftComponent implements OnInit {
       .join('');
 
     return initials || 'NA';
+  }
+
+  private getStaffMemberPropertyNames(member: StaffMember): string {
+    if (!member.roleAssignments || member.roleAssignments.length === 0) {
+      return 'Sin propiedad asignada';
+    }
+
+    let isTenant = false;
+    const names: string[] = [];
+
+    member.roleAssignments.forEach((ra: any) => {
+      if (ra.scope?.type === 'TENANT') {
+        isTenant = true;
+      } else if (ra.scope?.type === 'PROPERTY') {
+        this.extractPropertyNamesFromScope(ra.scope, names);
+      }
+    });
+
+    if (isTenant) return 'Todas las propiedades';
+    return names.length > 0 ? [...new Set(names)].join(', ') : 'Sin propiedad asignada';
+  }
+
+  private extractPropertyNamesFromScope(scope: any, names: string[]): void {
+    if (scope.resources && Array.isArray(scope.resources)) {
+      scope.resources.forEach((r: any) => {
+        if (r.name) names.push(r.name);
+      });
+    } else if (scope.resourceIds && Array.isArray(scope.resourceIds)) {
+      scope.resourceIds.forEach((id: string) => {
+        const p = this.properties().find(prop => prop.id === id);
+        if (p) names.push(p.name);
+      });
+    }
+  }
+
+  private checkStaffHasProperty(member: StaffMember, propertyId: string): boolean {
+    if (!member.roleAssignments) return false;
+    return member.roleAssignments.some((ra: any) => {
+      if (ra.scope?.type === 'TENANT') return true;
+      return ra.scope?.type === 'PROPERTY' &&
+        Array.isArray(ra.scope.resourceIds) &&
+        ra.scope.resourceIds.includes(propertyId);
+    });
   }
 
   private normalizeText(value: string): string {
