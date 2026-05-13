@@ -1238,10 +1238,6 @@ export class StaffShiftComponent implements OnInit {
       }
     }
 
-    const currentStaff = shift.staffMemberIds || [];
-
-    const newStaffList = [...currentStaff, employeeId];
-
     this.isAssigning.set(true);
     this.assignStaffToShiftUseCase.execute(shiftId.toString(), [employeeId]).subscribe({
       next: () => {
