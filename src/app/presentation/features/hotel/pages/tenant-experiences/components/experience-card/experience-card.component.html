@@ -1,0 +1,50 @@
+<article class="experience-card">
+  <img
+    class="experience-cover"
+    [src]="experience().coverImageUrl"
+    [alt]="'Portada de ' + experience().name"
+    loading="lazy"
+  />
+
+  <div class="experience-content">
+    <div class="card-top">
+      <span class="scope-badge">{{ scopeBadgeLabel() }}</span>
+      <span class="category-badge">{{ categoryLabel() }}</span>
+    </div>
+
+    <h3 class="experience-name">{{ experience().name }}</h3>
+    <p class="experience-description">{{ experience().description }}</p>
+
+    <p class="meta-line">
+      <ng-icon name="bootstrapGeoAltFill" size="14px"></ng-icon>
+      {{ experience().location.label }}
+    </p>
+    <p class="meta-line">
+      <ng-icon name="bootstrapTagFill" size="14px"></ng-icon>
+      {{ priceLabel() }}
+    </p>
+    <p class="meta-line">
+      <ng-icon name="bootstrapClockFill" size="14px"></ng-icon>
+      {{ experience().durationHours }} hora{{ experience().durationHours !== 1 ? 's' : '' }}
+    </p>
+    <p class="meta-line">
+      <ng-icon name="bootstrapPeopleFill" size="14px"></ng-icon>
+      Capacidad {{ experience().capacity }}
+    </p>
+
+    <p class="availability-summary">{{ availabilitySummary() }}</p>
+
+    <div class="actions">
+      <app-button type="button" variant="outline" size="small" (clicked)="onView()">
+        Ver detalle
+      </app-button>
+      <app-button type="button" variant="primary" size="small" (clicked)="onEdit()">
+        Editar
+      </app-button>
+      <app-button type="button" variant="secondary" size="small" (clicked)="onDelete()">
+        Eliminar
+      </app-button>
+    </div>
+  </div>
+</article>
+

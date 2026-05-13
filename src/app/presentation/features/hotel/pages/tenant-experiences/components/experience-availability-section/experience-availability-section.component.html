@@ -1,0 +1,33 @@
+<div class="section-shell">
+  <div class="section-title">Disponibilidad</div>
+
+  @if (readonlyMode()) {
+    @if (showDateRange()) {
+      <app-experience-date-range-section
+        [readonlyMode]="true"
+        [experience]="propertyExperience()"
+      />
+    }
+
+    @if (showRecurrence()) {
+      <app-experience-recurrence-section
+        [readonlyMode]="true"
+
+      />
+    }
+  } @else if (form(); as formGroup) {
+    @if (showDateRange()) {
+      <app-experience-date-range-section
+        [startAtControl]="formGroup.controls.startAt"
+        [endAtControl]="formGroup.controls.endAt"
+        [blackoutRanges]="formGroup.controls.blackoutRanges"
+        (addBlackout)="onAddBlackoutRange()"
+        (removeBlackout)="onRemoveBlackoutRange($event)"
+      />
+    }
+
+    @if (showRecurrence()) {
+      <app-experience-recurrence-section [recurrenceForm]="formGroup.controls.recurrence" />
+    }
+  }
+</div>

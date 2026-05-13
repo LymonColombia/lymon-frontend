@@ -1,0 +1,73 @@
+<app-hotel-page-layout
+  title="Experiencias"
+  subtitle="Administra tus experiencias "
+  iconName="bootstrapStars"
+>
+  <span hotelPageMeta class="experiences-count">{{ experienceCountLabel() }}</span>
+
+  <div hotelPageActions class="actions-row">
+    
+    <div class="view-switch">
+      <button
+        type="button"
+        [class.active]="viewMode() === 'CARDS'"
+        (click)="setViewMode('CARDS')"
+        aria-label="Vista cards"
+      >
+        <ng-icon name="bootstrapGrid" size="14px"></ng-icon>
+      </button>
+      <button
+        type="button"
+        [class.active]="viewMode() === 'TABLE'"
+        (click)="setViewMode('TABLE')"
+        aria-label="Vista tabla"
+      >
+        <ng-icon name="bootstrapListUl" size="14px"></ng-icon>
+      </button>
+    </div>
+
+    <app-button type="button" variant="primary" (clicked)="onCreateExperience()">
+      <ng-icon name="bootstrapPlus" size="16px"></ng-icon>
+      Nueva Experiencia
+    </app-button>
+  </div>
+
+  <div class="experiences-container">
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    }
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <p>Cargando experiencias...</p>
+      </div>
+    } @else if (experiences().length === 0) {
+      <div class="empty-state">
+        <ng-icon class="empty-state-icon" name="bootstrapStars" size="64px"></ng-icon>
+        <p class="empty-title">Aun no hay experiencias</p>
+        <p class="empty-subtitle">Crea una nueva experiencia para empezar a administrar tus servicios</p>
+        <app-button type="button" variant="primary" (clicked)="onCreateExperience()">
+          Crear primera experiencia
+        </app-button>
+      </div>
+    } @else if (viewMode() === 'TABLE') {
+      <app-experience-table
+        [experiences]="experiences()"
+        (view)="onViewExperience($event)"
+        (edit)="onEditExperience($event)"
+        (delete)="onDeleteExperience($event)"
+      />
+    } @else {
+      <div class="experience-grid">
+        @for (experience of experiences(); track experience.id) {
+          <app-experience-card
+            [experience]="experience"
+            (view)="onViewExperience($event)"
+            (edit)="onEditExperience($event)"
+          />
+        }
+      </div>
+    }
+  </div>
+</app-hotel-page-layout>
+

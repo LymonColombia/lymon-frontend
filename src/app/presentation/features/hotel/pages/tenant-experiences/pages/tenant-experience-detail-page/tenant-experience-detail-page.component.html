@@ -1,0 +1,73 @@
+<app-hotel-page-layout
+  [title]="experience()?.name ?? 'Detalle de Experiencia'"
+  iconName="bootstrapStars"
+  backLink="/tenant-experiences"
+  backLabel="Volver a experiencias"
+>
+  @if (experience()) {
+    <span hotelPageMeta class="scope-chip">{{ scopeBadge() }}</span>
+  }
+
+  @if (experience()) {
+    <div hotelPageActions>
+      <app-button type="button" variant="primary" (clicked)="onEdit()">
+        <ng-icon name="bootstrapPencilSquare" size="16px"></ng-icon>
+        Editar
+      </app-button>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Cargando experiencia...</p>
+    </div>
+  } @else if (experience(); as item) {
+    <div class="detail-grid">
+      <section class="detail-card">
+        <h2>Informacion General</h2>
+        <p class="description">{{ item.description }}</p>
+        <p class="meta"><strong>Categoria:</strong> {{ categoryLabel() }}</p>
+        <p class="meta"><strong>Tipo disponibilidad:</strong> {{ availabilityLabel() }}</p>
+      </section>
+
+      <section class="detail-card">
+        <h2>Capacidad y Precios</h2>
+        <p class="meta"><strong>Precio:</strong> {{ priceLabel() }}</p>
+        <p class="meta"><strong>Duracion:</strong> {{ item.durationHours }} hora{{ item.durationHours !== 1 ? 's' : '' }}</p>
+        <p class="meta"><strong>Capacidad:</strong> {{ item.capacity }} personas</p>
+      </section>
+
+      <section class="detail-card full-width">
+        <h2>Disponibilidad</h2>
+        <app-experience-availability-section
+          [readonlyMode]="true"
+          [experience]="item"
+          [scope]="item.scope"
+          [availabilityType]="item.availabilityType"
+        />
+      </section>
+
+      <section class="detail-card full-width">
+        <h2>Ubicacion</h2>
+        <app-experience-location-section [readonlyMode]="true" [location]="item.location" />
+      </section>
+
+      <section class="detail-card full-width">
+        <h2>Informacion de Alcance</h2>
+        <p class="meta"><strong>Scope:</strong> {{ scopeBadge() }}</p>
+        @if (item.scope === 'PROPERTY') {
+          <p class="meta"><strong>Id de Propiedad:</strong> {{ item.propertyId }}</p>
+          <p class="meta"><strong>Unidades:</strong> {{ item.unitIds.join(', ') }}</p>
+        } @else {
+          <p class="meta">Esta experiencia aplica a nivel tenant.</p>
+        }
+      </section>
+    </div>
+  }
+</app-hotel-page-layout>
+

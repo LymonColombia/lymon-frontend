@@ -1,0 +1,67 @@
+@if (readonlyMode()) {
+  @if (experience(); as item) {
+    <div class="detail-grid">
+      <p class="detail-item">
+        <span class="detail-label">Inicio</span>
+        <span class="detail-value">{{ formatDateTime(item.startAt) }}</span>
+      </p>
+      <p class="detail-item">
+        <span class="detail-label">Fin</span>
+        <span class="detail-value">{{ formatDateTime(item.endAt) }}</span>
+      </p>
+    </div>
+
+    @if (item.blackoutRanges.length > 0) {
+      <div class="blackout-detail">
+        <p class="section-caption">Fechas bloqueadas</p>
+        <ul>
+          @for (range of getBlackoutValues(); track $index) {
+            <li>{{ formatDateTime(range.startAt) }} - {{ formatDateTime(range.endAt) }}</li>
+          }
+        </ul>
+      </div>
+    }
+  }
+} @else {
+  <div class="form-row">
+    <div class="form-group">
+      <label><input type="text"/> Inicio <span class="required">*</span></label>
+      <input type="datetime-local" [formControl]="startAtControl()!" />
+      @if (startAtControl()?.invalid && startAtControl()?.touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+    <div class="form-group">
+      <label><input type="text"/> Fin <span class="required">*</span></label>
+      <input type="datetime-local" [formControl]="endAtControl()!" />
+      @if (endAtControl()?.invalid && endAtControl()?.touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+  </div>
+
+  @if (blackoutRanges(); as ranges) {
+    <div class="blackout-editor">
+      <div class="blackout-header">
+        <p class="section-caption">Fechas bloqueadas</p>
+        <button class="text-button" type="button" (click)="onAddBlackout()">Agregar rango</button>
+      </div>
+
+      @if (ranges.controls.length === 0) {
+        <p class="empty-blackout">Sin bloqueos configurados</p>
+      } @else {
+        <div class="blackout-grid">
+          @for (rangeGroup of ranges.controls; track $index) {
+            <div class="blackout-row" [formGroup]="rangeGroup">
+              <input type="datetime-local" formControlName="startAt" />
+              <input type="datetime-local" formControlName="endAt" />
+              <button class="icon-button" type="button" (click)="onRemoveBlackout($index)">
+                Eliminar
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+}

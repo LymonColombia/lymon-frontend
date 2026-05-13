@@ -1,0 +1,47 @@
+<app-hotel-page-layout
+  [title]="pageTitle()"
+  iconName="bootstrapStars"
+  backLink="/tenant-experiences"
+  backLabel="Volver a experiencias"
+>
+  @if (isEditing()) {
+    <span hotelPageMeta class="edit-chip">Modo edicion</span>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    }
+    @if (successMessage()) {
+      <div class="alert alert-success">{{ successMessage() }}</div>
+    }
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Cargando experiencia...</p>
+      </div>
+    } @else {
+      <app-experience-form
+        [form]="form"
+        [scopeOptions]="scopeOptions"
+        [categoryOptions]="categoryOptions"
+        [propertyOptions]="propertyOptions()"
+        [availabilityTypeOptions]="availabilityTypeOptions"
+        [unitOptions]="unitOptions()"
+        [unitsLoading]="unitsLoading()"
+        (propertyChanged)="onPropertyChanged($event)"
+        (addBlackoutRange)="onAddBlackoutRange()"
+        (removeBlackoutRange)="onRemoveBlackoutRange($event)"
+      />
+
+      <div class="form-actions">
+        <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
+        <app-button type="submit" variant="primary" [disabled]="isSaving()" [loading]="isSaving()">
+          {{ isEditing() ? 'Actualizar Experiencia' : 'Crear Experiencia' }}
+        </app-button>
+      </div>
+    }
+  </form>
+</app-hotel-page-layout>
+
