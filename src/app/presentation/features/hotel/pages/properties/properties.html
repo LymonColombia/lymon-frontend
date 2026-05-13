@@ -20,29 +20,37 @@
       <div class="alert alert-success">{{ successMessage() }}</div>
     }
 
-    @if (showForm()) {
-      <app-modal
-        [open]="true"
-        title="Nueva Propiedad"
-        size="large"
-        (closed)="closeForm()"
-      >
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <app-property-form
-            [form]="form"
-            [propertyTypeOptions]="propertyTypeOptions"
-            [cancellationPolicyOptions]="cancellationPolicyOptions"
-          />
+    <app-modal
+      [open]="showForm()"
+      [title]="editingProperty() ? 'Editar Propiedad' : 'Nueva Propiedad'"
+      size="large"
+      (closed)="closeForm()"
+    >
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <app-property-form
+          [form]="form"
+          [propertyTypeOptions]="propertyTypeOptions"
+          [cancellationPolicyOptions]="cancellationPolicyOptions"
+        />
 
-          <div modal-footer class="form-actions">
-            <app-button type="button" variant="secondary" (clicked)="cancelForm()">Cancelar</app-button>
-            <app-button type="submit" variant="primary" [disabled]="isSaving()" [loading]="isSaving()">
-              Crear Propiedad
-            </app-button>
-          </div>
-        </form>
-      </app-modal>
-    }
+        <div modal-footer class="form-actions">
+          <app-button type="button" variant="secondary" (clicked)="cancelForm()">Cancelar</app-button>
+          <app-button type="submit" variant="primary" [disabled]="isSaving()" [loading]="isSaving()">
+            {{ editingProperty() ? 'Guardar cambios' : 'Crear Propiedad' }}
+          </app-button>
+        </div>
+      </form>
+    </app-modal>
+
+    <app-modal [open]="showDeleteConfirm()" title="Eliminar Propiedad" size="small" (closed)="cancelDelete()">
+      <p class="delete-confirm-message">
+        ¿Estás seguro de que quieres eliminar <strong>{{ propertyToDelete()?.name }}</strong>? Esta acción no se puede deshacer.
+      </p>
+      <div modal-footer class="form-actions">
+        <app-button type="button" variant="secondary" (clicked)="cancelDelete()">Cancelar</app-button>
+        <app-button type="button" variant="danger" [disabled]="isDeleting()" [loading]="isDeleting()" (clicked)="confirmDelete()">Eliminar</app-button>
+      </div>
+    </app-modal>
 
     <!-- Properties list -->
     @if (isLoading()) {
@@ -62,7 +70,7 @@
     } @else {
       <div class="property-grid">
         @for (prop of properties(); track prop.id) {
-          <app-property-card [property]="prop" (viewUnits)="navigateToUnits($event)" />
+          <app-property-card [property]="prop" (viewUnits)="navigateToUnits($event)" (edit)="openEditForm($event)" (delete)="openDeleteConfirm($event)" />
         }
         
         <button class="create-property-card" type="button" (click)="openForm()">
