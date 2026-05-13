@@ -387,6 +387,14 @@
   border-radius: var(--radius-lg);
   background: var(--color-bg-primary);
   padding: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.fixed-card:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 2%, var(--color-bg-primary));
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
 }
 
 .fixed-card-header {
