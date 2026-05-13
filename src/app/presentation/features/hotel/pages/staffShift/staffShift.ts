@@ -14,6 +14,7 @@ import { GetShiftsUseCase } from '@/domain/use-cases/shift/get-shifts.use-case';
 import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
 import { UpdateShiftUseCase } from '@/domain/use-cases/shift/update-shift.use-case';
 import { DeleteShiftUseCase } from '@/domain/use-cases/shift/delete-shift.use-case';
+import { AssignStaffToShiftUseCase } from '@/domain/use-cases/shift/assign-staff.use-case';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffMember, Property } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -35,6 +36,9 @@ import {
   bootstrapCalendarX,
   bootstrapPersonDash,
   bootstrapChevronDown,
+  bootstrapX,
+  bootstrapPerson,
+  bootstrapEraser,
 } from '@ng-icons/bootstrap-icons';
 
 type PreviewTab = 'calendar' | 'fixed';
@@ -62,6 +66,7 @@ interface FixedShiftCard {
   propertyName?: string;
   propertyId?: string;
   notes?: string;
+  staffMemberIds?: string[];
 }
 
 interface ShiftOption {
@@ -93,6 +98,9 @@ interface ShiftOption {
       bootstrapCalendarX,
       bootstrapPersonDash,
       bootstrapChevronDown,
+      bootstrapX,
+      bootstrapPerson,
+      bootstrapEraser,
     }),
   ],
   templateUrl: './staffShift.html',
@@ -104,6 +112,7 @@ export class StaffShiftComponent implements OnInit {
   private readonly getShiftsUseCase = inject(GetShiftsUseCase);
   private readonly updateShiftUseCase = inject(UpdateShiftUseCase);
   private readonly deleteShiftUseCase = inject(DeleteShiftUseCase);
+  private readonly assignStaffToShiftUseCase = inject(AssignStaffToShiftUseCase);
   private readonly getStaffUseCase = inject(GetStaffUseCase);
   private readonly staffRepository = inject(StaffRepository);
 
@@ -119,11 +128,13 @@ export class StaffShiftComponent implements OnInit {
   readonly isCalendarOverviewModalOpen = signal(false);
   readonly overviewWeekStart = signal<Date>(this.getStartOfWeek(new Date()));
 
-  readonly assignmentDate = signal('');
   readonly assignmentProperty = signal('');
   readonly assignmentEmployee = signal('');
   readonly assignmentShiftId = signal<string | number | null>(null);
   readonly createAssignmentError = signal('');
+
+  readonly isEmployeeSelectorModalOpen = signal(false);
+  readonly employeeSearch = signal('');
 
   readonly fixedSearch = signal('');
   readonly fixedPropertyFilter = signal('');
@@ -133,7 +144,7 @@ export class StaffShiftComponent implements OnInit {
 
   readonly isCreateModalOpen = signal(false);
   readonly isOverviewDatePickerOpen = signal(false);
-  
+
   readonly overviewSelectedDay = signal(new Date().getDate());
   readonly overviewSelectedMonth = signal(new Date().getMonth());
   readonly overviewSelectedYear = signal(new Date().getFullYear());
@@ -185,28 +196,51 @@ export class StaffShiftComponent implements OnInit {
     return `${yyyy}-${mm}-${dd}`;
   });
 
-  readonly assignmentDays = signal<AssignmentDay[]>([
-    {
-      dateIso: '2026-04-11',
-      dateLabel: 'sabado, 11 de abril de 2026',
-      assignments: [
-        {
-          employeeName: 'Ana Torres',
-          employeeInitials: 'AT',
-          propertyName: 'Hotel Centro',
-          shiftName: 'Turno Mañana',
-          shiftTime: '07:00 - 15:00',
-        },
-        {
-          employeeName: 'Carlos Vega',
-          employeeInitials: 'CV',
-          propertyName: 'Hotel Norte',
-          shiftName: 'Turno Tarde',
-          shiftTime: '15:00 - 23:00',
-        },
-      ],
-    },
-  ]);
+  readonly assignmentDays = computed<AssignmentDay[]>(() => {
+    const shifts = this.fixedShifts();
+    const staff = this.staffMembers();
+    const results: AssignmentDay[] = [];
+
+    const start = new Date(this.currentWeekStart());
+
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const iso = `${yyyy}-${mm}-${dd}`;
+
+      const dayAssignments: DayAssignment[] = [];
+
+      shifts.forEach(shift => {
+        if (shift.startDate && shift.endDate && iso >= shift.startDate && iso <= shift.endDate) {
+          shift.staffMemberIds?.forEach(empId => {
+            const member = staff.find(m => m.id === empId);
+            if (member) {
+              dayAssignments.push({
+                employeeName: member.fullName || member.name || member.email,
+                employeeInitials: this.buildEmployeeInitials(member.fullName || member.name || member.email),
+                propertyName: shift.propertyName || 'N/A',
+                shiftName: shift.name,
+                shiftTime: shift.timeRange
+              });
+            }
+          });
+        }
+      });
+
+      if (dayAssignments.length > 0) {
+        results.push({
+          dateIso: iso,
+          dateLabel: this.formatDateLabel(iso),
+          assignments: dayAssignments
+        });
+      }
+    }
+
+    return results;
+  });
 
   readonly fixedShifts = signal<FixedShiftCard[]>([]);
 
@@ -237,15 +271,7 @@ export class StaffShiftComponent implements OnInit {
   });
 
   readonly calendarPropertyOptions = computed<string[]>(() => {
-    const propertySet = new Set<string>();
-    this.assignmentDays().forEach((day) => {
-      day.assignments.forEach((assignment) => {
-        if (assignment.propertyName.trim()) {
-          propertySet.add(assignment.propertyName);
-        }
-      });
-    });
-    return Array.from(propertySet).sort((a, b) => a.localeCompare(b));
+    return this.properties().map(p => p.name).sort((a, b) => a.localeCompare(b));
   });
 
   readonly calendarShiftTypeOptions = computed<string[]>(() => {
@@ -267,35 +293,104 @@ export class StaffShiftComponent implements OnInit {
     const propFilter = this.calendarPropertyFilter();
     const query = this.normalizeText(this.calendarSearch());
     const shiftFilter = this.calendarShiftTypeFilter();
-    const results: (DayAssignment & { dateLabel: string; dateIso: string; avatarColor: string })[] = [];
+    const allStaff = this.staffMembers();
+    const allAssignments = this.assignmentDays();
 
+    const results: any[] = [];
     const colors = ['primary', 'success', 'warning', 'danger', 'info'];
     let colorIndex = 0;
 
-    this.assignmentDays().forEach(day => {
-      day.assignments.forEach(assignment => {
-        // If property filter is active, check it
-        if (propFilter && assignment.propertyName !== propFilter) return;
-        
-        // If shift filter is active, check it
-        if (shiftFilter && assignment.shiftName !== shiftFilter) return;
+    allStaff.forEach(member => {
+      const memberName = member.fullName || member.name || member.email;
+      const initials = memberName.split(' ').filter(n => n).map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
-        const searchable = [
-          assignment.employeeName,
-          assignment.shiftName,
-        ].map(value => this.normalizeText(value)).join(' ');
+      let memberPropertyNames = 'Sin propiedad asignada';
+      if (member.roleAssignments && member.roleAssignments.length > 0) {
+        let isTenant = false;
+        const names: string[] = [];
+        member.roleAssignments.forEach((ra: any) => {
+          if (ra.scope?.type === 'TENANT') {
+            isTenant = true;
+          } else if (ra.scope?.type === 'PROPERTY') {
+            if (ra.scope.resources && Array.isArray(ra.scope.resources)) {
+              ra.scope.resources.forEach((r: any) => { if (r.name) names.push(r.name); });
+            } else if (ra.scope.resourceIds && Array.isArray(ra.scope.resourceIds)) {
+              ra.scope.resourceIds.forEach((id: string) => {
+                const p = this.properties().find(prop => prop.id === id);
+                if (p) names.push(p.name);
+              });
+            }
+          }
+        });
 
-        if (!query || searchable.includes(query)) {
-          const avatarColor = colors[colorIndex % colors.length];
-          colorIndex++;
-          results.push({
-            ...assignment,
-            dateLabel: day.dateLabel,
-            dateIso: day.dateIso,
-            avatarColor
-          });
+        if (isTenant) {
+          memberPropertyNames = 'Todas las propiedades';
+        } else if (names.length > 0) {
+          memberPropertyNames = [...new Set(names)].join(', ');
         }
-      });
+      }
+
+      if (propFilter) {
+        const propObj = this.properties().find(p => p.name === propFilter);
+        if (propObj) {
+          let hasProp = false;
+          member.roleAssignments?.forEach((ra: any) => {
+            if (ra.scope?.type === 'TENANT') hasProp = true;
+            else if (ra.scope?.type === 'PROPERTY' && Array.isArray(ra.scope.resourceIds)) {
+              if (ra.scope.resourceIds.includes(propObj.id)) hasProp = true;
+            }
+          });
+          if (!hasProp) return;
+        }
+      }
+
+      if (query && !this.normalizeText(memberName).includes(query)) return;
+
+      const memberShifts = this.fixedShifts().filter((s: any) => s.staffMemberIds?.includes(member.id || ''));
+
+      let filteredShifts = memberShifts;
+      if (shiftFilter) {
+        filteredShifts = filteredShifts.filter((s: any) => s.name === shiftFilter);
+      }
+
+      if (filteredShifts.length > 0) {
+        const s = filteredShifts[0];
+        const avatarColor = colors[colorIndex % colors.length];
+        colorIndex++;
+
+        let rangeLabel = 'Rango no definido';
+        if (s.startDate && s.endDate) {
+          const startD = new Date(`${s.startDate}T00:00:00`);
+          const endD = new Date(`${s.endDate}T00:00:00`);
+          const fmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short' });
+          rangeLabel = `Del ${fmt.format(startD)} al ${fmt.format(endD)}`;
+        }
+
+        results.push({
+          employeeName: memberName,
+          employeeInitials: initials,
+          avatarColor,
+          propertyName: memberPropertyNames,
+          shiftName: s.name,
+          shiftTime: s.timeRange,
+          dateLabel: rangeLabel,
+          dateIso: s.startDate,
+          shiftId: s.id
+        });
+      } else if (!shiftFilter) {
+        const avatarColor = colors[colorIndex % colors.length];
+        colorIndex++;
+        results.push({
+          employeeName: memberName,
+          employeeInitials: initials,
+          propertyName: memberPropertyNames,
+          shiftName: 'Sin turno',
+          shiftTime: '--:-- - --:--',
+          dateLabel: 'No asignado',
+          dateIso: '',
+          avatarColor
+        });
+      }
     });
 
     return results.sort((a, b) => a.employeeName.localeCompare(b.employeeName));
@@ -329,13 +424,17 @@ export class StaffShiftComponent implements OnInit {
     return Array.from(employeeSet).sort((a, b) => a.localeCompare(b));
   });
 
-  readonly assignmentShiftOptions = computed<ShiftOption[]>(() =>
-    this.fixedShifts().map((shift) => ({
-      id: shift.id,
-      name: shift.name,
-      timeRange: shift.timeRange,
-    })),
-  );
+  readonly assignmentShiftOptions = computed<FixedShiftCard[]>(() => {
+    const propFilter = this.assignmentProperty();
+    const allShifts = this.fixedShifts();
+
+    if (!propFilter) return [];
+    if (propFilter === 'ALL') return allShifts;
+
+    return allShifts.filter(shift => shift.propertyId === propFilter);
+  });
+
+
 
   readonly filteredFixedShifts = computed<FixedShiftCard[]>(() => {
     const query = this.normalizeText(this.fixedSearch());
@@ -582,7 +681,13 @@ export class StaffShiftComponent implements OnInit {
 
   private loadStaff(): void {
     this.getStaffUseCase.execute().subscribe({
-      next: (members) => this.staffMembers.set(members),
+      next: (members) => {
+        const normalized = members.map((m: any) => ({
+          ...m,
+          id: m.id || m._id || m.userId || ''
+        }));
+        this.staffMembers.set(normalized);
+      },
       error: () => this.staffMembers.set([]),
     });
   }
@@ -591,9 +696,13 @@ export class StaffShiftComponent implements OnInit {
     this.staffRepository.getProperties().subscribe({
       next: (response) => {
         const data = response.data ?? [];
-        this.properties.set(data);
-        if (data.length > 0 && !this.newShiftPropertyId()) {
-          this.newShiftPropertyId.set(data[0].id);
+        const normalizedData = data.map((p: any) => ({
+          ...p,
+          id: p.id || p._id || p.propertyId || ''
+        }));
+        this.properties.set(normalizedData);
+        if (normalizedData.length > 0 && !this.newShiftPropertyId()) {
+          this.newShiftPropertyId.set(normalizedData[0].id);
         }
         this.loadFixedShifts();
       },
@@ -607,17 +716,23 @@ export class StaffShiftComponent implements OnInit {
   private loadFixedShifts(): void {
     this.getShiftsUseCase.execute().subscribe({
       next: (shifts) => {
-        const mappedShifts: FixedShiftCard[] = shifts.map((s) => ({
-          id: s.id ?? crypto.randomUUID(),
-          name: s.name,
-          timeRange: `${s.startHour} - ${s.endHour}`,
-          startDate: s.startDate.split('T')[0],
-          endDate: s.endDate.split('T')[0],
-          propertyName: this.properties().find(p => p.id === s.propertyId)?.name ?? 'N/A',
-          propertyId: s.propertyId,
-          notes: s.notes
-        }));
-        this.fixedShifts.set(mappedShifts);
+        const mappedShifts: FixedShiftCard[] = shifts.map((s: any) => {
+          const id = s.id || s._id || s.shiftId || '';
+          const propertyId = s.propertyId || s.property_id || '';
+
+          return {
+            id,
+            name: s.name,
+            timeRange: `${s.startHour} - ${s.endHour}`,
+            startDate: s.startDate ? s.startDate.split('T')[0] : '',
+            endDate: s.endDate ? s.endDate.split('T')[0] : '',
+            propertyName: this.properties().find(p => p.id === propertyId)?.name ?? 'N/A',
+            propertyId: propertyId,
+            notes: s.notes,
+            staffMemberIds: s.staffMemberIds || []
+          };
+        });
+        this.fixedShifts.set(mappedShifts.filter(s => s.id));
       },
       error: () => this.fixedShifts.set([])
     });
@@ -634,6 +749,10 @@ export class StaffShiftComponent implements OnInit {
   onCalendarSearch(event: Event): void {
     const target = event.target as HTMLInputElement | null;
     this.calendarSearch.set(target?.value ?? '');
+  }
+
+  clearCalendarSearch(): void {
+    this.calendarSearch.set('');
   }
 
   onCalendarShiftTypeFilterChange(event: Event): void {
@@ -676,7 +795,27 @@ export class StaffShiftComponent implements OnInit {
 
   onFixedSearch(event: Event): void {
     const target = event.target as HTMLInputElement | null;
-    this.fixedSearch.set(target?.value ?? '');
+    const query = target?.value ?? '';
+    this.fixedSearch.set(query);
+
+    if (query.trim().length >= 3) {
+      const normalizedQuery = this.normalizeText(query);
+      const match = this.fixedShifts().find(s =>
+        this.normalizeText(s.name).includes(normalizedQuery)
+      );
+
+      if (match && match.startDate) {
+        const matchDate = new Date(`${match.startDate}T00:00:00`);
+        this.currentWeekStart.set(this.getStartOfWeek(matchDate));
+      }
+    } else if (query.trim().length === 0) {
+      this.currentWeekStart.set(this.getStartOfWeek(new Date()));
+    }
+  }
+
+  clearFixedSearch(): void {
+    this.fixedSearch.set('');
+    this.currentWeekStart.set(this.getStartOfWeek(new Date()));
   }
 
   onFixedPropertyFilterChange(event: Event): void {
@@ -693,6 +832,7 @@ export class StaffShiftComponent implements OnInit {
     this.fixedSearch.set('');
     this.fixedPropertyFilter.set('');
     this.fixedDateFilter.set('');
+    this.currentWeekStart.set(this.getStartOfWeek(new Date()));
   }
 
   openShiftDetail(shift: FixedShiftCard): void {
@@ -811,15 +951,9 @@ export class StaffShiftComponent implements OnInit {
   openCreateAssignmentModal(): void {
     this.isCreateAssignmentModalOpen.set(true);
     this.createAssignmentError.set('');
-
-    const defaultDate = this.assignmentDays()[0]?.dateIso ?? '';
-    const defaultProperty = this.assignmentPropertyOptions()[0] ?? '';
-    const defaultEmployee = this.assignmentEmployeeOptions()[0] ?? '';
-    const defaultShiftId = this.assignmentShiftOptions()[0]?.id ?? null;
-    this.assignmentDate.set(defaultDate);
-    this.assignmentProperty.set(defaultProperty);
-    this.assignmentEmployee.set(defaultEmployee);
-    this.assignmentShiftId.set(defaultShiftId);
+    this.assignmentProperty.set('');
+    this.assignmentEmployee.set('');
+    this.assignmentShiftId.set(null);
   }
 
   closeCreateAssignmentModal(): void {
@@ -829,7 +963,150 @@ export class StaffShiftComponent implements OnInit {
 
   onAssignmentPropertyChange(event: Event): void {
     const target = event.target as HTMLSelectElement | null;
-    this.assignmentProperty.set(target?.value ?? '');
+    const newProp = target?.value ?? '';
+    this.assignmentProperty.set(newProp);
+
+    const empId = this.assignmentEmployee();
+    if (empId && newProp && newProp !== 'ALL') {
+      const emp = this.staffMembers().find(e => e.id === empId);
+      if (emp) {
+        let hasAccess = false;
+        emp.roleAssignments?.forEach((ra: any) => {
+          if (ra.scope?.type === 'TENANT') {
+            hasAccess = true;
+          } else if (ra.scope?.type === 'PROPERTY' && Array.isArray(ra.scope.resourceIds)) {
+            if (ra.scope.resourceIds.includes(newProp)) hasAccess = true;
+          }
+        });
+        if (!hasAccess) {
+          this.assignmentEmployee.set('');
+          this.assignmentShiftId.set(null);
+        }
+      }
+    }
+  }
+
+  openEmployeeSelectorModal(): void {
+    this.isEmployeeSelectorModalOpen.set(true);
+    this.employeeSearch.set('');
+  }
+
+  closeEmployeeSelectorModal(): void {
+    this.isEmployeeSelectorModalOpen.set(false);
+  }
+
+  onEmployeeSearchInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    this.employeeSearch.set(target?.value ?? '');
+  }
+
+  getEmployeePropertiesText(employee: StaffMember): string {
+    let isTenant = false;
+    const names: string[] = [];
+    employee.roleAssignments?.forEach((ra: any) => {
+      if (ra.scope?.type === 'TENANT') {
+        isTenant = true;
+      } else if (ra.scope?.type === 'PROPERTY') {
+        if (ra.scope.resources && Array.isArray(ra.scope.resources)) {
+          ra.scope.resources.forEach((r: any) => { if (r.name) names.push(r.name); });
+        } else if (ra.scope.resourceIds && Array.isArray(ra.scope.resourceIds)) {
+          ra.scope.resourceIds.forEach((id: string) => {
+            const p = this.properties().find(prop => prop.id === id);
+            if (p) names.push(p.name);
+          });
+        }
+      }
+    });
+
+    if (isTenant) return 'Todas las propiedades (Tenant)';
+
+    if (names.length > 0) {
+      return [...new Set(names)].join(', ');
+    }
+    return 'Sin propiedad';
+  }
+
+  readonly filteredEmployeesForSelector = computed(() => {
+    const search = this.normalizeText(this.employeeSearch());
+    const propertyFilter = this.assignmentProperty();
+    let staff = this.staffMembers();
+
+    if (propertyFilter && propertyFilter !== 'ALL') {
+      staff = staff.filter(emp => {
+        let hasAccess = false;
+        emp.roleAssignments?.forEach((ra: any) => {
+          if (ra.scope?.type === 'TENANT') {
+            hasAccess = true;
+          } else if (ra.scope?.type === 'PROPERTY' && Array.isArray(ra.scope.resourceIds)) {
+            if (ra.scope.resourceIds.includes(propertyFilter)) {
+              hasAccess = true;
+            }
+          }
+        });
+        return hasAccess;
+      });
+    }
+
+    if (search) {
+      staff = staff.filter(emp => {
+        const name = emp.fullName || emp.name || emp.email;
+        return this.normalizeText(name).includes(search);
+      });
+    }
+
+    return staff.sort((a, b) => {
+      const nameA = a.fullName || a.name || a.email;
+      const nameB = b.fullName || b.name || b.email;
+      return nameA.localeCompare(nameB);
+    });
+  });
+
+  selectEmployee(employeeId: string): void {
+    this.assignmentEmployee.set(employeeId);
+    this.isEmployeeSelectorModalOpen.set(false);
+
+    const employee = this.staffMembers().find(e => e.id === employeeId);
+    if (employee) {
+      let isTenant = false;
+      const propIds: string[] = [];
+      employee.roleAssignments?.forEach((ra: any) => {
+        if (ra.scope?.type === 'TENANT') {
+          isTenant = true;
+        } else if (ra.scope?.type === 'PROPERTY') {
+          if (Array.isArray(ra.scope.resourceIds)) {
+            propIds.push(...ra.scope.resourceIds);
+          }
+        }
+      });
+
+      if (isTenant) {
+        this.assignmentProperty.set('ALL');
+      } else if (propIds.length > 0) {
+        const currentProp = this.assignmentProperty();
+        if (!currentProp || !propIds.includes(currentProp)) {
+          this.assignmentProperty.set(propIds[0]);
+        }
+      }
+    }
+  }
+
+  clearEmployeeSelection(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.assignmentEmployee.set('');
+    this.assignmentShiftId.set(null);
+    if (this.assignmentProperty() === 'ALL') {
+      this.assignmentProperty.set('');
+    }
+  }
+
+  getSelectedEmployeeName(): string {
+    const empId = this.assignmentEmployee();
+    if (!empId) return 'Seleccione un empleado...';
+    const emp = this.staffMembers().find(e => e.id === empId);
+    if (!emp) return 'Empleado no encontrado';
+    return emp.fullName || emp.name || emp.email;
   }
 
   openCalendarOverviewModal(): void {
@@ -839,11 +1116,6 @@ export class StaffShiftComponent implements OnInit {
 
   closeCalendarOverviewModal(): void {
     this.isCalendarOverviewModalOpen.set(false);
-  }
-
-  onAssignmentDateInput(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    this.assignmentDate.set(target?.value ?? '');
   }
 
   onAssignmentEmployeeChange(event: Event): void {
@@ -858,57 +1130,41 @@ export class StaffShiftComponent implements OnInit {
   }
 
   createAssignment(): void {
-    const dateIso = this.assignmentDate().trim();
-    const propertyName = this.assignmentProperty().trim();
-    const employeeName = this.assignmentEmployee().trim();
+    const propertyId = this.assignmentProperty().trim();
+    let employeeId = this.assignmentEmployee().trim();
     const shiftId = this.assignmentShiftId();
 
-    if (!dateIso || !propertyName || !employeeName || shiftId === null) {
+    if (!propertyId || !employeeId || shiftId === null || shiftId === '') {
       this.showNotification(
-        'Completa fecha, propiedad, empleado y turno para crear la asignacion.'
+        'Completa propiedad, empleado y turno para crear la asignación.', 'error'
       );
       return;
     }
 
-    const selectedShift = this.fixedShifts().find((shift) => shift.id === shiftId);
-    if (!selectedShift) {
-      this.showNotification('El turno seleccionado no es valido.');
+    const shift = this.fixedShifts().find(s => s.id === shiftId);
+    if (!shift) {
+      this.showNotification('El turno seleccionado no es válido.', 'error');
       return;
     }
 
-    const newAssignment: DayAssignment = {
-      employeeName,
-      employeeInitials: this.buildEmployeeInitials(employeeName),
-      propertyName,
-      shiftName: selectedShift.name,
-      shiftTime: selectedShift.timeRange,
-    };
+    const currentStaff = shift.staffMemberIds || [];
+    if (currentStaff.includes(employeeId)) {
+      this.showNotification('Este empleado ya tiene asignado este turno.', 'error');
+      return;
+    }
 
-    this.assignmentDays.update((days) => {
-      const existingDay = days.find((day) => day.dateIso === dateIso);
-      if (existingDay) {
-        return days.map((day) => {
-          if (day.dateIso !== dateIso) {
-            return day;
-          }
+    const newStaffList = [...currentStaff, employeeId];
 
-          return {
-            ...day,
-            assignments: [newAssignment, ...day.assignments],
-          };
-        });
+    this.assignStaffToShiftUseCase.execute(shiftId.toString(), newStaffList).subscribe({
+      next: () => {
+        this.showNotification('Turno asignado exitosamente.', 'success');
+        this.loadFixedShifts();
+        this.closeCreateAssignmentModal();
+      },
+      error: () => {
+        this.showNotification('Error al asignar el turno al empleado. Verifique los datos.', 'error');
       }
-
-      const newDay: AssignmentDay = {
-        dateIso,
-        dateLabel: this.formatDateLabel(dateIso),
-        assignments: [newAssignment],
-      };
-
-      return [...days, newDay].sort((a, b) => a.dateIso.localeCompare(b.dateIso));
     });
-
-    this.closeCreateAssignmentModal();
   }
 
   openCreateShiftModal(): void {
@@ -922,6 +1178,14 @@ export class StaffShiftComponent implements OnInit {
   closeCreateShiftModal(): void {
     this.isCreateModalOpen.set(false);
     this.resetCreateShiftForm();
+  }
+
+  getStaffNames(ids?: string[]): string[] {
+    if (!ids || !Array.isArray(ids)) return [];
+    return ids.map(id => {
+      const member = this.staffMembers().find(m => m.id === id);
+      return member ? (member.fullName || member.name || member.email) : 'Empleado desconocido';
+    });
   }
 
   onNewShiftNameInput(event: Event): void {
@@ -1068,7 +1332,6 @@ export class StaffShiftComponent implements OnInit {
   }
 
   private resetCreateAssignmentForm(): void {
-    this.assignmentDate.set('');
     this.assignmentProperty.set('');
     this.assignmentEmployee.set('');
     this.assignmentShiftId.set(null);

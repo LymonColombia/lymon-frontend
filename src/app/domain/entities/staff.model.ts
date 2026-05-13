@@ -75,9 +75,14 @@ export interface RolesResponse {
   roles: Role[];
 }
 
+export interface Resource {
+  id: string;
+  name: string;
+}
+
 export interface RoleAssignmentDto {
   roleId: string;
-  scope: { type: 'TENANT' } | { type: 'PROPERTY' | 'UNIT'; resourceIds: string[] };
+  scope: { type: 'TENANT' } | { type: 'PROPERTY' | 'UNIT'; resourceIds: string[]; resources?: Resource[] };
 }
 
 export interface InviteStaffDto {
