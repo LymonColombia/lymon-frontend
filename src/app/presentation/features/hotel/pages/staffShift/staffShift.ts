@@ -776,7 +776,7 @@ export class StaffShiftComponent implements OnInit {
         this.normalizeText(s.name).includes(normalizedQuery)
       );
 
-      if (match && match.startDate) {
+      if (match?.startDate) {
         const matchDate = new Date(`${match.startDate}T00:00:00`);
         this.currentWeekStart.set(this.getStartOfWeek(matchDate));
       }

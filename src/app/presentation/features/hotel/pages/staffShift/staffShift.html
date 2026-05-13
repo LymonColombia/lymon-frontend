@@ -38,7 +38,7 @@
       <label class="search-field calendar-property-filter">
         <div class="search-input-wrap">
           <select class="search-input search-input--select" [value]="calendarPropertyFilter()"
-            (change)="onCalendarPropertyFilterChange($event)" aria-label="Propiedad">
+            (change)="onCalendarPropertyFilterChange($event)">
             <option value="">Todas las propiedades</option>
             @for (prop of calendarPropertyOptions(); track prop) {
             <option [value]="prop">{{ prop }}</option>
@@ -51,7 +51,7 @@
       <label class="search-field calendar-shift-filter">
         <div class="search-input-wrap">
           <select class="search-input search-input--select" [value]="calendarShiftTypeFilter()"
-            (change)="onCalendarShiftTypeFilterChange($event)" aria-label="Tipo de turno">
+            (change)="onCalendarShiftTypeFilterChange($event)">
             <option value="">Todos los turnos</option>
             @for (shift of calendarShiftTypeOptions(); track shift) {
             <option [value]="shift">{{ shift }}</option>
@@ -721,26 +721,26 @@
                 <div class="picker-wheels">
                   <div class="picker-wheel" aria-label="Día">
                     @for (day of daysArray; track day) {
-                    <div class="wheel-item" [class.wheel-item--active]="overviewSelectedDay() === day"
-                      (click)="onOverviewDaySelect(day)" (keydown.enter)="onOverviewDaySelect(day)" tabindex="0">
+                    <button type="button" class="wheel-item" [class.wheel-item--active]="overviewSelectedDay() === day"
+                      (click)="onOverviewDaySelect(day)">
                       {{ day }}
-                    </div>
+                    </button>
                     }
                   </div>
                   <div class="picker-wheel" aria-label="Mes">
                     @for (month of monthsArray; track month; let i = $index) {
-                    <div class="wheel-item" [class.wheel-item--active]="overviewSelectedMonth() === i"
-                      (click)="onOverviewMonthSelect(i)" (keydown.enter)="onOverviewMonthSelect(i)" tabindex="0">
+                    <button type="button" class="wheel-item" [class.wheel-item--active]="overviewSelectedMonth() === i"
+                      (click)="onOverviewMonthSelect(i)">
                       {{ month }}
-                    </div>
+                    </button>
                     }
                   </div>
                   <div class="picker-wheel" aria-label="Año">
                     @for (year of yearsArray; track year) {
-                    <div class="wheel-item" [class.wheel-item--active]="overviewSelectedYear() === year"
-                      (click)="onOverviewYearSelect(year)" (keydown.enter)="onOverviewYearSelect(year)" tabindex="0">
+                    <button type="button" class="wheel-item" [class.wheel-item--active]="overviewSelectedYear() === year"
+                      (click)="onOverviewYearSelect(year)">
                       {{ year }}
-                    </div>
+                    </button>
                     }
                   </div>
                   <div class="wheel-selection-highlight"></div>
