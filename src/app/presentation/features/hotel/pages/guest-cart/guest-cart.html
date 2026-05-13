@@ -1,0 +1,49 @@
+<div class="guest-cart-page">
+  <nav class="cart-nav">
+    <div class="cart-nav-inner">
+      <button class="nav-back-btn" type="button" aria-label="Go back to booking" (click)="goBack()">
+        <ng-icon name="bootstrapChevronLeft" size="18px" aria-hidden="true"></ng-icon>
+        Back
+      </button>
+      <div class="nav-divider"></div>
+      <span class="nav-title">
+        <ng-icon name="bootstrapBag" size="14px" aria-hidden="true"></ng-icon>
+        Guest Cart
+      </span>
+    </div>
+  </nav>
+
+  <main class="guest-cart-container">
+    @if (isEmpty()) {
+      <section class="empty-card">
+        <h1 class="empty-title">Tu carrito está vacío</h1>
+        <p class="empty-text">Elige una habitación o experiencia para continuar con la compra.</p>
+        <app-button variant="primary" size="medium" (clicked)="goToBooking()">Explorar alojamientos</app-button>
+      </section>
+    } @else {
+      <section class="cart-grid">
+        <app-order-summary
+          [cartItems]="cartItems()"
+          [selectedItemId]="selectedItemId()"
+          [totals]="totals()"
+          (selectItem)="onSelectItem($event)"
+          (removeItem)="onRemoveItem($event)"
+        ></app-order-summary>
+
+        <app-checkout-panel
+          [selectedItem]="selectedItem()"
+          [cartItems]="cartItems()"
+          [isSubmitting]="isSubmitting()"
+          (quantityChange)="onQuantityChange($event)"
+          (removeItem)="onRemoveItem($event)"
+        ></app-checkout-panel>
+      </section>
+    }
+
+    <app-guest-recommendation-experience
+      (addToCart)="onAddRecommendation($event)" 
+    ></app-guest-recommendation-experience>
+  </main>
+
+  <app-footer></app-footer>
+</div>
