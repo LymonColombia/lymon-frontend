@@ -75,9 +75,13 @@ export interface RolesResponse {
   roles: Role[];
 }
 
-export interface RoleAssignmentDto {
+export interface RoleAssignment {
   roleId: string;
-  scope: { type: 'TENANT' | 'PROPERTY' | 'UNIT'; resourceIds?: string[] };
+  scope: {
+    type: 'TENANT' | 'PROPERTY' | 'UNIT';
+    resourceIds?: string[];
+    resources?: Array<{ id: string; name: string }>;
+  };
 }
 
 export interface InviteStaffDto {
@@ -85,23 +89,23 @@ export interface InviteStaffDto {
   password: string;
   fullName: string;
   document: string;
-  roleAssignments: RoleAssignmentDto[];
+  roleAssignments: RoleAssignment[];
 }
 
 export interface StaffMember {
-  id?: string;
+  id: string;
   email: string;
+  isOwner: boolean;
+  emailVerified: boolean;
   fullName?: string;
   name?: string;
   role?: 'ADMIN' | 'STAFF';
   createdAt?: string;
-  roleAssignments?: RoleAssignmentDto[];
+  roleAssignments?: RoleAssignment[];
 }
 
 export interface StaffListResponse {
-  data?: StaffMember[];
-  items?: StaffMember[];
-  results?: StaffMember[];
-  staff?: StaffMember[];
-  users?: StaffMember[];
+  message: string;
+  total: number;
+  data: StaffMember[];
 }

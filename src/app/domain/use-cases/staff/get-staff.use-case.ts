@@ -9,18 +9,14 @@ export class GetStaffUseCase {
   private readonly staffRepository = inject(StaffRepository);
 
   execute(): Observable<StaffMember[]> {
-    return this.staffRepository.getStaff().pipe(map((response) => this.extractStaff(response)));
+    return this.staffRepository.getStaff().pipe(
+      map((response) => this.extractStaff(response)),
+    );
   }
 
   private extractStaff(payload: StaffListResponse | unknown[]): StaffMember[] {
     if (Array.isArray(payload)) return payload as StaffMember[];
 
-    if (Array.isArray(payload.data)) return payload.data;
-    if (Array.isArray(payload.items)) return payload.items;
-    if (Array.isArray(payload.results)) return payload.results;
-    if (Array.isArray(payload.staff)) return payload.staff;
-    if (Array.isArray(payload.users)) return payload.users;
-
-    return [];
+    return payload.data || [];
   }
 }
