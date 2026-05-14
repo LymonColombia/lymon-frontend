@@ -12,6 +12,107 @@
     <div class="notification-timeline"></div>
   </div>
   }
+
+  @if (isConfirmUnassignModalOpen()) {
+  <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmUnassignModal()"
+    aria-label="Cerrar confirmación" style="z-index: 2000;"></button>
+  <dialog class="modal-card modal-card--confirm" open aria-modal="true" style="z-index: 2001;">
+    <header class="modal-header">
+      <div class="confirm-icon-wrapper confirm-icon-wrapper--danger">
+        <ng-icon name="bootstrapPersonDash" size="24"></ng-icon>
+      </div>
+      <h2>¿Desasignar empleado?</h2>
+    </header>
+
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas desasignar a <strong>{{ staffToUnassign()?.staffName }}</strong> de este turno?</p>
+    </div>
+
+    <footer class="modal-actions">
+      <button type="button" class="btn-ghost" (click)="closeConfirmUnassignModal()">
+        No, cancelar
+      </button>
+      <button type="button" class="btn-primary btn-primary--danger" [disabled]="isUnassigning()"
+        (click)="confirmUnassignStaff()">
+        @if (isUnassigning()) {
+        <span class="btn-spinner"></span>
+        Desasignando...
+        } @else {
+        Si, desasignar
+        }
+      </button>
+    </footer>
+  </dialog>
+  }
+
+  @if (isChangeShiftModalOpen()) {
+  <button type="button" class="modal-backdrop" (click)="closeChangeShiftModal()" aria-label="Cerrar modal"></button>
+  <dialog class="modal-card modal-card--wide" open aria-modal="true">
+    <header class="modal-header">
+      <div class="modal-header-info">
+        <h2>Cambiar turno: {{ staffToChangeShift()?.staffName }}</h2>
+        <p class="modal-subtitle">Selecciona el nuevo turno que deseas asignar</p>
+      </div>
+      <button type="button" class="modal-close-btn" (click)="closeChangeShiftModal()">✕</button>
+    </header>
+
+    <div class="modal-body" style="max-height: 60vh; overflow-y: auto; padding: 1rem;">
+      <div class="fixed-grid" style="grid-template-columns: 1fr; gap: 0.75rem;">
+        @for (shift of changeShiftOptions(); track shift.id) {
+        @let isCurrent = shift.id.toString() === staffToChangeShift()?.currentShiftId;
+        <button type="button" class="fixed-card" [disabled]="isCurrent" (click)="selectNewShift(shift.id)"
+          [style.opacity]="isCurrent ? '0.6' : '1'" [style.cursor]="isCurrent ? 'not-allowed' : 'pointer'"
+          style="text-align: left; width: 100%; border: 1px solid var(--border-color); transition: all 0.2s;">
+          <div class="fixed-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1rem; margin: 0;">{{ shift.name }}</h3>
+            @if (isCurrent) {
+            <span class="chip"
+              style="background: var(--color-bg-secondary); color: var(--color-text-secondary);">Actual</span>
+            }
+          </div>
+          <p class="fixed-time" style="margin-top: 0.25rem; font-size: 0.85rem;">{{ shift.timeRange }}</p>
+          <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin-top: 0.25rem;">{{ shift.propertyName
+            }}</p>
+        </button>
+        }
+      </div>
+    </div>
+  </dialog>
+  }
+
+  @if (isConfirmChangeModalOpen()) {
+  <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmChangeModal()"
+    aria-label="Cerrar confirmación" style="z-index: 2010;"></button>
+  <dialog class="modal-card modal-card--confirm" open aria-modal="true" style="z-index: 2011;">
+    <header class="modal-header">
+      <div class="confirm-icon-wrapper"
+        style="background: color-mix(in srgb, var(--color-primary) 10%, transparent); color: var(--color-primary); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+        <ng-icon name="bootstrapClockFill" size="24"></ng-icon>
+      </div>
+      <h2 style="text-align: center; width: 100%;">¿Confirmar cambio?</h2>
+    </header>
+
+    <div class="modal-body" style="text-align: center;">
+      <p>¿Estás seguro que deseas cambiar el turno de <strong>{{ staffToChangeShift()?.staffName }}</strong>?</p>
+      <p class="confirm-detail" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 0.5rem;">Se
+        desasignará el turno actual y se asignará el nuevo seleccionado.</p>
+    </div>
+
+    <footer class="modal-actions" style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <button type="button" class="btn-ghost" [disabled]="isChangingShift()" (click)="closeConfirmChangeModal()"
+        style="width: 100%; justify-content: center;">No, cancelar</button>
+      <button type="button" class="btn-primary" [disabled]="isChangingShift()" (click)="confirmChangeShift()"
+        style="width: 100%; justify-content: center;">
+        @if (isChangingShift()) {
+        <span class="btn-spinner"></span>
+        Cambiando...
+        } @else {
+        Si, cambiar
+        }
+      </button>
+    </footer>
+  </dialog>
+  }
   <section class="tabs-container" aria-label="Navegacion de secciones de turnos">
     <div class="tabs-capsule">
       <button type="button" class="tab-btn" [class.tab-btn--active]="activeTab() === 'calendar'"
@@ -126,10 +227,12 @@
 
           <div class="staff-row-actions">
             <button type="button" class="staff-action-btn staff-action-btn--edit"
+              (click)="openChangeShiftModal(item.shiftId, item.shiftName, item.staffId, item.employeeName)"
               aria-label="Editar turno de {{ item.employeeName }}">
               <ng-icon name="bootstrapPencil" size="14"></ng-icon>
             </button>
             <button type="button" class="staff-action-btn staff-action-btn--delete"
+              (click)="openConfirmUnassignModal(item.shiftId, item.staffId, item.employeeName)"
               aria-label="Eliminar {{ item.employeeName }} del turno">
               <ng-icon name="bootstrapPersonDash" size="14"></ng-icon>
             </button>
@@ -257,7 +360,8 @@
                 </div>
                 <div class="gantt-bar-actions">
                   @if (segment.shift.staffMemberIds && segment.shift.staffMemberIds.length > 0) {
-                  <span class="gantt-staff-count" style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-weight: 600;">
+                  <span class="gantt-staff-count"
+                    style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-weight: 600;">
                     <ng-icon name="bootstrapPerson" size="12"></ng-icon>
                     {{ segment.shift.staffMemberIds.length }}
                   </span>
@@ -423,12 +527,15 @@
       <label class="field-group">
         <span class="field-label">Nombre del empleado</span>
         <div class="employee-select-wrap" style="position: relative; display: flex; align-items: center;">
-          <button type="button" class="field-input field-input--select-btn" (click)="openEmployeeSelectorModal()" style="text-align: left; display: flex; justify-content: space-between; align-items: center; background-color: var(--surface-100); cursor: pointer; padding-right: 40px; width: 100%;">
+          <button type="button" class="field-input field-input--select-btn" (click)="openEmployeeSelectorModal()"
+            style="text-align: left; display: flex; justify-content: space-between; align-items: center; background-color: var(--surface-100); cursor: pointer; padding-right: 40px; width: 100%;">
             {{ getSelectedEmployeeName() }}
             <ng-icon name="bootstrapSearch" size="14"></ng-icon>
           </button>
           @if (assignmentEmployee()) {
-          <button type="button" class="clear-selection-btn" (click)="clearEmployeeSelection($event)" style="position: absolute; right: 8px; background: transparent; border: none; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 50%; transition: background 0.2s;" title="Quitar selección">
+          <button type="button" class="clear-selection-btn" (click)="clearEmployeeSelection($event)"
+            style="position: absolute; right: 8px; background: transparent; border: none; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 50%; transition: background 0.2s;"
+            title="Quitar selección">
             <ng-icon name="bootstrapX" size="18"></ng-icon>
           </button>
           }
@@ -437,7 +544,8 @@
 
       <label class="field-group">
         <span class="field-label">Turno</span>
-        <select class="field-input" [value]="assignmentShiftId() ?? ''" (change)="onAssignmentShiftChange($event)" [disabled]="!assignmentProperty() || !assignmentEmployee()">
+        <select class="field-input" [value]="assignmentShiftId() ?? ''" (change)="onAssignmentShiftChange($event)"
+          [disabled]="!assignmentProperty() || !assignmentEmployee()">
           <option value="">Seleccione un turno</option>
           @for (shift of assignmentShiftOptions(); track shift.id) {
           <option [value]="shift.id">{{ shift.name }} ({{ shift.timeRange }})</option>
@@ -451,37 +559,50 @@
     }
 
     <footer class="modal-actions">
-      <button type="button" class="btn-ghost" (click)="closeCreateAssignmentModal()">
+      <button type="button" class="btn-ghost" [disabled]="isAssigning()" (click)="closeCreateAssignmentModal()">
         Cancelar
       </button>
-      <button type="button" class="btn-primary" (click)="createAssignment()" [disabled]="!assignmentProperty() || !assignmentEmployee() || !assignmentShiftId()">
+      <button type="button" class="btn-primary" (click)="createAssignment()"
+        [disabled]="!assignmentProperty() || !assignmentEmployee() || !assignmentShiftId() || isAssigning()">
+        @if (isAssigning()) {
+        <span class="btn-spinner"></span>
+        Guardando...
+        } @else {
         Guardar asignacion
+        }
       </button>
     </footer>
   </dialog>
   }
 
   @if (isEmployeeSelectorModalOpen()) {
-  <button type="button" class="modal-backdrop modal-backdrop--top" (click)="closeEmployeeSelectorModal()" style="z-index: 1000;"></button>
-  <dialog class="modal-card modal-card--top" open aria-modal="true" style="z-index: 1001; max-width: 400px; padding: 1.5rem;">
-    <header class="modal-header" style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+  <button type="button" class="modal-backdrop modal-backdrop--top" (click)="closeEmployeeSelectorModal()"
+    style="z-index: 1000;"></button>
+  <dialog class="modal-card modal-card--top" open aria-modal="true"
+    style="z-index: 1001; max-width: 400px; padding: 1.5rem;">
+    <header class="modal-header"
+      style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
       <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Seleccionar Empleado</h2>
       <button type="button" class="icon-btn" (click)="closeEmployeeSelectorModal()" aria-label="Cerrar modal">✕</button>
     </header>
     <div class="modal-body" style="padding: 0;">
       <div class="search-field" style="margin-bottom: 1rem;">
-        <input type="search" class="search-input" [value]="employeeSearch()" (input)="onEmployeeSearchInput($event)" placeholder="Buscar empleado por nombre o correo..." style="width: 100%;" />
+        <input type="search" class="search-input" [value]="employeeSearch()" (input)="onEmployeeSearchInput($event)"
+          placeholder="Buscar empleado por nombre o correo..." style="width: 100%;" />
       </div>
       <div class="employee-list" style="max-height: 300px; overflow-y: auto;">
         @for (emp of filteredEmployeesForSelector(); track emp.id) {
-          <button type="button" class="employee-selector-item" (click)="selectEmployee(emp.id!)" style="display: flex; align-items: center; padding: 0.75rem; width: 100%; border: 1px solid var(--border-color); margin-bottom: 0.5rem; border-radius: var(--radius-md); background: white; cursor: pointer; transition: all 0.2s;">
-            <div style="flex-grow: 1; text-align: left;">
-              <div style="font-weight: 600; color: var(--text-primary);">{{ emp.fullName || emp.name || emp.email }}</div>
-              <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">{{ getEmployeePropertiesText(emp) }}</div>
-            </div>
-          </button>
+        <button type="button" class="employee-selector-item" (click)="selectEmployee(emp.id!)"
+          style="display: flex; align-items: center; padding: 0.75rem; width: 100%; border: 1px solid var(--border-color); margin-bottom: 0.5rem; border-radius: var(--radius-md); background: white; cursor: pointer; transition: all 0.2s;">
+          <div style="flex-grow: 1; text-align: left;">
+            <div style="font-weight: 600; color: var(--text-primary);">{{ emp.fullName || emp.name || emp.email }}</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">{{
+              getEmployeePropertiesText(emp) }}</div>
+          </div>
+        </button>
         } @empty {
-          <p style="text-align: center; color: var(--text-secondary); padding: 1rem 0;">No se encontraron empleados con ese criterio.</p>
+        <p style="text-align: center; color: var(--text-secondary); padding: 1rem 0;">No se encontraron empleados con
+          ese criterio.</p>
         }
       </div>
     </div>
@@ -541,15 +662,19 @@
           <span class="detail-label">Fecha Fin</span>
           <span class="detail-value">{{ selectedShiftDetail()!.endDate || 'N/A' }}</span>
         </div>
-        <div class="detail-item detail-item--full" style="grid-column: 1 / -1; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-          <span class="detail-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Personal Asignado</span>
+        <div class="detail-item detail-item--full"
+          style="grid-column: 1 / -1; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+          <span class="detail-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Personal
+            Asignado</span>
           <div class="detail-staff-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
             @for (name of getStaffNames(selectedShiftDetail()?.staffMemberIds); track name) {
-              <span class="staff-tag" style="background: var(--surface-100); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.85rem; border: 1px solid var(--border-color);">
-                {{ name }}
-              </span>
+            <span class="staff-tag"
+              style="background: var(--surface-100); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.85rem; border: 1px solid var(--border-color);">
+              {{ name }}
+            </span>
             } @empty {
-              <span style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">Sin personal asignado</span>
+            <span style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">Sin personal
+              asignado</span>
             }
           </div>
         </div>
@@ -737,8 +862,8 @@
                   </div>
                   <div class="picker-wheel" aria-label="Año">
                     @for (year of yearsArray; track year) {
-                    <button type="button" class="wheel-item" [class.wheel-item--active]="overviewSelectedYear() === year"
-                      (click)="onOverviewYearSelect(year)">
+                    <button type="button" class="wheel-item"
+                      [class.wheel-item--active]="overviewSelectedYear() === year" (click)="onOverviewYearSelect(year)">
                       {{ year }}
                     </button>
                     }
@@ -799,5 +924,6 @@
       </div>
     </div>
   </dialog>
+
   }
 </app-hotel-page-layout>

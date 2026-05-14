@@ -1,3 +1,4 @@
+import { switchMap } from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,6 +16,7 @@ import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
 import { UpdateShiftUseCase } from '@/domain/use-cases/shift/update-shift.use-case';
 import { DeleteShiftUseCase } from '@/domain/use-cases/shift/delete-shift.use-case';
 import { AssignStaffToShiftUseCase } from '@/domain/use-cases/shift/assign-staff.use-case';
+import { UnassignStaffFromShiftUseCase } from '@/domain/use-cases/shift/unassign-staff.use-case';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import { StaffMember, Property } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -113,6 +115,7 @@ export class StaffShiftComponent implements OnInit {
   private readonly updateShiftUseCase = inject(UpdateShiftUseCase);
   private readonly deleteShiftUseCase = inject(DeleteShiftUseCase);
   private readonly assignStaffToShiftUseCase = inject(AssignStaffToShiftUseCase);
+  private readonly unassignStaffFromShiftUseCase = inject(UnassignStaffFromShiftUseCase);
   private readonly getStaffUseCase = inject(GetStaffUseCase);
   private readonly staffRepository = inject(StaffRepository);
 
@@ -178,8 +181,33 @@ export class StaffShiftComponent implements OnInit {
   readonly isEditingDetail = signal(false);
   readonly isConfirmEditModalOpen = signal(false);
   readonly isConfirmDeleteModalOpen = signal(false);
+  readonly isConfirmUnassignModalOpen = signal(false);
+  readonly isChangeShiftModalOpen = signal(false);
+  readonly isConfirmChangeModalOpen = signal(false);
+  readonly staffToUnassign = signal<{ shiftId: string; staffId: string; staffName: string } | null>(null);
+  readonly staffToChangeShift = signal<{ currentShiftId: string; currentShiftName: string; staffId: string; staffName: string } | null>(null);
+  readonly newSelectedShiftId = signal<string | null>(null);
   readonly isUpdating = signal(false);
   readonly isDeleting = signal(false);
+  readonly isAssigning = signal(false);
+  readonly isUnassigning = signal(false);
+  readonly isChangingShift = signal(false);
+
+  readonly changeShiftOptions = computed<FixedShiftCard[]>(() => {
+    const data = this.staffToChangeShift();
+    const allShifts = this.fixedShifts();
+    const staffMembers = this.staffMembers();
+
+    if (!data) return [];
+
+    const member = staffMembers.find(m => m.id === data.staffId);
+    if (!member) return allShifts;
+
+    return allShifts.filter(shift => {
+      if (!shift.propertyId) return true;
+      return this.checkStaffHasProperty(member, shift.propertyId);
+    });
+  });
 
   editShiftNameValue = '';
   editStartDateValue = '';
@@ -299,7 +327,7 @@ export class StaffShiftComponent implements OnInit {
       .filter(member => {
         const memberName = member.fullName || member.name || member.email;
         if (query && !this.normalizeText(memberName).includes(query)) return false;
-        
+
         if (propFilter) {
           const propObj = this.properties().find(p => p.name === propFilter);
           if (propObj && !this.checkStaffHasProperty(member, propObj.id)) return false;
@@ -340,21 +368,9 @@ export class StaffShiftComponent implements OnInit {
           shiftTime: s.timeRange,
           dateLabel: this.getShiftDateRangeLabel(s),
           dateIso: s.startDate,
-          shiftId: s.id
+          shiftId: s.id,
+          staffId: member.id
         }));
-    }
-
-    if (!shiftFilter) {
-      return [{
-        employeeName: memberName,
-        employeeInitials: initials,
-        propertyName: propNames,
-        shiftName: 'Sin turno',
-        shiftTime: '--:-- - --:--',
-        dateLabel: 'No asignado',
-        dateIso: '',
-        avatarColor
-      }];
     }
 
     return [];
@@ -854,6 +870,84 @@ export class StaffShiftComponent implements OnInit {
     this.isConfirmDeleteModalOpen.set(false);
   }
 
+  openConfirmUnassignModal(shiftId: string | number, staffId: string, staffName: string): void {
+    this.staffToUnassign.set({ shiftId: shiftId.toString(), staffId, staffName });
+    this.isConfirmUnassignModalOpen.set(true);
+  }
+
+  closeConfirmUnassignModal(): void {
+    this.isConfirmUnassignModalOpen.set(false);
+    this.staffToUnassign.set(null);
+  }
+
+  openChangeShiftModal(currentShiftId: string | number, currentShiftName: string, staffId: string, staffName: string): void {
+    this.staffToChangeShift.set({
+      currentShiftId: currentShiftId.toString(),
+      currentShiftName,
+      staffId,
+      staffName
+    });
+    this.newSelectedShiftId.set(null);
+    this.isChangeShiftModalOpen.set(true);
+  }
+
+  closeChangeShiftModal(): void {
+    this.isChangeShiftModalOpen.set(false);
+    this.staffToChangeShift.set(null);
+    this.newSelectedShiftId.set(null);
+  }
+
+  selectNewShift(shiftId: string | number): void {
+    this.newSelectedShiftId.set(shiftId.toString());
+    this.isConfirmChangeModalOpen.set(true);
+  }
+
+  closeConfirmChangeModal(): void {
+    this.isConfirmChangeModalOpen.set(false);
+  }
+
+  confirmChangeShift(): void {
+    const data = this.staffToChangeShift();
+    const newId = this.newSelectedShiftId();
+    if (!data || !newId) return;
+
+    this.isChangingShift.set(true);
+    this.unassignStaffFromShiftUseCase.execute(data.currentShiftId, [data.staffId]).pipe(
+      switchMap(() => this.assignStaffToShiftUseCase.execute(newId, [data.staffId]))
+    ).subscribe({
+      next: () => {
+        this.showNotification(`Se ha cambiado el turno de ${data.staffName} exitosamente.`, 'success');
+        this.loadFixedShifts();
+        this.closeConfirmChangeModal();
+        this.closeChangeShiftModal();
+        this.isChangingShift.set(false);
+      },
+      error: () => {
+        this.showNotification('Error al realizar el cambio de turno.', 'error');
+        this.isChangingShift.set(false);
+      }
+    });
+  }
+
+  confirmUnassignStaff(): void {
+    const data = this.staffToUnassign();
+    if (!data) return;
+
+    this.isUnassigning.set(true);
+    this.unassignStaffFromShiftUseCase.execute(data.shiftId, [data.staffId]).subscribe({
+      next: () => {
+        this.showNotification(`Se ha desasignado a ${data.staffName} exitosamente.`, 'success');
+        this.loadFixedShifts();
+        this.closeConfirmUnassignModal();
+        this.isUnassigning.set(false);
+      },
+      error: () => {
+        this.showNotification('Error al desasignar al empleado.', 'error');
+        this.isUnassigning.set(false);
+      }
+    });
+  }
+
   confirmDeleteShift(): void {
     const detail = this.selectedShiftDetail();
     if (!detail?.id) {
@@ -1119,27 +1213,42 @@ export class StaffShiftComponent implements OnInit {
       return;
     }
 
-    const existingShift = this.fixedShifts().find(s => s.staffMemberIds?.includes(employeeId));
-    if (existingShift) {
-      this.showNotification(
-        `Este empleado ya tiene asignado el turno "${existingShift.name}". Debe desasignarlo primero para asignarle uno nuevo.`,
-        'error'
-      );
-      return;
+    const newStartStr = shift.startDate;
+    const newEndStr = shift.endDate;
+
+    if (newStartStr && newEndStr) {
+      const newStart = new Date(newStartStr + 'T00:00:00');
+      const newEnd = new Date(newEndStr + 'T00:00:00');
+
+      const conflictingShift = this.fixedShifts().find(s => {
+        if (!s.staffMemberIds?.includes(employeeId) || !s.startDate || !s.endDate) return false;
+
+        const existingStart = new Date(s.startDate + 'T00:00:00');
+        const existingEnd = new Date(s.endDate + 'T00:00:00');
+
+        return newStart <= existingEnd && newEnd >= existingStart;
+      });
+
+      if (conflictingShift) {
+        this.showNotification(
+          `Conflicto: El empleado ya tiene el turno "${conflictingShift.name}" del ${conflictingShift.startDate} al ${conflictingShift.endDate}.`,
+          'error'
+        );
+        return;
+      }
     }
 
-    const currentStaff = shift.staffMemberIds || [];
-
-    const newStaffList = [...currentStaff, employeeId];
-
-    this.assignStaffToShiftUseCase.execute(shiftId.toString(), newStaffList).subscribe({
+    this.isAssigning.set(true);
+    this.assignStaffToShiftUseCase.execute(shiftId.toString(), [employeeId]).subscribe({
       next: () => {
-        this.showNotification('Turno asignado exitosamente.', 'success');
+        this.showNotification('Turno asignado correctamente.', 'success');
         this.loadFixedShifts();
         this.closeCreateAssignmentModal();
+        this.isAssigning.set(false);
       },
       error: () => {
-        this.showNotification('Error al asignar el turno al empleado. Verifique los datos.', 'error');
+        this.showNotification('Error al asignar el turno.', 'error');
+        this.isAssigning.set(false);
       }
     });
   }
