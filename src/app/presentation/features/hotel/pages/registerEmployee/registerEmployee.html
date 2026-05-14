@@ -3,7 +3,7 @@
   subtitle="Registra un nuevo empleado en el sistema"
   iconName="bootstrapPersonFillAdd"
 >
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
     @if (errorMessage()) {
       <div class="alert alert-error">{{ errorMessage() }}</div>
     }
@@ -11,169 +11,192 @@
       <div class="alert alert-success">{{ successMessage() }}</div>
     }
 
-    <div class="form-card">
-      <div class="section-title">
-        <span class="section-icon">
-          <ng-icon name="bootstrapLock" size="16px" aria-hidden="true"></ng-icon>
-        </span>
-        Información de Acceso al Sistema
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="email">Correo Electrónico <span class="required">*</span></label>
-          <app-input
-            id="email"
-            type="email"
-            formControlName="email"
-            placeholder="empleado@hotel.com"
-            [class.input-invalid]="email.invalid && email.touched"
-          ></app-input>
-          @if (email.invalid && email.touched) {
-            <span class="field-error">Ingresa un correo electrónico válido</span>
-          }
-        </div>
-
-        <div class="form-group">
-          <label for="password">Contraseña Temporal <span class="required">*</span></label>
-          <div class="password-wrapper">
-            <app-input
-              id="password"
-              [type]="showPassword() ? 'text' : 'password'"
-              formControlName="password"
-              placeholder="Mínimo 8 caracteres"
-              [class.input-invalid]="password.invalid && password.touched"
-            ></app-input>
-            <button
-              type="button"
-              class="toggle-password"
-              (click)="togglePasswordVisibility()"
-              aria-label="Mostrar/ocultar contraseña"
-            >
-              @if (showPassword()) {
-                <ng-icon name="bootstrapEyeSlash" size="18px" aria-hidden="true"></ng-icon>
-              } @else {
-                <ng-icon name="bootstrapEye" size="18px" aria-hidden="true"></ng-icon>
-              }
-            </button>
+    <div class="form-grid">
+      <!-- Izquierda: Información Personal y Acceso -->
+      <div class="form-column">
+        <div class="form-card">
+          <div class="section-title">
+            <span class="section-icon">
+              <ng-icon name="bootstrapLock" size="16px" aria-hidden="true"></ng-icon>
+            </span>
+            Información de Empleado
           </div>
-          @if (password.invalid && password.touched) {
-            <span class="field-error">La contraseña debe tener al menos 8 caracteres</span>
-          }
-          <span class="field-hint"
-            >El empleado deberá cambiar esta contraseña en su primer inicio de sesión</span
-          >
+
+          <div class="form-group">
+            <label for="fullName">Nombre Completo <span class="required">*</span></label>
+            <app-input
+              id="fullName"
+              formControlName="fullName"
+              placeholder="Juan Pérez"
+              [class.input-invalid]="fullName.invalid && fullName.touched"
+            ></app-input>
+            @if (fullName.invalid && fullName.touched) {
+              <span class="field-error">El nombre es requerido</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="document">Documento de Identidad <span class="required">*</span></label>
+            <app-input
+              id="document"
+              formControlName="document"
+              placeholder="1234567890"
+              [class.input-invalid]="document.invalid && document.touched"
+            ></app-input>
+            @if (document.invalid && document.touched) {
+              <span class="field-error">El documento es requerido</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="email">Correo Electrónico <span class="required">*</span></label>
+            <app-input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="empleado@hotel.com"
+              [class.input-invalid]="email.invalid && email.touched"
+            ></app-input>
+            @if (email.invalid && email.touched) {
+              <span class="field-error">Ingresa un correo electrónico válido</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password">Contraseña Temporal <span class="required">*</span></label>
+            <div class="password-wrapper">
+              <app-input
+                id="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Mínimo 8 caracteres"
+                [class.input-invalid]="password.invalid && password.touched"
+              ></app-input>
+              <button
+                type="button"
+                class="toggle-password"
+                (click)="togglePasswordVisibility()"
+                aria-label="Mostrar/ocultar contraseña"
+              >
+                @if (showPassword()) {
+                  <ng-icon name="bootstrapEyeSlash" size="18px" aria-hidden="true"></ng-icon>
+                } @else {
+                  <ng-icon name="bootstrapEye" size="18px" aria-hidden="true"></ng-icon>
+                }
+              </button>
+            </div>
+            @if (password.invalid && password.touched) {
+              <span class="field-error">Mínimo 8 caracteres</span>
+            }
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="form-card">
-      <div class="section-title">
-        <span class="section-icon">
-          <ng-icon name="bootstrapShieldLock" size="16px" aria-hidden="true"></ng-icon>
-        </span>
-        Rol y Permisos
-      </div>
+      <!-- Derecha: Permisos -->
+      <div class="form-column">
+        <div class="form-card">
+          <div class="section-title">
+            <span class="section-icon">
+              <ng-icon name="bootstrapShieldLock" size="16px" aria-hidden="true"></ng-icon>
+            </span>
+            Roles y Permisos
+          </div>
 
-      <div formArrayName="roleAssignments">
-        @for (ra of roleAssignments.controls; track $index) {
-          <div [formGroupName]="$index" class="role-row">
-            <div class="role-row-header">
-              <span class="role-row-label">Rol #{{ $index + 1 }}</span>
-              @if (roleAssignments.length > 1) {
-                <app-button
-                  type="button"
-                  variant="text"
-                  size="small"
-                  class="btn-remove-role"
-                  (clicked)="removeRoleAssignment($index)"
-                >
-                  Eliminar
-                </app-button>
-              }
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Rol <span class="required">*</span></label>
-                <app-select
-                  formControlName="roleId"
-                  [options]="roleSelectOptions()"
-                  [class.input-invalid]="
-                    getRoleGroupAt($index).get('roleId')!.invalid &&
-                    getRoleGroupAt($index).get('roleId')!.touched
-                  "
-                ></app-select>
-                @if (
-                  getRoleGroupAt($index).get('roleId')!.invalid &&
-                  getRoleGroupAt($index).get('roleId')!.touched
-                ) {
-                  <span class="field-error">Selecciona un rol</span>
-                }
-              </div>
-
-              <div class="form-group">
-                <label>Tipo de Alcance <span class="required">*</span></label>
-                <app-select
-                  formControlName="scopeType"
-                  [options]="scopeTypeOptions"
-                  (valueChange)="onScopeChange($index)"
-                ></app-select>
-              </div>
-            </div>
-
-            @if (getRoleGroupAt($index).get('scopeType')?.value === SCOPE_PROPERTY) {
-              <div class="form-group">
-                <label>Propiedades <span class="required">*</span></label>
-                @if (propertiesLoading()) {
-                  <p class="field-hint">Cargando propiedades...</p>
-                } @else {
-                  <select multiple formControlName="resourceIds" class="select-multiple">
-                    @for (p of availableProperties(); track p.id) {
-                      <option [value]="p.id">{{ p.name }} — {{ p.city }}</option>
-                    }
-                  </select>
-                  <span class="field-hint">Mantén Ctrl / Cmd para seleccionar varias</span>
-                }
-              </div>
-            }
-
-            @if (getRoleGroupAt($index).get('scopeType')?.value === SCOPE_UNIT) {
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Propiedad <span class="required">*</span></label>
-                  <app-select
-                    formControlName="selectedPropertyId"
-                    [options]="propertySelectOptions()"
-                    (valueChange)="onPropertySelectChange($index, $any($event))"
-                  ></app-select>
+          <div formArrayName="roleAssignments" class="role-assignments-list">
+            @for (ra of roleAssignments.controls; track $index) {
+              <div [formGroupName]="$index" class="role-row">
+                <div class="role-row-header">
+                  <span class="role-row-label">Configuración de Rol #{{ $index + 1 }}</span>
+                  @if (roleAssignments.length > 1) {
+                    <button
+                      type="button"
+                      class="btn-icon-remove"
+                      (click)="removeRoleAssignment($index)"
+                      title="Eliminar rol"
+                    >
+                      <ng-icon name="bootstrapPlusLg" size="16px" style="transform: rotate(45deg)"></ng-icon>
+                    </button>
+                  }
                 </div>
 
-                @if (getRoleGroupAt($index).get('selectedPropertyId')?.value) {
+                <div class="role-row-content">
                   <div class="form-group">
-                    <label>Unidades <span class="required">*</span></label>
-                    @if (unitsLoadingPerRow()[$index]) {
-                      <p class="field-hint">Cargando unidades...</p>
-                    } @else {
-                      <select multiple formControlName="resourceIds" class="select-multiple">
-                        @for (u of getUnitOptionsForRow($index); track u.value) {
-                          <option [value]="u.value">{{ u.label }}</option>
-                        }
-                      </select>
-                      <span class="field-hint">Mantén Ctrl / Cmd para seleccionar varias</span>
-                    }
+                    <label>Rol asignado <span class="required">*</span></label>
+                    <app-select
+                      formControlName="roleId"
+                      [options]="roleSelectOptions()"
+                      [class.input-invalid]="
+                        getRoleGroupAt($index).get('roleId')!.invalid &&
+                        getRoleGroupAt($index).get('roleId')!.touched
+                      "
+                    ></app-select>
                   </div>
-                }
+
+                  <div class="form-group">
+                    <label>Tipo de Alcance <span class="required">*</span></label>
+                    <app-select
+                      formControlName="scopeType"
+                      [options]="scopeTypeOptions"
+                      (valueChange)="onScopeChange($index)"
+                    ></app-select>
+                  </div>
+
+                  @if (getRoleGroupAt($index).get('scopeType')?.value === SCOPE_PROPERTY) {
+                    <div class="form-group">
+                      <label>Propiedades <span class="required">*</span></label>
+                      @if (propertiesLoading()) {
+                        <p class="field-hint">Cargando...</p>
+                      } @else {
+                        <select multiple formControlName="resourceIds" class="select-multiple">
+                          @for (p of availableProperties(); track p.id) {
+                            <option [value]="p.id">{{ p.name }}</option>
+                          }
+                        </select>
+                        <span class="field-hint">Ctrl + Click para seleccionar varias</span>
+                      }
+                    </div>
+                  }
+
+                  @if (getRoleGroupAt($index).get('scopeType')?.value === SCOPE_UNIT) {
+                    <div class="property-unit-grid">
+                      <div class="form-group">
+                        <label>Propiedad <span class="required">*</span></label>
+                        <app-select
+                          formControlName="selectedPropertyId"
+                          [options]="propertySelectOptions()"
+                          (valueChange)="onPropertySelectChange($index, $any($event))"
+                        ></app-select>
+                      </div>
+
+                      @if (getRoleGroupAt($index).get('selectedPropertyId')?.value) {
+                        <div class="form-group">
+                          <label>Unidades <span class="required">*</span></label>
+                          @if (unitsLoadingPerRow()[$index]) {
+                            <p class="field-hint">Cargando...</p>
+                          } @else {
+                            <select multiple formControlName="resourceIds" class="select-multiple">
+                              @for (u of getUnitOptionsForRow($index); track u.value) {
+                                <option [value]="u.value">{{ u.label }}</option>
+                              }
+                            </select>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
               </div>
             }
           </div>
-        }
-      </div>
 
-      <app-button type="button" variant="outline" (clicked)="addRoleAssignment()">
-        <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
-        Agregar otro rol
-      </app-button>
+          <div class="add-role-container">
+            <app-button type="button" variant="outline" size="small" (clicked)="addRoleAssignment()">
+              <ng-icon name="bootstrapPlusLg" size="14px" aria-hidden="true"></ng-icon>
+              Añadir otro rol
+            </app-button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="form-actions">
@@ -181,9 +204,9 @@
       <app-button type="submit" variant="primary" [disabled]="isLoading()" [loading]="isLoading()">
         <ng-icon name="bootstrapPersonFillAdd" size="18px" aria-hidden="true"></ng-icon>
         @if (isLoading()) {
-          Guardando...
+          Registrando...
         } @else {
-          Guardar Empleado
+          Registrar Empleado
         }
       </app-button>
     </div>
