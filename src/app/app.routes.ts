@@ -39,6 +39,9 @@ import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/
 import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/pages/guest-reservation-details/guest-reservation-details';
 import { InventoryComponent } from '@/presentation/features/hotel/pages/inventory/inventory';
 import { SessionsComponent } from '@/presentation/features/hotel/pages/sessions/sessions';
+import { TenantExperiencesPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experiences-page/tenant-experiences-page.component';
+import { TenantExperienceFormPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-form-page/tenant-experience-form-page.component';
+import { TenantExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-detail-page/tenant-experience-detail-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
@@ -109,6 +112,10 @@ export const routes: Routes = [
       { path: 'staff-shift', component: StaffShiftComponent },
       { path: 'inventory', component: InventoryComponent },
       { path: 'sessions', component: SessionsComponent },
+      { path: 'tenant-experiences', component: TenantExperiencesPageComponent },
+      { path: 'tenant-experiences/new', component: TenantExperienceFormPageComponent },
+      { path: 'tenant-experiences/:id', component: TenantExperienceDetailPageComponent },
+      { path: 'tenant-experiences/:id/edit', component: TenantExperienceFormPageComponent },
     ],
   },
 

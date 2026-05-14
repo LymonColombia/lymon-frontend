@@ -30,15 +30,24 @@ export class ExperienceCardComponent {
   readonly availabilitySummary = computed(() => this.getAvailabilitySummary(this.experience()));
 
   onView(): void {
-    this.view.emit(this.experience().id);
+    const id = this.experience().id;
+    if (id) {
+      this.view.emit(id);
+    }
   }
 
   onEdit(): void {
-    this.edit.emit(this.experience().id);
+    const id = this.experience().id;
+    if (id) {
+      this.edit.emit(id);
+    }
   }
 
   onDelete() {
-   this.edit.emit(this.experience().id);
+    const id = this.experience().id;
+    if (id) {
+      this.edit.emit(id);
+    }
   }
 
   private formatCurrencyCop(priceCop: number): string {
@@ -63,10 +72,22 @@ export class ExperienceCardComponent {
       return `${this.formatDateTime(experience.startAt)} - ${this.formatDateTime(experience.endAt)}`;
     }
 
+    if (experience.availabilityType === 'ONE_TIME') {
+      return this.formatDateTime(experience.startAt);
+    }
+
+    if (!experience.recurrence) {
+      return 'Sin recurrencia';
+    }
+
     return `${this.formatDaysOfWeek(experience.recurrence.daysOfWeek)} - ${experience.recurrence.startTime} a ${experience.recurrence.endTime}`;
   }
 
-  private formatDateTime(value: string): string {
+  private formatDateTime(value?: string): string {
+    if (!value) {
+      return 'Sin fecha';
+    }
+
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) {
       return value;

@@ -62,7 +62,7 @@
         <p class="meta"><strong>Scope:</strong> {{ scopeBadge() }}</p>
         @if (item.scope === 'PROPERTY') {
           <p class="meta"><strong>Id de Propiedad:</strong> {{ item.propertyId }}</p>
-          <p class="meta"><strong>Unidades:</strong> {{ item.unitIds.join(', ') }}</p>
+          <p class="meta"><strong>Unidades:</strong> {{ item.unitIds?.join(', ') || 'No especificadas' }}</p>
         } @else {
           <p class="meta">Esta experiencia aplica a nivel tenant.</p>
         }

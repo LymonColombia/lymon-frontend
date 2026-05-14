@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapPencilSquare, bootstrapStars } from '@ng-icons/bootstrap-icons';
-
 import { Experience } from '@/domain/entities/experience.model';
 import {
   HotelPageActionsDirective,
@@ -12,7 +11,7 @@ import {
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { ExperienceAvailabilitySectionComponent } from '../../components/experience-availability-section/experience-availability-section.component';
 import { ExperienceLocationSectionComponent } from '../../components/experience-location-section/experience-location-section.component';
-import { TenantExperienceLocalStoreService } from '../../tenant-experience-local-store.service';
+import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
 
 @Component({
   selector: 'app-tenant-experience-detail-page',
@@ -34,7 +33,7 @@ import { TenantExperienceLocalStoreService } from '../../tenant-experience-local
 export class TenantExperienceDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly localStore = inject(TenantExperienceLocalStoreService);
+  private readonly getExperienceByIdUseCase = inject(GetExperienceByIdUseCase);
 
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
@@ -66,7 +65,7 @@ export class TenantExperienceDetailPageComponent {
 
   onEdit(): void {
     const item = this.experience();
-    if (!item) {
+    if (!item?.id) {
       return;
     }
 
@@ -81,8 +80,9 @@ export class TenantExperienceDetailPageComponent {
       return;
     }
 
-    this.localStore.getById(id).subscribe({
+    this.getExperienceByIdUseCase.execute(id).subscribe({
       next: (experience) => {
+        console.log('Experience loaded:', experience);
         this.experience.set(experience);
         this.isLoading.set(false);
       },
@@ -90,7 +90,7 @@ export class TenantExperienceDetailPageComponent {
         this.errorMessage.set('No se pudo cargar la experiencia.');
         this.isLoading.set(false);
       },
-    });
+    })
   }
 
   private formatCurrencyCop(priceCop: number): string {
@@ -111,6 +111,12 @@ export class TenantExperienceDetailPageComponent {
   }
 
   private getAvailabilityLabel(type: Experience['availabilityType']): string {
-    return type === 'DATE_RANGE' ? 'Rango de Fechas' : 'Recurrencia';
+    if (type === 'DATE_RANGE') {
+      return 'Rango de Fechas';
+    }
+    if (type === 'RECURRING') {
+      return 'Recurrencia';
+    }
+    return 'Una sola vez';
   }
 }

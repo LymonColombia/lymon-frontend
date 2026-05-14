@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
-import { Experience, PropertyExperience } from '@/domain/entities/experience.model';
+import { Experience } from '@/domain/entities/experience.model';
 import { ExperienceFormControls } from '../../models/experience-form.model';
 import { ExperienceDateRangeSectionComponent } from '../experience-date-range-section/experience-date-range-section.component';
 import { ExperienceRecurrenceSectionComponent } from '../experience-recurrence-section/experience-recurrence-section.component';
@@ -21,19 +21,21 @@ import { ExperienceRecurrenceSectionComponent } from '../experience-recurrence-s
 export class ExperienceAvailabilitySectionComponent {
   readonly form = input<FormGroup<ExperienceFormControls> | null>(null);
   readonly scope = input<'PROPERTY' | 'TENANT'>('TENANT');
-  readonly availabilityType = input<'DATE_RANGE' | 'RECURRING'>('RECURRING');
+  readonly availabilityType = input<'DATE_RANGE' | 'RECURRING' | 'ONE_TIME'>('RECURRING');
   readonly experience = input<Experience | null>(null);
   readonly readonlyMode = input(false);
 
   readonly addBlackoutRange = output<void>();
   readonly removeBlackoutRange = output<number>();
 
-  readonly showDateRange = computed(() => this.availabilityType() === 'DATE_RANGE');
+  readonly showDateRange = computed(
+    () => this.availabilityType() === 'DATE_RANGE' || this.availabilityType() === 'ONE_TIME',
+  );
   readonly showRecurrence = computed(() => this.availabilityType() === 'RECURRING');
 
-  readonly propertyExperience = computed<PropertyExperience | null>(() => {
+  readonly propertyExperience = computed<Experience | null>(() => {
     const value = this.experience();
-    if (value?.scope !== 'PROPERTY' || value.availabilityType !== 'DATE_RANGE') {
+    if (value?.availabilityType !== 'DATE_RANGE') {
       return null;
     }
 

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
-import { BlackoutRange, PropertyExperience } from '@/domain/entities/experience.model';
+import { BlackoutRange, Experience } from '@/domain/entities/experience.model';
 import { BlackoutRangeFormControls } from '../../models/experience-form.model';
 
 @Component({
@@ -17,7 +17,7 @@ export class ExperienceDateRangeSectionComponent {
   readonly endAtControl = input<FormControl<string> | null>(null);
   readonly blackoutRanges = input<FormArray<FormGroup<BlackoutRangeFormControls>> | null>(null);
   readonly readonlyMode = input(false);
-  readonly experience = input<PropertyExperience | null>(null);
+  readonly experience = input<Experience | null>(null);
 
   readonly addBlackout = output<void>();
   readonly removeBlackout = output<number>();
@@ -34,7 +34,11 @@ export class ExperienceDateRangeSectionComponent {
     return this.experience()?.blackoutRanges ?? [];
   }
 
-  formatDateTime(value: string): string {
+  formatDateTime(value?: string): string {
+    if (!value) {
+      return 'Sin fecha';
+    }
+
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) {
       return value;

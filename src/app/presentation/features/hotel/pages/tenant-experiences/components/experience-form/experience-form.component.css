@@ -5,6 +5,13 @@
   box-shadow: var(--shadow-sm);
 }
 
+.field-hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-md);
+  position: center;
+}
+
 .section-title {
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
@@ -13,17 +20,6 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-}
-
-.section-icon {
-  display: inline-flex;
-  width: 28px;
-  height: 28px;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  background: var(--color-bg-tertiary);
-  color: var(--color-primary-dark);
 }
 
 .section-separator {
@@ -41,7 +37,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-1xl);
 }
 
 .form-group {
@@ -89,10 +85,47 @@
   color: var(--color-error);
 }
 
-.field-hint {
+
+.drop-file {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+
+.file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
   margin: 0;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-xs);
+}
+
+
+.image-preview {
+  width: 100%;
+  max-width: 220px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: var(--input-border-width) solid var(--color-border-light);
+  display: block;
+  margin-top: var(--spacing-sm);
+}
+
+.availability-type-group {
+  max-width: 320px;
+}
+
+.sells-section {
+  margin-top: var(--spacing-xl);
+}
+
+.sells-section .form-row {
+  margin-bottom: 0;
 }
 
 .checklist-shell {
@@ -112,36 +145,35 @@
   font-size: var(--font-size-sm);
 }
 
-.file-input {
-  width: 100%;
-  border: var(--input-border-width) solid var(--color-border-light);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-sm);
-  background: var(--color-bg-primary);
-  color: var(--color-text-primary);
+
+.sells-section .form-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-weight: var(--font-weight-normal);
 }
 
-.file-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: var(--input-focus-ring);
+input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary-dark);
+  cursor: pointer;
 }
 
-.image-preview {
-  width: 100%;
-  max-width: 220px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: var(--radius-md);
-  border: var(--input-border-width) solid var(--color-border-light);
-}
-
-.availability-type-group {
-  max-width: 320px;
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
 }
 
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
   }
 }

@@ -19,16 +19,22 @@ export class ExperienceTableComponent {
   readonly edit = output<string>();
   readonly delete = output<string>();
 
-  onView(id: string): void {
-    this.view.emit(id);
+  onView(id: string | undefined): void {
+    if (id) {
+      this.view.emit(id);
+    }
   }
 
-  onEdit(id: string): void {
-    this.edit.emit(id);
+  onEdit(id: string | undefined): void {
+    if (id) {
+      this.edit.emit(id);
+    }
   }
 
-  onDelete(id: string): void {
-    this.delete.emit(id);
+  onDelete(id: string | undefined): void {
+    if (id) {
+      this.delete.emit(id);
+    }
   }
 
   formatCurrencyCop(priceCop: number): string {
@@ -53,10 +59,22 @@ export class ExperienceTableComponent {
       return `${this.formatDateTime(experience.startAt)} - ${this.formatDateTime(experience.endAt)}`;
     }
 
+    if (experience.availabilityType === 'ONE_TIME') {
+      return this.formatDateTime(experience.startAt);
+    }
+
+    if (!experience.recurrence) {
+      return 'Sin recurrencia';
+    }
+
     return `${this.formatDaysOfWeek(experience.recurrence.daysOfWeek)} - ${experience.recurrence.startTime} a ${experience.recurrence.endTime}`;
   }
 
-  private formatDateTime(value: string): string {
+  private formatDateTime(value?: string): string {
+    if (!value) {
+      return 'Sin fecha';
+    }
+
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) {
       return value;
@@ -86,5 +104,3 @@ export class ExperienceTableComponent {
   }
   
 }
-
-

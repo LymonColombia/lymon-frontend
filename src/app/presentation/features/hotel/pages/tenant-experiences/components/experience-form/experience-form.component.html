@@ -1,133 +1,147 @@
-<div class="form-card" [formGroup]="form()">
-  <div class="section-title">
-    <span class="section-icon">
-      <ng-icon name="bootstrapStars" size="16px"></ng-icon>
-    </span>
-    Informacion General
-  </div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-card">
+    <div class="section-title">Informacion General</div>
 
-  <div class="form-row">
-    <div class="form-group">
-      <label>Scope <span class="required">*</span></label>
-      <app-select [options]="scopeOptions()" formControlName="scope" />
-    </div>
-    <div class="form-group">
-      <label>Categoria <span class="required">*</span></label>
-      <app-select [options]="categoryOptions()" formControlName="category" />
-    </div>
-  </div>
-
-  @if (isPropertyScope) {
     <div class="form-row">
       <div class="form-group">
-        <label>Propiedad <span class="required">*</span></label>
-        <app-select
-          [options]="propertyOptions()"
-          formControlName="propertyId"
-          (valueChange)="onPropertyChanged($event)"
-        />
-        @if (form().controls.propertyId.invalid && form().controls.propertyId.touched) {
-          <span class="field-error">Selecciona una propiedad</span>
-        }
+        <label for="scope">Scope <span class="required">*</span></label>
+        <app-select id="scope" [options]="scopeOptions" formControlName="scope" />
       </div>
       <div class="form-group">
-        <label>Unidades <span class="required">*</span></label>
-        @if (unitsLoading()) {
-          <p class="field-hint">Cargando unidades...</p>
-        } @else {
-          <div class="checklist-shell">
-            @for (unit of unitOptions(); track unit.value) {
-              <label class="checklist-item">
-                <input
-                  type="checkbox"
-                  [checked]="isUnitSelected(unit.value.toString())"
-                  (change)="onUnitChecklistToggle(unit.value.toString(), $any($event.target).checked)"
-                />
-                <span>{{ unit.label }}</span>
-              </label>
+        <label for="category">Categoria <span class="required">*</span></label>
+        <app-select id="category" [options]="categoryOptions()" formControlName="category" />
+      </div>
+    </div>
+
+    @if (isPropertyScope) {
+      <div class="form-row">
+        <div class="form-group">
+          <label for="propertyId">Propiedad</label>
+          <app-select
+            id="propertyId"
+            [options]="propertyOptions()"
+            formControlName="propertyId"
+            (valueChange)="onPropertyChanged($event)"
+          />
+        </div>
+        <div class="form-group">
+            <legend>Unidades</legend>
+            @if (unitsLoading()) {
+              <p class="field-hint">Cargando unidades...</p>
+            } @else {
+              <div class="checklist-shell">
+                @for (unit of unitOptions(); track unit.value) {
+                  <label class="checklist-item">
+                    <input
+                      type="checkbox"
+                      [checked]="isUnitSelected(unit.value.toString())"
+                      (change)="
+                        onUnitChecklistToggle(unit.value.toString(), $any($event.target).checked)
+                      "
+                    />
+                    <span>{{ unit.label }}</span>
+                  </label>
+                }
+              </div>
             }
-          </div>
-        }
-        @if (form().controls.unitIds.invalid && form().controls.unitIds.touched) {
-          <span class="field-error">Selecciona al menos una unidad</span>
+        </div>
+      </div>
+    }
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="name">Nombre <span class="required">*</span></label>
+        <app-input id="name" formControlName="name" placeholder="Transporte al aeropuerto" />
+      </div>
+
+      <div class="form-group">
+        <label for="coverImageInput">Imagen de portada <span class="required">*</span></label>
+
+        <app-button class="drop-file">
+          <span class="drop-label">
+           Subir imagen</span
+          >
+          <input
+            id="coverImageInput"
+            type="file"
+            class="file-input"
+            aria-label="Seleccionar imagen de portada"
+            (change)="onCoverImageSelected()"
+          />
+        </app-button>
+
+        @if (form.controls.coverImageUrl.value) {
+          <img
+            class="image-preview"
+            [src]="form.controls.coverImageUrl.value"
+            alt="Vista previa de portada"
+          />
         }
       </div>
     </div>
-  }
 
-  <div class="form-row">
     <div class="form-group">
-      <label>Nombre <span class="required">*</span></label>
-      <app-input formControlName="name" placeholder="Airport transfer" />
-      @if (form().controls.name.invalid && form().controls.name.touched) {
-        <span class="field-error">Campo requerido</span>
-      }
+      <label for="description">Descripcion <span class="required">*</span></label>
+      <textarea id="description" formControlName="description" rows="3"></textarea>
     </div>
-    <div class="form-group">
-      <label>Imagen de portada <span class="required">*</span></label>
-      <input type="file" accept="image/*" class="file-input" (change)="onCoverImageSelected($event)" />
-      <span class="field-hint">Sube una imagen para la portada de la experiencia</span>
-      @if (form().controls.coverImageUrl.value) {
-        <img class="image-preview" [src]="form().controls.coverImageUrl.value" alt="Vista previa de portada" />
-      }
-      @if (form().controls.coverImageUrl.invalid && form().controls.coverImageUrl.touched) {
-        <span class="field-error">Debes subir una imagen</span>
-      }
-    </div>
-  </div>
 
-  <div class="form-group">
-    <label>Descripcion <span class="required">*</span></label>
-    <textarea
-      formControlName="description"
-      rows="3"
-      [class.input-invalid]="form().controls.description.invalid && form().controls.description.touched"
-    ></textarea>
-    @if (form().controls.description.invalid && form().controls.description.touched) {
-      <span class="field-error">Campo requerido</span>
-    }
-  </div>
+    <div class="section-separator">Capacidad y Precio</div>
 
-  <div class="section-separator">Capacidad y Precio</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="precioCop">Precio (COP) <span class="required">*</span></label>
+        <app-input type="number" formControlName="priceCop" placeholder="120000" />
+      </div>
+      <div class="form-group">
+        <label for="duracion">Duracion (horas) <span class="required">*</span></label>
+        <app-input type="number" formControlName="durationHours" placeholder="2" />
+      </div>
+      <div class="form-group">
+        <label for="capacidad">Capacidad <span class="required">*</span></label>
+        <app-input type="number" formControlName="capacity" placeholder="8" />
+      </div>
+    </div>
 
-  <div class="form-row">
-    <div class="form-group">
-      <label>Precio (COP) <span class="required">*</span></label>
-      <app-input type="number" formControlName="priceCop" placeholder="120000" />
-      @if (form().controls.priceCop.invalid && form().controls.priceCop.touched) {
-        <span class="field-error">Debe ser mayor a cero</span>
-      }
+    <div class="section-separator">Ubicacion</div>
+    <app-experience-location-section [locationForm]="form.controls.location" />
+
+    <div class="section-separator">Disponibilidad</div>
+    <div class="form-group availability-type-group">
+      <label for="availabilityType">Tipo de disponibilidad <span class="required">*</span></label>
+      <app-select [options]="availabilityTypeOptions" formControlName="availabilityType" />
     </div>
-    <div class="form-group">
-      <label>Duracion (horas) <span class="required">*</span></label>
-      <app-input type="number" formControlName="durationHours" placeholder="2" />
-      @if (form().controls.durationHours.invalid && form().controls.durationHours.touched) {
-        <span class="field-error">Debe ser mayor a cero</span>
-      }
-    </div>
-    <div class="form-group">
-      <label>Capacidad <span class="required">*</span></label>
-      <app-input type="number" formControlName="capacity" placeholder="8" />
-      @if (form().controls.capacity.invalid && form().controls.capacity.touched) {
-        <span class="field-error">Debe ser mayor a cero</span>
-      }
+
+    <app-experience-availability-section
+      [form]="form"
+      [scope]="form.controls.scope.value"
+      [availabilityType]="form.controls.availabilityType.value"
+      (addBlackoutRange)="onAddBlackoutRange()"
+      (removeBlackoutRange)="onRemoveBlackoutRange($event)"
+    />
+
+    <div class="sells-section">
+      <div class="section-title">Canales de venta</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="allowStandalonePurchase">
+            <input type="checkbox" id="allowStandalonePurchase" formControlName="allowStandalonePurchase" />
+            Permitir compra independiente
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="allowReservationPurchase">
+            <input type="checkbox" id="allowReservationPurchase" formControlName="allowReservationPurchase" />
+            Permitir compra con reserva
+          </label>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="section-separator">Ubicacion</div>
-  <app-experience-location-section [locationForm]="form().controls.location" />
-
-  <div class="section-separator">Disponibilidad</div>
-  <div class="form-group availability-type-group">
-    <label>Tipo de disponibilidad <span class="required">*</span></label>
-    <app-select [options]="availabilityTypeOptions()" formControlName="availabilityType" />
+  <div class="form-actions">
+    <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
+    <app-button type="submit" variant="primary" [disabled]="isSaving()" [loading]="isSaving()">
+      Guardar experiencia
+    </app-button>
   </div>
-
-  <app-experience-availability-section
-    [form]="form()"
-    [scope]="form().controls.scope.value"
-    [availabilityType]="form().controls.availabilityType.value"
-    (addBlackoutRange)="onAddBlackoutRange()"
-    (removeBlackoutRange)="onRemoveBlackoutRange($event)"
-  />
-</div>
+</form>

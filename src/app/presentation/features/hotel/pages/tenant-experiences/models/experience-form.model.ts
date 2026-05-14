@@ -1,4 +1,5 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
 
 export interface DayOption {
   value: number;
@@ -6,17 +7,17 @@ export interface DayOption {
 }
 
 export interface BlackoutRangeFormControls {
-  startAt: FormControl<string>;
-  endAt: FormControl<string>;
+  startAt: FormControl<string|null>;
+  endAt: FormControl<string|null>;
 }
 
-export interface ExperienceRecurrenceFormControls {
+export interface RecurrenceFormControls {
   daysOfWeek: FormControl<number[]>;
   startTime: FormControl<string>;
   endTime: FormControl<string>;
 }
 
-export interface ExperienceLocationFormControls {
+export interface LocationFormControls {
   label: FormControl<string>;
   address: FormControl<string>;
   lat: FormControl<number | null>;
@@ -24,21 +25,25 @@ export interface ExperienceLocationFormControls {
 }
 
 export interface ExperienceFormControls {
-  scope: FormControl<'PROPERTY' | 'TENANT'>;
+  scope: FormControl<ExperienceScope>;
   propertyId: FormControl<string>;
   unitIds: FormControl<string[]>;
   name: FormControl<string>;
   description: FormControl<string>;
   category: FormControl<string>;
-  priceCop: FormControl<number | null>;
-  durationHours: FormControl<number | null>;
-  capacity: FormControl<number | null>;
+  priceCop: FormControl<number|undefined>;
+  durationHours: FormControl<number|undefined>;
+  capacity: FormControl<number|undefined>;
   coverImageUrl: FormControl<string>;
-  availabilityType: FormControl<'DATE_RANGE' | 'RECURRING'>;
+  availabilityType: FormControl<ExperienceAvailabilityType>;
   startAt: FormControl<string>;
   endAt: FormControl<string>;
   blackoutRanges: FormArray<FormGroup<BlackoutRangeFormControls>>;
-  recurrence: FormGroup<ExperienceRecurrenceFormControls>;
-  location: FormGroup<ExperienceLocationFormControls>;
+  recurrence: FormGroup<RecurrenceFormControls>;
+  location: FormGroup<LocationFormControls>;
+  allowStandalonePurchase: FormControl<boolean>;
+  allowReservationPurchase: FormControl<boolean>;
 }
 
+export type ExperienceRecurrenceFormControls = RecurrenceFormControls;
+export type ExperienceLocationFormControls = LocationFormControls;

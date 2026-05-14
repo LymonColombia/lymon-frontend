@@ -11,7 +11,8 @@ import {
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { ExperienceCardComponent } from '../../components/experience-card/experience-card.component';
 import { ExperienceTableComponent } from '../../components/experience-table/experience-table.component';
-import { TenantExperienceLocalStoreService } from '../../tenant-experience-local-store.service';
+import { GetExperiencesUseCase } from '@/domain/use-cases/experience/get-experiences.use-case';
+import { DeleteExperienceUseCase } from '@/domain/use-cases/experience/delete-experience.use-case';
 
 type ExperienceViewMode = 'CARDS' | 'TABLE';
 
@@ -34,12 +35,18 @@ type ExperienceViewMode = 'CARDS' | 'TABLE';
 })
 export class TenantExperiencesPageComponent {
   private readonly router = inject(Router);
-  private readonly localStore = inject(TenantExperienceLocalStoreService);
+  private readonly getExperiencesUseCase = inject(GetExperiencesUseCase);
+  private readonly deleteExperienceUseCase = inject(DeleteExperienceUseCase);
+  
+  private readonly experienceToDelete = signal<string | null>(null);
+
 
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly experiences = signal<Experience[]>([]);
   readonly viewMode = signal<ExperienceViewMode>('CARDS');
+  readonly IdEditingExperience = signal<string | null>(null);
+
 
   readonly experienceCountLabel = computed(() => {
     if (this.isLoading()) {
@@ -59,7 +66,7 @@ export class TenantExperiencesPageComponent {
   }
 
   onDeleteExperience(id: string) {
-  throw new Error('Method not implemented.');
+    this.experienceToDelete.set(id);
   }
 
   onCreateExperience(): void {
@@ -70,7 +77,7 @@ export class TenantExperiencesPageComponent {
     this.router.navigate(['/tenant-experiences', id]);
   }
 
-  onEditExperience(id: string): void {
+  onEditExperience(id:string): void {
     this.router.navigate(['/tenant-experiences', id, 'edit']);
   }
 
@@ -78,10 +85,11 @@ export class TenantExperiencesPageComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.localStore.list().subscribe({
+    this.getExperiencesUseCase.execute().subscribe({
       next: (experiences) => {
         this.experiences.set(experiences);
         this.isLoading.set(false);
+        console.log('Experiencias cargadas:', experiences);
       },
       error: () => {
         this.errorMessage.set('No se pudieron cargar las experiencias.');
@@ -89,4 +97,17 @@ export class TenantExperiencesPageComponent {
       },
     });
   }
+
+  private deleteExperience(id: string): void {
+    this.deleteExperienceUseCase.execute(id).subscribe({
+      next: () => {
+        this.experiences.set(this.experiences().filter(exp => exp.id !== id));
+        this.experienceToDelete.set(null);
+      },
+      error: () => {
+        this.errorMessage.set('No se pudo eliminar la experiencia.');
+        this.experienceToDelete.set(null);
+      },
+    });
+}
 }
