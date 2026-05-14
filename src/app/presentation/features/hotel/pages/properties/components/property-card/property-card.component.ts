@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  computed,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { Property } from '@/domain/entities/staff.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -9,6 +17,9 @@ import {
   bootstrapGeoAltFill,
   bootstrapHouseDoorFill,
   bootstrapHouseFill,
+  bootstrapPencilSquare,
+  bootstrapThreeDotsVertical,
+  bootstrapTrashFill,
   bootstrapTreeFill,
 } from '@ng-icons/bootstrap-icons';
 
@@ -31,6 +42,9 @@ type PropertyIconName =
       bootstrapGeoAltFill,
       bootstrapHouseDoorFill,
       bootstrapHouseFill,
+      bootstrapPencilSquare,
+      bootstrapThreeDotsVertical,
+      bootstrapTrashFill,
       bootstrapTreeFill,
     }),
   ],
@@ -41,6 +55,19 @@ type PropertyIconName =
 export class PropertyCardComponent {
   readonly property = input.required<Property>();
   readonly viewUnits = output<string>();
+  readonly edit = output<Property>();
+  readonly delete = output<Property>();
+
+  readonly menuOpen = signal(false);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.menuOpen()) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.property-menu-wrapper')) {
+      this.menuOpen.set(false);
+    }
+  }
 
   readonly propertyTypeLabel = computed(() => {
     const rawType = this.property().propertyType;
@@ -71,7 +98,22 @@ export class PropertyCardComponent {
     }
   });
 
+  toggleMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    this.menuOpen.update(open => !open);
+  }
+
   onViewUnits(): void {
     this.viewUnits.emit(this.property().id);
+  }
+
+  onEdit(): void {
+    this.menuOpen.set(false);
+    this.edit.emit(this.property());
+  }
+
+  onDelete(): void {
+    this.menuOpen.set(false);
+    this.delete.emit(this.property());
   }
 }
