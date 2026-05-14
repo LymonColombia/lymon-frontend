@@ -45,6 +45,7 @@
               <th>Rol</th>
               <th>Estado</th>
               <th>Fecha de registro</th>
+              <th class="actions-header">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -72,6 +73,21 @@
                   </span>
                 </td>
                 <td>{{ formatDate(employee.createdAt) }}</td>
+                <td class="actions-cell">
+                  <app-button
+                    variant="text"
+                    size="small"
+                    (clicked)="openConfirmDelete(employee)"
+                    [disabled]="isDeleting() === employee.id"
+                  >
+                    <ng-icon
+                      name="bootstrapTrash"
+                      size="18px"
+                      class="delete-icon"
+                      [class.spinning]="isDeleting() === employee.id"
+                    ></ng-icon>
+                  </app-button>
+                </td>
               </tr>
             }
           </tbody>
@@ -79,4 +95,30 @@
       </div>
     }
   </section>
+
+  @if (isConfirmDeleteModalOpen()) {
+    <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmDelete()" aria-label="Cerrar confirmación"></button>
+    <dialog class="modal-card modal-card--confirm" open aria-modal="true">
+      <header class="modal-header">
+        <div class="confirm-icon-wrapper confirm-icon-wrapper--danger">
+          <ng-icon name="bootstrapTrash" size="24"></ng-icon>
+        </div>
+        <h2 id="delete-modal-title">¿Eliminar empleado?</h2>
+      </header>
+
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar permanentemente a <strong>"{{ employeeToDelete()?.fullName }}"</strong>?</p>
+        <p class="confirm-detail">Esta acción no se puede deshacer y el usuario perderá acceso al sistema.</p>
+      </div>
+
+      <footer class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="closeConfirmDelete()" [disabled]="isDeleting() !== null">
+          No, cancelar
+        </button>
+        <button type="button" class="btn-primary btn-primary--danger" (click)="confirmDeleteStaff()" [disabled]="isDeleting() !== null">
+          {{ isDeleting() !== null ? 'Eliminando...' : 'Si, eliminar' }}
+        </button>
+      </footer>
+    </dialog>
+  }
 </app-hotel-page-layout>
