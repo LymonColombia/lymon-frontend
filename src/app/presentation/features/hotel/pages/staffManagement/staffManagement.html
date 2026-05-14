@@ -95,7 +95,6 @@
                 (click)="openDetails(employee)"
                 (keydown.enter)="openDetails(employee)"
                 tabindex="0"
-                role="button"
                 aria-label="Ver detalles de empleado"
               >
                 <td>
@@ -245,12 +244,11 @@
 
       <div class="modal-body details-body">
         <div class="info-grid">
-          <div
+          <button
+            type="button"
             class="info-item info-item--clickable"
             (click)="copyToClipboard(selectedEmployee()?.email ?? '')"
             (keydown.enter)="copyToClipboard(selectedEmployee()?.email ?? '')"
-            tabindex="0"
-            role="button"
             aria-label="Copiar correo electrónico"
           >
             <div class="info-icon">
@@ -263,7 +261,7 @@
                 <ng-icon name="bootstrapClipboard" size="14" class="copy-hint-icon" title="Copiar"></ng-icon>
               </div>
             </div>
-          </div>
+          </button>
 
           <div class="info-item">
             <div class="info-icon">
@@ -285,12 +283,11 @@
             </div>
           </div>
 
-          <div
+          <button
+            type="button"
             class="info-item info-item--clickable"
             (click)="copyToClipboard(selectedEmployee()?.document ?? '')"
             (keydown.enter)="copyToClipboard(selectedEmployee()?.document ?? '')"
-            tabindex="0"
-            role="button"
             aria-label="Copiar número de documento"
           >
             <div class="info-icon">
@@ -303,7 +300,7 @@
                 <ng-icon name="bootstrapClipboard" size="14" class="copy-hint-icon" title="Copiar"></ng-icon>
               </div>
             </div>
-          </div>
+          </button>
         </div>
       </div>
 

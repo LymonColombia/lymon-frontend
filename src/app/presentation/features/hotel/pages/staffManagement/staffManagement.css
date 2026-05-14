@@ -212,7 +212,7 @@
 
 .col-actions {
   width: 80px;
-  text-align: center;
+  text-align: center !important;
 }
 
 .name-cell {
@@ -304,7 +304,7 @@
   text-align: center !important;
 }
 
-.col-actions { text-align: center !important; }
+
 
 .delete-icon {
   color: var(--color-danger);
@@ -468,6 +468,9 @@
   border: 1px solid #f0f4f0;
   border-radius: var(--radius-lg);
   transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  font: inherit;
 }
 
 .info-item--clickable {
