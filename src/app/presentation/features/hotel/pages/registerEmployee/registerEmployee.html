@@ -121,8 +121,9 @@
 
                 <div class="role-row-content">
                   <div class="form-group">
-                    <label>Rol asignado <span class="required">*</span></label>
+                    <label [for]="'roleId-' + $index">Rol asignado <span class="required">*</span></label>
                     <app-select
+                      [id]="'roleId-' + $index"
                       formControlName="roleId"
                       [options]="roleSelectOptions()"
                       [class.input-invalid]="
@@ -133,8 +134,9 @@
                   </div>
 
                   <div class="form-group">
-                    <label>Tipo de Alcance <span class="required">*</span></label>
+                    <label [for]="'scopeType-' + $index">Tipo de Alcance <span class="required">*</span></label>
                     <app-select
+                      [id]="'scopeType-' + $index"
                       formControlName="scopeType"
                       [options]="scopeTypeOptions"
                       (valueChange)="onScopeChange($index)"
@@ -143,11 +145,11 @@
 
                   @if (getRoleGroupAt($index).get('scopeType')?.value === SCOPE_PROPERTY) {
                     <div class="form-group">
-                      <label>Propiedades <span class="required">*</span></label>
+                      <label [for]="'resourceIds-' + $index">Propiedades <span class="required">*</span></label>
                       @if (propertiesLoading()) {
                         <p class="field-hint">Cargando...</p>
                       } @else {
-                        <select multiple formControlName="resourceIds" class="select-multiple">
+                        <select [id]="'resourceIds-' + $index" multiple formControlName="resourceIds" class="select-multiple">
                           @for (p of availableProperties(); track p.id) {
                             <option [value]="p.id">{{ p.name }}</option>
                           }

@@ -90,7 +90,14 @@
           </thead>
           <tbody>
             @for (employee of filteredEmployees(); track employee.id) {
-              <tr class="employee-row" (click)="openDetails(employee)">
+              <tr
+                class="employee-row"
+                (click)="openDetails(employee)"
+                (keydown.enter)="openDetails(employee)"
+                tabindex="0"
+                role="button"
+                aria-label="Ver detalles de empleado"
+              >
                 <td>
                   <div class="name-cell">
                     <span class="avatar">{{ employee.fullName.charAt(0) }}</span>
@@ -113,7 +120,11 @@
                   </span>
                 </td>
                 <td>{{ formatDate(employee.createdAt) }}</td>
-                <td class="actions-cell" (click)="$event.stopPropagation()">
+                <td
+                  class="actions-cell"
+                  (click)="$event.stopPropagation()"
+                  (keydown.enter)="$event.stopPropagation()"
+                >
                   <app-button
                     variant="text"
                     size="small"
@@ -234,13 +245,20 @@
 
       <div class="modal-body details-body">
         <div class="info-grid">
-          <div class="info-item info-item--clickable" (click)="copyToClipboard(selectedEmployee()?.email ?? '')">
+          <div
+            class="info-item info-item--clickable"
+            (click)="copyToClipboard(selectedEmployee()?.email ?? '')"
+            (keydown.enter)="copyToClipboard(selectedEmployee()?.email ?? '')"
+            tabindex="0"
+            role="button"
+            aria-label="Copiar correo electrónico"
+          >
             <div class="info-icon">
               <ng-icon name="bootstrapEnvelope" size="18"></ng-icon>
             </div>
             <div class="info-content">
-              <label>Correo electrónico</label>
-              <div class="info-text-with-action">
+              <span class="info-label">Correo electrónico</span>
+              <div id="detail-email" class="info-text-with-action">
                 <p>{{ selectedEmployee()?.email }}</p>
                 <ng-icon name="bootstrapClipboard" size="14" class="copy-hint-icon" title="Copiar"></ng-icon>
               </div>
@@ -252,8 +270,8 @@
               <ng-icon name="bootstrapShieldCheck" size="18"></ng-icon>
             </div>
             <div class="info-content">
-              <label>Rol asignado</label>
-              <p>{{ selectedEmployee()?.role }}</p>
+              <span class="info-label">Rol asignado</span>
+              <p id="detail-role">{{ selectedEmployee()?.role }}</p>
             </div>
           </div>
 
@@ -262,18 +280,25 @@
               <ng-icon name="bootstrapCalendar3" size="18"></ng-icon>
             </div>
             <div class="info-content">
-              <label>Miembro desde</label>
-              <p>{{ formatDate(selectedEmployee()?.createdAt ?? '') }}</p>
+              <span class="info-label">Miembro desde</span>
+              <p id="detail-date">{{ formatDate(selectedEmployee()?.createdAt ?? '') }}</p>
             </div>
           </div>
 
-          <div class="info-item info-item--clickable" (click)="copyToClipboard(selectedEmployee()?.document ?? '')">
+          <div
+            class="info-item info-item--clickable"
+            (click)="copyToClipboard(selectedEmployee()?.document ?? '')"
+            (keydown.enter)="copyToClipboard(selectedEmployee()?.document ?? '')"
+            tabindex="0"
+            role="button"
+            aria-label="Copiar número de documento"
+          >
             <div class="info-icon">
               <ng-icon name="bootstrapPersonBadge" size="18"></ng-icon>
             </div>
             <div class="info-content">
-              <label>Número de documento</label>
-              <div class="info-text-with-action">
+              <span class="info-label">Número de documento</span>
+              <div id="detail-document" class="info-text-with-action">
                 <p>{{ selectedEmployee()?.document }}</p>
                 <ng-icon name="bootstrapClipboard" size="14" class="copy-hint-icon" title="Copiar"></ng-icon>
               </div>
