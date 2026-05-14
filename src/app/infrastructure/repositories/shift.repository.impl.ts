@@ -44,6 +44,13 @@ export class ShiftRepositoryImpl extends ShiftRepository {
     );
   }
 
+  assignStaff(id: string, staffMemberIds: string[]): Observable<ShiftResponse> {
+    return this.http.patch<ShiftResponse>(
+      `${environment.apiUrl}${environment.shifts.endpoint}/${id}/assign-staff`,
+      { staffMemberIds }
+    );
+  }
+
   deleteShift(id: string): Observable<void> {
     return this.http.delete<void>(
       `${environment.apiUrl}${environment.shifts.endpoint}/${id}`
