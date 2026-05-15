@@ -3,7 +3,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env';
 import { GuestReservationRepository } from '@/domain/repositories/guest-reservation.repository';
-import { GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage } from '@/domain/entities/guest-reservation.model';
+import { GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
+import { UnitCalendarDto } from '@/infrastructure/dtos/unit-calendar.dto';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
 const BASE_URL = `${environment.apiUrl}/guest/reservations`;
@@ -26,6 +27,16 @@ export class GuestReservationRepositoryImpl implements GuestReservationRepositor
     return this.http
       .get<GuestReservationResponse>(`${BASE_URL}/${id}`, { headers: this.authHeaders() })
       .pipe(map((res) => ({ ...res, status: res.status?.toLowerCase() ?? res.status })));
+  }
+
+  // Public endpoint — no auth required; guests can view availability before logging in
+  getUnitCalendar(unitId: string, params?: { startDate?: string; endDate?: string }): Observable<OccupiedDateRange[]> {
+    let httpParams = new HttpParams();
+    if (params?.startDate) httpParams = httpParams.set('startDate', params.startDate);
+    if (params?.endDate) httpParams = httpParams.set('endDate', params.endDate);
+    return this.http
+      .get<UnitCalendarDto>(`${BASE_URL}/unit/${unitId}/calendar`, { params: httpParams })
+      .pipe(map((res) => res.data));
   }
 
   getAll(params: GetGuestReservationsParams): Observable<GuestReservationsPage> {
