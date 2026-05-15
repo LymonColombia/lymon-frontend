@@ -78,4 +78,8 @@ export class StaffRepositoryImpl extends StaffRepository {
       `${environment.apiUrl}${environment.units.endpoint}/public/unit/${unitId}`,
     );
   }
+
+  deleteStaff(id: string): Observable<unknown> {
+    return this.http.delete<unknown>(`${USER_BASE}/${id}`, { headers: this.authHeaders });
+  }
 }

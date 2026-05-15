@@ -7,7 +7,7 @@ import { AddStaffUseCase } from '@/domain/use-cases/staff/add-staff.use-case';
 import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { Role, Property, Unit, ScopeType } from '@/domain/entities/staff.model';
+import { Role, Property, Unit, ScopeType, InviteStaffDto } from '@/domain/entities/staff.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
@@ -95,6 +95,8 @@ export class RegisterEmployeeComponent implements OnInit {
   ]);
 
   readonly form = this.fb.group({
+    fullName: ['', [Validators.required]],
+    document: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     roleAssignments: this.fb.array([this.buildRoleGroup()]),
@@ -134,6 +136,12 @@ export class RegisterEmployeeComponent implements OnInit {
   }
   get password() {
     return this.form.controls.password;
+  }
+  get fullName() {
+    return this.form.controls.fullName;
+  }
+  get document() {
+    return this.form.controls.document;
   }
   get roleAssignments(): FormArray {
     return this.form.controls.roleAssignments;
@@ -241,9 +249,11 @@ export class RegisterEmployeeComponent implements OnInit {
 
     const raw = this.form.getRawValue();
 
-    const payload = {
+    const payload: InviteStaffDto = {
       email: raw.email as string,
       password: raw.password as string,
+      fullName: raw.fullName as string,
+      document: raw.document as string,
       roleAssignments: (
         raw.roleAssignments as Array<{
           roleId: string;
