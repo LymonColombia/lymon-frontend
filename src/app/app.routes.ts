@@ -38,7 +38,6 @@ import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/gues
 import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/pages/guest-reservation-details/guest-reservation-details';
 import { InventoryComponent } from '@/presentation/features/hotel/pages/properties/[propertyId]/inventory/inventory';
-import { SessionsComponent } from '@/presentation/features/hotel/pages/sessions/sessions';
 import { ExperienceComponent } from './presentation/features/hotel/pages/experiences/experiences';
 import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
 import { StorageTestComponent } from '@/presentation/features/hotel/pages/storageTest/storageTest';
@@ -113,7 +112,6 @@ export const routes: Routes = [
       { path: 'crm/guests/:guestId', component: GuestProfileComponent },
       { path: 'staff-shift', component: StaffShiftComponent },
       { path: 'properties/:propertyId/inventory', component: InventoryComponent },
-      { path: 'sessions', component: SessionsComponent },
       { path: 'storage-test', component: StorageTestComponent },
     ],
   },
