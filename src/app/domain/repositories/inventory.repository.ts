@@ -7,4 +7,5 @@ export abstract class InventoryRepository {
   abstract getCategories(): Observable<InventoryCategoryResponse[]>;
   abstract getItems(propertyId: string): Observable<InventoryItemResponse[]>;
   abstract associateSupplier(propertyId: string, itemId: string, supplierId: string | null): Observable<void>;
+  abstract deleteItem(propertyId: string, itemId: string): Observable<void>;
 }

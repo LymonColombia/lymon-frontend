@@ -401,6 +401,31 @@
   </div>
 </app-modal>
 
+<app-modal [open]="isDeleteSupplyModalOpen()" title="Confirmar Eliminación" size="small"
+  (closed)="closeDeleteSupplyModal()">
+  <div class="delete-confirmation">
+    <div class="delete-icon-wrapper delete-icon-wrapper--danger">
+      <ng-icon name="bootstrapExclamationTriangle" size="32px"></ng-icon>
+    </div>
+    <div class="delete-content">
+      <h3>¿Eliminar insumo?</h3>
+      <p>
+        ¿Estás seguro que deseas eliminar el insumo <strong>{{ supplyToDelete()?.name }}</strong>?
+        Esta acción eliminará permanentemente el registro del inventario.
+      </p>
+    </div>
+  </div>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeDeleteSupplyModal()" [disabled]="isDeletingSupply()">
+      Cancelar
+    </app-button>
+    <app-button type="button" variant="danger" (clicked)="confirmDeleteSupply()" [loading]="isDeletingSupply()">
+      Eliminar Insumo
+    </app-button>
+  </div>
+</app-modal>
+
 <app-modal [open]="isCategoryModalOpen()" title="Nueva Categoria" size="small" (closed)="closeCategoryModal()">
   <form id="inventory-category-form" class="category-form" [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
     <div class="form-grid">

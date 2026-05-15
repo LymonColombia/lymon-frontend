@@ -32,6 +32,7 @@ import { GetInventoryCategoriesUseCase } from '@/domain/use-cases/inventory/get-
 import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse, InventoryItemListResponse } from '@/infrastructure/dtos/inventory.dto';
 import { GetInventoryItemsUseCase } from '@/domain/use-cases/inventory/get-inventory-items.use-case';
 import { AssociateInventorySupplierUseCase } from '@/domain/use-cases/inventory/associate-inventory-supplier.use-case';
+import { DeleteInventoryItemUseCase } from '@/domain/use-cases/inventory/delete-inventory-item.use-case';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -100,6 +101,7 @@ export class InventoryComponent implements OnInit {
   private readonly getInventoryCategoriesUseCase = inject(GetInventoryCategoriesUseCase);
   private readonly getInventoryItemsUseCase = inject(GetInventoryItemsUseCase);
   private readonly associateInventorySupplierUseCase = inject(AssociateInventorySupplierUseCase);
+  private readonly deleteInventoryItemUseCase = inject(DeleteInventoryItemUseCase);
   private readonly route = inject(ActivatedRoute);
 
   readonly propertyId = signal<string | null>(null);
@@ -114,9 +116,12 @@ export class InventoryComponent implements OnInit {
   readonly selectedProviderId = signal<string | null>(null);
   readonly isDeleteProviderModalOpen = signal(false);
   readonly providerToDelete = signal<ProviderRow | null>(null);
+  readonly isDeleteSupplyModalOpen = signal(false);
+  readonly supplyToDelete = signal<SupplyRow | null>(null);
   readonly isSavingProvider = signal(false);
   readonly isSavingSupply = signal(false);
   readonly isSavingCategory = signal(false);
+  readonly isDeletingSupply = signal(false);
   readonly isCategoriesDropdownOpen = signal(false);
   readonly categories = signal<InventoryCategoryResponse[]>([]);
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
@@ -614,7 +619,42 @@ export class InventoryComponent implements OnInit {
   }
 
   removeSupply(id: string): void {
-    this.rawSupplies.update((items) => items.filter((item) => item.id !== id));
+    const supply = this.mappedSupplies().find(s => s.id === id);
+    if (supply) {
+      this.openDeleteSupplyModal(supply);
+    }
+  }
+
+  openDeleteSupplyModal(supply: SupplyRow): void {
+    this.supplyToDelete.set(supply);
+    this.isDeleteSupplyModalOpen.set(true);
+  }
+
+  closeDeleteSupplyModal(): void {
+    this.isDeleteSupplyModalOpen.set(false);
+    this.supplyToDelete.set(null);
+  }
+
+  confirmDeleteSupply(): void {
+    const supply = this.supplyToDelete();
+    const propertyId = this.propertyId();
+    if (!supply || !propertyId) return;
+
+    this.isDeletingSupply.set(true);
+    this.deleteInventoryItemUseCase.execute(propertyId, supply.id).subscribe({
+      next: () => {
+        this.isDeletingSupply.set(false);
+        this.showNotification('¡Insumo eliminado con éxito!', 'success');
+        this.closeDeleteSupplyModal();
+        this.loadSupplies(propertyId);
+      },
+      error: (err) => {
+        console.error('Error deleting supply', err);
+        this.isDeletingSupply.set(false);
+        this.showNotification('Error al eliminar el insumo. Por favor, intenta de nuevo.', 'error');
+        this.closeDeleteSupplyModal();
+      }
+    });
   }
 
   openDeleteProviderModal(provider: ProviderRow): void {

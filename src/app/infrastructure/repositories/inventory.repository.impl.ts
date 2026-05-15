@@ -42,4 +42,8 @@ export class InventoryRepositoryImpl extends InventoryRepository {
   associateSupplier(propertyId: string, itemId: string, supplierId: string | null): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/properties/${propertyId}/inventory/items/${itemId}/supplier`, { supplierId });
   }
+
+  deleteItem(propertyId: string, itemId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/properties/${propertyId}/inventory/items/${itemId}`);
+  }
 }
