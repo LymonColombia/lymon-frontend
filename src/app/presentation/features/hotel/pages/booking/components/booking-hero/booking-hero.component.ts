@@ -5,9 +5,9 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapPeopleFill, bootstrapSearch } from '@ng-icons/bootstrap-icons';
 
 export interface BookingSearchParams {
-  checkIn?: string;
-  checkOut?: string;
-  guests?: number;
+  startDate?: string;
+  endDate?: string;
+  minGuests?: number;
 }
 
 @Component({
@@ -22,9 +22,9 @@ export interface BookingSearchParams {
 export class BookingHeroComponent {
   readonly search = output<BookingSearchParams>();
 
-  readonly checkIn = signal<string | undefined>(undefined);
-  readonly checkOut = signal<string | undefined>(undefined);
-  readonly guests = signal<number | undefined>(undefined);
+  readonly startDate = signal<string | undefined>(undefined);
+  readonly endDate = signal<string | undefined>(undefined);
+  readonly minGuests = signal<number | undefined>(undefined);
 
   readonly guestOptions: SelectOption[] = [
     { value: 1, label: '1 Huésped' },
@@ -34,23 +34,23 @@ export class BookingHeroComponent {
     { value: 5, label: '5+ Huéspedes' },
   ];
 
-  onCheckInChange(value: string | number | null): void {
-    this.checkIn.set(typeof value === 'string' ? value : undefined);
+  onStartDateChange(value: string | number | null): void {
+    this.startDate.set(typeof value === 'string' ? value : undefined);
   }
 
-  onCheckOutChange(value: string | number | null): void {
-    this.checkOut.set(typeof value === 'string' ? value : undefined);
+  onEndDateChange(value: string | number | null): void {
+    this.endDate.set(typeof value === 'string' ? value : undefined);
   }
 
-  onGuestsChange(value: string | number | null): void {
-    this.guests.set(typeof value === 'number' ? value : undefined);
+  onMinGuestsChange(value: string | number | null): void {
+    this.minGuests.set(typeof value === 'number' ? value : undefined);
   }
 
   onSearch(): void {
     this.search.emit({
-      checkIn: this.checkIn(),
-      checkOut: this.checkOut(),
-      guests: this.guests(),
+      startDate: this.startDate(),
+      endDate: this.endDate(),
+      minGuests: this.minGuests(),
     });
   }
 }
