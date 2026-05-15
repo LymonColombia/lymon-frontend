@@ -66,6 +66,12 @@
   margin-top: var(--spacing-2xl)
 }
 
+.delete-confirm-message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+}
+
 /* ── Property grid ────────────────────────────────── */
 .property-grid {
   display: grid;

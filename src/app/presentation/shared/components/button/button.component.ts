@@ -25,6 +25,7 @@ export class ButtonComponent {
   variant = input<ButtonVariant>('primary');
   size = input<ButtonSize>('medium');
   type = input<ButtonType>('button');
+  ariaLabel = input<string | null>(null);
   disabled = input(false, { transform: booleanAttribute });
   fullWidth = input(false, { transform: booleanAttribute });
   loading = input(false, { transform: booleanAttribute });

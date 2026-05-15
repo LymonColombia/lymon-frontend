@@ -29,6 +29,59 @@
 .brand-logo {
     display: block;
 }
+/* ===== NAV-LINKS ===== */
+
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.nav-divider {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-dark);
+  text-decoration: none;
+  padding: var(--spacing-xs) var(--spacing-3xl);
+  transition: color var(--transition-slow);
+}
+
+.nav-link ng-icon {
+  color: var(--color-primary-dark);
+  transition: color var(--transition-slow);
+}
+
+.nav-link:hover {
+  color: var(--color-primary);
+}
+
+.nav-link--active {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.nav-link:hover ng-icon {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.nav-link--active ng-icon {
+  color: var(--color-primary);
+}
+
 
 .nav-actions {
     display: flex;

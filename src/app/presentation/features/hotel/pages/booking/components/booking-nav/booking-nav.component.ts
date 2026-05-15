@@ -16,6 +16,8 @@ import {
   bootstrapBoxArrowRight,
   bootstrapCalendar2Check,
   bootstrapChevronDown,
+  bootstrapCompass,
+  bootstrapHouseDoor,
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 
@@ -29,6 +31,8 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button.
       bootstrapBoxArrowRight,
       bootstrapCalendar2Check,
       bootstrapChevronDown,
+      bootstrapCompass,
+      bootstrapHouseDoor,
     }),
   ],
   templateUrl: './booking-nav.component.html',
