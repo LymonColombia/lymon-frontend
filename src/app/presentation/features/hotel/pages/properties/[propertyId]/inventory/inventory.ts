@@ -37,7 +37,8 @@ interface SupplyRow {
   id: string;
   sku: string;
   name: string;
-  category: string;
+  categoryId: string;
+  categoryName: string;
   quantity: number;
   unit: string;
   provider: string;
@@ -116,12 +117,12 @@ export class InventoryComponent implements OnInit {
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
   private notificationTimeout: any;
 
-  readonly categoryOptions: SelectOption[] = [
-    { value: 'TEXTILES', label: 'Textiles' },
-    { value: 'TOILETRIES', label: 'Higiene / Tocador' },
-    { value: 'CLEANING', label: 'Limpieza' },
-    { value: 'FOOD', label: 'Alimentos' },
-  ];
+  readonly categoryOptions = computed<SelectOption[]>(() => {
+    return this.categories().map(cat => ({
+      value: cat.id,
+      label: cat.name
+    }));
+  });
 
   readonly unitOptions: SelectOption[] = [
     { value: 'piece', label: 'Unidades' },
@@ -151,7 +152,8 @@ export class InventoryComponent implements OnInit {
       id: 'ins-1',
       sku: 'TOA-001',
       name: 'Toallas blancas',
-      category: 'Textiles',
+      categoryId: '1',
+      categoryName: 'Textiles',
       quantity: 250,
       unit: 'unidades',
       provider: 'Textiles Premium',
@@ -161,7 +163,8 @@ export class InventoryComponent implements OnInit {
       id: 'ins-2',
       sku: 'JAB-002',
       name: 'Jabon liquido',
-      category: 'Higiene',
+      categoryId: '2',
+      categoryName: 'Higiene',
       quantity: 80,
       unit: 'litros',
       provider: 'Distribuidora Clean Pro',
@@ -171,7 +174,8 @@ export class InventoryComponent implements OnInit {
       id: 'ins-3',
       sku: 'SAB-003',
       name: 'Sabanas king size',
-      category: 'Textiles',
+      categoryId: '1',
+      categoryName: 'Textiles',
       quantity: 120,
       unit: 'unidades',
       provider: 'Textiles Premium',
@@ -181,7 +185,7 @@ export class InventoryComponent implements OnInit {
 
   readonly supplyForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
-    category: ['TEXTILES', [Validators.required]],
+    categoryId: ['', [Validators.required]],
     quantity: [0, [Validators.required, Validators.min(1)]],
     unit: ['piece', [Validators.required]],
     provider: ['Sin proveedor', [Validators.required]],
@@ -216,7 +220,7 @@ export class InventoryComponent implements OnInit {
     return this.supplies().filter((item) => {
       return (
         item.name.toLowerCase().includes(term) ||
-        item.category.toLowerCase().includes(term) ||
+        item.categoryName.toLowerCase().includes(term) ||
         item.provider.toLowerCase().includes(term)
       );
     });
@@ -325,7 +329,7 @@ export class InventoryComponent implements OnInit {
     this.editingSupplyId.set(null);
     this.supplyForm.reset({
       name: '',
-      category: 'TEXTILES',
+      categoryId: '',
       quantity: 0,
       unit: 'piece',
       provider: 'Sin proveedor',
@@ -338,7 +342,7 @@ export class InventoryComponent implements OnInit {
     this.editingSupplyId.set(supply.id);
     this.supplyForm.reset({
       name: supply.name,
-      category: supply.category,
+      categoryId: supply.categoryId,
       quantity: supply.quantity,
       unit: supply.unit,
       provider: supply.provider,
@@ -421,7 +425,7 @@ export class InventoryComponent implements OnInit {
       const payload: CreateInventoryItemDto = {
         sku: generatedSku,
         name: value.name.trim(),
-        category: value.category,
+        categoryId: value.categoryId,
         unit: value.unit,
         minStock: value.minimumStock,
         initialStock: value.quantity,
@@ -434,11 +438,13 @@ export class InventoryComponent implements OnInit {
 
       useCase.execute(id, payload).subscribe({
         next: (response: InventoryItemResponse) => {
+          const categoryName = this.categories().find(c => c.id === response.categoryId)?.name ?? 'Sin categoría';
           const nextItem: SupplyRow = {
             id: response.id,
             sku: response.sku,
             name: response.name,
-            category: value.category,
+            categoryId: response.categoryId,
+            categoryName: categoryName,
             quantity: response.currentStock,
             unit: value.unit,
             provider: value.provider,
@@ -462,10 +468,12 @@ export class InventoryComponent implements OnInit {
           return item;
         }
 
+        const categoryName = this.categories().find(c => c.id === value.categoryId)?.name ?? 'Sin categoría';
         return {
           ...item,
           name: value.name.trim(),
-          category: value.category,
+          categoryId: value.categoryId,
+          categoryName: categoryName,
           quantity: value.quantity,
           unit: value.unit,
           provider: value.provider,
@@ -653,7 +661,7 @@ export class InventoryComponent implements OnInit {
     return 'Normal';
   }
 
-  getCategoryClass(category: string): string {
-    return category.toLowerCase().replace(/\s+/g, '-');
+  getCategoryClass(categoryName: string): string {
+    return categoryName.toLowerCase().replace(/\s+/g, '-');
   }
 }

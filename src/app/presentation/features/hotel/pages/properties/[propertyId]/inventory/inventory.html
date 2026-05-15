@@ -42,7 +42,8 @@
             <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
             Nueva Categoria
           </app-button>
-          <button type="button" class="split-button-side" aria-label="Más opciones" (click)="toggleCategoriesDropdown()">
+          <button type="button" class="split-button-side" aria-label="Más opciones"
+            (click)="toggleCategoriesDropdown()">
             <ng-icon name="bootstrapJustify" size="18px" aria-hidden="true"></ng-icon>
           </button>
 
@@ -101,8 +102,9 @@
               <td>{{ item.sku }}</td>
               <td>{{ item.name }}</td>
               <td>
-                <span class="category-pill" [class]="'category-pill category-pill--' + getCategoryClass(item.category)">
-                  {{ item.category }}
+                <span class="category-pill"
+                  [class]="'category-pill category-pill--' + getCategoryClass(item.categoryName)">
+                  {{ item.categoryName }}
                 </span>
               </td>
               <td>{{ item.quantity }} {{ item.unit }}</td>
@@ -195,7 +197,7 @@
 
       <div class="form-group">
         <label for="supply-category">Categoria *</label>
-        <app-select id="supply-category" formControlName="category" [options]="categoryOptions"></app-select>
+        <app-select id="supply-category" formControlName="categoryId" [options]="categoryOptions()"></app-select>
       </div>
 
       <div class="form-group">
@@ -317,7 +319,7 @@
       <li>
         <div>
           <p class="supply-name">{{ supply.name }}</p>
-          <p class="supply-meta">Categoria: {{ supply.category }}</p>
+          <p class="supply-meta">Categoria: {{ supply.categoryId }}</p>
         </div>
         <span class="supply-qty">{{ supply.quantity }} {{ supply.unit }}</span>
       </li>
