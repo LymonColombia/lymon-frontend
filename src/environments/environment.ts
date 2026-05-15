@@ -38,4 +38,7 @@ export const environment = {
   suppliers: {
     endpoint: '/suppliers',
   },
+  storage: {
+    endpoint: '/storage/presigned-url',
+  },
 };

@@ -1,4 +1,17 @@
 /* ========================================
+   FONTS
+   ======================================== */
+
+@font-face { font-family: 'Poppins'; src: url('/fonts/Poppins-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('/fonts/Poppins-Italic.ttf') format('truetype'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('/fonts/Poppins-Medium.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('/fonts/Poppins-MediumItalic.ttf') format('truetype'); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('/fonts/Poppins-SemiBold.ttf') format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('/fonts/Poppins-SemiBoldItalic.ttf') format('truetype'); font-weight: 600; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('/fonts/Poppins-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Poppins'; src: url('/fonts/Poppins-BoldItalic.ttf') format('truetype'); font-weight: 700; font-style: italic; font-display: swap; }
+
+/* ========================================
    GLOBAL CSS DESIGN TOKENS
    ======================================== */
 
@@ -6,15 +19,15 @@
   /* ===== COLORS ===== */
   
   /* Primary Brand Colors */
-  --color-primary: #6CC24A;
-  --color-primary-dark: #009A44;
-  --color-primary-light: #8ED168;
-  --color-primary-gradient: linear-gradient(135deg, #6CC24A 0%, #009A44 100%);
-  --gradient-primary: linear-gradient(135deg, #6CC24A 0%, #009A44 100%); /* Alias */
+  --color-primary: #2ec094;
+  --color-primary-dark: #084539;
+  --color-primary-light: #a9cac3;
+  --color-primary-gradient: linear-gradient(135deg, #2ec094 0%, #4e846e 100%);
+  --gradient-primary: linear-gradient(135deg, #2ec094 0%, #4e846e 100%); /* Alias */
   
   /* Neutral Colors */
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #666666;
+  --color-text-primary: #084539;
+  --color-text-secondary: #707d7d;
   --color-text-tertiary: #999999;
   --color-text-disabled: #cccccc;
   
@@ -29,7 +42,7 @@
   --color-border-dark: #999999;
   
   /* Semantic Colors */
-  --color-success: #6CC24A;
+  --color-success: #2ec094;
   --color-error: #dc3545;
   --color-warning: #ffc107;
   --color-info: #0dcaf0;
@@ -51,8 +64,8 @@
   /* ===== TYPOGRAPHY ===== */
   
   /* Font Families */
-  --font-primary: 'Syne', sans-serif;
-  --font-secondary: 'Ubuntu', sans-serif;
+  --font-primary: 'Poppins', sans-serif;
+  --font-secondary: 'Poppins', sans-serif;
   
   /* Font Sizes */
   --font-size-xs: 12px;
@@ -90,8 +103,8 @@
   --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 8px 30px rgba(0, 0, 0, 0.12);
-  --shadow-primary-hover: 0 6px 20px rgba(108, 194, 74, 0.4);
-  --shadow-primary: 0 4px 12px rgba(108, 194, 74, 0.3);
+  --shadow-primary-hover: 0 6px 20px rgba(46, 192, 148, 0.4);
+  --shadow-primary: 0 4px 12px rgba(46, 192, 148, 0.3);
   
   /* ===== TRANSITIONS ===== */
   --transition-fast: 0.15s ease;
@@ -134,7 +147,7 @@
   --input-padding: 10px 12px;
   --input-padding-with-icon: 10px 12px 10px 38px;
   --input-border-width: 1px;
-  --input-focus-ring: 0 0 0 2px rgba(108, 194, 74, 0.1);
+  --input-focus-ring: 0 0 0 2px rgba(46, 192, 148, 0.1);
 }
 
 /* ========================================

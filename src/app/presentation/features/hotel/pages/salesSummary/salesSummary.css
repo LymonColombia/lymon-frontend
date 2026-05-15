@@ -180,7 +180,7 @@
 
 .bar {
   width: 100%;
-  background: linear-gradient(180deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+  background: var(--color-primary-gradient);
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   transition: all var(--transition-base);
   min-height: var(--spacing-xs);

@@ -19,7 +19,7 @@
         id="checkin"
         name="checkin"
         [hasIcon]="true"
-        (valueChange)="onCheckInChange($event)">
+        (valueChange)="onStartDateChange($event)">
         <ng-icon icon class="field-icon" name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
       </app-input>
       <label for="checkin" class="search-label">Fecha de Entrada</label>
@@ -31,7 +31,7 @@
         id="checkout"
         name="checkout"
         [hasIcon]="true"
-        (valueChange)="onCheckOutChange($event)">
+        (valueChange)="onEndDateChange($event)">
         <ng-icon icon class="field-icon" name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
       </app-input>
       <label for="checkout" class="search-label">Fecha de Salida</label>
@@ -43,7 +43,7 @@
         name="guests"
         [hasIcon]="true"
         [options]="guestOptions"
-        (valueChange)="onGuestsChange($event)">
+        (valueChange)="onMinGuestsChange($event)">
         <ng-icon icon class="field-icon" name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
       </app-select>
       <label for="guests" class="search-label">Huéspedes</label>

@@ -1,6 +1,6 @@
 <div class="calendar">
   <div class="cal-header">
-    <button class="cal-nav-btn" type="button" (click)="prevMonth()" aria-label="Mes anterior">
+    <button class="cal-nav-btn" type="button" (click)="prevMonth()" [disabled]="isAtCurrentMonth()" aria-label="Mes anterior">
       <ng-icon name="bootstrapChevronLeft" size="14px" aria-hidden="true"></ng-icon>
     </button>
     <span class="cal-month-label">{{ monthLabel() }}</span>
@@ -26,7 +26,8 @@
         [class.is-start]="day.isStart"
         [class.is-end]="day.isEnd"
         [class.in-range]="day.isInRange"
-        [disabled]="!day.isCurrentMonth || day.isPast"
+        [class.is-occupied]="day.isOccupied"
+        [disabled]="!day.isCurrentMonth || day.isPast || day.isOccupied"
         (click)="onDayClick(day)">
         {{ day.day }}
       </button>
@@ -45,6 +46,10 @@
     <div class="legend-item">
       <span class="legend-dot dot-today"></span>
       <span>Hoy</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot dot-occupied"></span>
+      <span>Ocupado</span>
     </div>
   </div>
 </div>

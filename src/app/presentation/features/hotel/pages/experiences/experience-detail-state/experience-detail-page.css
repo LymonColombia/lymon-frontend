@@ -14,7 +14,7 @@
   padding: 10px 16px;
   border: 1px solid var(--color-border-light);
   border-radius: var(--border-radius-md);
-  background: var(--color-background-primary, #fff);
+  background: var(--color-bg-primary);
   color: var(--color-text-primary);
   cursor: pointer;
 }

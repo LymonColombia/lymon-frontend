@@ -9,7 +9,7 @@
   gap: var(--spacing-lg);
   min-height: 250px;
   padding: var(--spacing-3xl);
-  border: var(--input-border-width) solid transparent;
+  border: var(--input-border-width) solid var(--color-primary-light);
   border-radius: var(--radius-xl);
   background:
     linear-gradient(var(--color-bg-primary), var(--color-bg-primary)) padding-box,
@@ -23,6 +23,7 @@
 .property-card:hover {
   transform: translateY(calc(var(--spacing-xs) * -1));
   box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
 }
 
 .property-card-content {
@@ -38,7 +39,7 @@
   border-radius: var(--radius-lg);
   border: var(--input-border-width) solid var(--color-border-light);
   background: var(--color-bg-tertiary);
-  color: var(--color-primary-dark);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
