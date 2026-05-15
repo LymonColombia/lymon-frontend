@@ -1,0 +1,23 @@
+<div style="padding: 2rem; max-width: 600px; margin: 0 auto; font-family: sans-serif;">
+  <h2>Storage Upload Test</h2>
+
+  <input type="file" accept="image/*,.pdf" (change)="onFileSelected($event)" [disabled]="isUploading()" />
+
+  @if (isUploading()) {
+    <p style="color: gray;">Uploading...</p>
+  }
+
+  @if (error()) {
+    <p style="color: red;">Error: {{ error() }}</p>
+  }
+
+  @if (result()) {
+    <div style="margin-top: 1rem; border: 1px solid #ccc; padding: 1rem; border-radius: 6px;">
+      <p><strong>fileUrl:</strong> <a [href]="result()!.fileUrl" target="_blank">{{ result()!.fileUrl }}</a></p>
+      <p><strong>key:</strong> {{ result()!.key }}</p>
+      <p><strong>fileName:</strong> {{ result()!.fileName }}</p>
+      <p><strong>contentType:</strong> {{ result()!.contentType }}</p>
+      <img [src]="result()!.fileUrl" alt="uploaded" style="margin-top: 1rem; max-width: 100%; border-radius: 4px;" />
+    </div>
+  }
+</div>

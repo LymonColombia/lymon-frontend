@@ -41,6 +41,7 @@ import { InventoryComponent } from '@/presentation/features/hotel/pages/inventor
 import { SessionsComponent } from '@/presentation/features/hotel/pages/sessions/sessions';
 import { ExperienceComponent } from './presentation/features/hotel/pages/experiences/experiences';
 import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
+import { StorageTestComponent } from '@/presentation/features/hotel/pages/storageTest/storageTest';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
@@ -113,6 +114,7 @@ export const routes: Routes = [
       { path: 'staff-shift', component: StaffShiftComponent },
       { path: 'inventory', component: InventoryComponent },
       { path: 'sessions', component: SessionsComponent },
+      { path: 'storage-test', component: StorageTestComponent },
     ],
   },
 
