@@ -10,19 +10,20 @@
     </div>
   </nav>
 
-  <div class="checkout-container">
-
-    @if (!info()) {
+  @if (!info()) {
+    <div class="checkout-container">
       <div class="no-info-card">
         <p class="no-info-text">No hay información de reserva. Vuelve a la búsqueda y selecciona tus fechas.</p>
         <app-button variant="primary" size="medium" (clicked)="goToBooking()">
           Ver Habitaciones
         </app-button>
       </div>
-    }
+    </div>
+  }
 
-    @if (info(); as reservation) {
-      @if (isSuccess()) {
+  @if (info(); as reservation) {
+    @if (isSuccess()) {
+      <div class="checkout-container">
         <div class="success-card">
           <div class="success-icon-wrap">
             <ng-icon name="bootstrapCheckCircleFill" size="48px" aria-hidden="true"></ng-icon>
@@ -55,11 +56,13 @@
             <ng-icon name="bootstrapArrowRight" size="13px" aria-hidden="true"></ng-icon>
           </button>
         </div>
+      </div>
 
-      } @else {
+    } @else {
+      <div class="checkout-layout">
+
+        <!-- Left: checkout card -->
         <div class="checkout-card">
-
-          <!-- Image header -->
           <div class="checkout-card-header">
             <img src="/images/suite2.avif" alt="" class="header-image" />
             <div class="header-overlay"></div>
@@ -69,10 +72,8 @@
             </div>
           </div>
 
-          <!-- Body -->
           <div class="checkout-card-body">
 
-            <!-- Reservation summary -->
             <section>
               <h2 class="section-title">Resumen de la Reserva</h2>
               <div class="summary-list">
@@ -112,19 +113,26 @@
               </div>
             </section>
 
-            <!-- Price breakdown -->
             <div class="price-section">
               <div class="price-row">
                 <span>${{ reservation.pricePerNight }} × {{ reservation.nights }} noche{{ reservation.nights !== 1 ? 's' : '' }}</span>
                 <span>${{ reservation.total }}</span>
               </div>
+              @for (exp of addedExperiences(); track exp.id) {
+                <div class="price-row experience-price-row">
+                  <div class="experience-price-name">
+                    <span>{{ exp.name }}</span>
+                    <button type="button" class="remove-exp-btn" (click)="removeExperience(exp.id)">Quitar</button>
+                  </div>
+                  <span>${{ formatExpPrice(exp.priceCop) }}</span>
+                </div>
+              }
               <div class="price-total">
                 <span class="price-total-label">Total</span>
-                <span class="price-total-value">${{ reservation.total }}</span>
+                <span class="price-total-value">${{ grandTotal() }}</span>
               </div>
             </div>
 
-            <!-- Notes -->
             <div class="notes-section">
               <label class="notes-label" for="checkout-notes">
                 Notas adicionales
@@ -140,7 +148,6 @@
               </textarea>
             </div>
 
-            <!-- Error -->
             @if (errorMessage()) {
               <div class="error-banner">
                 <ng-icon name="bootstrapExclamationTriangle" size="15px" aria-hidden="true"></ng-icon>
@@ -148,7 +155,6 @@
               </div>
             }
 
-            <!-- Actions -->
             <div class="actions">
               <app-button
                 variant="primary"
@@ -168,9 +174,114 @@
 
           </div>
         </div>
-      }
-    }
 
-  </div>
+        <!-- Right: experiences panel -->
+        <aside class="experiences-panel">
+          <div class="experiences-panel-header">
+            <h2 class="experiences-panel-title">Complementa tu estadía</h2>
+            <p class="experiences-panel-subtitle">Experiencias seleccionadas para tu reserva</p>
+          </div>
+          @if (experiencesLoading() && experiences().length === 0) {
+            <p class="experiences-loading-text">Cargando experiencias...</p>
+          } @else if (!experiencesLoading() && experiences().length === 0) {
+            <div class="experiences-empty">
+              <ng-icon name="bootstrapStars" size="28px" aria-hidden="true"></ng-icon>
+              <p class="experiences-empty-text">No hay experiencias disponibles para esta propiedad</p>
+            </div>
+          } @else {
+            <div class="experiences-list">
+              @for (exp of experiences().slice(0, 3); track exp.id) {
+                <app-experience-compact-card
+                  [experience]="exp"
+                  [isAdded]="isExperienceAdded(exp.id)"
+                  (cardClicked)="selectExperience(exp)">
+                </app-experience-compact-card>
+              }
+            </div>
+          }
+          @if (experiences().length > 0) {
+            <app-button variant="secondary" size="medium" [fullWidth]="true" (clicked)="openExplorer()">
+              Explorar más experiencias
+            </app-button>
+          }
+        </aside>
+
+      </div>
+    }
+  }
+
+  <!-- Experience detail modal -->
+  <app-modal
+    [open]="selectedExperience() !== null"
+    [title]="selectedExperience()?.name ?? ''"
+    size="medium"
+    (closed)="closeExperienceDetail()">
+    @if (selectedExperience(); as exp) {
+      <img [src]="exp.coverImageUrl" [alt]="exp.name" class="exp-modal-image" />
+      <div class="exp-modal-body">
+        <span class="exp-modal-category">{{ formatCategory(exp.category) }}</span>
+        <p class="exp-modal-description">{{ exp.description }}</p>
+        <div class="exp-modal-meta">
+          <div class="exp-modal-meta-item">
+            <ng-icon name="bootstrapClock" size="14px" aria-hidden="true"></ng-icon>
+            <span>{{ exp.durationHours }} hora{{ exp.durationHours !== 1 ? 's' : '' }}</span>
+          </div>
+          <div class="exp-modal-meta-item">
+            <ng-icon name="bootstrapPeopleFill" size="14px" aria-hidden="true"></ng-icon>
+            <span>Hasta {{ exp.capacity }} personas</span>
+          </div>
+          <div class="exp-modal-meta-item">
+            <ng-icon name="bootstrapGeoAlt" size="14px" aria-hidden="true"></ng-icon>
+            <span>{{ exp.location.label }}</span>
+          </div>
+        </div>
+        <div class="exp-modal-price-row">
+          <span class="exp-modal-price">${{ formatExpPrice(exp.priceCop) }}</span>
+          <span class="exp-modal-price-label">por persona</span>
+        </div>
+        <p class="exp-modal-removal-note">
+          <ng-icon name="bootstrapInfoCircle" size="13px" aria-hidden="true"></ng-icon>
+          Puedes quitar esta experiencia antes de confirmar la reserva
+        </p>
+      </div>
+      <div modal-footer>
+        @if (isExperienceAdded(exp.id)) {
+          <app-button variant="secondary" size="medium" (clicked)="toggleAndClose(exp)">
+            <ng-icon name="bootstrapDashCircle" size="16px" aria-hidden="true"></ng-icon>
+            Quitar experiencia
+          </app-button>
+        } @else {
+          <app-button variant="primary" size="medium" (clicked)="toggleAndClose(exp)">
+            <ng-icon name="bootstrapPlusCircle" size="16px" aria-hidden="true"></ng-icon>
+            Añadir a mi reserva
+          </app-button>
+        }
+      </div>
+    }
+  </app-modal>
+
+  <!-- Experience explorer modal -->
+  <app-modal
+    [open]="showExplorerModal()"
+    title="Explorar experiencias"
+    size="large"
+    (closed)="closeExplorer()">
+    <div class="explorer-grid">
+      @for (exp of experiences(); track exp.id) {
+        <app-experience-compact-card
+          [experience]="exp"
+          [isAdded]="isExperienceAdded(exp.id)"
+          (cardClicked)="selectExperienceFromExplorer(exp)">
+        </app-experience-compact-card>
+      }
+    </div>
+    @if (hasMoreExperiences()) {
+      <div class="explorer-load-more">
+        <app-button variant="secondary" size="medium" [loading]="experiencesLoading()" (clicked)="loadMoreExperiences()">
+          Cargar más experiencias
+        </app-button>
+      </div>
+    }
+  </app-modal>
 
 </div>
