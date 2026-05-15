@@ -1,5 +1,17 @@
 <app-hotel-page-layout title="Gestion de Inventario" subtitle="Administra insumos y proveedores del hotel"
   iconName="bootstrapBoxSeam">
+
+  @if (notification()) {
+  <div class="notification-toast" [class]="'notification-toast--' + notification()!.type">
+    <div class="notification-content">
+      <ng-icon [name]="notification()!.type === 'error' ? 'bootstrapExclamationTriangle' : 'bootstrapCheckCircle'"
+        size="18">
+      </ng-icon>
+      <span>{{ notification()!.message }}</span>
+    </div>
+    <div class="notification-timeline"></div>
+  </div>
+  }
   <section class="inventory-view" aria-label="Gestion de inventario">
     <div class="inventory-tabs" role="tablist" aria-label="Secciones de inventario">
       <button type="button" class="tab-btn" role="tab" [class.tab-btn--active]="activeTab() === 'supplies'"
@@ -24,10 +36,21 @@
       </div>
 
       @if (activeTab() === 'supplies') {
-      <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()">
-        <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
-        Agregar Insumo
-      </app-button>
+      <div class="toolbar-actions">
+        <div class="split-button">
+          <app-button type="button" variant="primary" (clicked)="openCreateCategoryModal()" class="split-button-main">
+            <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+            Nueva Categoria
+          </app-button>
+          <button type="button" class="split-button-side" aria-label="Más opciones">
+            <ng-icon name="bootstrapJustify" size="18px" aria-hidden="true"></ng-icon>
+          </button>
+        </div>
+        <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()">
+          <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+          Agregar Insumo
+        </app-button>
+      </div>
       } @else {
       <app-button type="button" variant="primary" (clicked)="openCreateProviderModal()">
         <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
@@ -310,6 +333,31 @@
     </app-button>
     <app-button type="button" variant="danger" (clicked)="confirmDeleteProvider()">
       Eliminar Proveedor
+    </app-button>
+  </div>
+</app-modal>
+
+<app-modal [open]="isCategoryModalOpen()" title="Nueva Categoria" size="small" (closed)="closeCategoryModal()">
+  <form id="inventory-category-form" class="category-form" [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+    <div class="form-grid">
+      <div class="form-group form-group--full">
+        <label for="category-name">Nombre *</label>
+        <app-input id="category-name" formControlName="name" placeholder="Ej. Amenities"></app-input>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="category-description">Descripcion *</label>
+        <app-input id="category-description" formControlName="description"
+          placeholder="Breve descripcion de la categoria"></app-input>
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeCategoryModal()">Cancelar</app-button>
+    <app-button type="button" variant="primary" (clicked)="saveCategory()" [loading]="isSavingCategory()"
+      [disabled]="isSavingCategory()">
+      Guardar Categoria
     </app-button>
   </div>
 </app-modal>

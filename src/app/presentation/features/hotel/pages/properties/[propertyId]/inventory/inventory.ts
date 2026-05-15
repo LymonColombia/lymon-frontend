@@ -15,6 +15,8 @@ import {
   bootstrapX,
   bootstrapXCircleFill,
   bootstrapExclamationTriangle,
+  bootstrapCheckCircle,
+  bootstrapJustify,
 } from '@ng-icons/bootstrap-icons';
 
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
@@ -25,7 +27,8 @@ import { SelectComponent, SelectOption } from '@/presentation/shared/components/
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
 import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
-import { CreateInventoryItemDto, InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
+import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/create-inventory-category.use-case';
+import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto } from '@/infrastructure/dtos/inventory.dto';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -76,6 +79,8 @@ interface ProviderRow {
       bootstrapX,
       bootstrapXCircleFill,
       bootstrapExclamationTriangle,
+      bootstrapCheckCircle,
+      bootstrapJustify,
     }),
   ],
   templateUrl: './inventory.html',
@@ -85,7 +90,8 @@ interface ProviderRow {
 export class InventoryComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly supplierRepository = inject(SupplierRepository);
-  private readonly createInventoryItemUseCase: CreateInventoryItemUseCase = inject(CreateInventoryItemUseCase);
+  private readonly createInventoryItemUseCase = inject(CreateInventoryItemUseCase);
+  private readonly createInventoryCategoryUseCase = inject(CreateInventoryCategoryUseCase);
   private readonly route = inject(ActivatedRoute);
 
   readonly propertyId = signal<string | null>(null);
@@ -94,6 +100,7 @@ export class InventoryComponent implements OnInit {
   readonly searchTerm = signal('');
   readonly isSupplyModalOpen = signal(false);
   readonly isProviderModalOpen = signal(false);
+  readonly isCategoryModalOpen = signal(false);
   readonly editingSupplyId = signal<string | null>(null);
   readonly editingProviderId = signal<string | null>(null);
   readonly selectedProviderId = signal<string | null>(null);
@@ -101,6 +108,9 @@ export class InventoryComponent implements OnInit {
   readonly providerToDelete = signal<ProviderRow | null>(null);
   readonly isSavingProvider = signal(false);
   readonly isSavingSupply = signal(false);
+  readonly isSavingCategory = signal(false);
+  readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
+  private notificationTimeout: any;
 
   readonly categoryOptions: SelectOption[] = [
     { value: 'TEXTILES', label: 'Textiles' },
@@ -181,6 +191,11 @@ export class InventoryComponent implements OnInit {
     country: ['Colombia', [Validators.required]],
     contactEmail: ['', [Validators.required, Validators.email]],
     contactPhone: ['', [Validators.required, Validators.minLength(10)]],
+  });
+
+  readonly categoryForm = this.fb.nonNullable.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    description: ['', [Validators.required, Validators.minLength(5)]],
   });
 
   readonly providerOptions = computed<SelectOption[]>(() => {
@@ -314,6 +329,55 @@ export class InventoryComponent implements OnInit {
 
   closeSupplyModal(): void {
     this.isSupplyModalOpen.set(false);
+  }
+
+  openCreateCategoryModal(): void {
+    this.categoryForm.reset();
+    this.isCategoryModalOpen.set(true);
+  }
+
+  closeCategoryModal(): void {
+    this.isCategoryModalOpen.set(false);
+  }
+
+  saveCategory(): void {
+    if (this.categoryForm.invalid) {
+      this.categoryForm.markAllAsTouched();
+      return;
+    }
+
+    const value = this.categoryForm.getRawValue();
+    const payload: CreateInventoryCategoryDto = {
+      name: value.name.trim(),
+      description: value.description.trim(),
+    };
+
+    this.isSavingCategory.set(true);
+    this.createInventoryCategoryUseCase.execute(payload).subscribe({
+      next: () => {
+        this.isSavingCategory.set(false);
+        this.isCategoryModalOpen.set(false);
+        this.categoryForm.reset();
+        this.showNotification('¡Categoría creada con éxito!', 'success');
+      },
+      error: (err) => {
+        console.error('Error creating category', err);
+        this.isSavingCategory.set(false);
+        this.showNotification('Error al crear la categoría. Por favor, intenta de nuevo.', 'error');
+      },
+    });
+  }
+
+  showNotification(message: string, type: 'success' | 'error' = 'success'): void {
+    if (this.notificationTimeout) {
+      clearTimeout(this.notificationTimeout);
+    }
+
+    this.notification.set({ message, type });
+
+    this.notificationTimeout = setTimeout(() => {
+      this.notification.set(null);
+    }, 5000);
   }
 
   saveSupply(): void {

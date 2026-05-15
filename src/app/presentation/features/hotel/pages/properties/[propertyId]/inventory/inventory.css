@@ -275,6 +275,146 @@
   display: block;
 }
 
+.toolbar-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* ── Split Button ────────────────────────────────────────────────── */
+.split-button {
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.split-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-primary);
+}
+
+.split-button-main {
+  /* No special styles needed here if it's already an app-button, 
+     but we need to override its border-radius */
+}
+
+.split-button-main ::ng-deep .btn-inner {
+  border-radius: var(--radius-md) 0 0 var(--radius-md) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.split-button-side {
+  background: var(--color-primary-gradient);
+  color: white;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-base);
+  min-height: var(--btn-height-md);
+}
+
+.split-button-side:hover {
+  filter: brightness(1.1);
+}
+
+.split-button-side:active {
+  filter: brightness(0.9);
+}
+
+/* ── Notification Toast ─────────────────────────────────────────── */
+.notification-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  min-width: 320px;
+  max-width: 90vw;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: toast-enter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.notification-content {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.notification-toast--error {
+  border: 1px solid #fee2e2;
+  background: #fffafa;
+  color: #991b1b;
+}
+
+.notification-toast--error ng-icon {
+  color: #dc2626;
+  flex-shrink: 0;
+}
+
+.notification-toast--success {
+  border: 1px solid #dcfce7;
+  background: #f0fff4;
+  color: #166534;
+}
+
+.notification-toast--success ng-icon {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.notification-timeline {
+  height: 4px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.notification-timeline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: currentColor;
+  animation: timeline-shrink 5s linear forwards;
+  opacity: 0.6;
+}
+
+@keyframes timeline-shrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.category-form {
+  display: block;
+}
+
 .provider-form {
   display: block;
 }

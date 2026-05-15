@@ -19,3 +19,16 @@ export interface InventoryItemResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CreateInventoryCategoryDto {
+  name: string;
+  description: string;
+}
+
+export interface InventoryCategoryResponse {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
