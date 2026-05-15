@@ -24,11 +24,14 @@ import { ModalComponent } from '@/presentation/shared/components/modal/modal.com
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
+import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
+import { CreateInventoryItemDto, InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
 interface SupplyRow {
   id: string;
+  sku: string;
   name: string;
   category: string;
   quantity: number;
@@ -82,6 +85,7 @@ interface ProviderRow {
 export class InventoryComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly supplierRepository = inject(SupplierRepository);
+  private readonly createInventoryItemUseCase: CreateInventoryItemUseCase = inject(CreateInventoryItemUseCase);
   private readonly route = inject(ActivatedRoute);
 
   readonly propertyId = signal<string | null>(null);
@@ -96,19 +100,20 @@ export class InventoryComponent implements OnInit {
   readonly isDeleteProviderModalOpen = signal(false);
   readonly providerToDelete = signal<ProviderRow | null>(null);
   readonly isSavingProvider = signal(false);
+  readonly isSavingSupply = signal(false);
 
   readonly categoryOptions: SelectOption[] = [
-    { value: 'Textiles', label: 'Textiles' },
-    { value: 'Higiene', label: 'Higiene' },
-    { value: 'Limpieza', label: 'Limpieza' },
-    { value: 'Alimentos', label: 'Alimentos' },
+    { value: 'TEXTILES', label: 'Textiles' },
+    { value: 'TOILETRIES', label: 'Higiene / Tocador' },
+    { value: 'CLEANING', label: 'Limpieza' },
+    { value: 'FOOD', label: 'Alimentos' },
   ];
 
   readonly unitOptions: SelectOption[] = [
-    { value: 'unidades', label: 'unidades' },
-    { value: 'litros', label: 'litros' },
-    { value: 'kg', label: 'kg' },
-    { value: 'cajas', label: 'cajas' },
+    { value: 'piece', label: 'Unidades' },
+    { value: 'liter', label: 'Litros' },
+    { value: 'kilogram', label: 'Kilogramos' },
+    { value: 'box', label: 'Cajas' },
   ];
 
   readonly countryOptions: SelectOption[] = [
@@ -130,6 +135,7 @@ export class InventoryComponent implements OnInit {
   readonly supplies = signal<SupplyRow[]>([
     {
       id: 'ins-1',
+      sku: 'TOA-001',
       name: 'Toallas blancas',
       category: 'Textiles',
       quantity: 250,
@@ -139,6 +145,7 @@ export class InventoryComponent implements OnInit {
     },
     {
       id: 'ins-2',
+      sku: 'JAB-002',
       name: 'Jabon liquido',
       category: 'Higiene',
       quantity: 80,
@@ -148,6 +155,7 @@ export class InventoryComponent implements OnInit {
     },
     {
       id: 'ins-3',
+      sku: 'SAB-003',
       name: 'Sabanas king size',
       category: 'Textiles',
       quantity: 120,
@@ -159,10 +167,10 @@ export class InventoryComponent implements OnInit {
 
   readonly supplyForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
-    category: ['Textiles', [Validators.required]],
+    category: ['TEXTILES', [Validators.required]],
     quantity: [0, [Validators.required, Validators.min(1)]],
-    unit: ['unidades', [Validators.required]],
-    provider: ['Textiles Premium', [Validators.required]],
+    unit: ['piece', [Validators.required]],
+    provider: ['Sin proveedor', [Validators.required]],
     minimumStock: [10, [Validators.required, Validators.min(1)]],
   });
 
@@ -175,9 +183,10 @@ export class InventoryComponent implements OnInit {
     contactPhone: ['', [Validators.required, Validators.minLength(10)]],
   });
 
-  readonly providerOptions = computed<SelectOption[]>(() =>
-    this.providers().map((provider) => ({ value: provider.name, label: provider.name })),
-  );
+  readonly providerOptions = computed<SelectOption[]>(() => {
+    const options = this.providers().map((provider) => ({ value: provider.name, label: provider.name }));
+    return [{ value: 'Sin proveedor', label: 'Sin proveedor' }, ...options];
+  });
 
   readonly filteredSupplies = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
@@ -281,10 +290,10 @@ export class InventoryComponent implements OnInit {
     this.editingSupplyId.set(null);
     this.supplyForm.reset({
       name: '',
-      category: 'Textiles',
+      category: 'TEXTILES',
       quantity: 0,
-      unit: 'unidades',
-      provider: this.providers()[0]?.name ?? '',
+      unit: 'piece',
+      provider: 'Sin proveedor',
       minimumStock: 10,
     });
     this.isSupplyModalOpen.set(true);
@@ -317,18 +326,48 @@ export class InventoryComponent implements OnInit {
     const editingId = this.editingSupplyId();
 
     if (!editingId) {
-      const nextItem: SupplyRow = {
-        id: `ins-${Date.now()}`,
+      const propertyId = this.propertyId();
+      if (!propertyId) return;
+
+      const prefix = value.name.substring(0, 3).toUpperCase();
+      const nextNum = this.supplies().length + 1;
+      const generatedSku = `${prefix}-${String(nextNum).padStart(3, '0')}`;
+
+      const payload: CreateInventoryItemDto = {
+        sku: generatedSku,
         name: value.name.trim(),
         category: value.category,
-        quantity: value.quantity,
         unit: value.unit,
-        provider: value.provider,
-        minimumStock: value.minimumStock,
+        minStock: value.minimumStock,
+        initialStock: value.quantity,
       };
 
-      this.supplies.update((list) => [nextItem, ...list]);
-      this.closeSupplyModal();
+      this.isSavingSupply.set(true);
+
+      const useCase = this.createInventoryItemUseCase;
+      const id = String(propertyId);
+
+      useCase.execute(id, payload).subscribe({
+        next: (response: InventoryItemResponse) => {
+          const nextItem: SupplyRow = {
+            id: response.id,
+            sku: response.sku,
+            name: response.name,
+            category: value.category,
+            quantity: response.currentStock,
+            unit: value.unit,
+            provider: value.provider,
+            minimumStock: response.minStock,
+          };
+          this.supplies.update((list) => [nextItem, ...list]);
+          this.isSavingSupply.set(false);
+          this.closeSupplyModal();
+        },
+        error: (err: unknown) => {
+          console.error('Error creating supply', err);
+          this.isSavingSupply.set(false);
+        }
+      });
       return;
     }
 

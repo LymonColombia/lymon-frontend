@@ -178,6 +178,11 @@
   border-bottom: none;
 }
 
+.provider-emergency {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-semibold);
+}
+
 .category-pill,
 .stock-pill {
   display: inline-flex;

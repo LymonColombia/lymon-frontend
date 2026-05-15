@@ -45,6 +45,7 @@
         <table class="inventory-table" aria-label="Listado de insumos">
           <thead>
             <tr>
+              <th>SKU</th>
               <th>Nombre</th>
               <th>Categoria</th>
               <th>Cantidad</th>
@@ -57,6 +58,7 @@
           <tbody>
             @for (item of filteredSupplies(); track item.id) {
             <tr>
+              <td>{{ item.sku }}</td>
               <td>{{ item.name }}</td>
               <td>
                 <span class="category-pill" [class]="'category-pill category-pill--' + getCategoryClass(item.category)">
@@ -64,7 +66,9 @@
                 </span>
               </td>
               <td>{{ item.quantity }} {{ item.unit }}</td>
-              <td>{{ item.provider }}</td>
+              <td>
+                <span [class.provider-emergency]="item.provider === 'Sin proveedor'">{{ item.provider }}</span>
+              </td>
               <td>{{ item.minimumStock }} {{ item.unit }}</td>
               <td>
                 <span class="stock-pill" [class.stock-pill--normal]="getStockState(item) === 'NORMAL'"

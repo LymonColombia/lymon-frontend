@@ -29,6 +29,8 @@ import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { SupplierRepositoryImpl } from '@/infrastructure/repositories/supplier.repository.impl';
 import { ShiftRepository } from '@/domain/repositories/shift.repository';
 import { ShiftRepositoryImpl } from '@/infrastructure/repositories/shift.repository.impl';
+import { InventoryRepository } from '@/domain/repositories/inventory.repository';
+import { InventoryRepositoryImpl } from '@/infrastructure/repositories/inventory.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -49,5 +51,6 @@ export const appConfig: ApplicationConfig = {
     { provide: GuestReservationRepository, useClass: GuestReservationRepositoryImpl },
     { provide: SupplierRepository, useClass: SupplierRepositoryImpl },
     { provide: ShiftRepository, useClass: ShiftRepositoryImpl },
+    { provide: InventoryRepository, useClass: InventoryRepositoryImpl },
   ],
 };
