@@ -1,10 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -22,15 +24,17 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { GuestNavComponent } from '@/presentation/features/hotel/components/guest-nav/guest-nav';
 import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/reservation/get-guest-reservation-by-id.use-case';
+import { CancelReservationUseCase } from '@/domain/use-cases/reservation/cancel-reservation.use-case';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
 @Component({
   selector: 'app-guest-reservation-details',
   standalone: true,
-  imports: [GuestNavComponent, FooterComponent, ButtonComponent, NgIcon],
+  imports: [GuestNavComponent, FooterComponent, ButtonComponent, ModalComponent, NgIcon],
   providers: [
     provideIcons({
       bootstrapBuilding,
@@ -54,7 +58,9 @@ export class GuestReservationDetailsComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly getReservationByIdUseCase = inject(GetGuestReservationByIdUseCase);
+  private readonly cancelReservationUseCase = inject(CancelReservationUseCase);
   private readonly guestTokenService = inject(GuestTokenService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly reservation = signal<GuestReservationResponse | null>(null);
   readonly isLoading = signal(true);
@@ -103,6 +109,15 @@ export class GuestReservationDetailsComponent {
 
   readonly hasPendingStatus = computed(() => this.status() === 'pending');
 
+  readonly isCancellable = computed(() => {
+    const s = this.status();
+    return s === 'pending' || s === 'confirmed';
+  });
+
+  readonly showCancelModal = signal(false);
+  readonly isCancelling = signal(false);
+  readonly cancelError = signal<string | null>(null);
+
   constructor() {
     const reservationId = this.route.snapshot.paramMap.get('id');
 
@@ -113,6 +128,37 @@ export class GuestReservationDetailsComponent {
     }
 
     this.loadReservation(reservationId);
+  }
+
+  onCancelRequest(): void {
+    this.cancelError.set(null);
+    this.showCancelModal.set(true);
+  }
+
+  onCancelConfirm(): void {
+    const id = this.reservation()?.id;
+    if (!id) return;
+    this.isCancelling.set(true);
+    this.cancelReservationUseCase.execute(id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: () => {
+        this.isCancelling.set(false);
+        this.showCancelModal.set(false);
+        this.cancelError.set(null);
+        this.loadReservation(id);
+      },
+      error: () => {
+        this.isCancelling.set(false);
+        this.cancelError.set('No se pudo cancelar la reserva. Intenta de nuevo.');
+      },
+    });
+  }
+
+  onCancelModalClose(): void {
+    if (this.isCancelling()) return;
+    this.showCancelModal.set(false);
+    this.cancelError.set(null);
   }
 
   retryLoad(): void {
@@ -228,7 +274,7 @@ export class GuestReservationDetailsComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.getReservationByIdUseCase.execute(reservationId).subscribe({
+    this.getReservationByIdUseCase.execute(reservationId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (reservation) => {
         this.reservation.set(reservation);
         this.isLoading.set(false);

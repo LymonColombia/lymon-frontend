@@ -139,6 +139,12 @@
       </div>
 
       <div class="detail-actions fade-section fade-delay-4">
+        @if (isCancellable()) {
+          <app-button variant="danger" size="medium" (clicked)="onCancelRequest()">
+            <ng-icon name="bootstrapXCircle" size="14px" aria-hidden="true" class="action-icon" />
+            Cancelar reserva
+          </app-button>
+        }
         @if (hasPendingStatus()) {
           <app-button variant="primary" size="medium" (clicked)="goToCheckin()">
             <ng-icon name="bootstrapCheckCircle" size="14px" aria-hidden="true" class="action-icon" />
@@ -148,6 +154,26 @@
       </div>
     </div>
   }
+
+  <app-modal
+    [open]="showCancelModal()"
+    title="Cancelar reserva"
+    size="small"
+    (closed)="onCancelModalClose()"
+  >
+    <p>¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer.</p>
+    @if (cancelError()) {
+      <p class="modal-error">{{ cancelError() }}</p>
+    }
+    <div class="modal-actions">
+      <app-button variant="secondary" size="medium" [disabled]="isCancelling()" (clicked)="onCancelModalClose()">
+        Volver
+      </app-button>
+      <app-button variant="danger" size="medium" [disabled]="isCancelling()" (clicked)="onCancelConfirm()">
+        {{ isCancelling() ? 'Cancelando...' : 'Confirmar cancelación' }}
+      </app-button>
+    </div>
+  </app-modal>
 
   <app-footer />
 </div>
