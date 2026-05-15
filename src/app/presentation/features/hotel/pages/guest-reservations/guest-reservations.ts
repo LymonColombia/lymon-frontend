@@ -7,9 +7,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { EMPTY, Subject } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
-import { EMPTY } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowDown,
