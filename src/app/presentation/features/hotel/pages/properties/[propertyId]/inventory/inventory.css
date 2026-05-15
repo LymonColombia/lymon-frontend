@@ -803,3 +803,76 @@
   color: white;
   background: var(--color-primary-dark);
 }
+
+.category-pill--danger {
+  background-color: var(--color-danger-light, #fee2e2);
+  color: var(--color-danger, #dc2626);
+  border: 1px solid var(--color-danger-border, #fecaca);
+}
+
+.provider-assign-btn {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+  font-size: inherit;
+  padding: 4px 12px;
+  display: inline-block;
+}
+
+.provider-assign-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.provider-link-btn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  transition: color var(--transition-fast);
+}
+
+.provider-link-btn:hover {
+  color: var(--color-primary-dark);
+}
+
+.assign-supplier-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.select-wrapper {
+  position: relative;
+  z-index: 999;
+}
+
+/* Forzar que el select de Shared Components sea visible */
+.select-wrapper ::ng-deep .select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000 !important;
+  background: var(--color-bg-primary);
+  box-shadow: var(--shadow-lg);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.modal-footer-custom {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: var(--spacing-lg);
+}
+
+
+/* Asegurar que el modal no corte el dropdown */
+::ng-deep .modal-content {
+  overflow: visible !important;
+}

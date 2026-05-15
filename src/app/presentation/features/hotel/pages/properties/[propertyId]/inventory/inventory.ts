@@ -31,6 +31,7 @@ import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/cre
 import { GetInventoryCategoriesUseCase } from '@/domain/use-cases/inventory/get-inventory-categories.use-case';
 import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse, InventoryItemListResponse } from '@/infrastructure/dtos/inventory.dto';
 import { GetInventoryItemsUseCase } from '@/domain/use-cases/inventory/get-inventory-items.use-case';
+import { AssociateInventorySupplierUseCase } from '@/domain/use-cases/inventory/associate-inventory-supplier.use-case';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -98,6 +99,7 @@ export class InventoryComponent implements OnInit {
   private readonly createInventoryCategoryUseCase = inject(CreateInventoryCategoryUseCase);
   private readonly getInventoryCategoriesUseCase = inject(GetInventoryCategoriesUseCase);
   private readonly getInventoryItemsUseCase = inject(GetInventoryItemsUseCase);
+  private readonly associateInventorySupplierUseCase = inject(AssociateInventorySupplierUseCase);
   private readonly route = inject(ActivatedRoute);
 
   readonly propertyId = signal<string | null>(null);
@@ -120,6 +122,9 @@ export class InventoryComponent implements OnInit {
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
   private notificationTimeout: any;
 
+  readonly isAssignSupplierModalOpen = signal(false);
+  readonly selectedItemForSupplier = signal<SupplyRow | null>(null);
+  readonly isSavingSupplierAssignment = signal(false);
 
   readonly currentPage = signal(1);
   readonly pageSize = 10;
@@ -187,6 +192,18 @@ export class InventoryComponent implements OnInit {
   readonly categoryForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     description: ['', [Validators.required, Validators.minLength(5)]],
+  });
+
+  readonly supplierSelectionOptions = computed<SelectOption[]>(() => {
+    const options = this.providers().map((provider) => ({
+      value: provider.id,
+      label: provider.name
+    }));
+    return [{ value: null as any, label: 'Sin proveedor' }, ...options];
+  });
+
+  readonly supplierAssignmentForm = this.fb.group({
+    supplierId: [null as string | null],
   });
 
   readonly providerOptions = computed<SelectOption[]>(() => {
@@ -338,6 +355,10 @@ export class InventoryComponent implements OnInit {
 
   private mapToSupplyRow(item: InventoryItemResponse): SupplyRow {
     const category = this.categories().find(c => c.id === item.categoryId);
+    
+
+    const provider = this.providers().find(p => p.id === (item as any).supplierId);
+
     return {
       id: item.id,
       sku: item.sku || 'PENDIENTE',
@@ -346,7 +367,7 @@ export class InventoryComponent implements OnInit {
       categoryName: category ? this.toSentenceCase(category.name) : 'General',
       quantity: item.currentStock,
       unit: item.unit,
-      provider: 'Proveedor no asignado',
+      provider: provider ? provider.name : 'Proveedor no asignado',
       minimumStock: item.minStock,
       lowStock: item.lowStock
     };
@@ -428,6 +449,19 @@ export class InventoryComponent implements OnInit {
     this.isSupplyModalOpen.set(true);
   }
 
+  openAssignSupplierModal(item: SupplyRow): void {
+    this.selectedItemForSupplier.set(item);
+    this.supplierAssignmentForm.reset({
+      supplierId: ''
+    });
+    this.isAssignSupplierModalOpen.set(true);
+  }
+
+  closeAssignSupplierModal(): void {
+    this.isAssignSupplierModalOpen.set(false);
+    this.selectedItemForSupplier.set(null);
+  }
+
   closeSupplyModal(): void {
     this.isSupplyModalOpen.set(false);
   }
@@ -480,6 +514,34 @@ export class InventoryComponent implements OnInit {
     this.notificationTimeout = setTimeout(() => {
       this.notification.set(null);
     }, 5000);
+  }
+
+  assignSupplier(): void {
+    if (this.supplierAssignmentForm.invalid) {
+      this.supplierAssignmentForm.markAllAsTouched();
+      return;
+    }
+
+    const item = this.selectedItemForSupplier();
+    const propertyId = this.propertyId();
+    if (!item || !propertyId) return;
+
+    const { supplierId } = this.supplierAssignmentForm.getRawValue();
+
+    this.isSavingSupplierAssignment.set(true);
+    this.associateInventorySupplierUseCase.execute(propertyId, item.id, supplierId).subscribe({
+      next: () => {
+        this.isSavingSupplierAssignment.set(false);
+        this.showNotification('¡Proveedor asignado con éxito!', 'success');
+        this.closeAssignSupplierModal();
+        this.loadSupplies(propertyId);
+      },
+      error: (err) => {
+        console.error('Error assigning supplier', err);
+        this.isSavingSupplierAssignment.set(false);
+        this.showNotification('Error al asignar el proveedor. Por favor, intenta de nuevo.', 'error');
+      }
+    });
   }
 
   saveSupply(): void {

@@ -109,7 +109,16 @@
               </td>
               <td>{{ getFormattedUnit(item.unit, item.quantity) }}</td>
               <td>
-                <span [class.provider-emergency]="item.provider === 'Sin proveedor'">{{ item.provider }}</span>
+                @if (item.provider === 'Proveedor no asignado') {
+                  <button type="button" class="category-pill category-pill--danger provider-assign-btn" 
+                    (click)="openAssignSupplierModal(item)">
+                    Sin proveedor
+                  </button>
+                } @else {
+                  <button type="button" class="provider-link-btn" (click)="openAssignSupplierModal(item)">
+                    {{ item.provider }}
+                  </button>
+                }
               </td>
               <td>{{ getFormattedUnit(item.unit, item.minimumStock) }}</td>
               <td>
@@ -209,6 +218,24 @@
     </div>
   </section>
 </app-hotel-page-layout>
+
+<app-modal [open]="isAssignSupplierModalOpen()" title="Asignar Proveedor" size="small" (closed)="closeAssignSupplierModal()">
+  <form [formGroup]="supplierAssignmentForm" (ngSubmit)="assignSupplier()" class="supply-form assign-supplier-form">
+    <div class="form-group mb-6">
+      <p class="mb-4 text-sm text-gray-500">Selecciona el proveedor para el item: <strong>{{ selectedItemForSupplier()?.name }}</strong></p>
+      <label for="assign-supplier" class="mb-2 block font-medium">Seleccionar Proveedor *</label>
+      <div class="select-wrapper">
+        <app-select id="assign-supplier" formControlName="supplierId" [options]="supplierSelectionOptions()"></app-select>
+      </div>
+    </div>
+    <div class="modal-footer-custom">
+      <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Cancelar</app-button>
+      <app-button type="submit" variant="primary" [loading]="isSavingSupplierAssignment()">
+        Asignar
+      </app-button>
+    </div>
+  </form>
+</app-modal>
 
 <app-modal [open]="isSupplyModalOpen()" [title]="modalTitle()" size="medium" (closed)="closeSupplyModal()">
   <form id="inventory-supply-form" class="supply-form" [formGroup]="supplyForm" (ngSubmit)="saveSupply()">

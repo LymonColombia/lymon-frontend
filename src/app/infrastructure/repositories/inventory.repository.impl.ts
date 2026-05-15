@@ -38,4 +38,8 @@ export class InventoryRepositoryImpl extends InventoryRepository {
       map(res => res.data)
     );
   }
+
+  associateSupplier(propertyId: string, itemId: string, supplierId: string | null): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/properties/${propertyId}/inventory/items/${itemId}/supplier`, { supplierId });
+  }
 }
