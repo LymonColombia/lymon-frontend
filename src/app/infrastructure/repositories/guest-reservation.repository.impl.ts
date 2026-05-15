@@ -7,6 +7,8 @@ import { GuestReservationRequest, GuestReservationResponse, GuestReservationsPag
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
 const BASE_URL = `${environment.apiUrl}/guest/reservations`;
+// Cancel lives under /reservations (not /guest/reservations) — different API prefix per backend spec
+const CANCEL_BASE_URL = `${environment.apiUrl}/reservations`;
 
 @Injectable({ providedIn: 'root' })
 export class GuestReservationRepositoryImpl implements GuestReservationRepository {
@@ -26,6 +28,14 @@ export class GuestReservationRepositoryImpl implements GuestReservationRepositor
     return this.http
       .get<GuestReservationResponse>(`${BASE_URL}/${id}`, { headers: this.authHeaders() })
       .pipe(map((res) => ({ ...res, status: res.status?.toLowerCase() ?? res.status })));
+  }
+
+  cancel(id: string): Observable<void> {
+    return this.http.post<void>(
+      `${CANCEL_BASE_URL}/${id}/cancel`,
+      {},
+      { headers: this.authHeaders() },
+    );
   }
 
   getAll(params: { page?: number; limit?: number }): Observable<GuestReservationsPage> {

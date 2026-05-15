@@ -5,4 +5,5 @@ export abstract class GuestReservationRepository {
   abstract create(request: GuestReservationRequest): Observable<GuestReservationResponse>;
   abstract getAll(params: { page?: number; limit?: number }): Observable<GuestReservationsPage>;
   abstract getById(id: string): Observable<GuestReservationResponse>;
+  abstract cancel(id: string): Observable<void>;
 }
