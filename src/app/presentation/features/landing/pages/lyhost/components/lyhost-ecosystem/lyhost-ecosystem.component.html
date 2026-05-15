@@ -47,9 +47,9 @@
           </linearGradient>
         </defs>
 
-        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius + 44" stroke="var(--color-primary)" stroke-opacity="0.05" stroke-width="1"></circle>
-        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius" stroke="var(--color-primary)" stroke-opacity="0.14" stroke-width="1" stroke-dasharray="6 5"></circle>
-        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius - 52" stroke="var(--color-border-light)" stroke-opacity="0.35" stroke-width="1"></circle>
+        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius + 44" stroke="var(--color-primary-light)" stroke-opacity="0.1" stroke-width="1"></circle>
+        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius" stroke="var(--color-primary-light)" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="6 5"></circle>
+        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius - 52" stroke="var(--color-primary-light)" stroke-opacity="0.3" stroke-width="1"></circle>
 
         @for (node of nodes; track node.label) {
           <line

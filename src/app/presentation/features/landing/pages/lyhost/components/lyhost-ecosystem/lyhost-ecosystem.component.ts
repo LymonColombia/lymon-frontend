@@ -7,6 +7,8 @@ import {
   inject,
 } from '@angular/core';
 
+const COLOR_PRIMARY = '#2ec094';
+
 const ORBIT_MS = 22000;
 const TRIP_MS = 1800;
 const GAP_MS = 1400;
@@ -52,7 +54,7 @@ function computeParticles(nx: number, ny: number, elapsed: number, cycleOffset: 
     const phaseAlpha = t > TRIP_MS * 0.82 ? (TRIP_MS - t) / (TRIP_MS * 0.18) : 1;
 
     const p1 = t / TRIP_MS;
-    result.push({ x: lerp(CX, nx, p1), y: lerp(CY, ny, p1), opacity: alpha(p1), color: '#009A44' });
+    result.push({ x: lerp(CX, nx, p1), y: lerp(CY, ny, p1), opacity: alpha(p1), color: COLOR_PRIMARY });
 
     if (t > TRIP_MS * 0.38) {
       const p2 = (t - TRIP_MS * 0.38) / TRIP_MS;
@@ -60,7 +62,7 @@ function computeParticles(nx: number, ny: number, elapsed: number, cycleOffset: 
         x: lerp(CX, nx, p2),
         y: lerp(CY, ny, p2),
         opacity: alpha(p2) * phaseAlpha,
-        color: '#009A44',
+        color: COLOR_PRIMARY,
       });
     }
   }
@@ -71,7 +73,7 @@ function computeParticles(nx: number, ny: number, elapsed: number, cycleOffset: 
     const phaseAlpha = tIn > TRIP_MS * 0.82 ? (TRIP_MS - tIn) / (TRIP_MS * 0.18) : 1;
 
     const p1 = tIn / TRIP_MS;
-    result.push({ x: lerp(nx, CX, p1), y: lerp(ny, CY, p1), opacity: alpha(p1), color: '#6CC24A' });
+    result.push({ x: lerp(nx, CX, p1), y: lerp(ny, CY, p1), opacity: alpha(p1), color: COLOR_PRIMARY });
 
     if (tIn > TRIP_MS * 0.38) {
       const p2 = (tIn - TRIP_MS * 0.38) / TRIP_MS;
@@ -79,7 +81,7 @@ function computeParticles(nx: number, ny: number, elapsed: number, cycleOffset: 
         x: lerp(nx, CX, p2),
         y: lerp(ny, CY, p2),
         opacity: alpha(p2) * phaseAlpha,
-        color: '#6CC24A',
+        color: COLOR_PRIMARY,
       });
     }
   }
