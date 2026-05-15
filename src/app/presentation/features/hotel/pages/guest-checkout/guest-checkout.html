@@ -27,7 +27,7 @@
           <div class="success-icon-wrap">
             <ng-icon name="bootstrapCheckCircleFill" size="48px" aria-hidden="true"></ng-icon>
           </div>
-          <h1 class="success-title">¡Reserva Confirmada!</h1>
+          <h1 class="success-title">¡Reserva creada!</h1>
           <p class="success-subtitle">
             Tu reserva en <strong>{{ reservation.unitName }}</strong> ha sido creada exitosamente.
           </p>
@@ -41,9 +41,19 @@
               <span>{{ reservation.guestsCount }} huésped{{ reservation.guestsCount !== 1 ? 'es' : '' }}</span>
             </div>
           </div>
-          <app-button variant="primary" size="medium" (clicked)="goToBooking()">
-            Ver Más Habitaciones
-          </app-button>
+          <div class="success-actions">
+            <app-button variant="secondary" size="medium" (clicked)="goToReservations()">
+              Ir a mis reservas
+            </app-button>
+            <app-button variant="primary" size="medium" (clicked)="goToBooking()">
+              Ver más habitaciones
+            </app-button>
+          </div>
+          <button type="button" class="experiences-promo" (click)="goToExperiences()">
+            ¿Quieres complementar tu estadía?
+            <span class="experiences-promo-link">Revisa nuestras experiencias</span>
+            <ng-icon name="bootstrapArrowRight" size="13px" aria-hidden="true"></ng-icon>
+          </button>
         </div>
 
       } @else {
@@ -123,7 +133,7 @@
               <textarea
                 id="checkout-notes"
                 class="notes-input"
-                rows="3"
+                rows="2"
                 placeholder="Peticiones especiales, hora de llegada aproximada..."
                 [value]="notes()"
                 (input)="onNotesChange($any($event.target).value)">
@@ -147,12 +157,12 @@
                 [loading]="isLoading()"
                 (clicked)="confirmReservation()">
                 <ng-icon name="bootstrapCheckCircle" size="20px" aria-hidden="true"></ng-icon>
-                Confirmar Reserva
+                Crear reserva
               </app-button>
 
-              <div class="trust-line">
-                <ng-icon name="bootstrapShield" size="13px" aria-hidden="true"></ng-icon>
-                <span>No se realizará ningún cargo hasta confirmar con el establecimiento</span>
+              <div class="payment-note">
+                <ng-icon name="bootstrapCreditCard" size="13px" aria-hidden="true"></ng-icon>
+                <span>El pago se realiza al momento de confirmar tu reserva con el establecimiento</span>
               </div>
             </div>
 
@@ -163,5 +173,4 @@
 
   </div>
 
-  <app-footer></app-footer>
 </div>

@@ -3,16 +3,17 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  bootstrapArrowRight,
   bootstrapCalendar,
   bootstrapCheckCircle,
   bootstrapCheckCircleFill,
   bootstrapChevronLeft,
+  bootstrapCreditCard,
   bootstrapExclamationTriangle,
   bootstrapPeopleFill,
   bootstrapShield,
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { CreateGuestReservationUseCase } from '@/domain/use-cases/reservation/create-guest-reservation.use-case';
 
 export interface CheckoutState {
@@ -31,12 +32,14 @@ export interface CheckoutState {
 @Component({
   selector: 'app-guest-checkout',
   standalone: true,
-  imports: [ButtonComponent, FooterComponent, FormsModule, NgIcon],
+  imports: [ButtonComponent, FormsModule, NgIcon],
   providers: [provideIcons({
+    bootstrapArrowRight,
     bootstrapCalendar,
     bootstrapCheckCircle,
     bootstrapCheckCircleFill,
     bootstrapChevronLeft,
+    bootstrapCreditCard,
     bootstrapExclamationTriangle,
     bootstrapPeopleFill,
     bootstrapShield,
@@ -111,6 +114,14 @@ export class GuestCheckoutComponent implements OnInit {
 
   goToBooking(): void {
     this.router.navigate(['/booking']);
+  }
+
+  goToReservations(): void {
+    this.router.navigate(['/guest/reservations']);
+  }
+
+  goToExperiences(): void {
+    this.router.navigate(['/experiences']);
   }
 
   formatDate(dateStr: string): string {
