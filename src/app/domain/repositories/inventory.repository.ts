@@ -4,4 +4,5 @@ import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryD
 export abstract class InventoryRepository {
   abstract createItem(propertyId: string, data: CreateInventoryItemDto): Observable<InventoryItemResponse>;
   abstract createCategory(data: CreateInventoryCategoryDto): Observable<InventoryCategoryResponse>;
+  abstract getCategories(): Observable<InventoryCategoryResponse[]>;
 }

@@ -42,9 +42,26 @@
             <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
             Nueva Categoria
           </app-button>
-          <button type="button" class="split-button-side" aria-label="Más opciones">
+          <button type="button" class="split-button-side" aria-label="Más opciones" (click)="toggleCategoriesDropdown()">
             <ng-icon name="bootstrapJustify" size="18px" aria-hidden="true"></ng-icon>
           </button>
+
+          @if (isCategoriesDropdownOpen()) {
+          <div class="dropdown-menu">
+            <header class="dropdown-header">Categorías Registradas</header>
+            <div class="dropdown-content">
+              @for (category of categories(); track category.id) {
+              <div class="dropdown-item">
+                <span class="dropdown-item-name">{{ category.name }}</span>
+                <span class="dropdown-item-desc">{{ category.description }}</span>
+              </div>
+              } @empty {
+              <div class="dropdown-empty">No hay categorías registradas.</div>
+              }
+            </div>
+          </div>
+          <div class="dropdown-backdrop" (click)="toggleCategoriesDropdown()"></div>
+          }
         </div>
         <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()">
           <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>

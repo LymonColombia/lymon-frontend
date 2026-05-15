@@ -28,7 +28,8 @@ import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
 import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
 import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/create-inventory-category.use-case';
-import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto } from '@/infrastructure/dtos/inventory.dto';
+import { GetInventoryCategoriesUseCase } from '@/domain/use-cases/inventory/get-inventory-categories.use-case';
+import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse } from '@/infrastructure/dtos/inventory.dto';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -92,6 +93,7 @@ export class InventoryComponent implements OnInit {
   private readonly supplierRepository = inject(SupplierRepository);
   private readonly createInventoryItemUseCase = inject(CreateInventoryItemUseCase);
   private readonly createInventoryCategoryUseCase = inject(CreateInventoryCategoryUseCase);
+  private readonly getInventoryCategoriesUseCase = inject(GetInventoryCategoriesUseCase);
   private readonly route = inject(ActivatedRoute);
 
   readonly propertyId = signal<string | null>(null);
@@ -109,6 +111,8 @@ export class InventoryComponent implements OnInit {
   readonly isSavingProvider = signal(false);
   readonly isSavingSupply = signal(false);
   readonly isSavingCategory = signal(false);
+  readonly isCategoriesDropdownOpen = signal(false);
+  readonly categories = signal<InventoryCategoryResponse[]>([]);
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
   private notificationTimeout: any;
 
@@ -284,6 +288,22 @@ export class InventoryComponent implements OnInit {
   ngOnInit(): void {
     this.propertyId.set(this.route.snapshot.paramMap.get('propertyId'));
     this.loadProviders();
+    this.loadCategories();
+  }
+
+  private loadCategories(): void {
+    this.getInventoryCategoriesUseCase.execute().subscribe({
+      next: (categories) => {
+        this.categories.set(categories);
+      },
+      error: (err) => {
+        console.error('Error loading categories', err);
+      }
+    });
+  }
+
+  toggleCategoriesDropdown(): void {
+    this.isCategoriesDropdownOpen.update(v => !v);
   }
 
   private loadProviders(): void {
@@ -359,6 +379,7 @@ export class InventoryComponent implements OnInit {
         this.isCategoryModalOpen.set(false);
         this.categoryForm.reset();
         this.showNotification('¡Categoría creada con éxito!', 'success');
+        this.loadCategories();
       },
       error: (err) => {
         console.error('Error creating category', err);

@@ -32,3 +32,10 @@ export interface InventoryCategoryResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface InventoryCategoryListResponse {
+  message: string;
+  data: {
+    categories: InventoryCategoryResponse[];
+  };
+}

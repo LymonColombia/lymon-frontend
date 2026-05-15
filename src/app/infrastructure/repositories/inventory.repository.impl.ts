@@ -1,9 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '@env';
 import { InventoryRepository } from '../../domain/repositories/inventory.repository';
-import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse } from '../dtos/inventory.dto';
+import {
+  CreateInventoryItemDto,
+  InventoryItemResponse,
+  CreateInventoryCategoryDto,
+  InventoryCategoryResponse,
+  InventoryCategoryListResponse
+} from '../dtos/inventory.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -18,5 +24,11 @@ export class InventoryRepositoryImpl extends InventoryRepository {
 
   createCategory(data: CreateInventoryCategoryDto): Observable<InventoryCategoryResponse> {
     return this.http.post<InventoryCategoryResponse>(`${this.apiUrl}/inventory/categories`, data);
+  }
+
+  getCategories(): Observable<InventoryCategoryResponse[]> {
+    return this.http.get<InventoryCategoryListResponse>(`${this.apiUrl}/inventory/categories`).pipe(
+      map(res => res.data.categories)
+    );
   }
 }
