@@ -15,3 +15,4 @@ export interface UploadedFile {
   fileName: string;
   contentType: string;
 }
+

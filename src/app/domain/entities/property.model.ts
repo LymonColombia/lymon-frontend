@@ -56,6 +56,10 @@ export interface PropertyDetail {
   hostEmail: string;
 }
 
+export interface UpdateUnitMediaKeysDto {
+  mediaKeys: string[];
+}
+
 export interface CreateUnitDto {
   propertyId: string;
   name: string;
