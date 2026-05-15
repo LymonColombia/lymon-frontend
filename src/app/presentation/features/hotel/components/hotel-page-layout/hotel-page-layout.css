@@ -76,7 +76,7 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-xl);
-  background: var(--color-primary-dark);
+  background: var(--color-primary);
   color: var(--color-bg-primary);
   display: flex;
   align-items: center;
