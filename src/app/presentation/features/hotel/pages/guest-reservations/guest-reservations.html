@@ -133,6 +133,7 @@
           <app-reservation-card
             [reservation]="reservation"
             (confirm)="goToCheckin($event)"
+            (cancel)="onCancelRequest($event)"
             (viewDetails)="goToReservationDetails($event)"
           />
         }
@@ -191,5 +192,25 @@
   </div>
 
   <app-footer />
+
+  <app-modal
+    [open]="showCancelModal()"
+    title="Cancelar reserva"
+    size="small"
+    (closed)="onCancelModalClose()"
+  >
+    <p>¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer.</p>
+    @if (cancelError()) {
+      <p class="modal-error">{{ cancelError() }}</p>
+    }
+    <div class="modal-actions">
+      <app-button variant="secondary" size="medium" [disabled]="isCancelling()" (clicked)="onCancelModalClose()">
+        Volver
+      </app-button>
+      <app-button variant="danger" size="medium" [disabled]="isCancelling()" (clicked)="onCancelConfirm()">
+        {{ isCancelling() ? 'Cancelando...' : 'Confirmar cancelación' }}
+      </app-button>
+    </div>
+  </app-modal>
 
 </div>

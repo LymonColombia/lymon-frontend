@@ -1,11 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   computed,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -19,7 +21,9 @@ import {
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { GetGuestReservationsUseCase } from '@/domain/use-cases/reservation/get-guest-reservations.use-case';
+import { CancelReservationUseCase } from '@/domain/use-cases/reservation/cancel-reservation.use-case';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { GuestNavComponent } from '../../components/guest-nav/guest-nav';
@@ -55,6 +59,7 @@ const SORT_OPTIONS: SelectOption[] = [
   imports: [
     ButtonComponent,
     FooterComponent,
+    ModalComponent,
     NgIcon,
     GuestNavComponent,
     ReservationCardComponent,
@@ -76,7 +81,9 @@ const SORT_OPTIONS: SelectOption[] = [
 })
 export class GuestReservationsComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly getReservationsUseCase = inject(GetGuestReservationsUseCase);
+  private readonly cancelReservationUseCase = inject(CancelReservationUseCase);
   private readonly guestTokenService = inject(GuestTokenService);
 
   readonly filterTabs = FILTER_TABS;
@@ -87,6 +94,11 @@ export class GuestReservationsComponent implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly activeFilter = signal<FilterKey>('all');
   readonly activeSort = signal<SortKey>('date-desc');
+
+  readonly showCancelModal = signal(false);
+  readonly cancellingId = signal<string | null>(null);
+  readonly isCancelling = signal(false);
+  readonly cancelError = signal<string | null>(null);
 
   readonly guestEmail = this.guestTokenService.getGuestEmail() ?? '';
 
@@ -154,7 +166,7 @@ export class GuestReservationsComponent implements OnInit {
     this.errorMessage.set(null);
     this.currentPage.set(1);
 
-    this.getReservationsUseCase.execute({ page: 1, limit: 200 }).subscribe({
+    this.getReservationsUseCase.execute({ page: 1, limit: 200 }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: ({ reservations }) => {
         this.reservations.set(reservations);
         this.isLoading.set(false);
@@ -178,14 +190,6 @@ export class GuestReservationsComponent implements OnInit {
 
     this.activeSort.set(value);
     this.currentPage.set(1);
-  }
-
-  onPrevPage(): void {
-    this.currentPage.set(Math.max(1, this.safeCurrentPage() - 1));
-  }
-
-  onNextPage(): void {
-    this.currentPage.set(Math.min(this.totalPages(), this.safeCurrentPage() + 1));
   }
 
   goToPage(page: number): void {
@@ -219,6 +223,37 @@ export class GuestReservationsComponent implements OnInit {
 
   goToCheckin(reservationId: string): void {
     void this.router.navigate(['/guest/checkin'], { queryParams: { reservationId } });
+  }
+
+  onCancelRequest(reservationId: string): void {
+    this.cancellingId.set(reservationId);
+    this.cancelError.set(null);
+    this.showCancelModal.set(true);
+  }
+
+  onCancelConfirm(): void {
+    const id = this.cancellingId();
+    if (!id) return;
+    this.isCancelling.set(true);
+    this.cancelReservationUseCase.execute(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isCancelling.set(false);
+        this.showCancelModal.set(false);
+        this.cancellingId.set(null);
+        this.loadReservations();
+      },
+      error: () => {
+        this.isCancelling.set(false);
+        this.cancelError.set('No se pudo cancelar la reserva. Intenta de nuevo.');
+      },
+    });
+  }
+
+  onCancelModalClose(): void {
+    if (this.isCancelling()) return;
+    this.showCancelModal.set(false);
+    this.cancellingId.set(null);
+    this.cancelError.set(null);
   }
 
   goToReservationDetails(reservationId: string): void {

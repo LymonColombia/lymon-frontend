@@ -61,14 +61,18 @@
     <span class="booking-ref">Ref: {{ bookingReference() }}</span>
 
     <div class="card-actions">
+      @if (isCancellable()) {
+        <app-button variant="danger" size="small" (clicked)="onCancel()">
+          Cancelar
+        </app-button>
+      }
       @if (status() === 'pending') {
         <app-button variant="primary" size="small" (clicked)="onConfirm()">
           Confirmar
         </app-button>
-      } @else {
+      } @else if (!isCancellable()) {
         <span
           class="action-label"
-          [class.action-label--confirmed]="status() === 'confirmed'"
           [class.action-label--checked_in]="status() === 'checked_in'"
           [class.action-label--checked_out]="status() === 'checked_out'"
           [class.action-label--cancelled]="status() === 'cancelled'"

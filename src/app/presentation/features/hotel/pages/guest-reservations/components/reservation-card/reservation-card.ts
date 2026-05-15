@@ -37,9 +37,15 @@ export class ReservationCardComponent {
   readonly reservation = input.required<GuestReservationResponse>();
 
   readonly confirm = output<string>();
+  readonly cancel = output<string>();
   readonly viewDetails = output<string>();
 
   readonly status = computed(() => this.reservation().status?.toLowerCase() ?? '');
+
+  readonly isCancellable = computed(() => {
+    const s = this.status();
+    return s === 'pending' || s === 'confirmed';
+  });
 
   readonly nights = computed(() => {
     const r = this.reservation();
@@ -108,6 +114,10 @@ export class ReservationCardComponent {
 
   onConfirm(): void {
     this.confirm.emit(this.reservation().id);
+  }
+
+  onCancel(): void {
+    this.cancel.emit(this.reservation().id);
   }
 
   onViewDetails(): void {

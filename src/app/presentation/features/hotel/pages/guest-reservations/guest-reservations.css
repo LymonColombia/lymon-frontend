@@ -350,6 +350,19 @@
 
 /* ===== RESPONSIVE ===== */
 
+.modal-error {
+  color: var(--color-error);
+  font-size: var(--font-size-xs);
+  margin: var(--spacing-xs) 0 0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
 @media (max-width: 900px) {
   .reservations-grid {
     grid-template-columns: 1fr;
