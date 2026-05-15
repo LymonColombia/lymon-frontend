@@ -6,6 +6,8 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { bootstrapHouseFill } from '@ng-icons/bootstrap-icons';
 
 const COLOR_PRIMARY = '#2ec094';
 
@@ -92,7 +94,8 @@ function computeParticles(nx: number, ny: number, elapsed: number, cycleOffset: 
 @Component({
   selector: 'app-lyhost-ecosystem',
   standalone: true,
-  imports: [],
+  imports: [NgIconComponent],
+  providers: [provideIcons({ bootstrapHouseFill })],
   templateUrl: './lyhost-ecosystem.component.html',
   styleUrl: './lyhost-ecosystem.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

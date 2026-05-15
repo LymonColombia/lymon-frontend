@@ -83,15 +83,9 @@
 
         <g class="breathing-core">
           <circle [attr.cx]="cx" [attr.cy]="cy" r="34" fill="url(#center-grad)"></circle>
-          <image
-            href="images/LyHostLogo.svg"
-            [attr.x]="cx - 22"
-            [attr.y]="cy - 24"
-            width="45"
-            height="44"
-            class="lyhost-core-logo"
-            aria-hidden="true"
-          ></image>
+          <foreignObject [attr.x]="cx - 16" [attr.y]="cy - 16" width="32" height="32" aria-hidden="true">
+            <ng-icon name="bootstrapHouseFill" size="32px" style="color: white; display: flex;"></ng-icon>
+          </foreignObject>
         </g>
 
         <text [attr.x]="cx" [attr.y]="cy + 52" text-anchor="middle" class="center-label">LyHost</text>
