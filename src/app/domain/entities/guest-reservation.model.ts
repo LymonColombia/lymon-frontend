@@ -50,3 +50,9 @@ export interface GuestReservationsPage {
     totalPages: number;
   };
 }
+
+export interface OccupiedDateRange {
+  checkIn: string;
+  checkOut: string;
+}
+

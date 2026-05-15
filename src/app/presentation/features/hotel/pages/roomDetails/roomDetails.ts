@@ -10,9 +10,12 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';
+import { GetUnitCalendarUseCase } from '@/domain/use-cases/reservation/get-unit-calendar.use-case';
 import { Unit } from '@/domain/entities/staff.model';
+import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
@@ -76,6 +79,7 @@ export class RoomDetailsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitUseCase = inject(GetPublicUnitUseCase);
+  private readonly getUnitCalendarUseCase = inject(GetUnitCalendarUseCase);
   private readonly guestTokenService = inject(GuestTokenService);
 
   // Header search form (navigates back to booking list)
@@ -88,6 +92,7 @@ export class RoomDetailsComponent implements OnInit {
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly unit = signal<Unit | null>(null);
+  readonly occupiedRanges = signal<OccupiedDateRange[]>([]);
 
   // Booking card signals
   readonly checkIn = signal<string | null>(null);
@@ -149,21 +154,25 @@ export class RoomDetailsComponent implements OnInit {
   private loadUnitDetails(unitId: string): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    this.occupiedRanges.set([]);
 
-    this.getPublicUnitUseCase
-      .execute(unitId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (unit) => {
-          this.unit.set(unit);
-          this.isLoading.set(false);
-        },
-        error: () => {
-          this.unit.set(null);
-          this.errorMessage.set('No se pudo cargar la información de la habitación.');
-          this.isLoading.set(false);
-        },
-      });
+    this.getPublicUnitUseCase.execute(unitId).pipe(
+      switchMap((unit) => {
+        this.unit.set(unit);
+        this.isLoading.set(false);
+        return this.getUnitCalendarUseCase.execute(unitId).pipe(
+          catchError(() => of([] as OccupiedDateRange[])),
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (ranges) => this.occupiedRanges.set(ranges),
+      error: () => {
+        this.unit.set(null);
+        this.errorMessage.set('No se pudo cargar la información de la habitación.');
+        this.isLoading.set(false);
+      },
+    });
   }
 
   onDateRangeChange(range: BookingDateRange): void {
