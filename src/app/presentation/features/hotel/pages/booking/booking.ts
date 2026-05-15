@@ -70,8 +70,8 @@ export class BookingComponent implements OnInit {
     const minGuests = params.get('minGuests');
     this.startDate.set(startDate);
     this.endDate.set(endDate);
-    const parsed = minGuests !== null ? Number(minGuests) : NaN;
-    this.minGuests.set(!isNaN(parsed) ? parsed : undefined);
+    const parsed = minGuests === null ? Number.NaN : Number(minGuests);
+    this.minGuests.set(Number.isNaN(parsed) ? undefined : parsed);
     this.loadUnits(1);
   }
 
