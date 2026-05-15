@@ -224,7 +224,7 @@
 }
 
 .stock-pill--low {
-  color: #ef6c00;
+  color: #bf360c;
   background: #fff3e0;
 }
 
@@ -323,10 +323,6 @@
 
 .split-button-side:active {
   filter: brightness(0.9);
-}
-
-.split-button {
-  position: relative;
 }
 
 .dropdown-menu {

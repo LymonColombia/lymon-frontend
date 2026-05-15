@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { GetInventoryCategoriesUseCase } from './get-inventory-categories.use-case';
-import { InventoryRepository } from '../../repositories/inventory.repository';
 
 describe('GetInventoryCategoriesUseCase', () => {
   let useCase: GetInventoryCategoriesUseCase;

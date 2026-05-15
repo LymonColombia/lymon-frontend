@@ -29,7 +29,7 @@ import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supp
 import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
 import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/create-inventory-category.use-case';
 import { GetInventoryCategoriesUseCase } from '@/domain/use-cases/inventory/get-inventory-categories.use-case';
-import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse, InventoryItemListResponse } from '@/infrastructure/dtos/inventory.dto';
+import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse } from '@/infrastructure/dtos/inventory.dto';
 import { GetInventoryItemsUseCase } from '@/domain/use-cases/inventory/get-inventory-items.use-case';
 import { AssociateInventorySupplierUseCase } from '@/domain/use-cases/inventory/associate-inventory-supplier.use-case';
 import { DeleteInventoryItemUseCase } from '@/domain/use-cases/inventory/delete-inventory-item.use-case';

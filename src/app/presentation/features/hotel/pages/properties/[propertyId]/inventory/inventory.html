@@ -61,7 +61,7 @@
               }
             </div>
           </div>
-          <div class="dropdown-backdrop" (click)="toggleCategoriesDropdown()"></div>
+          <div class="dropdown-backdrop" role="button" tabindex="0" (click)="toggleCategoriesDropdown()" (keydown.escape)="toggleCategoriesDropdown()"></div>
           }
         </div>
         <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()">
@@ -320,10 +320,10 @@
 </app-modal>
 
 @if (selectedProvider()) {
-<div class="provider-drawer-backdrop" (click)="closeProviderDetails()" (keydown.escape)="closeProviderDetails()"
-  tabindex="0" aria-label="Cerrar panel de detalles"></div>
+<div class="provider-drawer-backdrop" role="button" tabindex="0" (click)="closeProviderDetails()" (keydown.escape)="closeProviderDetails()"
+  aria-label="Cerrar panel de detalles"></div>
 
-<aside class="provider-drawer" role="dialog" aria-modal="true" aria-label="Detalles del proveedor">
+<dialog class="provider-drawer" aria-modal="true" aria-label="Detalles del proveedor" open>
   <header class="drawer-header">
     <div>
       <h2>{{ selectedProvider()!.name }}</h2>
@@ -372,7 +372,7 @@
     </ul>
     }
   </section>
-</aside>
+</dialog>
 }
 
 <app-modal [open]="isDeleteProviderModalOpen()" title="Confirmar Eliminación" size="small"
