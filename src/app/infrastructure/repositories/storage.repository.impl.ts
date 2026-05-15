@@ -23,13 +23,11 @@ export class StorageRepositoryImpl extends StorageRepository {
         method: 'PUT',
         body: file,
         headers: { 'Content-Type': file.type },
-      }).then((res) => {
+      }).then(async (res) => {
         if (!res.ok) {
-          return res.text().then((body) => {
-            throw new Error(`R2 upload failed (${res.status}): ${body}`);
-          });
+          const body = await res.text();
+          throw new Error(`R2 upload failed (${res.status}): ${body}`);
         }
-        return Promise.resolve();
       }),
     );
   }
