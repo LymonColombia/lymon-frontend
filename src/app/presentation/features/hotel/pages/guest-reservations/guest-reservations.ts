@@ -1,38 +1,49 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
   computed,
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  bootstrapArrowDown,
   bootstrapArrowRight,
+  bootstrapArrowUp,
   bootstrapCalendar,
   bootstrapCalendarCheck,
+  bootstrapChevronDown,
   bootstrapChevronLeft,
   bootstrapChevronRight,
+  bootstrapChevronUp,
   bootstrapExclamationTriangle,
+  bootstrapXCircle,
 } from '@ng-icons/bootstrap-icons';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { GetGuestReservationsUseCase } from '@/domain/use-cases/reservation/get-guest-reservations.use-case';
-import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
+import {
+  GetGuestReservationsParams,
+  GuestReservationResponse,
+} from '@/domain/entities/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { GuestNavComponent } from '../../components/guest-nav/guest-nav';
 import { ReservationCardComponent } from './components/reservation-card/reservation-card';
 
-type FilterKey = 'all' | 'pending' | 'confirmed' | 'checked_out' | 'cancelled';
+type FilterKey = 'all' | 'active' | 'pending' | 'confirmed' | 'finished' | 'cancelled';
 
 interface FilterTab {
   key: FilterKey;
   label: string;
 }
-
-type SortKey = 'date-desc' | 'date-asc';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -40,21 +51,30 @@ const FILTER_TABS: FilterTab[] = [
   { key: 'all', label: 'Todas' },
   { key: 'pending', label: 'Pendientes' },
   { key: 'confirmed', label: 'Confirmadas' },
-  { key: 'checked_out', label: 'Completadas' },
+  { key: 'active', label: 'En estadía' },
+  { key: 'finished', label: 'Completadas' },
   { key: 'cancelled', label: 'Canceladas' },
 ];
 
-const SORT_OPTIONS: SelectOption[] = [
-  { value: 'date-desc', label: 'Fecha: mas reciente' },
-  { value: 'date-asc', label: 'Fecha: mas antigua' },
+const SORT_BY_OPTIONS: SelectOption[] = [
+  { value: 'date', label: 'Fecha de entrada' },
+  { value: 'status', label: 'Estado' },
+  { value: 'createdAt', label: 'Fecha de creación' },
+];
+
+const SORT_ORDER_OPTIONS: SelectOption[] = [
+  { value: 'desc', label: 'Descendente' },
+  { value: 'asc', label: 'Ascendente' },
 ];
 
 @Component({
   selector: 'app-guest-reservations',
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     ButtonComponent,
     FooterComponent,
+    InputComponent,
     NgIcon,
     GuestNavComponent,
     ReservationCardComponent,
@@ -62,74 +82,77 @@ const SORT_OPTIONS: SelectOption[] = [
   ],
   providers: [
     provideIcons({
+      bootstrapArrowDown,
       bootstrapArrowRight,
+      bootstrapArrowUp,
       bootstrapCalendar,
       bootstrapCalendarCheck,
+      bootstrapChevronDown,
       bootstrapChevronLeft,
       bootstrapChevronRight,
+      bootstrapChevronUp,
       bootstrapExclamationTriangle,
+      bootstrapXCircle,
     }),
   ],
   templateUrl: './guest-reservations.html',
   styleUrl: './guest-reservations.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GuestReservationsComponent implements OnInit {
+export class GuestReservationsComponent {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly getReservationsUseCase = inject(GetGuestReservationsUseCase);
   private readonly guestTokenService = inject(GuestTokenService);
+  private readonly loadTrigger = new Subject<GetGuestReservationsParams>();
 
   readonly filterTabs = FILTER_TABS;
-  readonly sortOptions = SORT_OPTIONS;
+  readonly sortByOptions = SORT_BY_OPTIONS;
+  readonly sortOrderOptions = SORT_ORDER_OPTIONS;
+  readonly fromDateControl = new FormControl('');
+  readonly toDateControl = new FormControl('');
+  readonly sortByLabels: Record<string, string> = {
+    date: 'Fecha entrada',
+    status: 'Estado',
+    createdAt: 'Fecha creación',
+  };
 
   readonly reservations = signal<GuestReservationResponse[]>([]);
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly activeFilter = signal<FilterKey>('all');
-  readonly activeSort = signal<SortKey>('date-desc');
+  readonly activeSortBy = signal<'date' | 'status' | 'createdAt'>('date');
+  readonly activeSortOrder = signal<'asc' | 'desc'>('desc');
+  readonly fromDate = signal<string | undefined>(undefined);
+  readonly toDate = signal<string | undefined>(undefined);
+  readonly totalItems = signal(0);
+  readonly totalPages = signal(1);
+  readonly currentPage = signal(1);
 
   readonly guestEmail = this.guestTokenService.getGuestEmail() ?? '';
 
-  readonly statusCounts = computed(() => {
-    const all = this.reservations();
-    return {
-      all: all.length,
-      pending: all.filter((r) => r.status === 'pending').length,
-      confirmed: all.filter((r) => r.status === 'confirmed').length,
-      checked_out: all.filter((r) => r.status === 'checked_out').length,
-      cancelled: all.filter((r) => r.status === 'cancelled').length,
-    };
-  });
-
-  readonly currentPage = signal(1);
-
-  readonly filteredReservations = computed(() => {
-    const filter = this.activeFilter();
-    const all = this.reservations();
-    if (filter === 'all') return all;
-    return all.filter((r) => r.status === filter);
-  });
-
-  readonly sortedReservations = computed(() => {
-    const sort = this.activeSort();
-    const reservations = [...this.filteredReservations()];
-
-    reservations.sort((a, b) => {
-      const firstTime = new Date(a.checkIn).getTime();
-      const secondTime = new Date(b.checkIn).getTime();
-      return sort === 'date-asc' ? firstTime - secondTime : secondTime - firstTime;
+  constructor() {
+    this.loadTrigger.pipe(
+      switchMap((params) =>
+        this.getReservationsUseCase.execute(params).pipe(
+          catchError(() => {
+            this.errorMessage.set('No se pudieron cargar tus reservas. Intenta de nuevo.');
+            this.isLoading.set(false);
+            return EMPTY;
+          }),
+        ),
+      ),
+      takeUntilDestroyed(),
+    ).subscribe(({ reservations, pagination }) => {
+      this.reservations.set(reservations);
+      this.totalItems.set(pagination.total);
+      this.totalPages.set(pagination.totalPages);
+      this.isLoading.set(false);
     });
 
-    return reservations;
-  });
-
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.sortedReservations().length / ITEMS_PER_PAGE)),
-  );
-
-  readonly pageNumbers = computed(() =>
-    Array.from({ length: this.totalPages() }, (_, index) => index + 1),
-  );
+    this.hydrateFromUrl();
+    this.loadReservations();
+  }
 
   readonly safeCurrentPage = computed(() => {
     const page = this.currentPage();
@@ -139,61 +162,156 @@ export class GuestReservationsComponent implements OnInit {
     return page;
   });
 
-  readonly pagedReservations = computed(() => {
-    const page = this.safeCurrentPage();
-    const start = (page - 1) * ITEMS_PER_PAGE;
-    return this.sortedReservations().slice(start, start + ITEMS_PER_PAGE);
-  });
+  readonly pageNumbers = computed(() =>
+    Array.from({ length: this.totalPages() }, (_, i) => i + 1),
+  );
 
-  ngOnInit(): void {
-    this.loadReservations();
-  }
-
-  loadReservations(): void {
+  loadReservations(page = 1): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    this.currentPage.set(1);
+    this.currentPage.set(page);
+    this.syncQueryParams(page);
+    this.loadTrigger.next(this.buildParams(page));
+  }
 
-    this.getReservationsUseCase.execute({ page: 1, limit: 200 }).subscribe({
-      next: ({ reservations }) => {
-        this.reservations.set(reservations);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('No se pudieron cargar tus reservas. Intenta de nuevo.');
-        this.isLoading.set(false);
-      },
+  private hydrateFromUrl(): void {
+    const p = this.route.snapshot.queryParamMap;
+    const status = p.get('status');
+    const fromDate = p.get('fromDate');
+    const toDate = p.get('toDate');
+    const sortBy = p.get('sortBy');
+    const sortOrder = p.get('sortOrder');
+    const page = p.get('page');
+
+    if (status && this.isValidFilter(status)) this.activeFilter.set(status);
+    if (fromDate) {
+      this.fromDate.set(fromDate);
+      this.fromDateControl.setValue(fromDate);
+    }
+    if (toDate) {
+      this.toDate.set(toDate);
+      this.toDateControl.setValue(toDate);
+    }
+    if (sortBy === 'date' || sortBy === 'status' || sortBy === 'createdAt') this.activeSortBy.set(sortBy);
+    if (sortOrder === 'asc' || sortOrder === 'desc') this.activeSortOrder.set(sortOrder);
+    if (page && Number(page) > 1) this.currentPage.set(Number(page));
+
+    if (this.hasActiveFilters() || fromDate || toDate) this.showAdditionalFilters.set(true);
+  }
+
+  private isValidFilter(value: string): value is FilterKey {
+    return ['all', 'active', 'pending', 'confirmed', 'finished', 'cancelled'].includes(value);
+  }
+
+  private syncQueryParams(page: number): void {
+    const queryParams: Record<string, string> = {};
+    const filter = this.activeFilter();
+    const fromDate = this.fromDate();
+    const toDate = this.toDate();
+    const sortBy = this.activeSortBy();
+    const sortOrder = this.activeSortOrder();
+
+    if (filter !== 'all') queryParams['status'] = filter;
+    if (fromDate) queryParams['fromDate'] = fromDate;
+    if (toDate) queryParams['toDate'] = toDate;
+    if (sortBy !== 'date') queryParams['sortBy'] = sortBy;
+    if (sortOrder !== 'desc') queryParams['sortOrder'] = sortOrder;
+    if (page > 1) queryParams['page'] = String(page);
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'replace',
+      replaceUrl: true,
     });
+  }
+
+  private buildParams(page: number): GetGuestReservationsParams {
+    const params: GetGuestReservationsParams = {
+      page,
+      limit: ITEMS_PER_PAGE,
+      sortBy: this.activeSortBy(),
+      sortOrder: this.activeSortOrder(),
+    };
+    const filter = this.activeFilter();
+    if (filter !== 'all') params.status = filter;
+    const fromDate = this.fromDate();
+    const toDate = this.toDate();
+    if (fromDate) params.fromDate = fromDate;
+    if (toDate) params.toDate = toDate;
+    return params;
   }
 
   setFilter(key: FilterKey): void {
     this.activeFilter.set(key);
-    this.currentPage.set(1);
+    this.loadReservations(1);
   }
 
-  onSortChange(value: string | number): void {
-    if (value !== 'date-asc' && value !== 'date-desc') {
-      return;
+  onSortByChange(value: string | number): void {
+    if (value === 'date' || value === 'status' || value === 'createdAt') {
+      this.activeSortBy.set(value);
+      this.loadReservations(1);
     }
-
-    this.activeSort.set(value);
-    this.currentPage.set(1);
   }
 
-  onPrevPage(): void {
-    this.currentPage.set(Math.max(1, this.safeCurrentPage() - 1));
+  onSortOrderChange(value: string | number): void {
+    if (value === 'asc' || value === 'desc') {
+      this.activeSortOrder.set(value);
+      this.loadReservations(1);
+    }
   }
 
-  onNextPage(): void {
-    this.currentPage.set(Math.min(this.totalPages(), this.safeCurrentPage() + 1));
+  toggleSortOrder(): void {
+    this.activeSortOrder.update((o) => (o === 'desc' ? 'asc' : 'desc'));
+    this.loadReservations(1);
+  }
+
+  onFromDateChange(value: string | number | null): void {
+    this.fromDate.set(typeof value === 'string' && value ? value : undefined);
+    this.loadReservations(1);
+  }
+
+  onToDateChange(value: string | number | null): void {
+    this.toDate.set(typeof value === 'string' && value ? value : undefined);
+    this.loadReservations(1);
+  }
+
+  clearFromDate(): void {
+    this.fromDateControl.reset('');
+    this.fromDate.set(undefined);
+    this.loadReservations(1);
+  }
+
+  clearToDate(): void {
+    this.toDateControl.reset('');
+    this.toDate.set(undefined);
+    this.loadReservations(1);
+  }
+
+  clearAllFilters(): void {
+    this.fromDateControl.reset('');
+    this.toDateControl.reset('');
+    this.fromDate.set(undefined);
+    this.toDate.set(undefined);
+    this.activeFilter.set('all');
+    this.activeSortBy.set('date');
+    this.activeSortOrder.set('desc');
+    this.loadReservations(1);
+  }
+
+  readonly hasActiveFilters = computed(() =>
+    !!this.fromDate() || !!this.toDate() || this.activeFilter() !== 'all',
+  );
+
+  readonly showAdditionalFilters = signal(false);
+
+  toggleAdditionalFilters(): void {
+    this.showAdditionalFilters.update((v) => !v);
   }
 
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages()) {
-      return;
-    }
-
-    this.currentPage.set(page);
+    if (page < 1 || page > this.totalPages()) return;
+    this.loadReservations(page);
   }
 
   goToPreviousPage(): void {
@@ -202,10 +320,6 @@ export class GuestReservationsComponent implements OnInit {
 
   goToNextPage(): void {
     this.goToPage(this.safeCurrentPage() + 1);
-  }
-
-  countFor(key: FilterKey): number {
-    return this.statusCounts()[key];
   }
 
   onLogout(): void {
