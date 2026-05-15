@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -81,6 +82,9 @@ interface ProviderRow {
 export class InventoryComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly supplierRepository = inject(SupplierRepository);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly propertyId = signal<string | null>(null);
 
   readonly activeTab = signal<'supplies' | 'providers'>('supplies');
   readonly searchTerm = signal('');
@@ -254,6 +258,7 @@ export class InventoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.propertyId.set(this.route.snapshot.paramMap.get('propertyId'));
     this.loadProviders();
   }
 
@@ -370,7 +375,7 @@ export class InventoryComponent implements OnInit {
       next: () => {
         this.providers.update((items) => items.filter((item) => item.id !== provider.id));
         this.closeDeleteProviderModal();
-        
+
         if (this.selectedProviderId() === provider.id) {
           this.selectedProviderId.set(null);
         }
