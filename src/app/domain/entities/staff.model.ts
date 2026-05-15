@@ -47,9 +47,10 @@ export interface Pagination {
 export interface PublicUnitsParams {
   page: number;
   limit: number;
-  checkIn?: string;
-  checkOut?: string;
-  guests?: number;
+  startDate?: string;
+  endDate?: string;
+  minGuests?: number;
+  propertyId?: string;
 }
 
 export interface UnitsResponse {

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { BookingRoomCard, RoomCardComponent } from './components/room-card/room-card.component';
 import { BookingNavComponent } from './components/booking-nav/booking-nav.component';
@@ -31,15 +32,17 @@ const ITEMS_PER_PAGE = 6;
 })
 export class BookingComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitsUseCase = inject(GetPublicUnitsUseCase);
   readonly guestTokenService = inject(GuestTokenService);
 
   readonly isRoomsLoading = signal(false);
   readonly currentPage = signal(1);
   readonly totalPages = signal(1);
-  readonly checkIn = signal<string | undefined>(undefined);
-  readonly checkOut = signal<string | undefined>(undefined);
-  readonly selectedGuests = signal<number | undefined>(undefined);
+  readonly startDate = signal<string | undefined>(undefined);
+  readonly endDate = signal<string | undefined>(undefined);
+  readonly minGuests = signal<number | undefined>(undefined);
 
   readonly searchQuery = signal('');
   readonly sortBy = signal<BookingSortOption>('rating');
@@ -50,11 +53,9 @@ export class BookingComponent implements OnInit {
   readonly displayedRooms = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const sort = this.sortBy();
-    const guests = this.selectedGuests();
 
     let result = this.rooms();
 
-    if (guests) result = result.filter((r) => (r.maxGuests ?? Infinity) >= guests);
     if (query) result = result.filter((r) => r.title.toLowerCase().includes(query));
 
     if (sort === 'price-asc') return [...result].sort((a, b) => a.price - b.price);
@@ -63,6 +64,14 @@ export class BookingComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const startDate = params.get('startDate') ?? undefined;
+    const endDate = params.get('endDate') ?? undefined;
+    const minGuests = params.get('minGuests');
+    this.startDate.set(startDate);
+    this.endDate.set(endDate);
+    const parsed = minGuests === null ? Number.NaN : Number(minGuests);
+    this.minGuests.set(Number.isNaN(parsed) ? undefined : parsed);
     this.loadUnits(1);
   }
 
@@ -72,10 +81,11 @@ export class BookingComponent implements OnInit {
       .execute({
         page,
         limit: ITEMS_PER_PAGE,
-        checkIn: this.checkIn(),
-        checkOut: this.checkOut(),
-        guests: this.selectedGuests(),
+        startDate: this.startDate(),
+        endDate: this.endDate(),
+        minGuests: this.minGuests(),
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ units, pagination }) => {
           this.rooms.set(units.map((unit) => this.toRoomCard(unit)));
@@ -91,9 +101,10 @@ export class BookingComponent implements OnInit {
   }
 
   onHeroSearch(params: BookingSearchParams): void {
-    this.checkIn.set(params.checkIn);
-    this.checkOut.set(params.checkOut);
-    this.selectedGuests.set(params.guests);
+    this.startDate.set(params.startDate);
+    this.endDate.set(params.endDate);
+    this.minGuests.set(params.minGuests);
+    this.syncQueryParams();
     this.loadUnits(1);
   }
 
@@ -141,6 +152,22 @@ export class BookingComponent implements OnInit {
 
   goToRoomDetails(unitId: string): void {
     this.router.navigate(['/room-details', unitId]);
+  }
+
+  private syncQueryParams(): void {
+    const queryParams: Record<string, string> = {};
+    const startDate = this.startDate();
+    const endDate = this.endDate();
+    const minGuests = this.minGuests();
+    if (startDate) queryParams['startDate'] = startDate;
+    if (endDate) queryParams['endDate'] = endDate;
+    if (minGuests !== undefined) queryParams['minGuests'] = String(minGuests);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'replace',
+      replaceUrl: true,
+    });
   }
 
   private toRoomCard(unit: Unit): BookingRoomCard {
