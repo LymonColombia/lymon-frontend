@@ -66,7 +66,7 @@ export class StaffRepositoryImpl extends StaffRepository {
     };
     if (params.startDate) queryParams['startDate'] = params.startDate;
     if (params.endDate) queryParams['endDate'] = params.endDate;
-    if (params.minGuests) queryParams['minGuests'] = String(params.minGuests);
+    if (params.minGuests !== undefined) queryParams['minGuests'] = String(params.minGuests);
     if (params.propertyId) queryParams['propertyId'] = params.propertyId;
     return this.http.get<UnitsResponse>(
       `${environment.apiUrl}${environment.units.endpoint}/public`,

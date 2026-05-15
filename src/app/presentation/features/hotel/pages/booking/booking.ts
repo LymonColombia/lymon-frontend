@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { BookingRoomCard, RoomCardComponent } from './components/room-card/room-card.component';
@@ -32,6 +33,7 @@ const ITEMS_PER_PAGE = 6;
 export class BookingComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitsUseCase = inject(GetPublicUnitsUseCase);
   readonly guestTokenService = inject(GuestTokenService);
 
@@ -68,7 +70,8 @@ export class BookingComponent implements OnInit {
     const minGuests = params.get('minGuests');
     this.startDate.set(startDate);
     this.endDate.set(endDate);
-    this.minGuests.set(minGuests ? Number(minGuests) : undefined);
+    const parsed = minGuests !== null ? Number(minGuests) : NaN;
+    this.minGuests.set(!isNaN(parsed) ? parsed : undefined);
     this.loadUnits(1);
   }
 
@@ -82,6 +85,7 @@ export class BookingComponent implements OnInit {
         endDate: this.endDate(),
         minGuests: this.minGuests(),
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ units, pagination }) => {
           this.rooms.set(units.map((unit) => this.toRoomCard(unit)));
@@ -157,7 +161,7 @@ export class BookingComponent implements OnInit {
     const minGuests = this.minGuests();
     if (startDate) queryParams['startDate'] = startDate;
     if (endDate) queryParams['endDate'] = endDate;
-    if (minGuests) queryParams['minGuests'] = String(minGuests);
+    if (minGuests !== undefined) queryParams['minGuests'] = String(minGuests);
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,

@@ -42,7 +42,7 @@ export class BookingHeroComponent {
     this.endDate.set(typeof value === 'string' ? value : undefined);
   }
 
-  onMinGuestsChange(value: string | number | null): void {
+  onMinGuestsChange(value: string | number): void {
     this.minGuests.set(typeof value === 'number' ? value : undefined);
   }
 
