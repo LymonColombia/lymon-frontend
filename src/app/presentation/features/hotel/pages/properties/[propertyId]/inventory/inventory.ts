@@ -29,7 +29,8 @@ import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supp
 import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
 import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/create-inventory-category.use-case';
 import { GetInventoryCategoriesUseCase } from '@/domain/use-cases/inventory/get-inventory-categories.use-case';
-import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse } from '@/infrastructure/dtos/inventory.dto';
+import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse, InventoryItemListResponse } from '@/infrastructure/dtos/inventory.dto';
+import { GetInventoryItemsUseCase } from '@/domain/use-cases/inventory/get-inventory-items.use-case';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -43,6 +44,7 @@ interface SupplyRow {
   unit: string;
   provider: string;
   minimumStock: number;
+  lowStock: boolean;
 }
 
 interface ProviderRow {
@@ -95,6 +97,7 @@ export class InventoryComponent implements OnInit {
   private readonly createInventoryItemUseCase = inject(CreateInventoryItemUseCase);
   private readonly createInventoryCategoryUseCase = inject(CreateInventoryCategoryUseCase);
   private readonly getInventoryCategoriesUseCase = inject(GetInventoryCategoriesUseCase);
+  private readonly getInventoryItemsUseCase = inject(GetInventoryItemsUseCase);
   private readonly route = inject(ActivatedRoute);
 
   readonly propertyId = signal<string | null>(null);
@@ -116,6 +119,10 @@ export class InventoryComponent implements OnInit {
   readonly categories = signal<InventoryCategoryResponse[]>([]);
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
   private notificationTimeout: any;
+
+
+  readonly currentPage = signal(1);
+  readonly pageSize = 10;
 
   readonly categoryOptions = computed<SelectOption[]>(() => {
     return this.categories().map(cat => ({
@@ -147,48 +154,24 @@ export class InventoryComponent implements OnInit {
 
   readonly providers = signal<ProviderRow[]>([]);
 
-  readonly supplies = signal<SupplyRow[]>([
-    {
-      id: 'ins-1',
-      sku: 'TOA-001',
-      name: 'Toallas blancas',
-      categoryId: '1',
-      categoryName: 'Textiles',
-      quantity: 250,
-      unit: 'unidades',
-      provider: 'Textiles Premium',
-      minimumStock: 80,
-    },
-    {
-      id: 'ins-2',
-      sku: 'JAB-002',
-      name: 'Jabon liquido',
-      categoryId: '2',
-      categoryName: 'Higiene',
-      quantity: 80,
-      unit: 'litros',
-      provider: 'Distribuidora Clean Pro',
-      minimumStock: 20,
-    },
-    {
-      id: 'ins-3',
-      sku: 'SAB-003',
-      name: 'Sabanas king size',
-      categoryId: '1',
-      categoryName: 'Textiles',
-      quantity: 120,
-      unit: 'unidades',
-      provider: 'Textiles Premium',
-      minimumStock: 50,
-    },
-  ]);
+  readonly rawSupplies = signal<InventoryItemResponse[]>([]);
+  readonly mappedSupplies = computed(() => this.rawSupplies().map(item => this.mapToSupplyRow(item)));
+
+  private readonly unitTranslations: Record<string, string> = {
+    'piece': 'unidad',
+    'liter': 'litro',
+    'kilogram': 'kilogramo',
+    'box': 'caja',
+    'unit': 'unidad',
+    'unidades': 'unidad',
+    'litros': 'litro'
+  };
 
   readonly supplyForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     categoryId: ['', [Validators.required]],
     quantity: [0, [Validators.required, Validators.min(1)]],
     unit: ['piece', [Validators.required]],
-    provider: ['Sin proveedor', [Validators.required]],
     minimumStock: [10, [Validators.required, Validators.min(1)]],
   });
 
@@ -213,11 +196,10 @@ export class InventoryComponent implements OnInit {
 
   readonly filteredSupplies = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
-    if (!term) {
-      return this.supplies();
-    }
+    const supplies = this.mappedSupplies();
+    if (!term) return supplies;
 
-    return this.supplies().filter((item) => {
+    return supplies.filter((item) => {
       return (
         item.name.toLowerCase().includes(term) ||
         item.categoryName.toLowerCase().includes(term) ||
@@ -226,19 +208,44 @@ export class InventoryComponent implements OnInit {
     });
   });
 
+  readonly paginatedSupplies = computed(() => {
+    const supplies = this.filteredSupplies();
+    const start = (this.currentPage() - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return supplies.slice(start, end);
+  });
+
+  readonly totalSuppliesPages = computed(() => {
+    return Math.ceil(this.filteredSupplies().length / this.pageSize) || 1;
+  });
+
   readonly filteredProviders = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
-    if (!term) {
-      return this.providers();
-    }
+    const providers = this.providers();
+    if (!term) return providers;
 
-    return this.providers().filter((provider) => {
+    return providers.filter((provider) => {
       return (
         provider.name.toLowerCase().includes(term) ||
         provider.nit.toLowerCase().includes(term) ||
         provider.contactEmail.toLowerCase().includes(term)
       );
     });
+  });
+
+  readonly paginatedProviders = computed(() => {
+    const providers = this.filteredProviders();
+    const start = (this.currentPage() - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return providers.slice(start, end);
+  });
+
+  readonly totalProvidersPages = computed(() => {
+    return Math.ceil(this.filteredProviders().length / this.pageSize) || 1;
+  });
+
+  readonly totalPages = computed(() => {
+    return this.activeTab() === 'supplies' ? this.totalSuppliesPages() : this.totalProvidersPages();
   });
 
   readonly searchPlaceholder = computed(() => {
@@ -282,17 +289,88 @@ export class InventoryComponent implements OnInit {
       return [];
     }
 
-    return this.supplies().filter((item) => item.provider === provider.name);
+    return this.mappedSupplies().filter((item) => item.provider === provider.name);
   });
 
   setActiveTab(tab: 'supplies' | 'providers'): void {
     this.activeTab.set(tab);
+    this.currentPage.set(1);
+  }
+
+  setPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
   }
 
   ngOnInit(): void {
-    this.propertyId.set(this.route.snapshot.paramMap.get('propertyId'));
+    const propertyId = this.route.snapshot.paramMap.get('propertyId');
+    this.propertyId.set(propertyId);
     this.loadProviders();
     this.loadCategories();
+    if (propertyId) {
+      this.loadSupplies(propertyId);
+    }
+  }
+
+  private loadSupplies(propertyId: string): void {
+    this.getInventoryItemsUseCase.execute(propertyId).subscribe({
+      next: (items) => {
+        this.rawSupplies.set(items);
+      },
+      error: (err) => {
+        console.error('Error loading supplies', err);
+      }
+    });
+  }
+
+  private mapToSupplyRow(item: InventoryItemResponse): SupplyRow {
+    const category = this.categories().find(c => c.id === item.categoryId);
+    return {
+      id: item.id,
+      sku: item.sku || 'PENDIENTE',
+      name: this.toSentenceCase(item.name || 'Insumo sin nombre'),
+      categoryId: item.categoryId,
+      categoryName: category ? this.toSentenceCase(category.name) : 'General',
+      quantity: item.currentStock,
+      unit: item.unit,
+      provider: 'Proveedor no asignado',
+      minimumStock: item.minStock,
+      lowStock: item.lowStock
+    };
+  }
+
+  private toSentenceCase(text: string): string {
+    if (!text) return '';
+    const lower = text.toLowerCase();
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+  }
+
+  getFormattedUnit(unit: string, quantity: number): string {
+    const translated = this.unitTranslations[unit.toLowerCase()] || unit;
+    let pluralized = translated;
+    
+    if (quantity !== 1) {
+      if (translated === 'unidad') pluralized = 'unidades';
+      else if (translated === 'litro') pluralized = 'litros';
+      else if (translated === 'kilogramo') pluralized = 'kilogramos';
+      else if (translated === 'caja') pluralized = 'cajas';
+      else pluralized = `${translated}s`;
+    }
+    
+    return `${quantity} ${pluralized.toLowerCase()}`;
   }
 
   private loadCategories(): void {
@@ -323,6 +401,7 @@ export class InventoryComponent implements OnInit {
 
   updateSearch(value: string | number | null): void {
     this.searchTerm.set((value ?? '').toString());
+    this.currentPage.set(1);
   }
 
   openCreateSupplyModal(): void {
@@ -332,7 +411,6 @@ export class InventoryComponent implements OnInit {
       categoryId: '',
       quantity: 0,
       unit: 'piece',
-      provider: 'Sin proveedor',
       minimumStock: 10,
     });
     this.isSupplyModalOpen.set(true);
@@ -345,7 +423,6 @@ export class InventoryComponent implements OnInit {
       categoryId: supply.categoryId,
       quantity: supply.quantity,
       unit: supply.unit,
-      provider: supply.provider,
       minimumStock: supply.minimumStock,
     });
     this.isSupplyModalOpen.set(true);
@@ -419,7 +496,7 @@ export class InventoryComponent implements OnInit {
       if (!propertyId) return;
 
       const prefix = value.name.substring(0, 3).toUpperCase();
-      const nextNum = this.supplies().length + 1;
+      const nextNum = this.rawSupplies().length + 1;
       const generatedSku = `${prefix}-${String(nextNum).padStart(3, '0')}`;
 
       const payload: CreateInventoryItemDto = {
@@ -437,47 +514,36 @@ export class InventoryComponent implements OnInit {
       const id = String(propertyId);
 
       useCase.execute(id, payload).subscribe({
-        next: (response: InventoryItemResponse) => {
-          const categoryName = this.categories().find(c => c.id === response.categoryId)?.name ?? 'Sin categoría';
-          const nextItem: SupplyRow = {
-            id: response.id,
-            sku: response.sku,
-            name: response.name,
-            categoryId: response.categoryId,
-            categoryName: categoryName,
-            quantity: response.currentStock,
-            unit: value.unit,
-            provider: value.provider,
-            minimumStock: response.minStock,
-          };
-          this.supplies.update((list) => [nextItem, ...list]);
+        next: () => {
           this.isSavingSupply.set(false);
+          this.showNotification('¡Insumo creado con éxito!', 'success');
           this.closeSupplyModal();
+          this.supplyForm.reset();
+          
+          this.loadSupplies(id);
         },
         error: (err: unknown) => {
           console.error('Error creating supply', err);
           this.isSavingSupply.set(false);
+          this.showNotification('Error al crear el insumo. Por favor, intenta de nuevo.', 'error');
         }
       });
       return;
     }
 
-    this.supplies.update((list) =>
+    this.rawSupplies.update((list) =>
       list.map((item) => {
         if (item.id !== editingId) {
           return item;
         }
 
-        const categoryName = this.categories().find(c => c.id === value.categoryId)?.name ?? 'Sin categoría';
         return {
           ...item,
           name: value.name.trim(),
           categoryId: value.categoryId,
-          categoryName: categoryName,
-          quantity: value.quantity,
+          currentStock: value.quantity,
           unit: value.unit,
-          provider: value.provider,
-          minimumStock: value.minimumStock,
+          minStock: value.minimumStock,
         };
       }),
     );
@@ -486,7 +552,7 @@ export class InventoryComponent implements OnInit {
   }
 
   removeSupply(id: string): void {
-    this.supplies.update((items) => items.filter((item) => item.id !== id));
+    this.rawSupplies.update((items) => items.filter((item) => item.id !== id));
   }
 
   openDeleteProviderModal(provider: ProviderRow): void {
@@ -574,23 +640,18 @@ export class InventoryComponent implements OnInit {
 
       this.isSavingProvider.set(true);
       this.supplierRepository.createSupplier(payload).subscribe({
-        next: (createdSupplier) => {
-          const nextProvider: ProviderRow = {
-            id: createdSupplier.id,
-            name: createdSupplier.name,
-            nit: createdSupplier.nit,
-            city: createdSupplier.city,
-            country: createdSupplier.country,
-            contactEmail: createdSupplier.contactEmail,
-            contactPhone: createdSupplier.contactPhone,
-          };
-          this.providers.update((items) => [nextProvider, ...items]);
+        next: () => {
           this.isSavingProvider.set(false);
+          this.showNotification('¡Proveedor agregado con éxito!', 'success');
           this.closeProviderModal();
+          this.providerForm.reset();
+          
+          this.loadProviders();
         },
         error: (err) => {
           console.error('Error creating supplier', err);
           this.isSavingProvider.set(false);
+          this.showNotification('Error al agregar el proveedor. Por favor, intenta de nuevo.', 'error');
         }
       });
       return;
@@ -608,28 +669,17 @@ export class InventoryComponent implements OnInit {
 
     this.isSavingProvider.set(true);
     this.supplierRepository.updateSupplier(updatePayload).subscribe({
-      next: (updatedSupplier) => {
-        this.providers.update((items) =>
-          items.map((item) => {
-            if (item.id !== providerId) {
-              return item;
-            }
-
-            return {
-              ...item,
-              city: formValue.city.trim(),
-              country: formValue.country.trim(),
-              contactEmail: formValue.contactEmail.trim(),
-              contactPhone: formValue.contactPhone.trim(),
-            };
-          }),
-        );
+      next: () => {
         this.isSavingProvider.set(false);
+        this.showNotification('¡Proveedor actualizado con éxito!', 'success');
         this.closeProviderModal();
+        
+        this.loadProviders();
       },
       error: (err) => {
         console.error('Error updating supplier', err);
         this.isSavingProvider.set(false);
+        this.showNotification('Error al actualizar el proveedor. Por favor, intenta de nuevo.', 'error');
       }
     });
   }
@@ -643,11 +693,11 @@ export class InventoryComponent implements OnInit {
   }
 
   getStockState(item: SupplyRow): StockState {
-    if (item.quantity <= item.minimumStock * 0.5) {
+    if (item.quantity === 0 || item.quantity <= item.minimumStock * 0.15) {
       return 'CRITICO';
     }
 
-    if (item.quantity <= item.minimumStock) {
+    if (item.quantity < item.minimumStock) {
       return 'BAJO';
     }
 
@@ -656,7 +706,7 @@ export class InventoryComponent implements OnInit {
 
   getStockLabel(item: SupplyRow): string {
     const state = this.getStockState(item);
-    if (state === 'CRITICO') return 'Critico';
+    if (state === 'CRITICO') return 'Crítico';
     if (state === 'BAJO') return 'Bajo';
     return 'Normal';
   }

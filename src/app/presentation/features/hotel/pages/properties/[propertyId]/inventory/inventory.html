@@ -97,7 +97,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of filteredSupplies(); track item.id) {
+            @for (item of paginatedSupplies(); track item.id) {
             <tr>
               <td>{{ item.sku }}</td>
               <td>{{ item.name }}</td>
@@ -107,11 +107,11 @@
                   {{ item.categoryName }}
                 </span>
               </td>
-              <td>{{ item.quantity }} {{ item.unit }}</td>
+              <td>{{ getFormattedUnit(item.unit, item.quantity) }}</td>
               <td>
                 <span [class.provider-emergency]="item.provider === 'Sin proveedor'">{{ item.provider }}</span>
               </td>
-              <td>{{ item.minimumStock }} {{ item.unit }}</td>
+              <td>{{ getFormattedUnit(item.unit, item.minimumStock) }}</td>
               <td>
                 <span class="stock-pill" [class.stock-pill--normal]="getStockState(item) === 'NORMAL'"
                   [class.stock-pill--low]="getStockState(item) === 'BAJO'"
@@ -143,7 +143,7 @@
       @if (filteredProviders().length === 0) {
       <div class="table-card empty-state">No hay proveedores que coincidan con la busqueda.</div>
       } @else {
-      @for (provider of filteredProviders(); track provider.id) {
+      @for (provider of paginatedProviders(); track provider.id) {
       <article class="provider-card" aria-label="Proveedor {{ provider.name }}">
         <div class="provider-head">
           <div class="provider-title-wrap">
@@ -184,6 +184,29 @@
       }
     </div>
     }
+
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Página {{ currentPage() }} de {{ totalPages() }}
+      </div>
+      <div class="pagination-actions">
+        <app-button type="button" variant="outline" size="small" [disabled]="currentPage() === 1" (clicked)="prevPage()">
+          Anterior
+        </app-button>
+        <div class="pagination-pages">
+          @for (page of [].constructor(totalPages()); track $index) {
+          <button type="button" class="page-num" [class.page-num--active]="currentPage() === ($index + 1)"
+            (click)="setPage($index + 1)">
+            {{ $index + 1 }}
+          </button>
+          }
+        </div>
+        <app-button type="button" variant="outline" size="small" [disabled]="currentPage() === totalPages()"
+          (clicked)="nextPage()">
+          Siguiente
+        </app-button>
+      </div>
+    </div>
   </section>
 </app-hotel-page-layout>
 
@@ -208,11 +231,6 @@
       <div class="form-group">
         <label for="supply-unit">Unidad *</label>
         <app-select id="supply-unit" formControlName="unit" [options]="unitOptions"></app-select>
-      </div>
-
-      <div class="form-group form-group--full">
-        <label for="supply-provider">Proveedor *</label>
-        <app-select id="supply-provider" formControlName="provider" [options]="providerOptions()"></app-select>
       </div>
 
       <div class="form-group form-group--full">

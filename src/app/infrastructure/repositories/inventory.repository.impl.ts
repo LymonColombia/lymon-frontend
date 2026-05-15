@@ -8,7 +8,8 @@ import {
   InventoryItemResponse,
   CreateInventoryCategoryDto,
   InventoryCategoryResponse,
-  InventoryCategoryListResponse
+  InventoryCategoryListResponse,
+  InventoryItemListResponse
 } from '../dtos/inventory.dto';
 
 @Injectable({
@@ -29,6 +30,12 @@ export class InventoryRepositoryImpl extends InventoryRepository {
   getCategories(): Observable<InventoryCategoryResponse[]> {
     return this.http.get<InventoryCategoryListResponse>(`${this.apiUrl}/inventory/categories`).pipe(
       map(res => res.data.categories)
+    );
+  }
+
+  getItems(propertyId: string): Observable<InventoryItemResponse[]> {
+    return this.http.get<InventoryItemListResponse>(`${this.apiUrl}/properties/${propertyId}/inventory/items`).pipe(
+      map(res => res.data)
     );
   }
 }
