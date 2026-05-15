@@ -40,7 +40,7 @@
 
 .tab-btn--active {
   color: var(--color-bg-primary);
-  background: linear-gradient(120deg, var(--color-primary), var(--color-primary-dark));
+  background: var(--color-primary-gradient);
 }
 
 .tab-btn:not(.tab-btn--active):hover {
