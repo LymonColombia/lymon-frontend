@@ -65,6 +65,10 @@
         <app-button variant="primary" size="small" (clicked)="onConfirm()">
           Confirmar
         </app-button>
+      } @else if (status() === 'completed') {
+        <app-button variant="secondary" size="small" (clicked)="onRate()">
+          Valorar
+        </app-button>
       } @else {
         <span
           class="action-label"
