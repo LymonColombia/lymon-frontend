@@ -17,6 +17,10 @@ export class ExperienceCompactCardComponent {
   readonly isAdded = input<boolean>(false);
   readonly cardClicked = output<void>();
 
+  onCardClick(): void {
+    this.cardClicked.emit();
+  }
+
   formatPrice(price: number): string {
     return price.toLocaleString('es-CO');
   }
