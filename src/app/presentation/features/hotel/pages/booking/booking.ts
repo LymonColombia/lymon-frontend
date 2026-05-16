@@ -192,6 +192,7 @@ export class BookingComponent implements OnInit {
       badgeVariant: unit.isShared ? 'shared' : 'available',
       featured: (unit.pricePerNight ?? 0) >= 200,
       maxGuests: unit.maxGuests ?? unit.standardGuests,
+      rating: unit.rating ?? undefined,
     };
   }
 

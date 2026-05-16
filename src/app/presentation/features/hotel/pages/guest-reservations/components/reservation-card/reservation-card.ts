@@ -38,6 +38,7 @@ export class ReservationCardComponent {
 
   readonly confirm = output<string>();
   readonly viewDetails = output<string>();
+  readonly rate = output<GuestReservationResponse>();
 
   readonly status = computed(() => this.reservation().status?.toLowerCase() ?? '');
 
@@ -108,6 +109,10 @@ export class ReservationCardComponent {
 
   onConfirm(): void {
     this.confirm.emit(this.reservation().id);
+  }
+
+  onRate(): void {
+    this.rate.emit(this.reservation());
   }
 
   onViewDetails(): void {

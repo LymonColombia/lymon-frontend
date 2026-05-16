@@ -59,7 +59,7 @@
   }
 
   @if (!isLoading() && !errorMessage() && unit(); as selectedUnit) {
-    <app-room-hero [unit]="selectedUnit">
+    <app-room-hero [unit]="selectedUnit" (viewRatings)="ratingsSection.scrollIntoView({ behavior: 'smooth' })">
       <div room-hero-side class="booking-column">
         <div class="booking-card">
           <h2 class="booking-title">Selecciona tus Fechas</h2>
@@ -140,6 +140,9 @@
         <app-room-general-info [unit]="selectedUnit"></app-room-general-info>
         <app-room-amenities [amenities]="selectedUnit.amenities ?? []"></app-room-amenities>
         <app-room-policies [unit]="selectedUnit"></app-room-policies>
+        <div #ratingsSection>
+          <app-room-ratings [unitId]="selectedUnit.id"></app-room-ratings>
+        </div>
       </div>
     </div>
   }

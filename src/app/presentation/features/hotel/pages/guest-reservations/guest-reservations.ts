@@ -36,6 +36,7 @@ import {
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { GuestNavComponent } from '../../components/guest-nav/guest-nav';
 import { ReservationCardComponent } from './components/reservation-card/reservation-card';
+import { RateReservationModalComponent } from './components/rate-reservation-modal/rate-reservation-modal.component';
 
 type FilterKey = 'all' | 'active' | 'pending' | 'confirmed' | 'finished' | 'cancelled';
 
@@ -77,6 +78,7 @@ const SORT_ORDER_OPTIONS: SelectOption[] = [
     NgIcon,
     GuestNavComponent,
     ReservationCardComponent,
+    RateReservationModalComponent,
     SelectComponent,
   ],
   providers: [
@@ -117,6 +119,7 @@ export class GuestReservationsComponent {
   };
 
   readonly reservations = signal<GuestReservationResponse[]>([]);
+  readonly ratingReservation = signal<GuestReservationResponse | null>(null);
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly activeFilter = signal<FilterKey>('all');
@@ -319,6 +322,18 @@ export class GuestReservationsComponent {
 
   goToNextPage(): void {
     this.goToPage(this.safeCurrentPage() + 1);
+  }
+
+  onRateReservation(reservation: GuestReservationResponse): void {
+    this.ratingReservation.set(reservation);
+  }
+
+  onRatingModalClose(): void {
+    this.ratingReservation.set(null);
+  }
+
+  onRatingSubmitted(): void {
+    this.ratingReservation.set(null);
   }
 
   onLogout(): void {
