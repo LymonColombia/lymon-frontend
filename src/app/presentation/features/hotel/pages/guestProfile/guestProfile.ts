@@ -326,6 +326,27 @@ export class GuestProfileComponent implements OnInit {
     return Object.entries(counts).sort(([, a], [, b]) => b - a)[0]?.[0] ?? null;
   });
 
+  readonly lastStayBooking = computed(() => {
+    const now = new Date();
+    return (
+      [...this.bookings()]
+        .filter((b) => b.status !== 'CANCELLED' && new Date(b.checkOut) < now)
+        .sort((a, b) => new Date(b.checkOut).getTime() - new Date(a.checkOut).getTime())[0] ?? null
+    );
+  });
+
+  readonly nextBooking = computed(() => {
+    const now = new Date();
+    return (
+      [...this.bookings()]
+        .filter(
+          (b) =>
+            b.status !== 'CANCELLED' && b.status !== 'NO_SHOW' && new Date(b.checkIn) > now,
+        )
+        .sort((a, b) => new Date(a.checkIn).getTime() - new Date(b.checkIn).getTime())[0] ?? null
+    );
+  });
+
   readonly noteCharCount = computed(() => this.noteContent().length);
 
   readonly isMessageFormVisible = signal(false);
@@ -988,6 +1009,12 @@ export class GuestProfileComponent implements OnInit {
       }
       return acc;
     }, {});
+  }
+
+  nightsBetween(checkIn: string, checkOut: string): number {
+    return Math.round(
+      (new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24),
+    );
   }
 
   private seasonOf(dateStr: string): string {
