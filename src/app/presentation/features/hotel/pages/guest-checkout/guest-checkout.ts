@@ -90,9 +90,8 @@ export class GuestCheckoutComponent implements OnInit {
   readonly hasMoreExperiences = computed(() => this.experiencesCurrentPage() < this.experiencesTotalPages());
 
   readonly grandTotal = computed(() => {
-    const info = this.info();
-    if (!info) return 0;
-    return info.total + this.addedExperiences().reduce((sum, exp) => sum + exp.priceCop, 0);
+    const base = this.cart()?.reservationItem?.totalPriceCop ?? 0;
+    return base + this.addedExperiences().reduce((sum, exp) => sum + exp.priceCop, 0);
   });
 
   ngOnInit(): void {
@@ -293,7 +292,7 @@ export class GuestCheckoutComponent implements OnInit {
   }
 
   loadMoreExperiences(): void {
-    const propertyId = this.info()?.propertyId;
+    const propertyId = this.cart()?.reservationItem?.propertyId;
     if (!propertyId) return;
     this.loadExperiences(propertyId, this.experiencesCurrentPage() + 1);
   }

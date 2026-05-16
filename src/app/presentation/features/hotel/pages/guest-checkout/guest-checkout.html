@@ -10,16 +10,17 @@
     </div>
   </nav>
 
-  <div class="checkout-container">
-
-    @if (isLoadingCart()) {
+  @if (isLoadingCart()) {
+    <div class="checkout-container">
       <div class="loading-card">
         <div class="spinner"></div>
         <p class="loading-text">Cargando carrito...</p>
       </div>
-    }
+    </div>
+  }
 
-    @if (!isLoadingCart() && !cart()) {
+  @if (!isLoadingCart() && !cart()) {
+    <div class="checkout-container">
       <div class="no-info-card">
         <ng-icon name="bootstrapCart" size="32px" aria-hidden="true"></ng-icon>
         <p class="no-info-text">No hay un carrito activo. Selecciona una habitación para comenzar tu reserva.</p>
@@ -27,10 +28,12 @@
           Ver Habitaciones
         </app-button>
       </div>
-    }
+    </div>
+  }
 
-    @if (!isLoadingCart() && cart(); as currentCart) {
-      @if (isSuccess()) {
+  @if (!isLoadingCart() && cart()) {
+    @if (isSuccess()) {
+      <div class="checkout-container">
         <div class="success-card">
           <div class="success-icon-wrap">
             <ng-icon name="bootstrapCheckCircleFill" size="48px" aria-hidden="true"></ng-icon>
@@ -83,7 +86,6 @@
           }
 
           @if (reservationItem; as item) {
-            <!-- Image header -->
             <div class="checkout-card-header">
               <img src="/images/suite2.avif" alt="" class="header-image" />
               <div class="header-overlay"></div>
@@ -93,7 +95,6 @@
               </div>
             </div>
 
-            <!-- Body -->
             <div class="checkout-card-body">
               <section>
                 <h2 class="section-title">Resumen de la Reserva</h2>
@@ -132,7 +133,6 @@
                 </div>
               </section>
 
-              <!-- Price breakdown -->
               <div class="price-section">
                 <div class="price-row">
                   <span>${{ item.pricePerNight }} × {{ nights }} noche{{ nights !== 1 ? 's' : '' }}</span>
@@ -144,7 +144,6 @@
                 </div>
               </div>
 
-              <!-- Notes -->
               <div class="notes-section">
                 <label class="notes-label" for="checkout-notes">
                   Notas adicionales
@@ -162,7 +161,6 @@
             </div>
           }
 
-          <!-- Error -->
           @if (errorMessage() && pollingStatus() !== 'POLLING') {
             <div class="error-banner">
               <ng-icon name="bootstrapExclamationTriangle" size="15px" aria-hidden="true"></ng-icon>
@@ -170,7 +168,6 @@
             </div>
           }
 
-          <!-- Actions -->
           <div class="actions">
             <app-button
               variant="primary"
@@ -227,7 +224,7 @@
 
       </div>
     }
-  </div>
+  }
 
   <!-- Experience detail modal -->
   <app-modal
