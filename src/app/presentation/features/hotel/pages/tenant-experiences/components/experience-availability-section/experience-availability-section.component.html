@@ -4,14 +4,14 @@
     @if (showDateRange()) {
       <app-experience-date-range-section
         [readonlyMode]="true"
-        [experience]="propertyExperience()"
+        [experience]="dateBasedExperience()"
       />
     }
 
     @if (showRecurrence()) {
       <app-experience-recurrence-section
         [readonlyMode]="true"
-
+        [recurrence]="experience()?.recurrence ?? null"
       />
     }
   } @else if (form(); as formGroup) {

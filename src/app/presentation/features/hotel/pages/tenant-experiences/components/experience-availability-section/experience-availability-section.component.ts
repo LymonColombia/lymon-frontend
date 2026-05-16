@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-
 import { Experience } from '@/domain/entities/experience.model';
 import { ExperienceFormControls } from '../../models/experience-form.model';
 import { ExperienceDateRangeSectionComponent } from '../experience-date-range-section/experience-date-range-section.component';
@@ -33,9 +32,13 @@ export class ExperienceAvailabilitySectionComponent {
   );
   readonly showRecurrence = computed(() => this.availabilityType() === 'RECURRING');
 
-  readonly propertyExperience = computed<Experience | null>(() => {
+  readonly dateBasedExperience = computed<Experience | null>(() => {
     const value = this.experience();
-    if (value?.availabilityType !== 'DATE_RANGE') {
+    if (!value) {
+      return null;
+    }
+
+    if (value.availabilityType !== 'DATE_RANGE' && value.availabilityType !== 'ONE_TIME') {
       return null;
     }
 

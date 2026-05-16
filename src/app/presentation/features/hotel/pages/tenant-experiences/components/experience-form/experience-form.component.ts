@@ -144,17 +144,6 @@ export class ExperienceFormComponent {
     return this.form.controls.availabilityType.value === 'ONE_TIME';
   }
 
-  get scopeLabel(): string {
-    const value = this.form.controls.scope.value;
-    return this.scopeOptions.find((option) => option.value === value)?.label ?? '';
-  }
-
-  get categoryLabel(): string {
-    const value = this.form.controls.category.value;
-    return this.categoryOptions().find((option) => option.value === value)?.label ?? '';
-  }
-
-
   onPropertyChanged(value: string | number): void {
     const propertyId = String(value);
     if (!propertyId) {

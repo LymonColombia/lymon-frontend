@@ -105,14 +105,11 @@
   margin: 0;
 }
 
-
 .image-preview {
   width: 100%;
-  max-width: 220px;
-  height: 120px;
+  height: var(--spacing-1xl);
   object-fit: cover;
   border-radius: var(--radius-md);
-  border: var(--input-border-width) solid var(--color-border-light);
   display: block;
   margin-top: var(--spacing-sm);
 }

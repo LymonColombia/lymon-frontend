@@ -13,24 +13,26 @@
     </div>
 
     <h3 class="experience-name">{{ experience().name }}</h3>
-    <p class="experience-description">{{ experience().description }}</p>
+     <p class="meta-line">
+        <ng-icon name="bootstrapGeoAltFill" size="14px"></ng-icon>
+        {{ experience().location.label }}
+      </p>
 
-    <p class="meta-line">
-      <ng-icon name="bootstrapGeoAltFill" size="14px"></ng-icon>
-      {{ experience().location.label }}
-    </p>
-    <p class="meta-line">
-      <ng-icon name="bootstrapTagFill" size="14px"></ng-icon>
-      {{ priceLabel() }}
-    </p>
-    <p class="meta-line">
-      <ng-icon name="bootstrapClockFill" size="14px"></ng-icon>
-      {{ experience().durationHours }} hora{{ experience().durationHours !== 1 ? 's' : '' }}
-    </p>
-    <p class="meta-line">
-      <ng-icon name="bootstrapPeopleFill" size="14px"></ng-icon>
-      Capacidad {{ experience().capacity }}
-    </p>
+    <div class="meta-grid">
+     
+      <p class="meta-line">
+        <ng-icon name="bootstrapTagFill" size="14px"></ng-icon>
+        {{ priceLabel() }}
+      </p>
+      <p class="meta-line">
+        <ng-icon name="bootstrapClockFill" size="14px"></ng-icon>
+        {{ experience().durationHours }} hora{{ experience().durationHours !== 1 ? 's' : '' }}
+      </p>
+      <p class="meta-line">
+        <ng-icon name="bootstrapPeopleFill" size="14px"></ng-icon>
+        Capacidad {{ experience().capacity }}
+      </p>
+    </div>
 
     <p class="availability-summary">{{ availabilitySummary() }}</p>
 
@@ -47,4 +49,3 @@
     </div>
   </div>
 </article>
-

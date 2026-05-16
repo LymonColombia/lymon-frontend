@@ -2,38 +2,31 @@
   <div class="form-card">
     <div class="section-separator">Informacion General</div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="scope">Scope <span class="required">*</span></label>
-        @if (isEditingMode()) {
-          
-        } @else {
-          <app-select id="scope" [options]="scopeOptions" formControlName="scope" />
-        }
-      </div>
-      <div class="form-group">
-        <label for="category">Categoria <span class="required">*</span></label>
-        @if (isEditingMode()) {
-          <app-input id="category" type="text" Placeholder ="categoryLabel" [disabled]="true" />
-        } @else {
-          <app-select id="category" [options]="categoryOptions()" formControlName="category" />
-        }
-      </div>
-    </div>
-
-    @if (isPropertyScope) {
+    @if (isEditingMode()) {
+    } @else {
       <div class="form-row">
         <div class="form-group">
-          <label for="propertyId">Propiedad</label>
-          <app-select
-            id="propertyId"
-            [options]="propertyOptions()"
-            formControlName="propertyId"
-            (valueChange)="onPropertyChanged($event)"
-             [disabled]="isEditingMode()"
-          />
+          <label for="scope">Scope <span class="required">*</span></label>
+          <app-select id="scope" [options]="scopeOptions" formControlName="scope" />
         </div>
         <div class="form-group">
+          <label for="category">Categoria <span class="required">*</span></label>
+          <app-select id="category" [options]="categoryOptions()" formControlName="category" />
+        </div>
+      </div>
+
+      @if (isPropertyScope) {
+        <div class="form-row">
+          <div class="form-group">
+            <label for="propertyId">Propiedad</label>
+            <app-select
+              id="propertyId"
+              [options]="propertyOptions()"
+              formControlName="propertyId"
+              (valueChange)="onPropertyChanged($event)"
+            />
+          </div>
+          <div class="form-group">
             <legend>Unidades</legend>
             @if (unitsLoading()) {
               <p class="field-hint">Cargando unidades...</p>
@@ -47,15 +40,15 @@
                       (change)="
                         onUnitChecklistToggle(unit.value.toString(), $any($event.target).checked)
                       "
-                      [disabled]="isEditingMode()"
                     />
                     <span>{{ unit.label }}</span>
                   </label>
                 }
               </div>
             }
+          </div>
         </div>
-      </div>
+      }
     }
 
     <div class="form-row">
@@ -68,9 +61,7 @@
         <label for="coverImageInput">Imagen de portada <span class="required">*</span></label>
 
         <app-button class="drop-file">
-          <span class="drop-label">
-           Subir imagen</span
-          >
+          <span class="drop-label"> Subir imagen</span>
           <input
             id="coverImageInput"
             type="file"
@@ -78,7 +69,6 @@
             class="file-input"
             aria-label="Seleccionar imagen de portada"
             (change)="onCoverImageSelected($event)"
-           
           />
         </app-button>
 
@@ -136,13 +126,21 @@
       <div class="form-row">
         <div class="form-group">
           <label for="allowStandalonePurchase">
-            <input type="checkbox" id="allowStandalonePurchase" formControlName="allowStandalonePurchase" />
+            <input
+              type="checkbox"
+              id="allowStandalonePurchase"
+              formControlName="allowStandalonePurchase"
+            />
             Permitir compra independiente
           </label>
         </div>
         <div class="form-group">
           <label for="allowReservationPurchase">
-            <input type="checkbox" id="allowReservationPurchase" formControlName="allowReservationPurchase" />
+            <input
+              type="checkbox"
+              id="allowReservationPurchase"
+              formControlName="allowReservationPurchase"
+            />
             Permitir compra con reserva
           </label>
         </div>

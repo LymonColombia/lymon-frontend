@@ -1,14 +1,25 @@
 @if (readonlyMode()) {
-    @if (getBlackoutValues().length > 0) {
-      <div class="blackout-detail">
-        <p class="section-caption">Fechas bloqueadas</p>
-        <ul>
-          @for (range of getBlackoutValues(); track $index) {
-            <li>{{ formatDateTime(range.startAt) }} - {{ formatDateTime(range.endAt) }}</li>
-          }
-        </ul>
-      </div>
-    }
+  <div class="detail-grid">
+    <p class="detail-item">
+      <span class="detail-label">Inicio</span>
+      <span class="detail-value">{{ formatDateTime(experience()?.startAt) }}</span>
+    </p>
+    <p class="detail-item">
+      <span class="detail-label">Fin</span>
+      <span class="detail-value">{{ formatDateTime(experience()?.endAt) }}</span>
+    </p>
+  </div>
+
+  @if (getBlackoutValues().length > 0) {
+    <div class="blackout-detail">
+      <p class="section-caption">Fechas bloqueadas</p>
+      <ul>
+        @for (range of getBlackoutValues(); track $index) {
+          <li>{{ formatDateTime(range.startAt) }} - {{ formatDateTime(range.endAt) }}</li>
+        }
+      </ul>
+    </div>
+  }
 
 } @else {
   <div class="form-row">
