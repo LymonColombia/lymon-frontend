@@ -138,7 +138,7 @@
   <div class="form-actions" modal-footer>
     <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
     <app-button type="submit" variant="primary" [loading]="isSubmitting()" [disabled]="isSubmitting()">
-      Crear Unidad
+      {{ isEditMode() ? 'Guardar cambios' : 'Crear Unidad' }}
     </app-button>
   </div>
 </form>
