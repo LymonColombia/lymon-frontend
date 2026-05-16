@@ -1,5 +1,5 @@
-<div class="wizard-overlay" (click)="onClose()">
-  <div class="wizard-container" (click)="$event.stopPropagation()">
+<div class="wizard-overlay" (click)="onClose()" (keydown.enter)="onClose()" role="button" tabindex="0">
+  <div class="wizard-container" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" role="presentation">
     <header class="wizard-header">
       <div class="header-title">
         <ng-icon name="bootstrapCalendarPlus" class="title-icon"></ng-icon>
