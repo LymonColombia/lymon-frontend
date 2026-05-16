@@ -67,7 +67,6 @@ export interface OccupiedDateRange {
 }
 
 export interface CreateUnitRatingDto {
-  tenantId: string;
   reservationId: string;
   rate: number;
   message?: string;
