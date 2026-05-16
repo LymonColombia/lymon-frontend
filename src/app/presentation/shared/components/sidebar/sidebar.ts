@@ -113,7 +113,6 @@ export class SidebarComponent implements OnInit {
 
   readonly menuItems: MenuItem[] = [
     { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
-    { icon: 'bootstrapArchive', label: 'Inventario', route: '/inventory' },
     { icon: 'bootstrapHouseDoor', label: 'Propiedades y Unidades', route: '/properties' },
     { icon: 'bootstrapStar', label: 'Experiencias', route: '/tenant-experiences' },
     { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/register-employee' },

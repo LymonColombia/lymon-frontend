@@ -5,13 +5,30 @@ import { vi } from 'vitest';
 import { InventoryComponent } from './inventory';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { Supplier } from '@/domain/entities/supplier.model';
+import { InventoryRepository } from '@/domain/repositories/inventory.repository';
+import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/create-inventory-category.use-case';
+import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
+import { ActivatedRoute } from '@angular/router';
 
 const supplierRepositoryMock = {
   createSupplier: vi.fn(),
   updateSupplier: vi.fn(),
   deleteSupplier: vi.fn(),
-  getSuppliers: vi.fn(),
+  getSuppliers: vi.fn().mockReturnValue(of([])),
   getSupplierById: vi.fn(),
+};
+
+const inventoryRepositoryMock = {
+  createCategory: vi.fn(),
+  createItem: vi.fn(),
+};
+
+const activatedRouteMock = {
+  snapshot: {
+    paramMap: {
+      get: vi.fn().mockReturnValue('prop-123'),
+    },
+  },
 };
 
 describe('InventoryComponent - suppliers', () => {
@@ -23,6 +40,10 @@ describe('InventoryComponent - suppliers', () => {
       imports: [InventoryComponent],
       providers: [
         { provide: SupplierRepository, useValue: supplierRepositoryMock },
+        { provide: InventoryRepository, useValue: inventoryRepositoryMock },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+        CreateInventoryCategoryUseCase,
+        CreateInventoryItemUseCase,
       ],
     }).compileComponents();
   });
@@ -93,6 +114,70 @@ describe('InventoryComponent - suppliers', () => {
     component.saveProvider();
 
     expect(supplierRepositoryMock.createSupplier).not.toHaveBeenCalled();
+    expect(markTouchedSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('InventoryComponent - categories', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+
+    await TestBed.configureTestingModule({
+      imports: [InventoryComponent],
+      providers: [
+        { provide: SupplierRepository, useValue: supplierRepositoryMock },
+        { provide: InventoryRepository, useValue: inventoryRepositoryMock },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+      ],
+    }).compileComponents();
+  });
+
+  it('debe crear categoría con payload correcto y cerrar modal', () => {
+    const mockCategoryResponse = {
+      id: 'cat-1',
+      name: 'Amenities',
+      description: 'Productos de tocador',
+      createdAt: '2023-01-01T00:00:00Z',
+      updatedAt: '2023-01-01T00:00:00Z',
+    };
+
+    inventoryRepositoryMock.createCategory.mockReturnValue(of(mockCategoryResponse));
+
+    const fixture = TestBed.createComponent(InventoryComponent);
+    const component = fixture.componentInstance;
+
+    component.openCreateCategoryModal();
+
+    component.categoryForm.patchValue({
+      name: ' Amenities ',
+      description: ' Productos de tocador ',
+    });
+
+    component.saveCategory();
+
+    expect(inventoryRepositoryMock.createCategory).toHaveBeenCalledWith({
+      name: 'Amenities',
+      description: 'Productos de tocador',
+    });
+    expect(component.isCategoryModalOpen()).toBe(false);
+  });
+
+  it('no debe llamar createCategory cuando el formulario es invalido', () => {
+    const fixture = TestBed.createComponent(InventoryComponent);
+    const component = fixture.componentInstance;
+
+    component.openCreateCategoryModal();
+    component.categoryForm.patchValue({
+      name: '',
+      description: 'short',
+    });
+
+    const markTouchedSpy = vi.spyOn(component.categoryForm, 'markAllAsTouched');
+
+    component.saveCategory();
+
+    expect(inventoryRepositoryMock.createCategory).not.toHaveBeenCalled();
     expect(markTouchedSpy).toHaveBeenCalledTimes(1);
   });
 });

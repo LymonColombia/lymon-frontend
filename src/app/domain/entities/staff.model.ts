@@ -25,6 +25,11 @@ export interface Unit {
   isShared?: boolean;
   amenities?: string[];
   bathroomsCount?: number;
+  externalIds?: {
+    airbnbId?: string;
+    bookingId?: string;
+    vrboId?: string;
+  };
 }
 
 export interface Bedroom {

@@ -70,7 +70,13 @@
     } @else {
       <div class="property-grid">
         @for (prop of properties(); track prop.id) {
-          <app-property-card [property]="prop" (viewUnits)="navigateToUnits($event)" (edit)="openEditForm($event)" (delete)="openDeleteConfirm($event)" />
+          <app-property-card
+            [property]="prop"
+            (viewUnits)="navigateToUnits($event)"
+            (viewInventory)="navigateToInventory($event)"
+            (edit)="openEditForm($event)"
+            (delete)="openDeleteConfirm($event)"
+          />
         }
         
         <button class="create-property-card" type="button" (click)="openForm()">

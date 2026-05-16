@@ -13,6 +13,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBuildingFill,
   bootstrapBuildingsFill,
+  bootstrapBoxSeam,
   bootstrapDoorOpenFill,
   bootstrapGeoAltFill,
   bootstrapHouseDoorFill,
@@ -36,6 +37,7 @@ type PropertyIconName =
   imports: [ButtonComponent, NgIcon],
   providers: [
     provideIcons({
+      bootstrapBoxSeam,
       bootstrapBuildingFill,
       bootstrapBuildingsFill,
       bootstrapDoorOpenFill,
@@ -55,6 +57,7 @@ type PropertyIconName =
 export class PropertyCardComponent {
   readonly property = input.required<Property>();
   readonly viewUnits = output<string>();
+  readonly viewInventory = output<string>();
   readonly edit = output<Property>();
   readonly delete = output<Property>();
 
@@ -115,5 +118,9 @@ export class PropertyCardComponent {
   onDelete(): void {
     this.menuOpen.set(false);
     this.delete.emit(this.property());
+  }
+
+  onViewInventory(): void {
+    this.viewInventory.emit(this.property().id);
   }
 }

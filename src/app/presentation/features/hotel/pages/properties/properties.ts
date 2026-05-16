@@ -65,6 +65,7 @@ export class PropertiesComponent implements OnInit {
   private static readonly DEFAULT_PROPERTY_TYPE: PropertyType = 'HOTEL';
   private static readonly DEFAULT_CANCELLATION_POLICY: CancellationPolicy = 'FLEXIBLE';
   private static readonly PROPERTY_UNITS_ROUTE = '/property-units';
+  private static readonly PROPERTY_INVENTORY_ROUTE = '/properties';
 
   readonly PROPERTY_TYPES: PropertyType[] = ['HOTEL', 'CASA', 'APARTAMENTO', 'VILLA', 'HOSTAL', 'GLAMPING'];
   readonly CANCELLATION_POLICIES: CancellationPolicy[] = ['FLEXIBLE', 'STANDARD', 'STRICT'];
@@ -212,6 +213,10 @@ export class PropertiesComponent implements OnInit {
 
   navigateToUnits(propertyId: string): void {
     this.router.navigate([PropertiesComponent.PROPERTY_UNITS_ROUTE], { queryParams: { propertyId } });
+  }
+
+  navigateToInventory(propertyId: string): void {
+    this.router.navigate([PropertiesComponent.PROPERTY_INVENTORY_ROUTE, propertyId, 'inventory']);
   }
 
   onSubmit(): void {

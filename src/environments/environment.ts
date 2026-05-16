@@ -21,6 +21,7 @@ export const environment = {
   },
   units: {
     endpoint: '/units',
+    unitDetailEndpoint: '/units/unit',
   },
   experiences: {
     endpoint: '/experiences',
