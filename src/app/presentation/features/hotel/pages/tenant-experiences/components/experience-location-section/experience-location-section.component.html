@@ -1,0 +1,57 @@
+@if (readonlyMode()) {
+  @if (location(); as item) {
+    <div class="detail-grid">
+      <p class="detail-item">
+        <span class="detail-label">Punto de encuentro</span>
+        <span class="detail-value">{{ item.label }}</span>
+      </p>
+      <p class="detail-item">
+        <span class="detail-label">Direccion</span>
+        <span class="detail-value">{{ item.address }}</span>
+      </p>
+      <p class="detail-item">
+        <span class="detail-label">Latitud</span>
+        <span class="detail-value">{{ item.lat }}</span>
+      </p>
+      <p class="detail-item">
+        <span class="detail-label">Longitud</span>
+        <span class="detail-value">{{ item.lng }}</span>
+      </p>
+    </div>
+  }
+} @else if (locationForm(); as formGroup) {
+  <div class="form-row" [formGroup]="formGroup">
+    <div class="form-group">
+      <label>Etiqueta <span class="required">*</span></label>
+      <app-input formControlName="label" placeholder="Main lobby pickup point" />
+      @if (formGroup.controls.label.invalid && formGroup.controls.label.touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Direccion <span class="required">*</span></label>
+      <app-input formControlName="address" placeholder="Cra 10 #20-30, Bogota" />
+      @if (formGroup.controls.address.invalid && formGroup.controls.address.touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+  </div>
+
+  <div class="form-row" [formGroup]="formGroup">
+    <div class="form-group">
+      <label>Latitud <span class="required">*</span></label>
+      <app-input type="number" formControlName="lat" placeholder="4.6097" />
+      @if (formGroup.controls.lat.invalid && formGroup.controls.lat.touched) {
+        <span class="field-error">Valor entre -90 y 90</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Longitud <span class="required">*</span></label>
+      <app-input type="number" formControlName="lng" placeholder="-74.0817" />
+      @if (formGroup.controls.lng.invalid && formGroup.controls.lng.touched) {
+        <span class="field-error">Valor entre -180 y 180</span>
+      }
+    </div>
+  </div>
+}
+

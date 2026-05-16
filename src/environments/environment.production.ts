@@ -23,6 +23,12 @@ export const environment = {
     endpoint: '/units',
     unitDetailEndpoint: '/units/unit',
   },
+  experiences: {
+    endpoint: '/experiences',
+  },
+  storage: {
+    endpoint: '/storage/presigned-url',
+  },
   guestAuth: {
     endpoint: '/guest/auth',
   },
@@ -38,9 +44,6 @@ export const environment = {
   },
   suppliers: {
     endpoint: '/suppliers',
-  },
-  storage: {
-    endpoint: '/storage/presigned-url',
   },
   guestExperiences: {
     endpoint: '/guest/experiences',

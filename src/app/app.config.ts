@@ -27,6 +27,10 @@ import { GuestReservationRepository } from '@/domain/repositories/guest-reservat
 import { GuestReservationRepositoryImpl } from '@/infrastructure/repositories/guest-reservation.repository.impl';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { SupplierRepositoryImpl } from '@/infrastructure/repositories/supplier.repository.impl';
+import { ExperienceRepository } from '@/domain/repositories/experience.repository';
+import { ExperienceRepositoryImpl } from '@/infrastructure/repositories/experience.repository.impl';
+import { ImageStorageRepository } from '@/domain/repositories/storage-img.repository';
+import { ImageStorageRepositoryImpl } from '@/infrastructure/repositories/storage-img.impl';
 import { ShiftRepository } from '@/domain/repositories/shift.repository';
 import { ShiftRepositoryImpl } from '@/infrastructure/repositories/shift.repository.impl';
 import { InventoryRepository } from '@/domain/repositories/inventory.repository';
@@ -58,10 +62,14 @@ export const appConfig: ApplicationConfig = {
     { provide: CrmRepository, useClass: CrmRepositoryImpl },
     { provide: GuestReservationRepository, useClass: GuestReservationRepositoryImpl },
     { provide: SupplierRepository, useClass: SupplierRepositoryImpl },
+    { provide: ExperienceRepository, useClass: ExperienceRepositoryImpl },
+    { provide: ImageStorageRepository, useClass: ImageStorageRepositoryImpl },
     { provide: ShiftRepository, useClass: ShiftRepositoryImpl },
     { provide: InventoryRepository, useClass: InventoryRepositoryImpl },
     { provide: StorageRepository, useClass: StorageRepositoryImpl },
     { provide: GuestExperienceRepository, useClass: GuestExperienceRepositoryImpl },
+    { provide: ExperienceRepository, useClass: ExperienceRepositoryImpl },
+    { provide: ImageStorageRepository, useClass: ImageStorageRepositoryImpl },
     { provide: PaymentRepository, useClass: PaymentRepositoryImpl },
     { provide: GuestCartRepository, useClass: GuestCartRepositoryImpl },
   ],

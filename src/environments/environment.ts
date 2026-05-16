@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000',
+  apiUrl: 'https://lymon-backend-development.onrender.com',
   auth: {
     endpoint: '/auth',
   },
@@ -23,6 +23,12 @@ export const environment = {
     endpoint: '/units',
     unitDetailEndpoint: '/units/unit',
   },
+  experiences: {
+    endpoint: '/experiences',
+  },
+   storage: {
+    endpoint: '/storage/presigned-url',
+  },
   guestAuth: {
     endpoint: '/guest/auth',
   },
@@ -38,9 +44,6 @@ export const environment = {
   },
   suppliers: {
     endpoint: '/suppliers',
-  },
-  storage: {
-    endpoint: '/storage/presigned-url',
   },
   guestExperiences: {
     endpoint: '/guest/experiences',
