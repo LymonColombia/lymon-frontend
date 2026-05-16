@@ -37,6 +37,9 @@ export class HotelPageIconDirective {}
 @Component({
   selector: 'app-hotel-page-layout',
   standalone: true,
+  host: {
+    '[attr.title]': 'null',
+  },
   imports: [
     RouterLink,
     FooterComponent,

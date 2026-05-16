@@ -129,8 +129,8 @@
   transform: translate(-50%, -50%) scale(0.9);
   opacity: 0;
   display: block;
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: auto;
   object-fit: contain;
   transition: none;
 }
@@ -272,6 +272,7 @@
   align-items: center;
   gap: var(--spacing-md);
   flex: 1;
+  min-width: 0;
 }
 
 .sidebar--collapsed .profile {

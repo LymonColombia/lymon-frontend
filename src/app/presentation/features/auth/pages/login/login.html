@@ -12,6 +12,10 @@
       <h1 class="auth-title">Bienvenido</h1>
       <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
 
+      @if (sessionExpired()) {
+        <div class="warning-banner">Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</div>
+      }
+
       @if (errorMessage()) {
         <div class="error-banner">{{ errorMessage() }}</div>
       }

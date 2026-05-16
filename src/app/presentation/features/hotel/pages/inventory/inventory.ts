@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -13,6 +13,7 @@ import {
   bootstrapTelephone,
   bootstrapX,
   bootstrapXCircleFill,
+  bootstrapExclamationTriangle,
 } from '@ng-icons/bootstrap-icons';
 
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
@@ -21,7 +22,7 @@ import { InputComponent } from '@/presentation/shared/components/input/input.com
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
-import { CreateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
+import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -70,13 +71,14 @@ interface ProviderRow {
       bootstrapTelephone,
       bootstrapX,
       bootstrapXCircleFill,
+      bootstrapExclamationTriangle,
     }),
   ],
   templateUrl: './inventory.html',
   styleUrl: './inventory.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InventoryComponent {
+export class InventoryComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly supplierRepository = inject(SupplierRepository);
 
@@ -87,6 +89,9 @@ export class InventoryComponent {
   readonly editingSupplyId = signal<string | null>(null);
   readonly editingProviderId = signal<string | null>(null);
   readonly selectedProviderId = signal<string | null>(null);
+  readonly isDeleteProviderModalOpen = signal(false);
+  readonly providerToDelete = signal<ProviderRow | null>(null);
+  readonly isSavingProvider = signal(false);
 
   readonly categoryOptions: SelectOption[] = [
     { value: 'Textiles', label: 'Textiles' },
@@ -116,35 +121,7 @@ export class InventoryComponent {
     { value: 'Barranquilla', label: 'Barranquilla' },
   ];
 
-  readonly providers = signal<ProviderRow[]>([
-    {
-      id: 'prov-1',
-      name: 'Distribuidora Clean Pro',
-      nit: 'NIT-123-456-789',
-      city: 'Bogotá',
-      country: 'Colombia',
-      contactEmail: 'ventas@cleanpro.com',
-      contactPhone: '+57 301 555-0101',
-    },
-    {
-      id: 'prov-2',
-      name: 'Alimentos Frescos CA',
-      nit: 'NIT-987-654-321',
-      city: 'Medellín',
-      country: 'Colombia',
-      contactEmail: 'info@alimentosfrescos.com',
-      contactPhone: '+57 301 555-0202',
-    },
-    {
-      id: 'prov-3',
-      name: 'Textiles Premium',
-      nit: 'NIT-555-444-333',
-      city: 'Cali',
-      country: 'Colombia',
-      contactEmail: 'contacto@textilespremium.com',
-      contactPhone: '+57 301 555-0303',
-    },
-  ]);
+  readonly providers = signal<ProviderRow[]>([]);
 
   readonly supplies = signal<SupplyRow[]>([
     {
@@ -276,6 +253,21 @@ export class InventoryComponent {
     this.activeTab.set(tab);
   }
 
+  ngOnInit(): void {
+    this.loadProviders();
+  }
+
+  private loadProviders(): void {
+    this.supplierRepository.getSuppliers().subscribe({
+      next: (suppliers) => {
+        this.providers.set(suppliers);
+      },
+      error: (err) => {
+        console.error('Error loading suppliers', err);
+      }
+    });
+  }
+
   updateSearch(value: string | number | null): void {
     this.searchTerm.set((value ?? '').toString());
   }
@@ -360,16 +352,37 @@ export class InventoryComponent {
     this.supplies.update((items) => items.filter((item) => item.id !== id));
   }
 
-  removeProvider(id: string): void {
-    this.providers.update((items) => items.filter((item) => item.id !== id));
+  openDeleteProviderModal(provider: ProviderRow): void {
+    this.providerToDelete.set(provider);
+    this.isDeleteProviderModalOpen.set(true);
+  }
 
-    if (this.selectedProviderId() === id) {
-      this.selectedProviderId.set(null);
-    }
+  closeDeleteProviderModal(): void {
+    this.isDeleteProviderModalOpen.set(false);
+    this.providerToDelete.set(null);
+  }
 
-    if (this.editingProviderId() === id) {
-      this.closeProviderModal();
-    }
+  confirmDeleteProvider(): void {
+    const provider = this.providerToDelete();
+    if (!provider) return;
+
+    this.supplierRepository.deleteSupplier(provider.id).subscribe({
+      next: () => {
+        this.providers.update((items) => items.filter((item) => item.id !== provider.id));
+        this.closeDeleteProviderModal();
+        
+        if (this.selectedProviderId() === provider.id) {
+          this.selectedProviderId.set(null);
+        }
+        if (this.editingProviderId() === provider.id) {
+          this.closeProviderModal();
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting supplier', err);
+        this.closeDeleteProviderModal();
+      }
+    });
   }
 
   openEditProviderModal(provider: ProviderRow): void {
@@ -422,42 +435,66 @@ export class InventoryComponent {
         contactPhone: formValue.contactPhone.trim(),
       };
 
+      this.isSavingProvider.set(true);
       this.supplierRepository.createSupplier(payload).subscribe({
-        next: () => {
+        next: (createdSupplier) => {
           const nextProvider: ProviderRow = {
-            id: `prov-${Date.now()}`,
-            name: payload.name,
-            nit: payload.nit,
-            city: payload.city,
-            country: payload.country,
-            contactEmail: payload.contactEmail,
-            contactPhone: payload.contactPhone,
+            id: createdSupplier.id,
+            name: createdSupplier.name,
+            nit: createdSupplier.nit,
+            city: createdSupplier.city,
+            country: createdSupplier.country,
+            contactEmail: createdSupplier.contactEmail,
+            contactPhone: createdSupplier.contactPhone,
           };
           this.providers.update((items) => [nextProvider, ...items]);
+          this.isSavingProvider.set(false);
           this.closeProviderModal();
         },
+        error: (err) => {
+          console.error('Error creating supplier', err);
+          this.isSavingProvider.set(false);
+        }
       });
       return;
     }
 
-    this.providers.update((items) =>
-      items.map((item) => {
-        if (item.id !== providerId) {
-          return item;
-        }
+    const updatePayload: UpdateSupplierDto = {
+      supplierId: providerId,
+      name: formValue.name.trim(),
+      nit: formValue.nit.trim(),
+      city: formValue.city.trim(),
+      country: formValue.country.trim(),
+      contactEmail: formValue.contactEmail.trim(),
+      contactPhone: formValue.contactPhone.trim(),
+    };
 
-        return {
-          ...item,
-          nit: formValue.nit.trim(),
-          city: formValue.city.trim(),
-          country: formValue.country.trim(),
-          contactEmail: formValue.contactEmail.trim(),
-          contactPhone: formValue.contactPhone.trim(),
-        };
-      }),
-    );
+    this.isSavingProvider.set(true);
+    this.supplierRepository.updateSupplier(updatePayload).subscribe({
+      next: (updatedSupplier) => {
+        this.providers.update((items) =>
+          items.map((item) => {
+            if (item.id !== providerId) {
+              return item;
+            }
 
-    this.closeProviderModal();
+            return {
+              ...item,
+              city: formValue.city.trim(),
+              country: formValue.country.trim(),
+              contactEmail: formValue.contactEmail.trim(),
+              contactPhone: formValue.contactPhone.trim(),
+            };
+          }),
+        );
+        this.isSavingProvider.set(false);
+        this.closeProviderModal();
+      },
+      error: (err) => {
+        console.error('Error updating supplier', err);
+        this.isSavingProvider.set(false);
+      }
+    });
   }
 
   openProviderDetails(providerId: string): void {

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  HostListener,
   inject,
   OnInit,
   signal,
@@ -9,36 +10,53 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  CreateCrmGuestNoteRequest,
   CrmGuest,
   CrmGuestBooking,
   CrmGuestBookingSource,
+  CrmGuestEmail,
+  CrmGuestMessageTemplateId,
   CrmGuestNote,
   CrmGuestNoteCategory,
+  CreateCrmGuestNoteRequest,
+  UpdateCrmGuestNoteRequest,
+  SendCrmGuestMessageRequest,
 } from '@/domain/entities/crm-guest.model';
 import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
+import { UpdateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/update-crm-guest-note.use-case';
+import { DeleteCrmGuestNoteUseCase } from '@/domain/use-cases/crm/delete-crm-guest-note.use-case';
+import { PinCrmGuestNoteUseCase } from '@/domain/use-cases/crm/pin-crm-guest-note.use-case';
+import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
+import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
+import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
-import { HotelPageLayoutComponent, HotelPageIconDirective } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { NgTemplateOutlet } from '@angular/common';
+import {
+  HotelPageLayoutComponent,
+  HotelPageIconDirective,
+} from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import {
   SelectComponent,
   SelectOption,
 } from '@/presentation/shared/components/select/select.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import {
   bootstrapPersonFill,
+  bootstrapPerson,
   bootstrapEnvelope,
   bootstrapTelephone,
   bootstrapTags,
   bootstrapHouseDoor,
   bootstrapCalendarCheck,
+  bootstrapCalendar3,
   bootstrapWallet2,
   bootstrapCardText,
   bootstrapPinAngleFill,
@@ -46,6 +64,16 @@ import {
   bootstrapMoonStars,
   bootstrapSun,
   bootstrapChevronLeft,
+  bootstrapEnvelopeFill,
+  bootstrapEnvelopeOpen,
+  bootstrapTrash,
+  bootstrapPaperclip,
+  bootstrapFileEarmark,
+  bootstrapX,
+  bootstrapPencil,
+  bootstrapSearch,
+  bootstrapCheck,
+  bootstrapGraphUp,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -62,21 +90,71 @@ type UnitLookupItem = Unit & {
 };
 
 type BookingStatusTone = 'info' | 'muted' | 'success' | 'warning' | 'danger';
+type SelectValue = string | number | null;
+type GuestProfileTab = 'resumen' | 'metricas' | 'reservas' | 'comunicaciones' | 'documentos';
 
 const NOTE_MAX_LENGTH = 280;
+const EMAIL_HISTORY_LIMIT = 5;
+
+const NOTE_CATEGORIES: readonly CrmGuestNoteCategory[] = [
+  'general',
+  'preference',
+  'behavior',
+  'incident',
+];
+
+const AVAILABLE_TAGS: readonly string[] = [
+  'vip',
+  'family',
+  'honeymoon',
+  'business',
+  'regular',
+  'pet friendly',
+  'accessibility needs',
+  'loyalty member',
+  'early check-in',
+  'late checkout',
+];
+
+const TAG_LABELS: Record<string, string | undefined> = {
+  vip: 'VIP',
+  family: 'Familia',
+  honeymoon: 'Luna de miel',
+  business: 'Negocios',
+  regular: 'Regular',
+  'pet friendly': 'Mascotas',
+  'accessibility needs': 'Accesibilidad',
+  'loyalty member': 'Miembro fidelidad',
+  'early check-in': 'Check-in temprano',
+  'late checkout': 'Check-out tardío',
+};
+
+function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
+  return typeof value === 'string' && (NOTE_CATEGORIES as readonly string[]).includes(value);
+}
 
 @Component({
   selector: 'app-guest-profile',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [HotelPageLayoutComponent, HotelPageIconDirective, ButtonComponent, SelectComponent, NgIcon],
+  imports: [
+    HotelPageLayoutComponent,
+    HotelPageIconDirective,
+    ButtonComponent,
+    SelectComponent,
+    NgIcon,
+    ModalComponent,
+    NgTemplateOutlet,
+  ],
   providers: [
     provideIcons({
       bootstrapPersonFill,
+      bootstrapPerson,
       bootstrapEnvelope,
       bootstrapTelephone,
       bootstrapTags,
       bootstrapHouseDoor,
       bootstrapCalendarCheck,
+      bootstrapCalendar3,
       bootstrapWallet2,
       bootstrapCardText,
       bootstrapPinAngleFill,
@@ -84,6 +162,16 @@ const NOTE_MAX_LENGTH = 280;
       bootstrapMoonStars,
       bootstrapSun,
       bootstrapChevronLeft,
+      bootstrapEnvelopeFill,
+      bootstrapEnvelopeOpen,
+      bootstrapTrash,
+      bootstrapPaperclip,
+      bootstrapFileEarmark,
+      bootstrapX,
+      bootstrapPencil,
+      bootstrapSearch,
+      bootstrapCheck,
+      bootstrapGraphUp,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -96,8 +184,24 @@ export class GuestProfileComponent implements OnInit {
   private readonly getCrmGuestBookingsUseCase = inject(GetCrmGuestBookingsUseCase);
   private readonly getCrmGuestNotesUseCase = inject(GetCrmGuestNotesUseCase);
   private readonly createCrmGuestNoteUseCase = inject(CreateCrmGuestNoteUseCase);
+  private readonly updateCrmGuestNoteUseCase = inject(UpdateCrmGuestNoteUseCase);
+  private readonly deleteCrmGuestNoteUseCase = inject(DeleteCrmGuestNoteUseCase);
+  private readonly pinCrmGuestNoteUseCase = inject(PinCrmGuestNoteUseCase);
+  private readonly sendCrmGuestMessageUseCase = inject(SendCrmGuestMessageUseCase);
+  private readonly getCrmGuestEmailsUseCase = inject(GetCrmGuestEmailsUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
+  private readonly updateCrmGuestTagsUseCase = inject(UpdateCrmGuestTagsUseCase);
+
+  readonly activeTab = signal<GuestProfileTab>('resumen');
+
+  readonly profileNavTabs: Array<{ value: GuestProfileTab; label: string; icon: string }> = [
+    { value: 'resumen', label: 'Resumen', icon: 'bootstrapPerson' },
+    { value: 'metricas', label: 'Métricas', icon: 'bootstrapGraphUp' },
+    { value: 'reservas', label: 'Reservas', icon: 'bootstrapCalendar3' },
+    { value: 'comunicaciones', label: 'Comunicaciones', icon: 'bootstrapEnvelope' },
+    { value: 'documentos', label: 'Documentos', icon: 'bootstrapFileEarmark' },
+  ];
 
   readonly isGuestLoading = signal(true);
   readonly isBookingsLoading = signal(false);
@@ -109,6 +213,15 @@ export class GuestProfileComponent implements OnInit {
   readonly guest = signal<CrmGuest | null>(null);
   readonly bookings = signal<CrmGuestBooking[]>([]);
   readonly notes = signal<CrmGuestNote[]>([]);
+  readonly emails = signal<CrmGuestEmail[]>([]);
+  readonly isEmailsLoading = signal(false);
+  readonly emailsErrorMessage = signal<string | null>(null);
+  readonly isEmailsExpanded = signal(false);
+
+  readonly visibleEmails = computed(() =>
+    this.isEmailsExpanded() ? this.emails() : this.emails().slice(0, EMAIL_HISTORY_LIMIT),
+  );
+  readonly hasMoreEmails = computed(() => this.emails().length > EMAIL_HISTORY_LIMIT);
 
   readonly propertyNamesById = signal<Record<string, string>>({});
   readonly unitNamesById = signal<Record<string, string>>({});
@@ -120,6 +233,19 @@ export class GuestProfileComponent implements OnInit {
   readonly noteCategory = signal<CrmGuestNoteCategory>('general');
   readonly noteContent = signal('');
   readonly noteErrorMessage = signal<string | null>(null);
+
+  readonly isEditNoteModalOpen = signal(false);
+  readonly editingNote = signal<CrmGuestNote | null>(null);
+  readonly editNoteContent = signal('');
+  readonly editNoteCategory = signal<CrmGuestNoteCategory>('general');
+  readonly isUpdatingNote = signal(false);
+  readonly editNoteErrorMessage = signal<string | null>(null);
+  readonly editNoteCharCount = computed(() => this.editNoteContent().length);
+
+  readonly isDeleteNoteModalOpen = signal(false);
+  readonly deletingNote = signal<CrmGuestNote | null>(null);
+  readonly isDeletingNote = signal(false);
+  readonly deleteNoteErrorMessage = signal<string | null>(null);
 
   readonly noteFilterTabs: Array<{ value: CrmGuestNoteCategory | 'all'; label: string }> = [
     { value: 'all', label: 'Todas' },
@@ -144,8 +270,8 @@ export class GuestProfileComponent implements OnInit {
       .join(''),
   );
 
-  readonly guestTags = computed(() =>
-    this.guest()?.tags?.filter((tag) => tag.trim().length > 0) ?? [],
+  readonly guestTags = computed(
+    () => this.guest()?.tags?.filter((tag) => tag.trim().length > 0) ?? [],
   );
 
   readonly pinnedNotes = computed(() => this.notes().filter((n) => n.status === 'pinned'));
@@ -165,9 +291,7 @@ export class GuestProfileComponent implements OnInit {
 
   readonly totalBookings = computed(() => this.bookings().length);
 
-  readonly totalSpend = computed(() =>
-    this.bookings().reduce((sum, b) => sum + b.totalAmount, 0),
-  );
+  readonly totalSpend = computed(() => this.bookings().reduce((sum, b) => sum + b.totalAmount, 0));
 
   readonly avgStayNights = computed(() => {
     const bks = this.bookings();
@@ -204,10 +328,74 @@ export class GuestProfileComponent implements OnInit {
 
   readonly noteCharCount = computed(() => this.noteContent().length);
 
+  readonly isMessageFormVisible = signal(false);
+  readonly isSendingMessage = signal(false);
+  readonly messageSubject = signal('');
+  readonly messageBody = signal('');
+  readonly messageTemplateId = signal<CrmGuestMessageTemplateId>('guest-message');
+  readonly attachedFiles = signal<File[]>([]);
+  readonly isDragOver = signal(false);
+  readonly messageErrorMessage = signal<string | null>(null);
+  readonly messageSentSuccess = signal(false);
+
+  readonly messageTemplateSelectOptions: SelectOption[] = [
+    { value: 'guest-message', label: 'Mensaje general' },
+    { value: 'GUEST_WELCOME', label: 'Bienvenida al huésped' },
+  ];
+
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'CRM de Huéspedes', route: '/crm/guests' },
     { label: this.guest()?.name ?? 'Perfil del huésped' },
   ]);
+
+  readonly availableTags = AVAILABLE_TAGS;
+  readonly tagLabels = TAG_LABELS;
+
+  readonly isTagPopoverOpen = signal(false);
+  readonly tagSearchQuery = signal('');
+
+  readonly filteredAvailableTags = computed(() => {
+    const q = this.tagSearchQuery().toLowerCase().trim();
+    if (!q) return AVAILABLE_TAGS;
+    return AVAILABLE_TAGS.filter((t) => (TAG_LABELS[t] ?? t).toLowerCase().includes(q));
+  });
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    if (this.isTagPopoverOpen()) {
+      this.isTagPopoverOpen.set(false);
+      this.tagSearchQuery.set('');
+    }
+  }
+
+  openTagPopover(event: Event): void {
+    event.stopPropagation();
+    this.tagSearchQuery.set('');
+    this.isTagPopoverOpen.set(true);
+  }
+
+  toggleTag(tag: string): void {
+    const guestId = this.guest()?.id?.trim();
+    if (!guestId) return;
+
+    const current = this.guestTags();
+    const newTags = current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag];
+
+    this.guest.update((g) => (g ? { ...g, tags: newTags } : g));
+    this.updateCrmGuestTagsUseCase.execute(guestId, newTags).subscribe({
+      error: () => {
+        this.guest.update((g) => (g ? { ...g, tags: current } : g));
+      },
+    });
+  }
+
+  isTagAssigned(tag: string): boolean {
+    return this.guestTags().includes(tag);
+  }
+
+  onTagSearchChange(value: string): void {
+    this.tagSearchQuery.set(value);
+  }
 
   ngOnInit(): void {
     const guestId = this.route.snapshot.paramMap.get('guestId');
@@ -220,19 +408,16 @@ export class GuestProfileComponent implements OnInit {
     this.loadGuest(guestId);
   }
 
+  setActiveTab(tab: GuestProfileTab): void {
+    this.activeTab.set(tab);
+  }
+
   setNoteFilter(value: CrmGuestNoteCategory | 'all'): void {
     this.activeNoteFilter.set(value);
   }
 
-  setNoteCategory(value: string | number | null): void {
-    if (
-      value !== 'general' &&
-      value !== 'preference' &&
-      value !== 'behavior' &&
-      value !== 'incident'
-    ) {
-      return;
-    }
+  setNoteCategory(value: SelectValue): void {
+    if (!isNoteCategory(value)) return;
     this.noteCategory.set(value);
   }
 
@@ -247,6 +432,105 @@ export class GuestProfileComponent implements OnInit {
 
   cancelNoteForm(): void {
     this.resetNoteForm();
+  }
+
+  openMessageForm(): void {
+    this.isMessageFormVisible.set(true);
+    this.messageErrorMessage.set(null);
+    this.messageSentSuccess.set(false);
+  }
+
+  cancelMessageForm(): void {
+    this.resetMessageForm();
+  }
+
+  setMessageTemplateId(value: SelectValue): void {
+    if (value !== 'GUEST_WELCOME' && value !== 'guest-message') return;
+    this.messageTemplateId.set(value);
+  }
+
+  onMessageSubjectChange(value: string): void {
+    this.messageSubject.set(value);
+  }
+
+  onMessageBodyChange(value: string): void {
+    this.messageBody.set(value);
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver.set(true);
+  }
+
+  onDragLeave(): void {
+    this.isDragOver.set(false);
+  }
+
+  onFileDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver.set(false);
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (files.length) this.attachedFiles.update((list) => [...list, ...files]);
+  }
+
+  onFileInputChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    if (files.length) this.attachedFiles.update((list) => [...list, ...files]);
+    input.value = '';
+  }
+
+  removeAttachedFile(index: number): void {
+    this.attachedFiles.update((list) => list.filter((_, i) => i !== index));
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  sendMessage(): void {
+    const guestId = this.guest()?.id?.trim();
+    const subject = this.messageSubject().trim();
+    const body = this.messageBody().trim();
+
+    if (!guestId) {
+      this.messageErrorMessage.set('No se pudo identificar al huésped para enviar el mensaje.');
+      return;
+    }
+
+    if (!subject) {
+      this.messageErrorMessage.set('El asunto del mensaje es obligatorio.');
+      return;
+    }
+
+    if (!body) {
+      this.messageErrorMessage.set('El cuerpo del mensaje es obligatorio.');
+      return;
+    }
+
+    const payload: SendCrmGuestMessageRequest = {
+      subject,
+      body,
+      templateId: this.messageTemplateId(),
+      attachments: this.attachedFiles().map((f) => ({ name: f.name, type: f.type, url: '' })),
+    };
+
+    this.isSendingMessage.set(true);
+    this.messageErrorMessage.set(null);
+
+    this.sendCrmGuestMessageUseCase.execute(guestId, payload).subscribe({
+      next: () => {
+        this.isSendingMessage.set(false);
+        this.messageSentSuccess.set(true);
+        this.resetMessageForm(true);
+      },
+      error: () => {
+        this.isSendingMessage.set(false);
+        this.messageErrorMessage.set('No se pudo enviar el mensaje. Inténtalo de nuevo.');
+      },
+    });
   }
 
   saveNote(): void {
@@ -290,13 +574,120 @@ export class GuestProfileComponent implements OnInit {
     });
   }
 
-  toggleNotePin(noteId: string): void {
+  toggleNotePin(note: CrmGuestNote): void {
+    const guestId = this.guest()?.id?.trim();
+    if (!guestId || !note.id) return;
+
+    const previousStatus = note.status;
+    const newStatus: CrmGuestNote['status'] = previousStatus === 'pinned' ? 'not_pinned' : 'pinned';
+
     this.notes.update((notes) =>
-      notes.map((note) => {
-        if (this.getNoteIdentifier(note) !== noteId) return note;
-        return { ...note, status: note.status === 'pinned' ? 'not_pinned' : 'pinned' };
-      }),
+      notes.map((n) => (n.id === note.id ? { ...n, status: newStatus } : n)),
     );
+
+    this.pinCrmGuestNoteUseCase.execute(guestId, note.id).subscribe({
+      error: () => {
+        this.notes.update((notes) =>
+          notes.map((n) => (n.id === note.id ? { ...n, status: previousStatus } : n)),
+        );
+      },
+    });
+  }
+
+  openEditNoteModal(note: CrmGuestNote): void {
+    this.editingNote.set(note);
+    this.editNoteContent.set(note.note);
+    this.editNoteCategory.set(note.type);
+    this.editNoteErrorMessage.set(null);
+    this.isEditNoteModalOpen.set(true);
+  }
+
+  cancelEditNote(): void {
+    this.isEditNoteModalOpen.set(false);
+    this.editingNote.set(null);
+    this.editNoteContent.set('');
+    this.editNoteErrorMessage.set(null);
+  }
+
+  onEditNoteContentChange(value: string): void {
+    this.editNoteContent.set(value.slice(0, NOTE_MAX_LENGTH));
+  }
+
+  setEditNoteCategory(value: SelectValue): void {
+    if (!isNoteCategory(value)) return;
+    this.editNoteCategory.set(value);
+  }
+
+  saveEditedNote(): void {
+    const guestId = this.guest()?.id?.trim();
+    const note = this.editingNote();
+    const content = this.editNoteContent().trim();
+
+    if (!guestId || !note) return;
+
+    if (!content) {
+      this.editNoteErrorMessage.set('Escribe una nota antes de guardarla.');
+      return;
+    }
+
+    if (content.length > NOTE_MAX_LENGTH) {
+      this.editNoteErrorMessage.set('La nota no puede superar los 280 caracteres.');
+      return;
+    }
+
+    const payload: UpdateCrmGuestNoteRequest = { note: content, type: this.editNoteCategory() };
+
+    this.isUpdatingNote.set(true);
+    this.editNoteErrorMessage.set(null);
+
+    this.updateCrmGuestNoteUseCase.execute(guestId, note.id, payload).subscribe({
+      next: () => {
+        this.isUpdatingNote.set(false);
+        this.cancelEditNote();
+        this.loadNotes(guestId, true);
+      },
+      error: () => {
+        this.isUpdatingNote.set(false);
+        this.editNoteErrorMessage.set('No se pudo actualizar la nota. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  openDeleteNoteModal(note: CrmGuestNote): void {
+    this.deletingNote.set(note);
+    this.deleteNoteErrorMessage.set(null);
+    this.isDeleteNoteModalOpen.set(true);
+  }
+
+  cancelDeleteNote(): void {
+    this.isDeleteNoteModalOpen.set(false);
+    this.deletingNote.set(null);
+    this.deleteNoteErrorMessage.set(null);
+  }
+
+  confirmDeleteNote(): void {
+    const guestId = this.guest()?.id?.trim();
+    const note = this.deletingNote();
+    if (!guestId || !note) return;
+
+    this.isDeletingNote.set(true);
+    this.deleteNoteErrorMessage.set(null);
+
+    this.deleteCrmGuestNoteUseCase.execute(guestId, note.id).subscribe({
+      next: () => {
+        this.isDeletingNote.set(false);
+        this.cancelDeleteNote();
+        this.loadNotes(guestId, true);
+      },
+      error: () => {
+        this.isDeletingNote.set(false);
+        this.deleteNoteErrorMessage.set('No se pudo eliminar la nota. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  truncateNotePreview(text: string): string {
+    return text.length > 60 ? `${text.slice(0, 60)}…` : text;
   }
 
   getBookingStatusLabel(status: CrmGuestBooking['status']): string {
@@ -393,6 +784,21 @@ export class GuestProfileComponent implements OnInit {
     return `+${countryCode} ${localNumber}`;
   }
 
+  toggleEmailsExpanded(): void {
+    this.isEmailsExpanded.update((v) => !v);
+  }
+
+  getEmailStatusLabel(status: string): string {
+    switch (status) {
+      case 'sent':
+        return 'Enviado';
+      case 'failed':
+        return 'Fallido';
+      default:
+        return 'Pendiente';
+    }
+  }
+
   getNoteIdentifier(note: CrmGuestNote): string {
     return note.id || `${note.createdAt}-${note.note}`;
   }
@@ -414,6 +820,7 @@ export class GuestProfileComponent implements OnInit {
         this.isGuestLoading.set(false);
         this.loadBookings(guestId);
         this.loadNotes(guestId);
+        this.loadEmails(guestId);
       },
       error: (error: HttpErrorResponse) => {
         this.isGuestLoading.set(false);
@@ -422,7 +829,9 @@ export class GuestProfileComponent implements OnInit {
         } else if (error.status === 403) {
           this.guestErrorMessage.set('No tienes permisos para ver este huésped.');
         } else {
-          this.guestErrorMessage.set('No se pudo cargar el perfil del huésped. Inténtalo de nuevo.');
+          this.guestErrorMessage.set(
+            'No se pudo cargar el perfil del huésped. Inténtalo de nuevo.',
+          );
         }
       },
     });
@@ -450,6 +859,27 @@ export class GuestProfileComponent implements OnInit {
     });
   }
 
+  private loadEmails(guestId: string): void {
+    this.isEmailsLoading.set(true);
+    this.emailsErrorMessage.set(null);
+
+    this.getCrmGuestEmailsUseCase.execute(guestId).subscribe({
+      next: (emails) => {
+        this.emails.set(
+          [...emails].sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
+        );
+        this.isEmailsLoading.set(false);
+      },
+      error: () => {
+        this.emails.set([]);
+        this.isEmailsLoading.set(false);
+        this.emailsErrorMessage.set('No se pudo cargar el historial de comunicaciones.');
+      },
+    });
+  }
+
   private loadNotes(guestId: string, forceRefresh = false): void {
     if (!forceRefresh && this.notes().length > 0) return;
 
@@ -473,8 +903,7 @@ export class GuestProfileComponent implements OnInit {
 
   private enrichBookingsWithNames(bookings: CrmGuestBooking[], requestedGuestId: string): void {
     const missingPropertyNames = bookings.some(
-      (b) =>
-        b.propertyId && !b.propertyName && !this.propertyNamesById()[b.propertyId],
+      (b) => b.propertyId && !b.propertyName && !this.propertyNamesById()[b.propertyId],
     );
     const propertyIdsForUnits = [
       ...new Set(
@@ -567,6 +996,18 @@ export class GuestProfileComponent implements OnInit {
     if (month >= 5 && month <= 7) return 'Verano';
     if (month >= 8 && month <= 10) return 'Otoño';
     return 'Invierno';
+  }
+
+  private resetMessageForm(keepSuccess = false): void {
+    this.isMessageFormVisible.set(false);
+    this.isSendingMessage.set(false);
+    this.messageSubject.set('');
+    this.messageBody.set('');
+    this.messageTemplateId.set('guest-message');
+    this.attachedFiles.set([]);
+    this.isDragOver.set(false);
+    this.messageErrorMessage.set(null);
+    if (!keepSuccess) this.messageSentSuccess.set(false);
   }
 
   private resetNoteForm(): void {

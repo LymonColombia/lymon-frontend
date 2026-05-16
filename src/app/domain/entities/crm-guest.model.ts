@@ -1,4 +1,11 @@
-export type CrmGuestStatus = 'active' | 'inactive';
+export type CrmGuestStatus = 'active' | 'inactive' | 'blocked' | 'archived';
+export type CrmGuestSortBy = 'createdAt' | 'fullName' | 'status';
+export type CrmGuestSortDirection = 'asc' | 'desc';
+
+export interface GetCrmGuestsParams {
+  sortBy?: CrmGuestSortBy;
+  sortDirection?: CrmGuestSortDirection;
+}
 export type CrmGuestBookingStatus =
   | 'PENDING'
   | 'CONFIRMED'
@@ -47,6 +54,15 @@ export interface CreateCrmGuestNoteRequest {
   status: CrmGuestNoteStatus;
 }
 
+export interface UpdateCrmGuestNoteRequest {
+  note: string;
+  type: CrmGuestNoteCategory;
+}
+
+export interface UpdateCrmGuestTagsRequest {
+  tags: string[];
+}
+
 export interface CrmGuestNote {
   id: string;
   note: string;
@@ -58,4 +74,31 @@ export interface CrmGuestNote {
 
 export interface GetCrmGuestNotesResponse {
   data: CrmGuestNote[];
+}
+
+export type CrmGuestMessageTemplateId = 'GUEST_WELCOME' | 'guest-message';
+
+export interface CrmGuestMessageAttachment {
+  url: string;
+  name: string;
+  type: string;
+}
+
+export interface SendCrmGuestMessageRequest {
+  subject: string;
+  body: string;
+  templateId: CrmGuestMessageTemplateId;
+  attachments: CrmGuestMessageAttachment[];
+}
+
+export interface CrmGuestEmail {
+  id: string;
+  subject: string;
+  status: string;
+  sentById: string;
+  createdAt: string;
+}
+
+export interface GetCrmGuestEmailsResponse {
+  data: CrmGuestEmail[];
 }

@@ -38,4 +38,16 @@ export const environment = {
     endpoint: '/crm',
     guestsEndpoint: '/guests',
   },
+  shifts: {
+    endpoint: '/shifts',
+  },
+  suppliers: {
+    endpoint: '/suppliers',
+  },
+  storage: {
+    endpoint: '/storage/presigned-url',
+  },
+  guestExperiences: {
+    endpoint: '/guest/experiences',
+  },
 };

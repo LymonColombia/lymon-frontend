@@ -27,9 +27,17 @@
   transition: border-color var(--transition-fast), color var(--transition-fast);
 }
 
-.cal-nav-btn:hover {
+.cal-nav-btn:hover:not(:disabled) {
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+
+.cal-nav-btn:disabled {
+  color: var(--color-text-disabled);
+  border-color: var(--color-border-light);
+  background: var(--color-bg-secondary);
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 .cal-month-label {
@@ -138,14 +146,17 @@
   gap: var(--spacing-xs);
   font-family: var(--font-secondary);
   font-size: 10px;
+  line-height: 1;
   color: var(--color-text-secondary);
 }
 
 .legend-dot {
+  display: block;
   width: 10px;
   height: 10px;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .dot-selected {
@@ -160,4 +171,16 @@
 .dot-today {
   border: 2px solid var(--color-primary);
   background: transparent;
+}
+
+.dot-occupied {
+  background: color-mix(in srgb, var(--color-error) 40%, transparent);
+  border: 1px solid var(--color-error);
+}
+
+.cal-day.is-occupied {
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  text-decoration: line-through;
 }

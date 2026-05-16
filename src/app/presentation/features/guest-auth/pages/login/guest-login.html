@@ -12,6 +12,10 @@
       <h1 class="auth-title">Bienvenido</h1>
       <p class="auth-subtitle">Inicia sesión como huésped</p>
 
+      @if (sessionExpired()) {
+        <div class="warning-banner">Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</div>
+      }
+
       @if (emailNotVerified()) {
         <div class="warning-banner">
           Tu correo aún no ha sido verificado. Algunas funciones pueden estar limitadas.
