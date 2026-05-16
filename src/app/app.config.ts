@@ -29,6 +29,8 @@ import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { SupplierRepositoryImpl } from '@/infrastructure/repositories/supplier.repository.impl';
 import { ShiftRepository } from '@/domain/repositories/shift.repository';
 import { ShiftRepositoryImpl } from '@/infrastructure/repositories/shift.repository.impl';
+import { InventoryRepository } from '@/domain/repositories/inventory.repository';
+import { InventoryRepositoryImpl } from '@/infrastructure/repositories/inventory.repository.impl';
 import { StorageRepository } from '@/domain/repositories/storage.repository';
 import { StorageRepositoryImpl } from '@/infrastructure/repositories/storage.repository.impl';
 import { GuestExperienceRepository } from '@/domain/repositories/guest-experience.repository';
@@ -53,6 +55,7 @@ export const appConfig: ApplicationConfig = {
     { provide: GuestReservationRepository, useClass: GuestReservationRepositoryImpl },
     { provide: SupplierRepository, useClass: SupplierRepositoryImpl },
     { provide: ShiftRepository, useClass: ShiftRepositoryImpl },
+    { provide: InventoryRepository, useClass: InventoryRepositoryImpl },
     { provide: StorageRepository, useClass: StorageRepositoryImpl },
     { provide: GuestExperienceRepository, useClass: GuestExperienceRepositoryImpl },
   ],
