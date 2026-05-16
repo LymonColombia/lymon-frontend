@@ -1,5 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   HotelPageLayoutComponent,
   HotelPageMetaDirective,
@@ -9,6 +19,8 @@ import { ModalComponent } from '@/presentation/shared/components/modal/modal.com
 import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
+import { GetUnitUseCase } from '@/domain/use-cases/property/get-unit.use-case';
+import { DeleteUnitUseCase } from '@/domain/use-cases/property/delete-unit.use-case';
 import { Unit } from '@/domain/entities/staff.model';
 import { UnitCardComponent } from './components/unit-card/unit-card.component';
 import { UnitFormModalComponent } from './components/unit-form-modal/unit-form-modal.component';
@@ -36,19 +48,29 @@ import {
   styleUrl: './propertyUnits.css',
 })
 export class PropertyUnitsComponent implements OnInit {
+  private static readonly DEFAULT_PROPERTY_NAME = 'Propiedad';
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
+  private readonly getUnitUseCase = inject(GetUnitUseCase);
+  private readonly deleteUnitUseCase = inject(DeleteUnitUseCase);
 
   readonly isLoading = signal(true);
+  readonly isLoadingEdit = signal(false);
+  readonly isDeleting = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
   readonly propertyId = signal<string | null>(null);
-  readonly propertyName = signal<string>('Propiedad');
+  readonly propertyName = signal<string>(PropertyUnitsComponent.DEFAULT_PROPERTY_NAME);
   readonly propertyType = signal<string | null>(null);
   readonly units = signal<Unit[]>([]);
-  readonly showCreateUnitModal = signal(false);
+  readonly showUnitModal = signal(false);
+  readonly editingUnit = signal<Unit | null>(null);
+  readonly showDeleteConfirm = signal(false);
+  readonly unitToDelete = signal<Unit | null>(null);
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'Propiedades', route: '/properties' },
@@ -63,8 +85,7 @@ export class PropertyUnitsComponent implements OnInit {
     }
     this.propertyId.set(pid);
 
-    // Resolve property name
-    this.getPropertiesUseCase.execute().subscribe({
+    this.getPropertiesUseCase.execute().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (props) => {
         const found = props.find((p) => p.id === pid);
         if (found) {
@@ -72,7 +93,7 @@ export class PropertyUnitsComponent implements OnInit {
           this.propertyType.set(found.propertyType);
         }
       },
-      error: () => {},
+      error: () => { this.errorMessage.set('No se pudo cargar la información de la propiedad.'); },
     });
 
     this.loadUnits(pid);
@@ -80,7 +101,7 @@ export class PropertyUnitsComponent implements OnInit {
 
   private loadUnits(propertyId: string): void {
     this.isLoading.set(true);
-    this.getUnitsUseCase.execute(propertyId).subscribe({
+    this.getUnitsUseCase.execute(propertyId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (units) => {
         this.units.set(units);
         this.isLoading.set(false);
@@ -93,24 +114,83 @@ export class PropertyUnitsComponent implements OnInit {
   }
 
   navigateToCreateUnit(): void {
+    this.editingUnit.set(null);
     this.successMessage.set(null);
     this.errorMessage.set(null);
-    this.showCreateUnitModal.set(true);
+    this.showUnitModal.set(true);
   }
 
-  closeCreateUnitModal(): void {
-    this.showCreateUnitModal.set(false);
+  closeUnitModal(): void {
+    this.showUnitModal.set(false);
+    this.editingUnit.set(null);
   }
 
-  onUnitCreated(): void {
-    this.successMessage.set('Unidad creada correctamente.');
-    this.showCreateUnitModal.set(false);
+  openEditUnit(unit: Unit): void {
+    this.isLoadingEdit.set(true);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+    this.getUnitUseCase
+      .execute(unit.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (fullUnit) => {
+          this.editingUnit.set(fullUnit);
+          this.showUnitModal.set(true);
+          this.isLoadingEdit.set(false);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.isLoadingEdit.set(false);
+          this.errorMessage.set(err.error?.message ?? 'No se pudo cargar la unidad para editar.');
+        },
+      });
+  }
 
+  openDeleteConfirm(unit: Unit): void {
+    this.unitToDelete.set(unit);
+    this.showDeleteConfirm.set(true);
+    this.errorMessage.set(null);
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm.set(false);
+    this.unitToDelete.set(null);
+  }
+
+  confirmDelete(): void {
+    const unit = this.unitToDelete();
+    if (!unit) return;
+    this.isDeleting.set(true);
+    this.deleteUnitUseCase
+      .execute(unit.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.handleDeleteSuccess(),
+        error: (err: HttpErrorResponse) => this.handleDeleteError(err),
+      });
+  }
+
+  private handleDeleteSuccess(): void {
+    this.isDeleting.set(false);
+    this.showDeleteConfirm.set(false);
+    this.unitToDelete.set(null);
+    this.successMessage.set('Unidad eliminada correctamente.');
     const currentPropertyId = this.propertyId();
-    if (!currentPropertyId) {
-      return;
-    }
+    if (currentPropertyId) this.loadUnits(currentPropertyId);
+  }
 
-    this.loadUnits(currentPropertyId);
+  private handleDeleteError(err: HttpErrorResponse): void {
+    this.isDeleting.set(false);
+    this.errorMessage.set(err.error?.message ?? 'Error al eliminar la unidad. Inténtalo de nuevo.');
+  }
+
+  onUnitSaved(): void {
+    const wasEditing = !!this.editingUnit();
+    this.showUnitModal.set(false);
+    this.editingUnit.set(null);
+    this.successMessage.set(
+      wasEditing ? 'Unidad actualizada correctamente.' : 'Unidad creada correctamente.',
+    );
+    const currentPropertyId = this.propertyId();
+    if (currentPropertyId) this.loadUnits(currentPropertyId);
   }
 }
