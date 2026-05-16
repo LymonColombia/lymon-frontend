@@ -42,7 +42,7 @@ import { SessionsComponent } from '@/presentation/features/hotel/pages/sessions/
 import { ExperienceComponent } from './presentation/features/hotel/pages/experiences/experiences';
 import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
 import { StorageTestComponent } from '@/presentation/features/hotel/pages/storageTest/storageTest';
-
+import { TenantReservations } from '@/presentation/features/hotel/pages/tenant-reservations/tenant-reservations'; 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
   { path: 'lyhost', component: LyhostPageComponent },
@@ -115,6 +115,7 @@ export const routes: Routes = [
       { path: 'inventory', component: InventoryComponent },
       { path: 'sessions', component: SessionsComponent },
       { path: 'storage-test', component: StorageTestComponent },
+      { path: 'tenant-reservations', component: TenantReservations}
     ],
   },
 

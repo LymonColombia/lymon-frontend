@@ -1,0 +1,190 @@
+<app-hotel-page-layout
+  title="Gestión de Reservaciones"
+  subtitle="Visualiza todas las reservas registradas en tus propiedades"
+  iconName="bootstrapCalendarEvent"
+>
+  <section class="summary-grid" aria-label="Resumen de reservaciones">
+    <article class="summary-card">
+      <p class="summary-label">Total de Reservas</p>
+      <p class="summary-value">{{ totalReservations() }}</p>
+      <p class="summary-hint">Registradas en el sistema</p>
+    </article>
+
+    <article class="summary-card">
+      <p class="summary-label">Check-ins Activos</p>
+      <p class="summary-value">{{ activeCheckins() }}</p>
+      <p class="summary-hint">Huéspedes actualmente hospedados</p>
+    </article>
+  </section>
+
+  <section class="list-card" aria-label="Listado de reservaciones">
+    <header class="list-header">
+      <div class="header-content">
+        <div>
+          <h2 class="list-title">Reservaciones</h2>
+          <p class="list-subtitle">Administra las estancias de tus huéspedes.</p>
+        </div>
+        <div class="search-and-actions">
+          <div class="search-container">
+            <div class="search-input-wrapper">
+              <ng-icon name="bootstrapSearch" class="search-icon"></ng-icon>
+              <input
+                type="text"
+                placeholder="Buscar por ID, nombre o propiedad..."
+                (input)="onSearchChange($event)"
+                class="search-input"
+                aria-label="Buscar reservaciones"
+              />
+            </div>
+          </div>
+          <button class="btn-create-header" aria-label="Crear Reserva">
+            <ng-icon name="bootstrapPlusCircle" class="btn-icon"></ng-icon>
+            <span>Crear Reserva</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="table-wrapper">
+      <table class="employees-table">
+        <thead>
+          <tr>
+            <th class="col-name">Reserva / Huésped</th>
+            <th class="col-email">Propiedad / Unidad</th>
+            <th class="col-role">Check In / Out</th>
+            <th class="col-status">Estado</th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (res of reservations(); track res.id) {
+            <tr
+              class="employee-row"
+              (click)="openDetails(res)"
+              (keydown.enter)="openDetails(res)"
+              tabindex="0"
+              aria-label="Ver detalles de reserva"
+            >
+              <td>
+                <div class="name-cell">
+                  <span class="avatar reservation-avatar">
+                     <ng-icon name="bootstrapCalendarEvent"></ng-icon>
+                  </span>
+                  <div class="guest-info flex flex-col items-start gap-1 ml-4">
+                    <span class="main-text font-medium">{{ res.id }}</span>
+                    <span class="sub-text text-sm text-gray-500">{{ res.guestName }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                 <div class="stacked-cell flex flex-col items-start gap-1">
+                   <span class="main-text font-medium">{{ res.propertyName }}</span>
+                   <span class="sub-text text-sm text-gray-500">{{ res.unitName }}</span>
+                 </div>
+              </td>
+              <td>
+                 <div class="stacked-cell flex flex-col items-start gap-1">
+                   <span class="main-text font-medium">{{ res.checkIn }}</span>
+                   <span class="sub-text text-sm text-gray-500">al {{ res.checkOut }}</span>
+                 </div>
+              </td>
+              <td>
+                <span class="status-pill" [ngClass]="'status-' + res.status.toLowerCase()">
+                  {{ res.status }}
+                </span>
+              </td>
+              <td>
+                 <button type="button" class="btn-outline-small" (click)="$event.stopPropagation(); openDetails(res)">
+                    Detalles
+                 </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+  
+  @if (selectedReservation()) {
+      <div class="modal-overlay" (click)="closeDetails()">
+          <div class="modal-container" (click)="$event.stopPropagation()">
+              <header class="modal-header">
+                  <div class="modal-title-group">
+                      <ng-icon name="bootstrapCalendarEvent" class="modal-icon"></ng-icon>
+                      <h2 class="modal-title">Detalle de Reserva {{ selectedReservation().id }}</h2>
+                  </div>
+                  <button type="button" class="icon-btn" (click)="closeDetails()" aria-label="Cerrar modal">
+                      <ng-icon name="bootstrapX"></ng-icon>
+                  </button>
+              </header>
+              <div class="modal-content-scroll">
+                  <div class="details-grid">
+                      <section class="detail-group">
+                          <h3 class="group-title">Información del Huésped</h3>
+                          <div class="group-content">
+                              <div class="detail-item">
+                                  <span class="detail-label">Nombre</span>
+                                  <span class="detail-value">{{ selectedReservation().guestName }}</span>
+                              </div>
+                              <div class="detail-item">
+                                  <span class="detail-label">Correo</span>
+                                  <span class="detail-value">{{ selectedReservation().guestEmail }}</span>
+                              </div>
+                              <div class="detail-item">
+                                  <span class="detail-label">Teléfono</span>
+                                  <span class="detail-value">{{ selectedReservation().guestPhone }}</span>
+                              </div>
+                          </div>
+                      </section>
+                      <section class="detail-group">
+                          <h3 class="group-title">Alojamiento</h3>
+                          <div class="group-content">
+                              <div class="detail-item">
+                                  <span class="detail-label">Propiedad</span>
+                                  <span class="detail-value">{{ selectedReservation().propertyName }}</span>
+                              </div>
+                              <div class="detail-item">
+                                  <span class="detail-label">Unidad</span>
+                                  <span class="detail-value">{{ selectedReservation().unitName }}</span>
+                              </div>
+                          </div>
+                      </section>
+                      <section class="detail-group highlight-group">
+                          <h3 class="group-title">Datos de Estancia</h3>
+                          <div class="group-content">
+                              <div class="detail-item">
+                                  <span class="detail-label">Fecha Check-in</span>
+                                  <span class="detail-value">{{ selectedReservation().checkIn }}</span>
+                              </div>
+                              <div class="detail-item">
+                                  <span class="detail-label">Fecha Check-out</span>
+                                  <span class="detail-value">{{ selectedReservation().checkOut }}</span>
+                              </div>
+                              <div class="detail-item">
+                                  <span class="detail-label">Estado</span>
+                                  <span class="detail-value status-pill status-{{selectedReservation().status | lowercase}}">{{ selectedReservation().status }}</span>
+                              </div>
+                              <div class="detail-item total-item">
+                                  <span class="detail-label">Monto Total</span>
+                                  <span class="detail-value text-xl">${{ selectedReservation().totalAmount | number:'1.2-2' }}</span>
+                              </div>
+                          </div>
+                      </section>
+                  </div>
+                  
+                  <div class="modal-actions-bar">
+                      <div class="primary-actions">
+                          <button class="btn btn-emerald"><ng-icon name="bootstrapCheck"></ng-icon> Confirmar Reserva</button>
+                      </div>
+                      <div class="secondary-actions">
+                          <button class="btn btn-blue">Check-in</button>
+                          <button class="btn btn-purple">Check-out</button>
+                          <button class="btn btn-amber"><ng-icon name="bootstrapPencil"></ng-icon> Editar</button>
+                          <button class="btn btn-danger">Cancelar Reserva</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  }
+</app-hotel-page-layout>
