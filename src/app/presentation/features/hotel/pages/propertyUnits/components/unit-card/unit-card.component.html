@@ -1,11 +1,46 @@
 <article class="unit-card">
   <div class="unit-card-top">
     <h3 class="unit-name">{{ unit().name }}</h3>
-    @if (unit().isShared !== undefined) {
-      <span class="shared-badge" [class.shared]="unit().isShared">
-        {{ unit().isShared ? 'Compartida' : 'Privada' }}
-      </span>
-    }
+    <div class="unit-card-top-actions">
+      @if (unit().isShared !== undefined) {
+        <span class="shared-badge" [class.shared]="unit().isShared">
+          {{ unit().isShared ? 'Compartida' : 'Privada' }}
+        </span>
+      }
+      <div class="unit-menu-wrapper">
+        <button
+          type="button"
+          class="unit-menu-trigger"
+          aria-label="Opciones de unidad"
+          [attr.aria-expanded]="menuOpen()"
+          (click)="toggleMenu($event)"
+        >
+          <ng-icon name="bootstrapThreeDotsVertical" size="18px" aria-hidden="true"></ng-icon>
+        </button>
+        @if (menuOpen()) {
+          <div class="unit-menu-dropdown" role="menu">
+            <button
+              type="button"
+              class="unit-menu-item"
+              role="menuitem"
+              (click)="onEdit()"
+            >
+              <ng-icon name="bootstrapPencilSquare" size="14px" aria-hidden="true"></ng-icon>
+              Editar
+            </button>
+            <button
+              type="button"
+              class="unit-menu-item unit-menu-item-danger"
+              role="menuitem"
+              (click)="onDelete()"
+            >
+              <ng-icon name="bootstrapTrashFill" size="14px" aria-hidden="true"></ng-icon>
+              Eliminar
+            </button>
+          </div>
+        }
+      </div>
+    </div>
   </div>
 
   @if (unit().description) {

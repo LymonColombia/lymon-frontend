@@ -21,6 +21,7 @@ export const environment = {
   },
   units: {
     endpoint: '/units',
+    unitDetailEndpoint: '/units/unit',
   },
   guestAuth: {
     endpoint: '/guest/auth',
@@ -40,5 +41,8 @@ export const environment = {
   },
   storage: {
     endpoint: '/storage/presigned-url',
+  },
+  guestExperiences: {
+    endpoint: '/guest/experiences',
   },
 };

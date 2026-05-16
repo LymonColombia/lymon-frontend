@@ -25,6 +25,12 @@ export interface Unit {
   isShared?: boolean;
   amenities?: string[];
   bathroomsCount?: number;
+  rating?: number | null;
+  externalIds?: {
+    airbnbId?: string;
+    bookingId?: string;
+    vrboId?: string;
+  };
 }
 
 export interface Bedroom {
@@ -109,4 +115,30 @@ export interface StaffListResponse {
   message: string;
   total: number;
   data: StaffMember[];
+}
+
+export interface UnitRating {
+  id: string;
+  unitId: string;
+  guestId: string;
+  reservationId: string;
+  rate: number;
+  message: string;
+  createdAt: string;
+  guestName: string;
+}
+
+export interface UnitRatingsResponse {
+  ratings: UnitRating[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface GetUnitRatingsParams {
+  unitId: string;
+  page: number;
+  limit: number;
+  sort?: 'best' | 'worst';
+  filterRate?: number;
 }

@@ -403,6 +403,91 @@
 
     <!-- Resumen tab -->
     @if (activeTab() === 'resumen') {
+
+    <!-- KPI strip -->
+    <div class="kpi-strip">
+      <div class="kpi-card">
+        <span class="kpi-card-label">Reservas totales</span>
+        <span class="kpi-card-value">{{ totalBookings() }}</span>
+        <span class="kpi-card-sub">estancias confirmadas</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card-label">Gasto total</span>
+        <span class="kpi-card-value">{{ formatCurrency(totalSpend()) }}</span>
+        <span class="kpi-card-sub">acumulado</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card-label">Última estancia</span>
+        @if (lastStayBooking(); as b) {
+          <span class="kpi-card-value">{{ formatDateLabel(b.checkOut) }}</span>
+          <span class="kpi-card-sub">{{ b.propertyName || 'Propiedad desconocida' }}</span>
+        } @else {
+          <span class="kpi-card-value">—</span>
+          <span class="kpi-card-sub">Sin estancias previas</span>
+        }
+      </div>
+      <div class="kpi-card kpi-card--accent">
+        <span class="kpi-card-label">Próxima reserva</span>
+        @if (nextBooking(); as b) {
+          <span class="kpi-card-value">{{ formatDateLabel(b.checkIn) }}</span>
+          <span class="kpi-card-sub">{{ b.propertyName || 'Propiedad desconocida' }} · {{ nightsBetween(b.checkIn, b.checkOut) }} noches</span>
+        } @else {
+          <span class="kpi-card-value">—</span>
+          <span class="kpi-card-sub">Sin próximas reservas</span>
+        }
+      </div>
+    </div>
+
+    <!-- Próxima reserva card -->
+    <section class="profile-section next-booking-card">
+      <div class="next-booking-header">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapCalendar3" size="18px"></ng-icon>
+          </span>
+          Próxima reserva
+        </h2>
+      </div>
+      @if (nextBooking(); as booking) {
+        <div class="next-booking-body">
+          <div class="next-booking-section">
+            <span class="next-booking-field-label">Propiedad</span>
+            <span class="next-booking-field-value">{{ booking.propertyName || 'Propiedad desconocida' }}</span>
+            @if (booking.unitName) {
+              <span class="next-booking-field-sub">{{ booking.unitName }}</span>
+            }
+          </div>
+          <div class="next-booking-right">
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Check-in</span>
+              <span class="next-booking-field-value">{{ formatDateLabel(booking.checkIn) }}</span>
+            </div>
+            <span class="next-booking-arrow" aria-hidden="true">→</span>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Check-out</span>
+              <span class="next-booking-field-value">{{ formatDateLabel(booking.checkOut) }}</span>
+            </div>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Duración</span>
+              <span class="next-booking-field-value">{{ nightsBetween(booking.checkIn, booking.checkOut) }} noches</span>
+            </div>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Estado</span>
+              <span
+                class="booking-status"
+                [class.booking-status-info]="getBookingStatusTone(booking.status) === 'info'"
+                [class.booking-status-success]="getBookingStatusTone(booking.status) === 'success'"
+                [class.booking-status-warning]="getBookingStatusTone(booking.status) === 'warning'"
+                [class.booking-status-danger]="getBookingStatusTone(booking.status) === 'danger'"
+              >{{ getBookingStatusLabel(booking.status) }}</span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <p class="next-booking-empty">El huésped no tiene próximas reservas.</p>
+      }
+    </section>
+
     <!-- Pinned notes (only when there are pinned notes) -->
     @if (pinnedNotes().length > 0) {
       <section class="profile-section">
