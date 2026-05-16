@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { provideIcons } from '@ng-icons/core';
 import { bootstrapStars } from '@ng-icons/bootstrap-icons';
 
-import { CreateExperienceDto, Experience } from '@/domain/entities/experience.model';
+import { CreateExperienceDto, Experience, UpdateExperienceDto } from '@/domain/entities/experience.model';
 import { CreateExperienceUseCase } from '@/domain/use-cases/experience/create-experience.use-case';
 import {
   HotelPageLayoutComponent,
@@ -129,8 +129,9 @@ export class TenantExperienceFormPageComponent implements OnInit {
 
     const editingId = this.editingExperienceId();
     if (editingId) {
-       console.log('Updating experience with ID:', editingId, 'and data:', dto);
-      this.updateExperienceUseCase.execute(editingId, dto).subscribe({
+      const updateDto = this.toUpdateExperienceDto(dto);
+      console.log('Updating experience with ID:', editingId, 'and data:', updateDto);
+      this.updateExperienceUseCase.execute(editingId, updateDto).subscribe({
         next: () => this.handleSaveSuccess('Experiencia actualizada correctamente.'),
         error: (error) => this.handleSaveError('No se pudo actualizar la experiencia.', error.message ),
       });
@@ -195,5 +196,24 @@ export class TenantExperienceFormPageComponent implements OnInit {
           this.isLoading.set(false);
         },
       });
+  }
+
+  private toUpdateExperienceDto(dto: CreateExperienceDto): UpdateExperienceDto {
+    return {
+      name: dto.name,
+      description: dto.description,
+      priceCop: dto.priceCop,
+      durationHours: dto.durationHours,
+      capacity: dto.capacity,
+      coverImageUrl: dto.coverImageUrl,
+      location: dto.location,
+      availabilityType: dto.availabilityType,
+      startAt: dto.startAt,
+      endAt: dto.endAt,
+      recurrence: dto.recurrence,
+      blackoutRanges: dto.blackoutRanges,
+      allowStandalonePurchase: dto.allowStandalonePurchase,
+      allowReservationPurchase: dto.allowReservationPurchase,
+    };
   }
 }

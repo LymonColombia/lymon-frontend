@@ -6,6 +6,7 @@ import { TokenService } from '@/infrastructure/services/token.service';
 
 const REFRESH_THRESHOLD_SECONDS = 60;
 const AUTH_REFRESH_PATH = `${environment.auth.endpoint}/refresh`;
+const SKIP_DOMAINS = ['r2.cloudflarestorage.com'];
 
 interface RefreshResponse {
   data?: {
@@ -22,6 +23,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenService);
   const http = inject(HttpClient);
   const accessToken = tokenService.getAccessToken();
+
+   if (SKIP_DOMAINS.some(domain => req.url.includes(domain))) {
+    return next(req);
+   }
 
   if (!accessToken || isRefreshRequest(req.url) || req.headers.has('Authorization')) {
     return next(req);

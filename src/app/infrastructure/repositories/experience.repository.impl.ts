@@ -57,7 +57,7 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
   }
 
   updateExperience(id: string, data: UpdateExperienceDto): Observable<unknown> {
-    return this.http.put<unknown>(`${environment.apiUrl}${environment.experiences.endpoint}/${id}`, data, {
+    return this.http.patch<unknown>(`${environment.apiUrl}${environment.experiences.endpoint}/${id}`, data, {
       headers: this.authHeaders,
     });
   }

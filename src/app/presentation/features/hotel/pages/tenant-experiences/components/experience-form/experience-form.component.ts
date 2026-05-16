@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CreateExperienceDto, Experience, ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
@@ -49,6 +49,7 @@ export class ExperienceFormComponent {
   readonly propertyOptions = input<SelectOption[]>([]);
   readonly unitOptions = input<SelectOption[]>([]);
   readonly unitsLoading = input(false);
+  readonly isEditingMode = computed(() => Boolean(this.initialExperience()));
 
   readonly scopeOptions: SelectOption[] = [
     { value: 'TENANT', label: 'Tenant' },
@@ -143,6 +144,16 @@ export class ExperienceFormComponent {
     return this.form.controls.availabilityType.value === 'ONE_TIME';
   }
 
+  get scopeLabel(): string {
+    const value = this.form.controls.scope.value;
+    return this.scopeOptions.find((option) => option.value === value)?.label ?? '';
+  }
+
+  get categoryLabel(): string {
+    const value = this.form.controls.category.value;
+    return this.categoryOptions().find((option) => option.value === value)?.label ?? '';
+  }
+
 
   onPropertyChanged(value: string | number): void {
     const propertyId = String(value);
@@ -205,9 +216,9 @@ export class ExperienceFormComponent {
     };
 
     this.createImageStorageUseCase.execute(dto).subscribe({
-      next: ({ objectKey }) => {
+      next: ({ fileUrl }) => {
         this.form.controls.coverImageUrl.setErrors(null);
-        this.form.controls.coverImageUrl.setValue(objectKey);
+        this.form.controls.coverImageUrl.setValue(fileUrl);
         this.form.controls.coverImageUrl.markAsDirty();
         this.form.controls.coverImageUrl.updateValueAndValidity();
       },

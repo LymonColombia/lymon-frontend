@@ -17,15 +17,13 @@ export interface CreatePresignedUrlRequest {
 export interface PresignedUrlResponse {
   message: string;
   data: {
-    uploadUrl?: string;
     presignedUrl?: string;
-    objectKey?: string;
     key?: string;
-    fileUrl?: string;
+    fileUrl: string;
   };
 }
 
 export interface UploadedImageResult {
-  objectKey: string;
-  fileUrl?: string;
+  key: string;
+  fileUrl: string;
 }

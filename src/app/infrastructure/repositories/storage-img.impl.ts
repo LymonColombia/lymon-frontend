@@ -37,23 +37,24 @@ export class ImageStorageRepositoryImpl extends ImageStorageRepository {
       })
       .pipe(
         map((response) => {
-          const presignedUrl = response.data.presignedUrl ?? response.data.uploadUrl;
-          const objectKey = response.data.objectKey ?? response.data.key;
+          const presignedUrl = response.data.presignedUrl ;
+          const key =  response.data.key;
           const fileUrl = response.data.fileUrl;
-          if (!presignedUrl || !objectKey) {
+          if (!presignedUrl || !key) {
             throw new Error('Invalid presigned URL response');
           }
-          return { presignedUrl, objectKey, fileUrl };
+          return { presignedUrl,key, fileUrl };
         }),
-        switchMap(({ presignedUrl, objectKey, fileUrl }) =>
+        switchMap(({ presignedUrl, key, fileUrl }) =>
           this.http
-            .put(presignedUrl, {
-              headers: new HttpHeaders({
-                'Content-Type': contentType,
-              }),
-              body: input.file,
-            })
-            .pipe(map(() => ({ objectKey, fileUrl }))),
+            .put(presignedUrl,input.file,
+              {
+                headers: new HttpHeaders({
+                  'Content-Type': input.file.type,
+                }),
+              }
+            )
+            .pipe(map(() => ({ key, fileUrl }))),
         ),
       );
   }

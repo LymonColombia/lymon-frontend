@@ -5,11 +5,19 @@
     <div class="form-row">
       <div class="form-group">
         <label for="scope">Scope <span class="required">*</span></label>
-        <app-select id="scope" [options]="scopeOptions" formControlName="scope" />
+        @if (isEditingMode()) {
+          
+        } @else {
+          <app-select id="scope" [options]="scopeOptions" formControlName="scope" />
+        }
       </div>
       <div class="form-group">
         <label for="category">Categoria <span class="required">*</span></label>
-        <app-select id="category" [options]="categoryOptions()" formControlName="category" />
+        @if (isEditingMode()) {
+          <app-input id="category" type="text" Placeholder ="categoryLabel" [disabled]="true" />
+        } @else {
+          <app-select id="category" [options]="categoryOptions()" formControlName="category" />
+        }
       </div>
     </div>
 
@@ -22,6 +30,7 @@
             [options]="propertyOptions()"
             formControlName="propertyId"
             (valueChange)="onPropertyChanged($event)"
+             [disabled]="isEditingMode()"
           />
         </div>
         <div class="form-group">
@@ -38,6 +47,7 @@
                       (change)="
                         onUnitChecklistToggle(unit.value.toString(), $any($event.target).checked)
                       "
+                      [disabled]="isEditingMode()"
                     />
                     <span>{{ unit.label }}</span>
                   </label>

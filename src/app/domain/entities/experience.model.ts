@@ -48,7 +48,27 @@ export type PropertyExperience = Experience & { scope: 'PROPERTY' };
 export type TenantExperience = Experience & { scope: 'TENANT' };
 
 export type CreateExperienceDto = Omit<Experience, 'id'>;
-export type UpdateExperienceDto = Partial<Omit<Experience, 'id'>>;
+export type UpdateExperienceDto = Partial<
+  Pick<
+    Experience,
+    | 'name'
+    | 'description'
+    | 'priceCop'
+    | 'durationHours'
+    | 'capacity'
+    | 'coverImageUrl'
+    | 'location'
+    | 'availabilityType'
+    | 'startAt'
+    | 'endAt'
+    | 'recurrence'
+    | 'blackoutRanges'
+    | 'allowStandalonePurchase'
+    | 'allowReservationPurchase'
+  >
+> & {
+  mediaKeys?: string[];
+};
 
 export interface ExperiencesResponse {
   data:
