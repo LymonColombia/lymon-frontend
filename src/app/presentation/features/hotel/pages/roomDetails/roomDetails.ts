@@ -27,6 +27,7 @@ import { RoomGeneralInfoComponent } from './components/room-general-info/room-ge
 import { RoomAmenitiesComponent } from './components/room-amenities/room-amenities.component';
 import { RoomPoliciesComponent } from './components/room-policies/room-policies.component';
 import { RoomBookingCalendarComponent, BookingDateRange } from './components/room-booking-calendar/room-booking-calendar.component';
+import { RoomRatingsComponent } from './components/room-ratings/room-ratings.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCalendar,
@@ -57,6 +58,7 @@ import { SaveReservationDraftUseCase } from '@/domain/use-cases/cart/save-reserv
     RoomAmenitiesComponent,
     RoomPoliciesComponent,
     RoomBookingCalendarComponent,
+    RoomRatingsComponent,
     NgIconComponent,
   ],
   providers: [
