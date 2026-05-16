@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlusCircle, bootstrapX, bootstrapCheck, bootstrapPencil } from '@ng-icons/bootstrap-icons';
 import { HotelPageLayoutComponent } from '../../components/hotel-page-layout/hotel-page-layout';
+import { CreateReservationWizardComponent } from './components/create-reservation-wizard/create-reservation-wizard';
 
 @Component({
   selector: 'app-tenant-reservations',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, HotelPageLayoutComponent],
+  imports: [CommonModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent],
   templateUrl: './tenant-reservations.html',
   styleUrls: ['./tenant-reservations.css'],
   viewProviders: [
@@ -71,6 +72,7 @@ export class TenantReservations {
   errorMessage = signal('');
 
   selectedReservation = signal<any | null>(null);
+  showWizard = signal(false);
 
   constructor() {
     this.totalReservations.set(this.reservations().length);
@@ -87,5 +89,13 @@ export class TenantReservations {
 
   onSearchChange(event: Event) {
 
+  }
+
+  openWizard() {
+    this.showWizard.set(true);
+  }
+
+  closeWizard() {
+    this.showWizard.set(false);
   }
 }

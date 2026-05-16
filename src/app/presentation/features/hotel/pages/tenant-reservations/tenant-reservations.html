@@ -37,7 +37,7 @@
               />
             </div>
           </div>
-          <button class="btn-create-header" aria-label="Crear Reserva">
+          <button class="btn-create-header" aria-label="Crear Reserva" (click)="openWizard()">
             <ng-icon name="bootstrapPlusCircle" class="btn-icon"></ng-icon>
             <span>Crear Reserva</span>
           </button>
@@ -186,5 +186,9 @@
               </div>
           </div>
       </div>
+  }
+
+  @if (showWizard()) {
+    <app-create-reservation-wizard (close)="closeWizard()"></app-create-reservation-wizard>
   }
 </app-hotel-page-layout>
