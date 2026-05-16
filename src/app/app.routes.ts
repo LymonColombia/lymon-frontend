@@ -38,6 +38,8 @@ import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/gues
 import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/pages/guest-reservation-details/guest-reservation-details';
 import { InventoryComponent } from '@/presentation/features/hotel/pages/properties/[propertyId]/inventory/inventory';
+import { PaymentSuccessComponent } from '@/presentation/features/hotel/pages/payment-success/payment-success';
+import { PaymentFailureComponent } from '@/presentation/features/hotel/pages/payment-failure/payment-failure';
 import { ExperienceComponent } from './presentation/features/hotel/pages/experiences/experiences';
 import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
 import { StorageTestComponent } from '@/presentation/features/hotel/pages/storageTest/storageTest';
@@ -80,6 +82,9 @@ export const routes: Routes = [
     component: GuestReservationDetailsComponent,
     canActivate: [guestGuard],
   },
+
+  { path: 'guest/payment/success', component: PaymentSuccessComponent, canActivate: [guestGuard] },
+  { path: 'guest/payment/failure', component: PaymentFailureComponent, canActivate: [guestGuard] },
 
   { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
 

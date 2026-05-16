@@ -36,9 +36,9 @@ import {
   bootstrapPeopleFill,
   bootstrapSearch,
 } from '@ng-icons/bootstrap-icons';
-import { CheckoutState } from '../guest-checkout/guest-checkout';
 // Known arch violation: direct infra import for auth check — pending GetGuestSessionUseCase
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { SaveReservationDraftUseCase } from '@/domain/use-cases/cart/save-reservation-draft.use-case';
 
 @Component({
   selector: 'app-room-details',
@@ -79,6 +79,7 @@ export class RoomDetailsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitUseCase = inject(GetPublicUnitUseCase);
+  private readonly saveReservationDraftUseCase = inject(SaveReservationDraftUseCase);
   private readonly getUnitCalendarUseCase = inject(GetUnitCalendarUseCase);
   private readonly guestTokenService = inject(GuestTokenService);
 
@@ -93,6 +94,7 @@ export class RoomDetailsComponent implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly unit = signal<Unit | null>(null);
   readonly occupiedRanges = signal<OccupiedDateRange[]>([]);
+  readonly savingDraft = signal(false);
 
   // Booking card signals
   readonly checkIn = signal<string | null>(null);
@@ -194,20 +196,27 @@ export class RoomDetailsComponent implements OnInit {
       return;
     }
 
-    const state: CheckoutState = {
+    this.savingDraft.set(true);
+    this.errorMessage.set(null);
+
+    this.saveReservationDraftUseCase.execute({
+      tenantId: unit.tenantId ?? '',
+      propertyId: unit.propertyId ?? '',
       unitId: unit.id,
-      tenantId: unit.tenantId,
-      propertyId: unit.propertyId,
-      unitName: unit.name,
       checkIn: this.checkIn()!,
       checkOut: this.checkOut()!,
       guestsCount: this.guestsCount(),
       pricePerNight: unit.pricePerNight ?? 0,
-      nights: this.nights(),
-      total: this.totalPrice(),
-    };
-
-    this.router.navigate(['/guest/checkout'], { state });
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.savingDraft.set(false);
+        this.router.navigate(['/guest/checkout']);
+      },
+      error: (err: { error?: { message?: string } }) => {
+        this.savingDraft.set(false);
+        this.errorMessage.set(err?.error?.message ?? 'No se pudo guardar la reserva. Intenta de nuevo.');
+      },
+    });
   }
 
   onSearch(): void {

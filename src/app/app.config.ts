@@ -35,6 +35,10 @@ import { StorageRepository } from '@/domain/repositories/storage.repository';
 import { StorageRepositoryImpl } from '@/infrastructure/repositories/storage.repository.impl';
 import { GuestExperienceRepository } from '@/domain/repositories/guest-experience.repository';
 import { GuestExperienceRepositoryImpl } from '@/infrastructure/repositories/guest-experience.repository.impl';
+import { PaymentRepository } from '@/domain/repositories/payment.repository';
+import { PaymentRepositoryImpl } from '@/infrastructure/repositories/payment.repository.impl';
+import { GuestCartRepository } from '@/domain/repositories/guest-cart.repository';
+import { GuestCartRepositoryImpl } from '@/infrastructure/repositories/guest-cart.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -58,5 +62,7 @@ export const appConfig: ApplicationConfig = {
     { provide: InventoryRepository, useClass: InventoryRepositoryImpl },
     { provide: StorageRepository, useClass: StorageRepositoryImpl },
     { provide: GuestExperienceRepository, useClass: GuestExperienceRepositoryImpl },
+    { provide: PaymentRepository, useClass: PaymentRepositoryImpl },
+    { provide: GuestCartRepository, useClass: GuestCartRepositoryImpl },
   ],
 };

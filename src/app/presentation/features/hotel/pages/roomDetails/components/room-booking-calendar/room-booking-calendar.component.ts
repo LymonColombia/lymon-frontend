@@ -14,10 +14,10 @@ interface CalendarDay {
   isCurrentMonth: boolean;
   isToday: boolean;
   isPast: boolean;
+  isOccupied: boolean;
   isStart: boolean;
   isEnd: boolean;
   isInRange: boolean;
-  isOccupied: boolean;
 }
 
 const MONTH_NAMES = [
@@ -145,7 +145,7 @@ export class RoomBookingCalendarComponent {
     occupiedRanges: OccupiedDateRange[],
   ): CalendarDay {
     const dateStr = this.toDateStr(date);
-    const isOccupied = occupiedRanges.some((r) => {
+    const isOccupied = isCurrentMonth && occupiedRanges.some((r) => {
       const checkIn = r.checkIn.slice(0, 10);
       const checkOut = r.checkOut.slice(0, 10);
       return dateStr >= checkIn && dateStr < checkOut;
@@ -156,10 +156,10 @@ export class RoomBookingCalendarComponent {
       isCurrentMonth,
       isToday: dateStr === this.todayStr,
       isPast: dateStr < this.todayStr,
+      isOccupied,
       isStart: dateStr === startStr,
       isEnd: dateStr === endStr,
       isInRange: !!(startStr && endStr && dateStr > startStr && dateStr < endStr),
-      isOccupied,
     };
   }
 

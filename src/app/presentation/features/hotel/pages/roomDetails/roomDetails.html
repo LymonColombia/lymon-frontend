@@ -117,10 +117,10 @@
               <button
                 type="button"
                 class="btn-reserve-now"
-                [disabled]="!canReserve()"
+                [disabled]="!canReserve() || savingDraft()"
                 (click)="onReserveNow(selectedUnit)"
               >
-                Reservar Ahora
+                {{ savingDraft() ? 'Guardando...' : 'Reservar Ahora' }}
               </button>
             </div>
           </div>
