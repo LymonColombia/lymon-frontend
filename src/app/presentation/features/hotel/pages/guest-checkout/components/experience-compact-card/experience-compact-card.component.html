@@ -1,4 +1,4 @@
-<button type="button" class="exp-card" (click)="cardClicked.emit()">
+<button type="button" class="exp-card" (click)="onCardClick()">
   <div class="exp-card-image-wrap">
     <img [src]="experience().coverImageUrl" [alt]="experience().name" class="exp-card-image" />
     @if (isAdded()) {
