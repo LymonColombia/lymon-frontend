@@ -7,6 +7,7 @@ import {
   bootstrapHeartFill,
   bootstrapHouseDoorFill,
   bootstrapPeopleFill,
+  bootstrapStar,
   bootstrapStarFill,
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
@@ -47,6 +48,7 @@ export interface BookingRoomCard {
       bootstrapDoorOpenFill,
       bootstrapHouseDoorFill,
       bootstrapPeopleFill,
+      bootstrapStar,
       bootstrapStarFill,
       bootstrapGeoAlt,
       bootstrapHeart,
@@ -62,6 +64,12 @@ export class RoomCardComponent {
   readonly isLiked = input<boolean>(false);
   readonly viewDetails = output<string>();
   readonly toggleLike = output<string>();
+
+  protected getStars(): boolean[] {
+    const rating = this.room().rating;
+    if (rating === undefined || rating === null) return [];
+    return Array.from({ length: 5 }, (_, i) => i < rating);
+  }
 
   onViewDetails(): void {
     this.viewDetails.emit(this.room().id);
