@@ -44,9 +44,6 @@ export const environment = {
   suppliers: {
     endpoint: '/suppliers',
   },
-  storage: {
-    endpoint: '/storage/presigned-url',
-  },
   guestExperiences: {
     endpoint: '/guest/experiences',
   },
