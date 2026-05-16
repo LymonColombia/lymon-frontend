@@ -27,10 +27,10 @@
       <img
         class="sidebar-logo-image--collapsed"
         [class.sidebar-logo-image--collapsed-visible]="!isExpanded()"
-        src="/images/LyHostLogo.svg"
+        src="/images/LyHost.svg"
         alt="LyHost"
-        width="48"
-        height="48"
+        width="56"
+        height="14"
       />
     </a>
   </div>
@@ -38,7 +38,7 @@
   <ul class="sidebar-menu">
     @for (item of menuItems; track item.route) {
       <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <a [routerLink]="item.route" class="menu-link" [title]="!isExpanded() ? item.label : null">
+        <a [routerLink]="item.route" class="menu-link" [attr.title]="!isExpanded() ? item.label : null">
           <ng-icon [name]="item.icon" size="20px" class="menu-icon" aria-hidden="true"></ng-icon>
           <span class="menu-label" [class.menu-label--hidden]="!isExpanded()">{{ item.label }}</span>
         </a>
@@ -73,10 +73,6 @@
             <button type="button" class="profile-menu-item" role="menuitem" (click)="goToSettings()">
               Configuración
             </button>
-            <button type="button" class="profile-menu-item" role="menuitem" (click)="goToSessions()">
-              Sesiones
-            </button>
-            <button type="button" class="profile-menu-item" role="menuitem" (click)="goToPlans()">Planes</button>
 
             <button
               type="button"

@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { HttpClient, HttpInterceptorFn } from '@angular/common/http';
-import { Observable, finalize, map, shareReplay, switchMap, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { Observable, catchError, finalize, map, shareReplay, switchMap, throwError } from 'rxjs';
 import { environment } from '@env';
 import { TokenService } from '@/infrastructure/services/token.service';
 
@@ -22,6 +23,7 @@ let refreshInFlight$: Observable<string> | null = null;
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenService = inject(TokenService);
   const http = inject(HttpClient);
+  const router = inject(Router);
   const accessToken = tokenService.getAccessToken();
 
    if (SKIP_DOMAINS.some(domain => req.url.includes(domain))) {
@@ -36,8 +38,20 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(addAuthorizationHeader(req, accessToken));
   }
 
+  const refreshToken = tokenService.getRefreshToken();
+  if (!refreshToken || isTokenExpired(refreshToken)) {
+    tokenService.clear();
+    router.navigate(['/login'], { queryParams: { sessionExpired: true } });
+    return throwError(() => new Error('Session expired'));
+  }
+
   return refreshAccessToken(http, tokenService).pipe(
     switchMap((updatedAccessToken) => next(addAuthorizationHeader(req, updatedAccessToken))),
+    catchError((err) => {
+      tokenService.clear();
+      router.navigate(['/login'], { queryParams: { sessionExpired: true } });
+      return throwError(() => err);
+    }),
   );
 };
 
@@ -89,6 +103,12 @@ function isRefreshRequest(url: string): boolean {
   return url.includes(AUTH_REFRESH_PATH);
 }
 
+function isTokenExpired(token: string): boolean {
+  const payload = getJwtPayload(token);
+  if (!payload?.exp || typeof payload.exp !== 'number') return true;
+  return payload.exp <= Math.floor(Date.now() / 1000);
+}
+
 function isTokenExpiringSoon(token: string, thresholdSeconds: number): boolean {
   const payload = getJwtPayload(token);
 
@@ -121,7 +141,7 @@ function getJwtPayload(token: string): { exp?: number } | null {
 }
 
 function decodeBase64Url(value: string): string {
-  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const normalized = value.replaceAll('-', '+').replaceAll('_', '/');
   const padding = '='.repeat((4 - (normalized.length % 4)) % 4);
   return atob(normalized + padding);
 }

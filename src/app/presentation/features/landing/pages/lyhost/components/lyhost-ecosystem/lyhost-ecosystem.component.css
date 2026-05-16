@@ -5,7 +5,7 @@
 .lyhost-ecosystem {
   position: relative;
   overflow: hidden;
-  background: var(--color-bg-secondary);
+  background: var(--color-primary-dark);
   padding: var(--spacing-5xl) 0;
 }
 
@@ -35,8 +35,8 @@
   justify-content: center;
   padding: var(--spacing-xs) var(--spacing-md);
   border-radius: var(--radius-full);
-  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
-  background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 50%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
   margin-bottom: var(--spacing-2xl);
 }
 
@@ -53,7 +53,7 @@
   font-size: clamp(var(--font-size-3xl), 3.5vw, calc(var(--font-size-4xl) * 1.05));
   line-height: var(--line-height-tight);
   letter-spacing: -0.02em;
-  color: var(--color-text-primary);
+  color: var(--color-bg-primary);
 }
 
 .ecosystem-copy h2 span {
@@ -65,7 +65,7 @@
   font-family: var(--font-secondary);
   font-size: var(--font-size-md);
   line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
+  color: color-mix(in srgb, var(--color-bg-primary) 75%, transparent);
 }
 
 .ecosystem-list {
@@ -83,7 +83,7 @@
 .ecosystem-check {
   width: var(--spacing-xl);
   height: var(--spacing-xl);
-  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 60%, transparent);
   border-radius: var(--radius-full);
   display: inline-flex;
   align-items: center;
@@ -93,7 +93,7 @@
 .ecosystem-item span:last-child {
   font-family: var(--font-secondary);
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: color-mix(in srgb, var(--color-bg-primary) 75%, transparent);
 }
 
 .ecosystem-visual {
@@ -130,7 +130,7 @@
 }
 
 .center-label {
-  fill: var(--color-text-primary);
+  fill: var(--color-bg-primary);
   font-size: 11px;
   font-weight: var(--font-weight-semibold);
   font-family: var(--font-secondary);

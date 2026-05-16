@@ -1,0 +1,20 @@
+<div class="map-wrapper">
+  <iframe
+    class="map-frame"
+    [src]="mapEmbedUrl()"
+    [title]="label()"
+    [attr.aria-label]="label()"
+    allowfullscreen
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+  ></iframe>
+
+  <a
+    class="map-open-link"
+    [href]="mapExternalUrl()"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Ver en Google Maps
+  </a>
+</div>

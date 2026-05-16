@@ -126,7 +126,7 @@
 }
 
 .select-option-selected {
-  background: var(--color-primary-gradient);
+  background: var(--color-primary);
   color: var(--color-bg-primary);
   font-weight: var(--font-weight-semibold);
 }

@@ -25,6 +25,11 @@ export interface Unit {
   isShared?: boolean;
   amenities?: string[];
   bathroomsCount?: number;
+  externalIds?: {
+    airbnbId?: string;
+    bookingId?: string;
+    vrboId?: string;
+  };
 }
 
 export interface Bedroom {
@@ -47,9 +52,10 @@ export interface Pagination {
 export interface PublicUnitsParams {
   page: number;
   limit: number;
-  checkIn?: string;
-  checkOut?: string;
-  guests?: number;
+  startDate?: string;
+  endDate?: string;
+  minGuests?: number;
+  propertyId?: string;
 }
 
 export interface UnitsResponse {
@@ -75,31 +81,37 @@ export interface RolesResponse {
   roles: Role[];
 }
 
-export interface RoleAssignmentDto {
+export interface RoleAssignment {
   roleId: string;
-  scope: { type: 'TENANT' } | { type: 'PROPERTY' | 'UNIT'; resourceIds: string[] };
+  scope: {
+    type: 'TENANT' | 'PROPERTY' | 'UNIT';
+    resourceIds?: string[];
+    resources?: Array<{ id: string; name: string }>;
+  };
 }
 
 export interface InviteStaffDto {
   email: string;
   password: string;
-  roleAssignments: RoleAssignmentDto[];
+  fullName: string;
+  document: string;
+  roleAssignments: RoleAssignment[];
 }
 
 export interface StaffMember {
-  id?: string;
+  id: string;
   email: string;
+  isOwner: boolean;
+  emailVerified: boolean;
   fullName?: string;
   name?: string;
   role?: 'ADMIN' | 'STAFF';
   createdAt?: string;
-  roleAssignments?: RoleAssignmentDto[];
+  roleAssignments?: RoleAssignment[];
 }
 
 export interface StaffListResponse {
-  data?: StaffMember[];
-  items?: StaffMember[];
-  results?: StaffMember[];
-  staff?: StaffMember[];
-  users?: StaffMember[];
+  message: string;
+  total: number;
+  data: StaffMember[];
 }

@@ -113,12 +113,11 @@ export class SidebarComponent implements OnInit {
 
   readonly menuItems: MenuItem[] = [
     { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
-    { icon: 'bootstrapArchive', label: 'Inventario', route: '/inventory' },
     { icon: 'bootstrapHouseDoor', label: 'Propiedades y Unidades', route: '/properties' },
     { icon: 'bootstrapStar', label: 'Experiencias', route: '/tenant-experiences' },
     { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/register-employee' },
     { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/employee-management' },
-    { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/staffShift'},
+    { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/staff-shift' },
     { icon: 'bootstrapCurrencyDollar', label: 'Resumen de Ventas', route: '/sales-summary' },
     { icon: 'bootstrapCalendar', label: 'Sincronizar Calendarios', route: '/calendar-sync' },
     { icon: 'bootstrapEnvelopeAt', label: 'Configuración de Correos', route: '/email-config' },

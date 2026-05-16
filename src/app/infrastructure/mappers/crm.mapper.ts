@@ -3,12 +3,13 @@ import {
   CrmGuestBooking,
   CrmGuestBookingSource,
   CrmGuestBookingStatus,
+  CrmGuestEmail,
   CrmGuestNote,
   CrmGuestNoteCategory,
   CrmGuestNoteStatus,
   CrmGuestStatus,
 } from '@/domain/entities/crm-guest.model';
-import { CrmGuestBookingDto, CrmGuestDto, CrmGuestNoteDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto } from '@/infrastructure/dtos/crm.dto';
 
 export class CrmMapper {
   static toGuests(dtos: CrmGuestDto[]): CrmGuest[] {
@@ -21,6 +22,16 @@ export class CrmMapper {
 
   static toGuestNotes(dtos: CrmGuestNoteDto[]): CrmGuestNote[] {
     return dtos.map((dto) => CrmMapper.toDomainGuestNote(dto));
+  }
+
+  static toGuestEmails(dtos: CrmGuestEmailDto[]): CrmGuestEmail[] {
+    return dtos.map((dto) => ({
+      id: dto.id,
+      subject: dto.subject,
+      status: dto.status,
+      sentById: dto.sentById,
+      createdAt: dto.createdAt,
+    }));
   }
 
   private static toDomainGuest(dto: CrmGuestDto): CrmGuest {
@@ -62,7 +73,11 @@ export class CrmMapper {
   }
 
   private static toGuestStatus(status: string): CrmGuestStatus {
-    return status.toLowerCase() === 'inactive' ? 'inactive' : 'active';
+    const normalized = status.toLowerCase();
+    if (normalized === 'inactive') return 'inactive';
+    if (normalized === 'blocked') return 'blocked';
+    if (normalized === 'archived') return 'archived';
+    return 'active';
   }
 
   private static toGuestNoteCategory(value: string): CrmGuestNoteCategory {

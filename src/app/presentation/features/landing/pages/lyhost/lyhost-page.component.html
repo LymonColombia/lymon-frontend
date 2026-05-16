@@ -14,15 +14,6 @@
     <section
       #revealSection
       class="reveal-section"
-      data-section-id="plans"
-      [class.is-visible]="isVisible('plans')"
-    >
-      <app-lyhost-plans></app-lyhost-plans>
-    </section>
-
-    <section
-      #revealSection
-      class="reveal-section"
       data-section-id="features"
       [class.is-visible]="isVisible('features')"
     >
@@ -37,7 +28,16 @@
     >
       <app-lyhost-ecosystem></app-lyhost-ecosystem>
     </section>
+
+    <section
+      #revealSection
+      class="reveal-section"
+      data-section-id="plans"
+      [class.is-visible]="isVisible('plans')"
+    >
+      <app-lyhost-plans></app-lyhost-plans>
+    </section>
   </main>
 
-  <app-footer></app-footer>
+  <app-footer [dark]="true"></app-footer>
 </div>

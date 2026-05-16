@@ -41,6 +41,16 @@ export interface GuestReservationResponse {
   };
 }
 
+export interface GetGuestReservationsParams {
+  page?: number;
+  limit?: number;
+  status?: 'active' | 'pending' | 'confirmed' | 'finished' | 'cancelled';
+  sortBy?: 'date' | 'status' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+  fromDate?: string;
+  toDate?: string;
+}
+
 export interface GuestReservationsPage {
   reservations: GuestReservationResponse[];
   pagination: {
@@ -50,3 +60,9 @@ export interface GuestReservationsPage {
     totalPages: number;
   };
 }
+
+export interface OccupiedDateRange {
+  checkIn: string;
+  checkOut: string;
+}
+

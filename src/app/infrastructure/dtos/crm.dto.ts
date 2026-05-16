@@ -1,3 +1,15 @@
+export interface PaginationDto {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginatedResponseDto<T> {
+  items: T[];
+  pagination: PaginationDto;
+}
+
 export interface CrmGuestDto {
   guestId: string;
   fullName: string;
@@ -40,4 +52,15 @@ export interface CrmGuestNoteDto {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CrmGuestEmailDto {
+  id: string;
+  guestId: string;
+  subject: string;
+  status: string;
+  messageId: string;
+  attachments: unknown[];
+  sentById: string;
+  createdAt: string;
 }

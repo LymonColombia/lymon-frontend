@@ -21,6 +21,7 @@ export const environment = {
   },
   units: {
     endpoint: '/units',
+    unitDetailEndpoint: '/units/unit',
   },
   experiences: {
     endpoint: '/experiences',
@@ -37,5 +38,17 @@ export const environment = {
   crm: {
     endpoint: '/crm',
     guestsEndpoint: '/guests',
+  },
+  shifts: {
+    endpoint: '/shifts',
+  },
+  suppliers: {
+    endpoint: '/suppliers',
+  },
+  storage: {
+    endpoint: '/storage/presigned-url',
+  },
+  guestExperiences: {
+    endpoint: '/guest/experiences',
   },
 };

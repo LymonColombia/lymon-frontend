@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -33,6 +33,9 @@ export class LoginComponent {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly sessionExpired = signal(
+    inject(ActivatedRoute).snapshot.queryParamMap.get('sessionExpired') === 'true',
+  );
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],

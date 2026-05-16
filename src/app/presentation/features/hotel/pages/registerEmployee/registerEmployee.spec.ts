@@ -116,5 +116,23 @@ describe('RegisterEmployeeComponent — US-026 (Ver roles del sistema)', () => {
     it('llama al use-case de roles exactamente una vez al inicializar', () => {
       expect(getRolesMock).toHaveBeenCalledTimes(1);
     });
+
+    describe('Formulario de registro extendido', () => {
+      it('inicializa con campos fullName y document', () => {
+        expect(component.form.contains('fullName')).toBe(true);
+        expect(component.form.contains('document')).toBe(true);
+      });
+
+      it('requiere fullName y document', () => {
+        const fullName = component.form.get('fullName');
+        const document = component.form.get('document');
+
+        fullName?.setValue('');
+        document?.setValue('');
+
+        expect(fullName?.valid).toBe(false);
+        expect(document?.valid).toBe(false);
+      });
+    });
   });
 });

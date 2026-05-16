@@ -38,7 +38,7 @@ const MOCK_GUESTS = [
     name: 'Javier López',
     email: 'javier.lopez@email.com',
     phone: '+34 645 678 901',
-    status: 'inactive' as const,
+    status: 'archived' as const,
   },
   {
     id: '5',
@@ -59,7 +59,7 @@ const MOCK_GUESTS = [
     name: 'Sofía Herrera',
     email: 'sofia.herrera@email.com',
     phone: '+34 678 901 234',
-    status: 'inactive' as const,
+    status: 'archived' as const,
   },
   {
     id: '8',
@@ -351,6 +351,80 @@ describe('GuestsCrmComponent – validación de entrada en selectores', () => {
   });
 });
 
+// ─── Ordenación ──────────────────────────────────────────────────────────────
+describe('GuestsCrmComponent – ordenación', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+  });
+
+  it('estado inicial usa createdAt desc', async () => {
+    const { component } = await setup();
+    expect(component.sortBy()).toBe('createdAt');
+    expect(component.sortDirection()).toBe('desc');
+  });
+
+  it('setSort con columna nueva cambia sortBy y resetea dirección a desc', async () => {
+    const { component } = await setup();
+    component.setSort('fullName');
+    expect(component.sortBy()).toBe('fullName');
+    expect(component.sortDirection()).toBe('desc');
+  });
+
+  it('setSort con misma columna no hace nada', async () => {
+    const { component } = await setup();
+    mockGetGuests.execute.mockClear();
+    component.setSort('createdAt');
+    expect(mockGetGuests.execute).not.toHaveBeenCalled();
+    expect(component.sortBy()).toBe('createdAt');
+  });
+
+  it('setSort resetea la página actual a 1', async () => {
+    const { component } = await setup();
+    component.goToPage(2);
+    component.setSort('status');
+    expect(component.currentPage()).toBe(1);
+  });
+
+  it('setSort llama al use case con los parámetros de ordenación correctos', async () => {
+    const { component } = await setup();
+    mockGetGuests.execute.mockClear();
+    component.setSort('fullName');
+    expect(mockGetGuests.execute).toHaveBeenCalledWith({ sortBy: 'fullName', sortDirection: 'desc' });
+  });
+
+  it('carga inicial llama al use case con sortBy y sortDirection', async () => {
+    const { component } = await setup();
+    expect(mockGetGuests.execute).toHaveBeenCalledWith({ sortBy: 'createdAt', sortDirection: 'desc' });
+    expect(component.guests().length).toBe(8);
+  });
+
+  it('toggleSortDirection alterna de desc a asc', async () => {
+    const { component } = await setup();
+    expect(component.sortDirection()).toBe('desc');
+    component.toggleSortDirection();
+    expect(component.sortDirection()).toBe('asc');
+    component.toggleSortDirection();
+    expect(component.sortDirection()).toBe('desc');
+  });
+
+  it('toggleSortDirection llama al use case con la nueva dirección', async () => {
+    const { component } = await setup();
+    mockGetGuests.execute.mockClear();
+    component.toggleSortDirection();
+    expect(mockGetGuests.execute).toHaveBeenCalledWith({ sortBy: 'createdAt', sortDirection: 'asc' });
+  });
+
+  it('toggleSortDirection resetea la página actual a 1', async () => {
+    const { component } = await setup();
+    component.goToPage(2);
+    component.toggleSortDirection();
+    expect(component.currentPage()).toBe(1);
+  });
+});
+
 // ─── Placeholder de búsqueda ──────────────────────────────────────────────────
 describe('GuestsCrmComponent – placeholder de búsqueda', () => {
   beforeEach(() => {
@@ -367,5 +441,225 @@ describe('GuestsCrmComponent – placeholder de búsqueda', () => {
     expect(component.searchPlaceholder()).toBe('Buscar por correo electrónico...');
     component.selectSearchField('phone');
     expect(component.searchPlaceholder()).toBe('Buscar por teléfono...');
+  });
+});
+
+// ─── Etiquetas disponibles y traducciones ─────────────────────────────────────
+describe('GuestsCrmComponent – etiquetas disponibles y traducciones', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of([]));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+  });
+
+  it('availableTags contiene exactamente 10 etiquetas', async () => {
+    const { component } = await setup();
+    expect(component.availableTags.length).toBe(10);
+  });
+
+  it('availableTags incluye todas las etiquetas esperadas', async () => {
+    const { component } = await setup();
+    const expected = [
+      'vip', 'family', 'honeymoon', 'business', 'regular',
+      'pet friendly', 'accessibility needs', 'loyalty member',
+      'early check-in', 'late checkout',
+    ];
+    expected.forEach((tag) => expect(component.availableTags).toContain(tag));
+  });
+
+  it('tagLabels traduce correctamente todas las etiquetas al español', async () => {
+    const { component } = await setup();
+    expect(component.tagLabels['vip']).toBe('VIP');
+    expect(component.tagLabels['family']).toBe('Familia');
+    expect(component.tagLabels['honeymoon']).toBe('Luna de miel');
+    expect(component.tagLabels['business']).toBe('Negocios');
+    expect(component.tagLabels['regular']).toBe('Regular');
+    expect(component.tagLabels['pet friendly']).toBe('Mascotas');
+    expect(component.tagLabels['accessibility needs']).toBe('Necesidades de accesibilidad');
+    expect(component.tagLabels['loyalty member']).toBe('Miembro de fidelidad');
+    expect(component.tagLabels['early check-in']).toBe('Check-in temprano');
+    expect(component.tagLabels['late checkout']).toBe('Check-out tardío');
+  });
+});
+
+// ─── Gestión de etiquetas ─────────────────────────────────────────────────────
+describe('GuestsCrmComponent – gestión de etiquetas', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(MOCK_GUESTS));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+  });
+
+  it('toggleTag activa una etiqueta inactiva', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    expect(component.activeTags()).toContain('vip');
+  });
+
+  it('toggleTag desactiva una etiqueta ya activa', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    component.toggleTag('vip');
+    expect(component.activeTags()).not.toContain('vip');
+  });
+
+  it('toggleTag puede mantener múltiples etiquetas activas a la vez', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    component.toggleTag('family');
+    expect(component.activeTags()).toEqual(['vip', 'family']);
+  });
+
+  it('toggleTag reinicia la página a 1', async () => {
+    const { component } = await setup();
+    component.goToPage(2);
+    component.toggleTag('vip');
+    expect(component.currentPage()).toBe(1);
+  });
+
+  it('isTagActive devuelve true para una etiqueta activa', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    expect(component.isTagActive('vip')).toBe(true);
+  });
+
+  it('isTagActive devuelve false para una etiqueta inactiva', async () => {
+    const { component } = await setup();
+    expect(component.isTagActive('vip')).toBe(false);
+  });
+
+  it('clearTags elimina todas las etiquetas activas', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    component.toggleTag('family');
+    component.clearTags();
+    expect(component.activeTags()).toEqual([]);
+  });
+
+  it('clearTags reinicia la página a 1', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    component.goToPage(2);
+    component.clearTags();
+    expect(component.currentPage()).toBe(1);
+  });
+});
+
+// ─── Filtro por estado ────────────────────────────────────────────────────────
+describe('GuestsCrmComponent – filtro por estado', () => {
+  const GUESTS_WITH_STATUS = [
+    { id: '1', name: 'Activo Uno',    email: 'activo1@email.com',   phone: '+1111111111', status: 'active'   as const },
+    { id: '2', name: 'Activo Dos',    email: 'activo2@email.com',   phone: '+2222222222', status: 'active'   as const },
+    { id: '3', name: 'Activo Tres',   email: 'activo3@email.com',   phone: '+3333333333', status: 'active'   as const },
+    { id: '4', name: 'Activo Cuatro', email: 'activo4@email.com',   phone: '+4444444444', status: 'active'   as const },
+    { id: '5', name: 'Activo Cinco',  email: 'activo5@email.com',   phone: '+5555555555', status: 'active'   as const },
+    { id: '6', name: 'Activo Seis',   email: 'activo6@email.com',   phone: '+6666666666', status: 'active'   as const },
+    { id: '7', name: 'Bloqueado Uno', email: 'bloqueado@email.com', phone: '+7777777777', status: 'blocked'  as const },
+    { id: '8', name: 'Archivado Uno', email: 'archivado@email.com', phone: '+8888888888', status: 'archived' as const },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(GUESTS_WITH_STATUS));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+  });
+
+  it('sin filtro de estado muestra todos los huéspedes', async () => {
+    const { component } = await setup();
+    expect(component.filteredGuests().length).toBe(8);
+  });
+
+  it('filtra por "active" y muestra solo huéspedes activos', async () => {
+    const { component } = await setup();
+    component.onStatusFilterChange('active');
+    expect(component.filteredGuests().length).toBe(6);
+    expect(component.filteredGuests().every((g) => g.status === 'active')).toBe(true);
+  });
+
+  it('filtra por "blocked" y muestra solo huéspedes bloqueados', async () => {
+    const { component } = await setup();
+    component.onStatusFilterChange('blocked');
+    expect(component.filteredGuests().length).toBe(1);
+    expect(component.filteredGuests()[0].name).toBe('Bloqueado Uno');
+  });
+
+  it('filtra por "archived" y muestra solo huéspedes archivados', async () => {
+    const { component } = await setup();
+    component.onStatusFilterChange('archived');
+    expect(component.filteredGuests().length).toBe(1);
+    expect(component.filteredGuests()[0].name).toBe('Archivado Uno');
+  });
+
+  it('volver a "all" restaura todos los huéspedes', async () => {
+    const { component } = await setup();
+    component.onStatusFilterChange('blocked');
+    component.onStatusFilterChange('all');
+    expect(component.filteredGuests().length).toBe(8);
+  });
+
+  it('onStatusFilterChange reinicia la página a 1', async () => {
+    const { component } = await setup();
+    component.goToPage(2);
+    component.onStatusFilterChange('active');
+    expect(component.currentPage()).toBe(1);
+  });
+});
+
+// ─── Filtro por etiquetas ─────────────────────────────────────────────────────
+describe('GuestsCrmComponent – filtro por etiquetas', () => {
+  const GUESTS_WITH_TAGS = [
+    { id: '1', name: 'VIP Familia',  email: 'vipfamily@email.com', phone: '+1111111111', status: 'active' as const, tags: ['vip', 'family'] },
+    { id: '2', name: 'Solo Familia', email: 'family@email.com',    phone: '+2222222222', status: 'active' as const, tags: ['family'] },
+    { id: '3', name: 'Solo Regular', email: 'regular@email.com',   phone: '+3333333333', status: 'active' as const, tags: ['regular'] },
+    { id: '4', name: 'Sin Etiquetas', email: 'none@email.com',     phone: '+4444444444', status: 'active' as const, tags: [] },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+    mockGetGuests.execute.mockReturnValue(of(GUESTS_WITH_TAGS));
+    mockGetGuestBookings.execute.mockReturnValue(of([]));
+  });
+
+  it('sin etiquetas activas muestra todos los huéspedes', async () => {
+    const { component } = await setup();
+    expect(component.filteredGuests().length).toBe(4);
+  });
+
+  it('al activar "vip" muestra solo huéspedes con esa etiqueta', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    expect(component.filteredGuests().length).toBe(1);
+    expect(component.filteredGuests()[0].name).toBe('VIP Familia');
+  });
+
+  it('al activar "family" muestra todos los huéspedes que la contienen', async () => {
+    const { component } = await setup();
+    component.toggleTag('family');
+    expect(component.filteredGuests().length).toBe(2);
+  });
+
+  it('al activar "vip" y "family" muestra solo huéspedes con ambas etiquetas', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    component.toggleTag('family');
+    expect(component.filteredGuests().length).toBe(1);
+    expect(component.filteredGuests()[0].name).toBe('VIP Familia');
+  });
+
+  it('etiqueta sin coincidencias devuelve lista vacía', async () => {
+    const { component } = await setup();
+    component.toggleTag('honeymoon');
+    expect(component.filteredGuests().length).toBe(0);
+  });
+
+  it('al desactivar la única etiqueta activa vuelve a mostrar todos los huéspedes', async () => {
+    const { component } = await setup();
+    component.toggleTag('vip');
+    component.toggleTag('vip');
+    expect(component.filteredGuests().length).toBe(4);
   });
 });
