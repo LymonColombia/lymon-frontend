@@ -106,8 +106,8 @@
   </section>
   
   @if (selectedReservation(); as res) {
-      <div class="modal-overlay" (click)="closeDetails()" (keydown.escape)="closeDetails()" tabindex="0">
-          <div class="modal-container" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="0">
+      <div class="modal-overlay" (click)="closeDetails()">
+          <div class="modal-container" (click)="$event.stopPropagation()">
               <header class="modal-header">
                   <div class="modal-title-group">
                       <ng-icon name="bootstrapCalendarEvent" class="modal-icon"></ng-icon>

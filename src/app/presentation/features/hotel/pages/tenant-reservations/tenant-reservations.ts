@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlusCircle, bootstrapX, bootstrapCheck, bootstrapPencil } from '@ng-icons/bootstrap-icons';
@@ -62,7 +62,7 @@ export class TenantReservations {
       checkIn: '2026-06-10',
       checkOut: '2026-06-12',
       status: 'Pendiente',
-      totalAmount: 340.50,
+      totalAmount: 340.5,
       createdAt: '2026-05-12T14:30:00.000Z'
     },
     {
@@ -111,5 +111,12 @@ export class TenantReservations {
 
   closeWizard() {
     this.showWizard.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (this.selectedReservation()) {
+      this.closeDetails();
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, output, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -100,6 +100,11 @@ export class CreateReservationWizardComponent {
 
   onSubmit() {
     console.log('Reservation created (simulated)');
+    this.onClose();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
     this.onClose();
   }
 }

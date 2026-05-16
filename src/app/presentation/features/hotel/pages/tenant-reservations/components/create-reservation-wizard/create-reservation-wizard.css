@@ -112,7 +112,7 @@
   height: 28px;
   border-radius: 50%;
   background: #f1f5f9;
-  color: #94a3b8;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,7 +129,7 @@
 }
 
 .step-item.completed .step-icon {
-  background: var(--color-success-text, #059669);
+  background: var(--color-success-text, #047857);
   color: white;
 }
 
@@ -372,7 +372,7 @@ select {
 }
 
 .btn-emerald {
-  background: var(--color-success-text, #059669);
+  background: var(--color-success-text, #047857);
   color: white;
 }
 
