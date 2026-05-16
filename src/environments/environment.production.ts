@@ -41,4 +41,7 @@ export const environment = {
   storage: {
     endpoint: '/storage/presigned-url',
   },
+  guestExperiences: {
+    endpoint: '/guest/experiences',
+  },
 };
