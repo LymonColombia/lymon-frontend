@@ -35,7 +35,7 @@ import {
 })
 export class CreateReservationWizardComponent {
   currentStep = signal(1);
-  close = output<void>();
+  closeWizard = output<void>();
 
   guestIsRegistered = signal<boolean | null>(null);
 
@@ -95,7 +95,7 @@ export class CreateReservationWizardComponent {
   }
 
   onClose() {
-    this.close.emit();
+    this.closeWizard.emit();
   }
 
   onSubmit() {

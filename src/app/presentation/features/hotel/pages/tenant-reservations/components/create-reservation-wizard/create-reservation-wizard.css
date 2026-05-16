@@ -123,13 +123,13 @@
 }
 
 .step-item.active .step-icon {
-  background: var(--color-primary, #6366f1);
+  background: var(--color-primary, #4f46e5);
   color: white;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #4f46e5) 15%, transparent);
 }
 
 .step-item.completed .step-icon {
-  background: var(--color-success-text, #10b981);
+  background: var(--color-success-text, #059669);
   color: white;
 }
 
@@ -340,9 +340,9 @@ select {
 }
 
 .btn-primary {
-  background: var(--color-primary, #6366f1);
+  background: var(--color-primary, #4f46e5);
   color: white;
-  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-primary, #4f46e5) 20%, transparent);
 }
 
 .btn-primary:hover {
@@ -372,7 +372,7 @@ select {
 }
 
 .btn-emerald {
-  background: var(--color-success-text, #10b981);
+  background: var(--color-success-text, #059669);
   color: white;
 }
 

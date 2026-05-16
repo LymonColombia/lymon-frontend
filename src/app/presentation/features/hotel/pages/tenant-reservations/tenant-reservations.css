@@ -19,7 +19,7 @@
   
   .status-pendiente {
     background-color: var(--color-warning-bg, #fffbeb);
-    color: var(--color-warning-text, #b45309);
+    color: var(--color-warning-text, #92400e);
     border: 1px solid var(--color-warning-border, #fef08a);
   }
   
@@ -351,9 +351,9 @@
     border-color: #e2e8f0;
   }
   .btn-amber:hover { 
-    background-color: #f1f5f9;
-    color: #d97706;
-    border-color: #fcd34d;
+    background-color: #fefce8;
+    color: #92400e;
+    border-color: #fde047;
   }
   
   .btn-danger { 
