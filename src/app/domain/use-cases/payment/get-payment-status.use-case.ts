@@ -1,0 +1,13 @@
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { PaymentRepository } from '../../repositories/payment.repository';
+import { GetPaymentSessionStatusResult } from '../../entities/payment.model';
+
+@Injectable({ providedIn: 'root' })
+export class GetPaymentStatusUseCase {
+  private readonly repository = inject(PaymentRepository);
+
+  execute(reference: string): Observable<GetPaymentSessionStatusResult> {
+    return this.repository.getStatus(reference);
+  }
+}

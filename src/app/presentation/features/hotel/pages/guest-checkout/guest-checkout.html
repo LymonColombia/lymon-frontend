@@ -12,16 +12,24 @@
 
   <div class="checkout-container">
 
-    @if (!info()) {
+    @if (isLoadingCart()) {
+      <div class="loading-card">
+        <div class="spinner"></div>
+        <p class="loading-text">Cargando carrito...</p>
+      </div>
+    }
+
+    @if (!isLoadingCart() && !cart()) {
       <div class="no-info-card">
-        <p class="no-info-text">No hay información de reserva. Vuelve a la búsqueda y selecciona tus fechas.</p>
+        <ng-icon name="bootstrapCart" size="32px" aria-hidden="true"></ng-icon>
+        <p class="no-info-text">No hay un carrito activo. Selecciona una habitación para comenzar tu reserva.</p>
         <app-button variant="primary" size="medium" (clicked)="goToBooking()">
           Ver Habitaciones
         </app-button>
       </div>
     }
 
-    @if (info(); as reservation) {
+    @if (!isLoadingCart() && cart(); as currentCart) {
       @if (isSuccess()) {
         <div class="success-card">
           <div class="success-icon-wrap">
@@ -29,138 +37,160 @@
           </div>
           <h1 class="success-title">¡Reserva Confirmada!</h1>
           <p class="success-subtitle">
-            Tu reserva en <strong>{{ reservation.unitName }}</strong> ha sido creada exitosamente.
+            Tu reserva en <strong>{{ reservationItem?.unitName ?? 'la habitación' }}</strong> ha sido creada exitosamente.
           </p>
           <div class="success-summary">
-            <div class="success-row">
-              <ng-icon name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
-              <span>{{ formatDate(reservation.checkIn) }} → {{ formatDate(reservation.checkOut) }}</span>
-            </div>
-            <div class="success-row">
-              <ng-icon name="bootstrapPeopleFill" size="14px" aria-hidden="true"></ng-icon>
-              <span>{{ reservation.guestsCount }} huésped{{ reservation.guestsCount !== 1 ? 'es' : '' }}</span>
-            </div>
+            @if (reservationItem; as item) {
+              <div class="success-row">
+                <ng-icon name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+                <span>{{ formatDate(item.checkIn) }} → {{ formatDate(item.checkOut) }}</span>
+              </div>
+              <div class="success-row">
+                <ng-icon name="bootstrapPeopleFill" size="14px" aria-hidden="true"></ng-icon>
+                <span>{{ item.guestsCount }} huésped{{ item.guestsCount !== 1 ? 'es' : '' }}</span>
+              </div>
+            }
           </div>
-          <app-button variant="primary" size="medium" (clicked)="goToBooking()">
-            Ver Más Habitaciones
-          </app-button>
+          <div class="success-actions">
+            <app-button variant="primary" size="medium" (clicked)="goToReservations()">
+              Ver Mis Reservas
+            </app-button>
+            <app-button variant="secondary" size="medium" (clicked)="goToBooking()">
+              Ver Más Habitaciones
+            </app-button>
+          </div>
         </div>
 
       } @else {
         <div class="checkout-card">
-
-          <!-- Image header -->
-          <div class="checkout-card-header">
-            <img src="/images/suite2.avif" alt="" class="header-image" />
-            <div class="header-overlay"></div>
-            <div class="header-content">
-              <span class="unit-badge">Habitación</span>
-              <h1 class="unit-name">{{ reservation.unitName }}</h1>
+          @if (pollingStatus() === 'POLLING') {
+            <div class="polling-overlay">
+              <div class="polling-content">
+                <div class="spinner"></div>
+                <h2 class="polling-title">Procesando pago</h2>
+                <p class="polling-subtitle">Estamos verificando tu transacción con Wompi. Por favor no cierres esta ventana.</p>
+                @if (paymentStatus()) {
+                  <span class="status-badge" [class]="paymentStatus()?.toLowerCase()">
+                    {{ paymentStatus() }}
+                  </span>
+                }
+              </div>
             </div>
-          </div>
+          }
 
-          <!-- Body -->
-          <div class="checkout-card-body">
-
-            <!-- Reservation summary -->
-            <section>
-              <h2 class="section-title">Resumen de la Reserva</h2>
-              <div class="summary-list">
-
-                <div class="summary-item">
-                  <div class="summary-item-icon">
-                    <ng-icon name="bootstrapCalendar" size="15px" aria-hidden="true"></ng-icon>
-                  </div>
-                  <div class="summary-item-content">
-                    <span class="summary-item-label">Entrada</span>
-                    <span class="summary-item-value">{{ formatDate(reservation.checkIn) }}</span>
-                  </div>
-                </div>
-
-                <div class="summary-item">
-                  <div class="summary-item-icon">
-                    <ng-icon name="bootstrapCalendar" size="15px" aria-hidden="true"></ng-icon>
-                  </div>
-                  <div class="summary-item-content">
-                    <span class="summary-item-label">Salida</span>
-                    <span class="summary-item-value">{{ formatDate(reservation.checkOut) }}</span>
-                  </div>
-                </div>
-
-                <div class="summary-item">
-                  <div class="summary-item-icon">
-                    <ng-icon name="bootstrapPeopleFill" size="15px" aria-hidden="true"></ng-icon>
-                  </div>
-                  <div class="summary-item-content">
-                    <span class="summary-item-label">Huéspedes</span>
-                    <span class="summary-item-value">
-                      {{ reservation.guestsCount }} persona{{ reservation.guestsCount !== 1 ? 's' : '' }}
-                    </span>
-                  </div>
-                </div>
-
-              </div>
-            </section>
-
-            <!-- Price breakdown -->
-            <div class="price-section">
-              <div class="price-row">
-                <span>${{ reservation.pricePerNight }} × {{ reservation.nights }} noche{{ reservation.nights !== 1 ? 's' : '' }}</span>
-                <span>${{ reservation.total }}</span>
-              </div>
-              <div class="price-total">
-                <span class="price-total-label">Total</span>
-                <span class="price-total-value">${{ reservation.total }}</span>
+          @if (reservationItem; as item) {
+            <!-- Image header -->
+            <div class="checkout-card-header">
+              <img src="/images/suite2.avif" alt="" class="header-image" />
+              <div class="header-overlay"></div>
+              <div class="header-content">
+                <span class="unit-badge">Habitación</span>
+                <h1 class="unit-name">{{ item.unitName ?? 'Habitación' }}</h1>
               </div>
             </div>
 
-            <!-- Notes -->
-            <div class="notes-section">
-              <label class="notes-label" for="checkout-notes">
-                Notas adicionales
-                <span class="optional">(opcional)</span>
-              </label>
-              <textarea
-                id="checkout-notes"
-                class="notes-input"
-                rows="3"
-                placeholder="Peticiones especiales, hora de llegada aproximada..."
-                [value]="notes()"
-                (input)="onNotesChange($any($event.target).value)">
-              </textarea>
-            </div>
+            <!-- Body -->
+            <div class="checkout-card-body">
+              <section>
+                <h2 class="section-title">Resumen de la Reserva</h2>
+                <div class="summary-list">
+                  <div class="summary-item">
+                    <div class="summary-item-icon">
+                      <ng-icon name="bootstrapCalendar" size="15px" aria-hidden="true"></ng-icon>
+                    </div>
+                    <div class="summary-item-content">
+                      <span class="summary-item-label">Entrada</span>
+                      <span class="summary-item-value">{{ formatDate(item.checkIn) }}</span>
+                    </div>
+                  </div>
 
-            <!-- Error -->
-            @if (errorMessage()) {
-              <div class="error-banner">
-                <ng-icon name="bootstrapExclamationTriangle" size="15px" aria-hidden="true"></ng-icon>
-                <span>{{ errorMessage() }}</span>
+                  <div class="summary-item">
+                    <div class="summary-item-icon">
+                      <ng-icon name="bootstrapCalendar" size="15px" aria-hidden="true"></ng-icon>
+                    </div>
+                    <div class="summary-item-content">
+                      <span class="summary-item-label">Salida</span>
+                      <span class="summary-item-value">{{ formatDate(item.checkOut) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="summary-item">
+                    <div class="summary-item-icon">
+                      <ng-icon name="bootstrapPeopleFill" size="15px" aria-hidden="true"></ng-icon>
+                    </div>
+                    <div class="summary-item-content">
+                      <span class="summary-item-label">Huéspedes</span>
+                      <span class="summary-item-value">
+                        {{ item.guestsCount }} persona{{ item.guestsCount !== 1 ? 's' : '' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Price breakdown -->
+              <div class="price-section">
+                <div class="price-row">
+                  <span>${{ item.pricePerNight }} × {{ nights }} noche{{ nights !== 1 ? 's' : '' }}</span>
+                  <span>${{ item.totalPriceCop }}</span>
+                </div>
+                <div class="price-total">
+                  <span class="price-total-label">Total</span>
+                  <span class="price-total-value">${{ item.totalPriceCop }}</span>
+                </div>
               </div>
-            }
 
-            <!-- Actions -->
-            <div class="actions">
-              <app-button
-                variant="primary"
-                size="large"
-                [fullWidth]="true"
-                [loading]="isLoading()"
-                (clicked)="confirmReservation()">
+              <!-- Notes -->
+              <div class="notes-section">
+                <label class="notes-label" for="checkout-notes">
+                  Notas adicionales
+                  <span class="optional">(opcional)</span>
+                </label>
+                <textarea
+                  id="checkout-notes"
+                  class="notes-input"
+                  rows="3"
+                  placeholder="Peticiones especiales, hora de llegada aproximada..."
+                  [value]="notes()"
+                  (input)="onNotesChange($any($event.target).value)">
+                </textarea>
+              </div>
+            </div>
+          }
+
+          <!-- Error -->
+          @if (errorMessage() && pollingStatus() !== 'POLLING') {
+            <div class="error-banner">
+              <ng-icon name="bootstrapExclamationTriangle" size="15px" aria-hidden="true"></ng-icon>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          <!-- Actions -->
+          <div class="actions">
+            <app-button
+              variant="primary"
+              size="large"
+              [fullWidth]="true"
+              [loading]="isProcessingPayment() || pollingStatus() === 'POLLING'"
+              [disabled]="pollingStatus() === 'POLLING' || !reservationItem"
+              (clicked)="confirmReservation()">
+              @if (pollingStatus() === 'POLLING') {
+                Procesando...
+              } @else {
                 <ng-icon name="bootstrapCheckCircle" size="20px" aria-hidden="true"></ng-icon>
-                Confirmar Reserva
-              </app-button>
+                Pagar y Reservar
+              }
+            </app-button>
 
-              <div class="trust-line">
-                <ng-icon name="bootstrapShield" size="13px" aria-hidden="true"></ng-icon>
-                <span>No se realizará ningún cargo hasta confirmar con el establecimiento</span>
-              </div>
+            <div class="trust-line">
+              <ng-icon name="bootstrapShield" size="13px" aria-hidden="true"></ng-icon>
+              <span>Pago seguro procesado por Wompi</span>
             </div>
-
           </div>
         </div>
       }
     }
-
   </div>
 
   <app-footer></app-footer>
