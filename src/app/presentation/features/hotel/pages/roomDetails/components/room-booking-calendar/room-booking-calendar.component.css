@@ -94,6 +94,13 @@
   text-decoration: line-through;
 }
 
+.cal-day.is-occupied {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  background: rgba(220, 53, 69, 0.05);
+  text-decoration: line-through;
+}
+
 .cal-day.is-today:not(.is-start):not(.is-end) {
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
@@ -160,4 +167,9 @@
 .dot-today {
   border: 2px solid var(--color-primary);
   background: transparent;
+}
+
+.dot-occupied {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
 }

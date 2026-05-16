@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env';
 import { GuestReservationRepository } from '@/domain/repositories/guest-reservation.repository';
-import { GuestReservationRequest, GuestReservationResponse, GuestReservationsPage } from '@/domain/entities/guest-reservation.model';
+import { GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, UnitCalendarEntry } from '@/domain/entities/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
 const BASE_URL = `${environment.apiUrl}/guest/reservations`;
@@ -26,6 +26,12 @@ export class GuestReservationRepositoryImpl implements GuestReservationRepositor
     return this.http
       .get<GuestReservationResponse>(`${BASE_URL}/${id}`, { headers: this.authHeaders() })
       .pipe(map((res) => ({ ...res, status: res.status?.toLowerCase() ?? res.status })));
+  }
+
+  getCalendar(unitId: string): Observable<UnitCalendarEntry[]> {
+    return this.http.get<UnitCalendarEntry[]>(`${BASE_URL}/unit/${encodeURIComponent(unitId)}/calendar`, {
+      headers: this.authHeaders(),
+    });
   }
 
   getAll(params: { page?: number; limit?: number }): Observable<GuestReservationsPage> {

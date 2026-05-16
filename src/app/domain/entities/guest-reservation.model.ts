@@ -41,6 +41,11 @@ export interface GuestReservationResponse {
   };
 }
 
+export interface UnitCalendarEntry {
+  date: string;
+  available: boolean;
+}
+
 export interface GuestReservationsPage {
   reservations: GuestReservationResponse[];
   pagination: {

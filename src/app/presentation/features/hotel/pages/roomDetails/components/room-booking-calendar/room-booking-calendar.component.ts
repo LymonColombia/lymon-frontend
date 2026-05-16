@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapChevronLeft, bootstrapChevronRight } from '@ng-icons/bootstrap-icons';
 
@@ -13,6 +13,7 @@ interface CalendarDay {
   isCurrentMonth: boolean;
   isToday: boolean;
   isPast: boolean;
+  isOccupied: boolean;
   isStart: boolean;
   isEnd: boolean;
   isInRange: boolean;
@@ -36,6 +37,7 @@ const WEEKDAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 })
 export class RoomBookingCalendarComponent {
   readonly dateRangeChange = output<BookingDateRange>();
+  readonly blockedDates = input<string[]>([]);
 
   readonly weekdays = WEEKDAYS;
 
@@ -54,6 +56,7 @@ export class RoomBookingCalendarComponent {
     const month = this.viewMonth();
     const startStr = this.startDate() ? this.toDateStr(this.startDate()!) : null;
     const endStr = this.endDate() ? this.toDateStr(this.endDate()!) : null;
+    const blocked = new Set(this.blockedDates());
 
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
@@ -61,19 +64,19 @@ export class RoomBookingCalendarComponent {
 
     // Leading days from previous month
     for (let i = firstDay.getDay(); i > 0; i--) {
-      days.push(this.makeDay(new Date(year, month, 1 - i), false, startStr, endStr));
+      days.push(this.makeDay(new Date(year, month, 1 - i), false, startStr, endStr, blocked));
     }
 
     // Current month
     for (let d = 1; d <= lastDay.getDate(); d++) {
-      days.push(this.makeDay(new Date(year, month, d), true, startStr, endStr));
+      days.push(this.makeDay(new Date(year, month, d), true, startStr, endStr, blocked));
     }
 
     // Trailing days to fill last row
     const trailing = 7 - (days.length % 7);
     if (trailing < 7) {
       for (let d = 1; d <= trailing; d++) {
-        days.push(this.makeDay(new Date(year, month + 1, d), false, startStr, endStr));
+        days.push(this.makeDay(new Date(year, month + 1, d), false, startStr, endStr, blocked));
       }
     }
 
@@ -99,7 +102,7 @@ export class RoomBookingCalendarComponent {
   }
 
   onDayClick(day: CalendarDay): void {
-    if (!day.isCurrentMonth || day.isPast) return;
+    if (!day.isCurrentMonth || day.isPast || day.isOccupied) return;
 
     const clickedStr = this.toDateStr(day.date);
     const start = this.startDate();
@@ -128,6 +131,7 @@ export class RoomBookingCalendarComponent {
     isCurrentMonth: boolean,
     startStr: string | null,
     endStr: string | null,
+    blocked: Set<string>,
   ): CalendarDay {
     const dateStr = this.toDateStr(date);
     return {
@@ -136,6 +140,7 @@ export class RoomBookingCalendarComponent {
       isCurrentMonth,
       isToday: dateStr === this.todayStr,
       isPast: dateStr < this.todayStr,
+      isOccupied: isCurrentMonth && blocked.has(dateStr),
       isStart: dateStr === startStr,
       isEnd: dateStr === endStr,
       isInRange: !!(startStr && endStr && dateStr > startStr && dateStr < endStr),
