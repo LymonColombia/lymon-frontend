@@ -78,7 +78,6 @@ export class RateReservationModalComponent {
     this.errorMessage.set(null);
 
     this.createUnitRatingUseCase.execute({
-      tenantId: res.tenantId ?? '',
       reservationId: res.id,
       rate: this.selectedRate(),
       message: this.message() || undefined,
