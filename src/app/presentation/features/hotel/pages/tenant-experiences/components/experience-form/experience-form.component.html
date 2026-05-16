@@ -1,6 +1,6 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="form-card">
-    <div class="section-title">Informacion General</div>
+    <div class="section-separator">Informacion General</div>
 
     <div class="form-row">
       <div class="form-group">
@@ -64,9 +64,11 @@
           <input
             id="coverImageInput"
             type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
             class="file-input"
             aria-label="Seleccionar imagen de portada"
-            (change)="onCoverImageSelected()"
+            (change)="onCoverImageSelected($event)"
+           
           />
         </app-button>
 

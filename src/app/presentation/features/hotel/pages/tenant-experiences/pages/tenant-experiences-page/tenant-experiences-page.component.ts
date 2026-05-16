@@ -43,11 +43,9 @@ export class TenantExperiencesPageComponent {
 
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
+  readonly successMessage = signal<string | null>(null);
   readonly experiences = signal<Experience[]>([]);
   readonly viewMode = signal<ExperienceViewMode>('CARDS');
-  readonly IdEditingExperience = signal<string | null>(null);
-
-
   readonly experienceCountLabel = computed(() => {
     if (this.isLoading()) {
       return 'Cargando experiencias...';
@@ -65,8 +63,9 @@ export class TenantExperiencesPageComponent {
     this.viewMode.set(mode);
   }
 
-  onDeleteExperience(id: string) {
+  onDeleteExperience(id: string): void {
     this.experienceToDelete.set(id);
+    this.deleteExperience(id);
   }
 
   onCreateExperience(): void {
@@ -103,11 +102,12 @@ export class TenantExperiencesPageComponent {
       next: () => {
         this.experiences.set(this.experiences().filter(exp => exp.id !== id));
         this.experienceToDelete.set(null);
+        this.successMessage.set('Experiencia eliminada correctamente.');
       },
       error: () => {
         this.errorMessage.set('No se pudo eliminar la experiencia.');
         this.experienceToDelete.set(null);
       },
     });
-}
+  }
 }

@@ -22,6 +22,12 @@ export const environment = {
   units: {
     endpoint: '/units',
   },
+  experiences: {
+    endpoint: '/experiences',
+  },
+  storage: {
+    endpoint: '/storage/presigned-url',
+  },
   guestAuth: {
     endpoint: '/guest/auth',
   },

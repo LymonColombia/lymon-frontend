@@ -29,6 +29,8 @@ import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { SupplierRepositoryImpl } from '@/infrastructure/repositories/supplier.repository.impl';
 import { ExperienceRepository } from '@/domain/repositories/experience.repository';
 import { ExperienceRepositoryImpl } from '@/infrastructure/repositories/experience.repository.impl';
+import { ImageStorageRepository } from '@/domain/repositories/storage-img.repository';
+import { ImageStorageRepositoryImpl } from '@/infrastructure/repositories/storage-img.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -49,5 +51,6 @@ export const appConfig: ApplicationConfig = {
     { provide: GuestReservationRepository, useClass: GuestReservationRepositoryImpl },
     { provide: SupplierRepository, useClass: SupplierRepositoryImpl },
     { provide: ExperienceRepository, useClass: ExperienceRepositoryImpl },
+    { provide: ImageStorageRepository, useClass: ImageStorageRepositoryImpl },
   ],
 };

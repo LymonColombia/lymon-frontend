@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CreateExperienceDto, Experience, ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
@@ -7,9 +7,9 @@ import { InputComponent } from '@/presentation/shared/components/input/input.com
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ExperienceLocationSectionComponent } from '../experience-location-section/experience-location-section.component';
 import { ExperienceAvailabilitySectionComponent } from '../experience-availability-section/experience-availability-section.component';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapFile, bootstrapStars } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/image-storage.use-case';
+import { ImageStorage } from '@/domain/entities/storage-img';
 
 @Component({
   selector: 'app-experience-form',
@@ -21,15 +21,23 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button.
     SelectComponent,
     ExperienceLocationSectionComponent,
     ExperienceAvailabilitySectionComponent,
-    NgIcon,
   ],
-  providers: [provideIcons({ bootstrapStars, bootstrapFile })],
   templateUrl: './experience-form.component.html',
   styleUrl: './experience-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExperienceFormComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly createImageStorageUseCase = inject(CreateImageStorageUseCase);
+  private patchedExperienceId: string | null = null;
+  private readonly allowedContentTypes = new Set<string>([
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'application/pdf',
+  ]);
+
   
   readonly initialExperience = input<Experience | null>(null);
   readonly isSaving = input(false);
@@ -41,8 +49,6 @@ export class ExperienceFormComponent {
   readonly propertyOptions = input<SelectOption[]>([]);
   readonly unitOptions = input<SelectOption[]>([]);
   readonly unitsLoading = input(false);
-  readonly addBlackoutRange = output<void>();
-  readonly removeBlackoutRange = output<number>();
 
   readonly scopeOptions: SelectOption[] = [
     { value: 'TENANT', label: 'Tenant' },
@@ -84,10 +90,7 @@ export class ExperienceFormComponent {
     }),
     startAt: this.fb.control('',{ nonNullable: true }),
     endAt: this.fb.control('',{ nonNullable: true }),
-    blackoutRanges: this.fb.array([this.fb.group({
-      startAt: this.fb.control<string | null>(null, { nonNullable: true }),
-      endAt: this.fb.control<string | null>(null, { nonNullable: true }),
-    })]),
+    blackoutRanges: this.fb.array<FormGroup<BlackoutRangeFormControls>>([]),
     recurrence: this.fb.group({
       daysOfWeek: this.fb.control<number[]>([], { nonNullable: true }),
       startTime: this.fb.control('', { nonNullable: true }),
@@ -102,6 +105,23 @@ export class ExperienceFormComponent {
     allowStandalonePurchase: this.fb.control(true, { nonNullable: true }),
     allowReservationPurchase: this.fb.control(false, { nonNullable: true }),
   });
+
+  constructor() {
+    effect(() => {
+      const experience = this.initialExperience();
+      if (!experience) {
+        return;
+      }
+
+      const nextExperienceId = experience.id ?? null;
+      if (nextExperienceId && this.patchedExperienceId === nextExperienceId) {
+        return;
+      }
+
+      this.patchFormFromExperience(experience);
+      this.patchedExperienceId = nextExperienceId;
+    });
+  }
 
   get isPropertyScope(): boolean {
     return this.form.controls.scope.value === 'PROPERTY';
@@ -152,15 +172,51 @@ export class ExperienceFormComponent {
   }
 
   onAddBlackoutRange(): void {
-    this.addBlackoutRange.emit();
+    this.blackoutRanges.push(this.createBlackoutRangeGroup());
+    this.blackoutRanges.markAsDirty();
+    this.blackoutRanges.updateValueAndValidity();
   }
 
   onRemoveBlackoutRange(index: number): void {
-    this.removeBlackoutRange.emit(index);
+    if (index < 0 || index >= this.blackoutRanges.length) {
+      return;
+    }
+
+    this.blackoutRanges.removeAt(index);
+    this.blackoutRanges.markAsDirty();
+    this.blackoutRanges.updateValueAndValidity();
   }
 
-  onCoverImageSelected(): void {
-    this.form.controls.coverImageUrl.setValue('https://picsum.photos/id/10/800/600');
+  onCoverImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    if (!this.allowedContentTypes.has(file.type)) {
+      this.form.controls.coverImageUrl.setErrors({ invalidContentType: true });
+      this.form.controls.coverImageUrl.markAsTouched();
+      return;
+    }
+
+    const dto: ImageStorage = {
+      file,
+    };
+
+    this.createImageStorageUseCase.execute(dto).subscribe({
+      next: ({ objectKey }) => {
+        this.form.controls.coverImageUrl.setErrors(null);
+        this.form.controls.coverImageUrl.setValue(objectKey);
+        this.form.controls.coverImageUrl.markAsDirty();
+        this.form.controls.coverImageUrl.updateValueAndValidity();
+      },
+      error: () => {
+        this.form.controls.coverImageUrl.setErrors({ uploadFailed: true });
+        this.form.controls.coverImageUrl.markAsTouched();
+      }
+    });
+
   }
 
   onCancel(): void {
@@ -174,6 +230,50 @@ export class ExperienceFormComponent {
     }
 
     this.submitted.emit(this.buildPayload());
+  }
+
+  private patchFormFromExperience(experience: Experience): void {
+    const blackoutRanges = experience.blackoutRanges ?? [];
+    const blackoutControls = blackoutRanges.map((range) =>
+      this.createBlackoutRangeGroup(
+        this.toLocalDateTime(range.startAt),
+        this.toLocalDateTime(range.endAt),
+      ),
+    );
+
+    this.form.setControl('blackoutRanges', this.fb.array(blackoutControls));
+    this.form.patchValue({
+      scope: experience.scope,
+      propertyId: experience.propertyId ?? '',
+      unitIds: experience.unitIds ?? [],
+      name: experience.name,
+      description: experience.description,
+      category: experience.category,
+      priceCop: experience.priceCop,
+      durationHours: experience.durationHours,
+      capacity: experience.capacity,
+      coverImageUrl: experience.coverImageUrl,
+      availabilityType: experience.availabilityType,
+      startAt: this.toLocalDateTime(experience.startAt),
+      endAt: this.toLocalDateTime(experience.endAt),
+      recurrence: {
+        daysOfWeek: experience.recurrence?.daysOfWeek ?? [],
+        startTime: experience.recurrence?.startTime ?? '',
+        endTime: experience.recurrence?.endTime ?? '',
+      },
+      location: {
+        label: experience.location.label,
+        address: experience.location.address,
+        lat: experience.location.lat,
+        lng: experience.location.lng,
+      },
+      allowStandalonePurchase: experience.allowStandalonePurchase ?? true,
+      allowReservationPurchase: experience.allowReservationPurchase ?? false,
+    });
+
+    if (experience.scope === 'PROPERTY' && experience.propertyId) {
+      this.propertyChanged.emit(experience.propertyId);
+    }
   }
 
 
@@ -239,5 +339,34 @@ export class ExperienceFormComponent {
     }
 
     return date.toISOString();
+  }
+
+  private createBlackoutRangeGroup(
+    startAt: string | null = null,
+    endAt: string | null = null,
+  ): FormGroup<BlackoutRangeFormControls> {
+    return this.fb.group<BlackoutRangeFormControls>({
+      startAt: this.fb.control<string | null>(startAt),
+      endAt: this.fb.control<string | null>(endAt),
+    });
+  }
+
+  private toLocalDateTime(value?: string): string {
+    if (!value) {
+      return '';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;  
   }
 }

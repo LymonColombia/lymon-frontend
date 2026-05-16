@@ -15,6 +15,7 @@ import { ExperienceFormComponent } from '../../components/experience-form/experi
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { UpdateExperienceUseCase } from '@/domain/use-cases/experience/update-experience.use-case';
+import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
 
 const EXPERIENCE_CATEGORIES = [
   'TRANSPORTATION',
@@ -47,6 +48,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getPropertyUnitsUseCase = inject(GetUnitsUseCase);
   private readonly updateExperienceUseCase = inject(UpdateExperienceUseCase);
+  private readonly getExperienceByIdUseCase = inject(GetExperienceByIdUseCase);
 
   readonly isSaving = signal(false);
   readonly isLoading = signal(false);
@@ -130,7 +132,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
        console.log('Updating experience with ID:', editingId, 'and data:', dto);
       this.updateExperienceUseCase.execute(editingId, dto).subscribe({
         next: () => this.handleSaveSuccess('Experiencia actualizada correctamente.'),
-        error: () => this.handleSaveError('No se pudo actualizar la experiencia.'),
+        error: (error) => this.handleSaveError('No se pudo actualizar la experiencia.', error.message ),
       });
       return;
     }
@@ -138,7 +140,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
     console.log('Creating experience with data:', dto);
     this.createExperienceUseCase.execute(dto).subscribe({
       next: () => this.handleSaveSuccess('Experiencia creada correctamente.'),
-      error: () => this.handleSaveError('No se pudo crear la experiencia.'),
+      error: (error) => this.handleSaveError('No se pudo crear la experiencia.', error),
     });
   }
 
@@ -158,9 +160,10 @@ export class TenantExperienceFormPageComponent implements OnInit {
     this.router.navigate(['/tenant-experiences']);
   }
 
-  private handleSaveError(message: string): void {
+  private handleSaveError(message: string, error: any): void {
     this.isSaving.set(false);
-    this.errorMessage.set(message);
+    this.errorMessage.set(message + ' ' + error.error.message);
+    console.error('Error saving experience:', error);
   }
 
   private loadEditValueIfNeeded(): void {
@@ -171,6 +174,26 @@ export class TenantExperienceFormPageComponent implements OnInit {
 
     this.editingExperienceId.set(experienceId);
     this.isLoading.set(true);
+    this.errorMessage.set(null);
 
+    this.getExperienceByIdUseCase
+      .execute(experienceId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (experience) => {
+          if (!experience) {
+            this.errorMessage.set('No se encontro la experiencia solicitada.');
+            this.isLoading.set(false);
+            return;
+          }
+
+          this.editingExperience.set(experience);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.errorMessage.set('No se pudo cargar la experiencia para editar.');
+          this.isLoading.set(false);
+        },
+      });
   }
 }

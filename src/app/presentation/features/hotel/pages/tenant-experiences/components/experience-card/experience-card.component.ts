@@ -23,6 +23,7 @@ export class ExperienceCardComponent {
   readonly experience = input.required<Experience>();
   readonly view = output<string>();
   readonly edit = output<string>();
+  readonly delete = output<string>();
 
   readonly priceLabel = computed(() => this.formatCurrencyCop(this.experience().priceCop));
   readonly categoryLabel = computed(() => this.getCategoryLabel(this.experience().category));
@@ -43,10 +44,10 @@ export class ExperienceCardComponent {
     }
   }
 
-  onDelete() {
+  onDelete(): void {
     const id = this.experience().id;
     if (id) {
-      this.edit.emit(id);
+      this.delete.emit(id);
     }
   }
 
