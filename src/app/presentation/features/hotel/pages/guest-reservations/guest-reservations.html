@@ -210,6 +210,7 @@
             [reservation]="reservation"
             (confirm)="goToCheckin($event)"
             (viewDetails)="goToReservationDetails($event)"
+            (rate)="onRateReservation($event)"
           />
         }
       </div>
@@ -267,5 +268,12 @@
   </div>
 
   <app-footer />
+
+  <app-rate-reservation-modal
+    [open]="ratingReservation() !== null"
+    [reservation]="ratingReservation()"
+    (closed)="onRatingModalClose()"
+    (submitted)="onRatingSubmitted()"
+  ></app-rate-reservation-modal>
 
 </div>
