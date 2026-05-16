@@ -67,7 +67,7 @@ export class PropertyRepositoryImpl extends PropertyRepository {
 
   updateUnit(id: string, data: UpdateUnitDto): Observable<unknown> {
     return this.http.patch<unknown>(
-      `${environment.apiUrl}${environment.units.endpoint}/${id}`,
+      `${environment.apiUrl}${environment.units.unitDetailEndpoint}/${id}`,
       data,
       { headers: this.authHeaders },
     );
