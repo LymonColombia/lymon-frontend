@@ -1,0 +1,20 @@
+<button type="button" class="exp-card" (click)="cardClicked.emit()">
+  <div class="exp-card-image-wrap">
+    <img [src]="experience().coverImageUrl" [alt]="experience().name" class="exp-card-image" />
+    @if (isAdded()) {
+      <div class="exp-card-added-badge">
+        <ng-icon name="bootstrapCheckCircleFill" size="12px" aria-hidden="true"></ng-icon>
+        Añadida
+      </div>
+    }
+  </div>
+  <div class="exp-card-content">
+    <span class="exp-card-category">{{ experience().category }}</span>
+    <p class="exp-card-name">{{ experience().name }}</p>
+    <div class="exp-card-meta">
+      <ng-icon name="bootstrapClock" size="12px" aria-hidden="true"></ng-icon>
+      <span>{{ experience().durationHours }}h</span>
+      <span class="exp-card-price">${{ formatPrice(experience().priceCop) }}</span>
+    </div>
+  </div>
+</button>
