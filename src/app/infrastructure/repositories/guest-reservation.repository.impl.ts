@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env';
 import { GuestReservationRepository } from '@/domain/repositories/guest-reservation.repository';
-import { GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
+import { CreateUnitRatingDto, GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 import { UnitCalendarDto } from '@/infrastructure/dtos/unit-calendar.dto';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
@@ -37,6 +37,14 @@ export class GuestReservationRepositoryImpl implements GuestReservationRepositor
     return this.http
       .get<UnitCalendarDto>(`${BASE_URL}/unit/${unitId}/calendar`, { params: httpParams })
       .pipe(map((res) => res.data));
+  }
+
+  createUnitRating(dto: CreateUnitRatingDto): Observable<unknown> {
+    return this.http.post<unknown>(
+      `${environment.apiUrl}/guest/unit-ratings`,
+      dto,
+      { headers: this.authHeaders() },
+    );
   }
 
   getAll(params: GetGuestReservationsParams): Observable<GuestReservationsPage> {

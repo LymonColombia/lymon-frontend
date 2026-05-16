@@ -66,3 +66,10 @@ export interface OccupiedDateRange {
   checkOut: string;
 }
 
+export interface CreateUnitRatingDto {
+  tenantId: string;
+  reservationId: string;
+  rate: number;
+  message?: string;
+}
+

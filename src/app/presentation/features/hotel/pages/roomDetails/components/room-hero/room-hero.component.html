@@ -9,13 +9,18 @@
     <div class="room-meta">
       <div class="room-rating">
         <div class="stars" aria-hidden="true">
-          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
-          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
-          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
-          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
-          <ng-icon class="star-icon" name="bootstrapStarFill" size="20px"></ng-icon>
+          @for (filled of getStars(); track $index) {
+            <ng-icon class="star-icon" [name]="filled ? 'bootstrapStarFill' : 'bootstrapStar'" size="20px" aria-hidden="true"></ng-icon>
+          }
         </div>
-        <span class="rating-text">Habitación {{ unit().isShared ? 'compartida' : 'privada' }}</span>
+        @if (unit().rating) {
+          <span class="rating-text">{{ unit().rating }}</span>
+        } @else {
+          <span class="rating-text rating-text--muted">Sin valoraciones</span>
+        }
+        <button type="button" class="btn-view-ratings" (click)="viewRatings.emit()">
+          Ver valoraciones
+        </button>
       </div>
 
       <div class="room-price-section">

@@ -1,10 +1,12 @@
 import { Observable } from 'rxjs';
 import {
+  GetUnitRatingsParams,
   InviteStaffDto,
   PropertiesResponse,
   PublicUnitsParams,
   RolesResponse,
   StaffListResponse,
+  UnitRatingsResponse,
   UnitResponse,
   UnitsResponse,
 } from '@/domain/entities/staff.model';
@@ -18,4 +20,5 @@ export abstract class StaffRepository {
   abstract getPublicUnits(params: PublicUnitsParams): Observable<UnitsResponse>;
   abstract getPublicUnit(unitId: string): Observable<UnitResponse>;
   abstract deleteStaff(id: string): Observable<unknown>;
+  abstract getUnitRatings(params: GetUnitRatingsParams): Observable<UnitRatingsResponse>;
 }
