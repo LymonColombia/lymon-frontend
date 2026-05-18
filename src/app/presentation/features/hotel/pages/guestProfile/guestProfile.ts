@@ -366,7 +366,7 @@ export class GuestProfileComponent implements OnInit {
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'CRM de Huéspedes', route: '/crm/guests' },
-    { label: this.guest()?.name ?? 'Perfil del huésped' },
+    { label: 'Detalle del huésped' },
   ]);
 
   readonly availableTags = AVAILABLE_TAGS;
