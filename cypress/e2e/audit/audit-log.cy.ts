@@ -3,20 +3,20 @@
  *
  * Gherkin Source: tests/features/audit/audit-log.feature
  *
- * Pre-condition : Manager is already authenticated (storageState injected by Playwright setup).
+ * Pre-condition : Manager is already authenticated (session injected via cy.injectManagerSession).
  * Post-condition: Read-only test — no cleanup required.
  */
 
-import { test, expect } from '../../fixtures/api.fixture';
 import { ManagerFlow } from '../../support/screenplay/manager-flow';
 
-test.describe('Feature: Audit Log', () => {
+describe('Feature: Audit Log', () => {
   let manager: ManagerFlow;
 
-  test.beforeEach(async ({ page }) => {
-    manager = new ManagerFlow(page);
-    // Session already loaded from storageState — land on dashboard.
-    await page.goto('/dashboard');
+  beforeEach(() => {
+    cy.injectManagerSession();
+    manager = new ManagerFlow();
+    // Session already loaded — land on dashboard
+    cy.visit('/dashboard');
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -25,15 +25,17 @@ test.describe('Feature: Audit Log', () => {
   // When   the manager navigates to Audit Log
   // Then   the Audit Log page is visible with at least one timestamped entry
   // ──────────────────────────────────────────────────────────────────────────
-  test('Scenario: audit log list is visible and contains entries', async ({ page }) => {
+  it('Scenario: audit log list is visible and contains entries', () => {
     // When
-    await manager.openAuditLogPage();
+    manager.openAuditLogPage();
 
     // Then
-    await expect(page.getByRole('heading')).toContainText('Registros de Auditoría');
-    await expect(page.locator('div').filter({ hasText: 'Todos los' }).nth(3)).toBeVisible();
-    await expect(page.locator('tbody tr').first().locator('td.cell-date')).toContainText(
-      /\d{1,2} de [a-záéíóú]+ de \d{4}, \d{1,2}:\d{2} [ap]\.\s*m\./i,
-    );
+    cy.get('h1, h2, h3, h4, h5, h6, [role="heading"]').should('contain.text', 'Registros de Auditoría');
+    cy.get('div').contains('Todos los').should('be.visible');
+    cy.get('tbody tr')
+      .first()
+      .find('td.cell-date')
+      .invoke('text')
+      .should('match', /\d{1,2} de [a-záéíóú]+ de \d{4}, \d{1,2}:\d{2} [ap]\.\s*m\./i);
   });
 });
