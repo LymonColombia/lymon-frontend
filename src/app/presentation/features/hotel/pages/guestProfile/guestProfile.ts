@@ -17,6 +17,7 @@ import {
   CrmGuestMessageTemplateId,
   CrmGuestNote,
   CrmGuestNoteCategory,
+  CrmGuestRating,
   CreateCrmGuestNoteRequest,
   UpdateCrmGuestNoteRequest,
   SendCrmGuestMessageRequest,
@@ -31,6 +32,7 @@ import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-c
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
 import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
 import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
+import { GetCrmGuestRatingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-ratings.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
@@ -74,6 +76,8 @@ import {
   bootstrapSearch,
   bootstrapCheck,
   bootstrapGraphUp,
+  bootstrapStarFill,
+  bootstrapStar,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -172,6 +176,8 @@ function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
       bootstrapSearch,
       bootstrapCheck,
       bootstrapGraphUp,
+      bootstrapStarFill,
+      bootstrapStar,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -192,6 +198,7 @@ export class GuestProfileComponent implements OnInit {
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly updateCrmGuestTagsUseCase = inject(UpdateCrmGuestTagsUseCase);
+  private readonly getCrmGuestRatingsUseCase = inject(GetCrmGuestRatingsUseCase);
 
   readonly activeTab = signal<GuestProfileTab>('resumen');
 
@@ -217,6 +224,18 @@ export class GuestProfileComponent implements OnInit {
   readonly isEmailsLoading = signal(false);
   readonly emailsErrorMessage = signal<string | null>(null);
   readonly isEmailsExpanded = signal(false);
+
+  readonly ratings = signal<CrmGuestRating[]>([]);
+  readonly ratingsAverageRating = signal<number | null>(null);
+  readonly ratingsPagination = signal<{ total: number; page: number; limit: number; totalPages: number } | null>(null);
+  readonly isRatingsLoading = signal(false);
+  readonly ratingsErrorMessage = signal<string | null>(null);
+  readonly isLoadingMoreRatings = signal(false);
+
+  readonly hasMoreRatings = computed(() => {
+    const p = this.ratingsPagination();
+    return p !== null && p.page < p.totalPages;
+  });
 
   readonly visibleEmails = computed(() =>
     this.isEmailsExpanded() ? this.emails() : this.emails().slice(0, EMAIL_HISTORY_LIMIT),
@@ -809,6 +828,53 @@ export class GuestProfileComponent implements OnInit {
     this.isEmailsExpanded.update((v) => !v);
   }
 
+  loadRatings(guestId: string, page = 1): void {
+    if (page === 1) {
+      this.isRatingsLoading.set(true);
+      this.ratingsErrorMessage.set(null);
+    } else {
+      this.isLoadingMoreRatings.set(true);
+    }
+
+    this.getCrmGuestRatingsUseCase.execute(guestId, { page, limit: 20 }).subscribe({
+      next: (result) => {
+        if (page === 1) {
+          this.ratings.set(result.items);
+          this.isRatingsLoading.set(false);
+        } else {
+          this.ratings.update((current) => [...current, ...result.items]);
+          this.isLoadingMoreRatings.set(false);
+        }
+        this.ratingsAverageRating.set(result.averageRating);
+        this.ratingsPagination.set(result.pagination);
+      },
+      error: () => {
+        if (page === 1) {
+          this.isRatingsLoading.set(false);
+        } else {
+          this.isLoadingMoreRatings.set(false);
+        }
+        this.ratingsErrorMessage.set('No se pudieron cargar las reseñas. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  loadMoreRatings(): void {
+    const guestId = this.guest()?.id?.trim();
+    const pagination = this.ratingsPagination();
+    if (!guestId || !pagination) return;
+    this.loadRatings(guestId, pagination.page + 1);
+  }
+
+  getStarsArray(rate: number): boolean[] {
+    return Array.from({ length: 5 }, (_, i) => i < Math.round(rate));
+  }
+
+  formatRatingDate(dateStr: string): string {
+    const d = new Date(dateStr);
+    return new Intl.DateTimeFormat('es-ES', { month: 'short', year: 'numeric' }).format(d).replace('.', '');
+  }
+
   getEmailStatusLabel(status: string): string {
     switch (status) {
       case 'sent':
@@ -842,6 +908,7 @@ export class GuestProfileComponent implements OnInit {
         this.loadBookings(guestId);
         this.loadNotes(guestId);
         this.loadEmails(guestId);
+        this.loadRatings(guestId);
       },
       error: (error: HttpErrorResponse) => {
         this.isGuestLoading.set(false);
