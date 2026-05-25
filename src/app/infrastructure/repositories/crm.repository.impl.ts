@@ -6,6 +6,8 @@ import {
   GetCrmGuestBookingsResponse,
   GetCrmGuestEmailsResponse,
   GetCrmGuestNotesResponse,
+  GetCrmGuestRatingsParams,
+  GetCrmGuestRatingsResponse,
   GetCrmGuestsParams,
   GetCrmGuestsResponse,
   SendCrmGuestMessageRequest,
@@ -14,7 +16,7 @@ import {
 } from '@/domain/entities/crm-guest.model';
 import { CrmRepository } from '@/domain/repositories/crm.repository';
 import { CrmMapper } from '@/infrastructure/mappers/crm.mapper';
-import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto, PaginatedResponseDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto, CrmGuestRatingsResponseDto, PaginatedResponseDto } from '@/infrastructure/dtos/crm.dto';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.crm.endpoint}`;
@@ -91,5 +93,16 @@ export class CrmRepositoryImpl extends CrmRepository {
       `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/tags`,
       data,
     );
+  }
+
+  getGuestRatings(guestId: string, params?: GetCrmGuestRatingsParams): Observable<GetCrmGuestRatingsResponse> {
+    return this.http
+      .get<{ data: CrmGuestRatingsResponseDto }>(`${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/ratings`, {
+        params: {
+          ...(params?.page && { page: params.page }),
+          ...(params?.limit && { limit: params.limit }),
+        },
+      })
+      .pipe(map((res) => ({ data: CrmMapper.toGuestRatings(res.data) })));
   }
 }

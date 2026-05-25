@@ -8,8 +8,15 @@ import {
   CrmGuestNoteCategory,
   CrmGuestNoteStatus,
   CrmGuestStatus,
+  GetCrmGuestRatingsResponse,
 } from '@/domain/entities/crm-guest.model';
-import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto } from '@/infrastructure/dtos/crm.dto';
+import {
+  CrmGuestBookingDto,
+  CrmGuestDto,
+  CrmGuestEmailDto,
+  CrmGuestNoteDto,
+  CrmGuestRatingsResponseDto,
+} from '@/infrastructure/dtos/crm.dto';
 
 export class CrmMapper {
   static toGuests(dtos: CrmGuestDto[]): CrmGuest[] {
@@ -32,6 +39,21 @@ export class CrmMapper {
       sentById: dto.sentById,
       createdAt: dto.createdAt,
     }));
+  }
+
+  static toGuestRatings(dto: CrmGuestRatingsResponseDto): GetCrmGuestRatingsResponse['data'] {
+    return {
+      items: dto.items.map((item) => ({
+        id: item.id,
+        unitId: item.unitId,
+        unitName: item.unitName,
+        rate: item.rate,
+        message: item.message,
+        createdAt: item.createdAt,
+      })),
+      averageRating: dto.averageRating,
+      pagination: dto.pagination,
+    };
   }
 
   private static toDomainGuest(dto: CrmGuestDto): CrmGuest {
