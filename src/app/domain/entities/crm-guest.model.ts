@@ -102,3 +102,30 @@ export interface CrmGuestEmail {
 export interface GetCrmGuestEmailsResponse {
   data: CrmGuestEmail[];
 }
+
+export interface CrmGuestRating {
+  id: string;
+  unitId: string;
+  unitName: string;
+  rate: number;
+  message: string;
+  createdAt: string;
+}
+
+export interface GetCrmGuestRatingsParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface GetCrmGuestRatingsResponse {
+  data: {
+    items: CrmGuestRating[];
+    averageRating: number;
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
+}
