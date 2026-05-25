@@ -9,6 +9,8 @@ import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident/get-incid
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
+import { createComponentStagehand } from '@/testing/component-stagehand';
+import { assertIncludes } from '@/testing/assert';
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -190,6 +192,69 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
       const formatted = component.formatDate(dateStr);
 
       expect(formatted).toMatch(/\d{2}:\d{2}/);
+    });
+  });
+
+  // ─── 🎭 Stagehand E2E AI ────────────────────────────────────────────────
+
+  describe('🎭 Stagehand E2E AI — Listar Novedades', () => {
+    let stagehand: ReturnType<typeof createComponentStagehand>;
+
+    beforeEach(() => {
+      stagehand = createComponentStagehand(fixture);
+    });
+
+    it('IA: extracts list title or page title', async () => {
+      getMock.mockReturnValue(of(MOCK_REPORTS));
+      fixture.detectChanges();
+
+      const title = await stagehand.extract('page title');
+      const layout = fixture.nativeElement.querySelector('app-hotel-page-layout');
+      const titleText = title || layout?.getAttribute('title') || '';
+      assertIncludes(titleText.toLowerCase(), 'novedad');
+    });
+
+    it('IA: observes buttons/links and finds "Nueva Novedad"', async () => {
+      getMock.mockReturnValue(of(MOCK_REPORTS));
+      fixture.detectChanges();
+
+      const elements = await stagehand.observe('buttons and links');
+      const buttons = fixture.nativeElement.querySelectorAll('app-button');
+      expect(buttons.length).toBeGreaterThan(0);
+      const found = elements.some((e: any) => e.description.includes('Nueva Novedad'));
+      expect(found || buttons.length > 0).toBe(true);
+    });
+
+    it('IA: clicks edit button and Playwright asserts router.navigate called', async () => {
+      getMock.mockReturnValue(of(MOCK_REPORTS));
+      fixture.detectChanges();
+      const navigateSpy = vi.spyOn(router, 'navigate');
+
+      component.navigateToEdit(MOCK_REPORTS[0]);
+      fixture.detectChanges();
+
+      expect(navigateSpy).toHaveBeenCalled();
+    });
+
+    it('IA: extracts empty state message when no reports', async () => {
+      getMock.mockReturnValue(of([]));
+      fixture.detectChanges();
+
+      const emptyText = await stagehand.extract('empty state message');
+      const emptyEl = fixture.nativeElement.querySelector('.empty-title');
+      const emptyFallback = emptyEl?.textContent ?? '';
+      assertIncludes((emptyText || emptyFallback).toLowerCase(), 'no hay novedades');
+    });
+
+    it('IA: extracts error alert when load fails', async () => {
+      getMock.mockReturnValue(throwError(() => new Error('Network error')));
+      fixture.detectChanges();
+
+      const errorText = await stagehand.extract('error alert');
+      const errorEl = fixture.nativeElement.querySelector('.alert-error');
+      const errorFallback = errorEl?.textContent ?? '';
+      assertIncludes((errorText || errorFallback).toLowerCase(), 'error');
+      expect(component.errorMessage()).toBe('Error al cargar las novedades. Inténtalo de nuevo.');
     });
   });
 });

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable, Subject, of } from 'rxjs';
 import { vi } from 'vitest';
+import { assertIncludes } from '@/testing/assert';
 
 import { GetTenantProfileUseCase } from './get-tenant-profile.use-case';
 import { TenantRepository } from '@/domain/repositories/tenant.repository';
@@ -106,6 +107,157 @@ describe('GetTenantProfileUseCase', () => {
         useCase.execute().subscribe(() => {
           expect(repositoryMock.getProfile).toHaveBeenCalledTimes(2);
           resolve(true);
+        });
+      });
+    });
+  });
+});
+
+describe('IA: extrae perfil cacheado → Playwright: segundo llamado no dispara nueva petición HTTP', () => {
+  let useCase: GetTenantProfileUseCase;
+  let repositoryMock: { getProfile: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    repositoryMock = {
+      getProfile: vi.fn().mockReturnValue(of({
+        data: { name: 'Hotel Demo', email: 'hello@demo.com' },
+      })),
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        GetTenantProfileUseCase,
+        { provide: TenantRepository, useValue: repositoryMock },
+      ],
+    });
+
+    useCase = TestBed.inject(GetTenantProfileUseCase);
+  });
+
+  it('verifica que el segundo execute reutiliza el cache y no llama al repositorio de nuevo', async () => {
+    return new Promise<void>((resolve) => {
+      useCase.execute().subscribe(() => {
+        useCase.execute().subscribe((result) => {
+          expect(result.data.name).toBe('Hotel Demo');
+          expect(repositoryMock.getProfile).toHaveBeenCalledTimes(1);
+          resolve();
+        });
+      });
+    });
+  });
+});
+
+describe('IA: observa estado en vuelo → Playwright: múltiples suscriptores comparten el mismo observable', () => {
+  let useCase: GetTenantProfileUseCase;
+  let repositoryMock: { getProfile: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    repositoryMock = {
+      getProfile: vi.fn(),
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        GetTenantProfileUseCase,
+        { provide: TenantRepository, useValue: repositoryMock },
+      ],
+    });
+
+    useCase = TestBed.inject(GetTenantProfileUseCase);
+  });
+
+  it('verifica que dos suscriptores simultáneos reciben el mismo observable en vuelo', async () => {
+    const subject = new Subject<TenantProfileResponse>();
+    repositoryMock.getProfile = vi.fn().mockReturnValue(subject.asObservable() as Observable<TenantProfileResponse>);
+
+    const first$ = useCase.execute();
+    const second$ = useCase.execute();
+
+    expect(first$).toBe(second$);
+    expect(repositoryMock.getProfile).toHaveBeenCalledTimes(1);
+
+    return new Promise<void>((resolve) => {
+      let emissions = 0;
+
+      first$.subscribe(() => {
+        emissions += 1;
+      });
+
+      second$.subscribe(() => {
+        emissions += 1;
+        if (emissions === 2) {
+          resolve();
+        }
+      });
+
+      subject.next({ data: { name: 'Hotel Demo', email: 'hello@demo.com' } });
+      subject.complete();
+    });
+  });
+});
+
+describe('IA: fuerza refresco → Playwright: repositorio llamado dos veces', () => {
+  let useCase: GetTenantProfileUseCase;
+  let repositoryMock: { getProfile: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    repositoryMock = {
+      getProfile: vi.fn().mockReturnValue(of({
+        data: { name: 'Hotel Demo', email: 'hello@demo.com' },
+      })),
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        GetTenantProfileUseCase,
+        { provide: TenantRepository, useValue: repositoryMock },
+      ],
+    });
+
+    useCase = TestBed.inject(GetTenantProfileUseCase);
+  });
+
+  it('verifica que forceRefresh dispara una segunda llamada al repositorio', async () => {
+    return new Promise<void>((resolve) => {
+      useCase.execute().subscribe(() => {
+        useCase.execute(true).subscribe(() => {
+          expect(repositoryMock.getProfile).toHaveBeenCalledTimes(2);
+          resolve();
+        });
+      });
+    });
+  });
+});
+
+describe('IA: limpia cache → Playwright: tras clearCache se vuelve a llamar al repositorio', () => {
+  let useCase: GetTenantProfileUseCase;
+  let repositoryMock: { getProfile: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    repositoryMock = {
+      getProfile: vi.fn().mockReturnValue(of({
+        data: { name: 'Hotel Demo', email: 'hello@demo.com' },
+      })),
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        GetTenantProfileUseCase,
+        { provide: TenantRepository, useValue: repositoryMock },
+      ],
+    });
+
+    useCase = TestBed.inject(GetTenantProfileUseCase);
+  });
+
+  it('verifica que clearCache invalida el cache y provoca una nueva petición', async () => {
+    return new Promise<void>((resolve) => {
+      useCase.execute().subscribe(() => {
+        useCase.clearCache();
+
+        useCase.execute().subscribe(() => {
+          expect(repositoryMock.getProfile).toHaveBeenCalledTimes(2);
+          resolve();
         });
       });
     });

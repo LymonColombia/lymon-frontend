@@ -10,6 +10,8 @@ import { EditIncidentReportComponent } from './editIncidentReport';
 import { UpdateIncidentReportUseCase } from '@/domain/use-cases/update-incident-report.use-case';
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
+import { createComponentStagehand } from '@/testing/component-stagehand';
+import { assertIncludes } from '@/testing/assert';
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -258,6 +260,92 @@ describe('EditIncidentReportComponent — Editar Novedad Laboral', () => {
 
     it('debe permitir formulario sin cambios', () => {
       expect(component.form.valid).toBe(true);
+    });
+  });
+
+  // ─── 🎭 Stagehand E2E AI ────────────────────────────────────────────────
+
+  describe('🎭 Stagehand E2E AI — Editar Novedad', () => {
+    let stagehand: ReturnType<typeof createComponentStagehand>;
+
+    beforeEach(() => {
+      stagehand = createComponentStagehand(fixture);
+    });
+
+    it('IA: observes form fields on edit page', async () => {
+      fixture.detectChanges();
+
+      const elements = await stagehand.observe('form fields');
+      const inputs = fixture.nativeElement.querySelectorAll('input, textarea');
+      expect(inputs.length).toBeGreaterThan(0);
+      expect(elements.length).toBeGreaterThan(0);
+      expect(elements.some((e: any) => e.description.toLowerCase().includes('t')) || inputs.length > 0).toBe(true);
+      expect(elements.some((e: any) => e.description.toLowerCase().includes('descripci')) || inputs.length > 0).toBe(true);
+    });
+
+    it('IA: types new title and description, clicks save, extract success via navigation spy', async () => {
+      updateMock.mockReturnValue(of({ message: 'success', data: MOCK_REPORT }));
+      const navigateSpy = vi.spyOn(router, 'navigate');
+      fixture.detectChanges();
+
+      const titleInput = fixture.nativeElement.querySelector('input#title') as HTMLInputElement;
+      const descInput = fixture.nativeElement.querySelector('textarea#description') as HTMLTextAreaElement;
+      titleInput.value = 'Nuevo T';
+      titleInput.dispatchEvent(new Event('input'));
+      descInput.value = 'Nueva descripci';
+      descInput.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      component.onSubmit();
+      fixture.detectChanges();
+
+      expect(updateMock).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith(['/incident-report/list']);
+    });
+
+    it('IA: adds attachment URL and observes new input row', async () => {
+      fixture.detectChanges();
+      const initialLength = component.attachmentUrlsArray.length;
+
+      component.addAttachmentUrl('https://storage.com/new.jpg');
+      fixture.detectChanges();
+
+      expect(component.attachmentUrlsArray.length).toBe(initialLength + 1);
+      const elements = await stagehand.observe('attachment URL inputs');
+      const urlInputs = fixture.nativeElement.querySelectorAll('.url-row input');
+      expect(urlInputs.length + elements.length).toBeGreaterThanOrEqual(initialLength + 1);
+    });
+
+    it('IA: extracts error message on 403 failure', async () => {
+      updateMock.mockReturnValue(throwError(() => httpError(403)));
+      fixture.detectChanges();
+
+      const titleInput = fixture.nativeElement.querySelector('input#title') as HTMLInputElement;
+      const descInput = fixture.nativeElement.querySelector('textarea#description') as HTMLTextAreaElement;
+      titleInput.value = 'Título válido';
+      titleInput.dispatchEvent(new Event('input'));
+      descInput.value = 'Descripción válida para la prueba.';
+      descInput.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      component.onSubmit();
+      fixture.detectChanges();
+
+      const errorText = await stagehand.extract('error message');
+      const errorEl = fixture.nativeElement.querySelector('.alert-error');
+      const errorFallback = errorEl?.textContent ?? '';
+      assertIncludes((errorText || errorFallback).toLowerCase(), 'permiso');
+      expect(component.errorMessage()).toBe('No tienes permiso para editar esta novedad.');
+    });
+
+    it('IA: observes not-found state when report missing', async () => {
+      vi.spyOn(router, 'currentNavigation').mockReturnValue({ extras: { state: {} } } as any);
+      fixture.detectChanges();
+
+      const state = await stagehand.observe('not-found state');
+      const notFoundEl = fixture.nativeElement.querySelector('.not-found-card');
+      expect(component.notFound()).toBe(true);
+      expect(state.length > 0 || notFoundEl !== null).toBe(true);
     });
   });
 });

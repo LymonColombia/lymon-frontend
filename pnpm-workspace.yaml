@@ -1,6 +1,9 @@
 allowBuilds:
+  '@google/genai': true
   '@parcel/watcher': true
+  bufferutil: true
   cypress: true
   esbuild: true
   lmdb: true
   msgpackr-extract: true
+  protobufjs: true

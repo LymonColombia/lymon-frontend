@@ -9,7 +9,12 @@
     "test": "ng test",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "test:cov:scope": "ng test --watch=false --coverage --coverage-reporters lcov --coverage-reporters text --coverage-reporters text-summary --include \"src/app/domain/use-cases/**/*.spec.ts\" --include \"src/app/presentation/features/hotel/pages/tenantProfile/tenantProfile.spec.ts\" --include \"src/app/presentation/features/hotel/pages/incidentReport/**/*.spec.ts\" --include \"src/app/infrastructure/repositories/tenant.repository.impl.spec.ts\" --include \"src/app/infrastructure/repositories/incident-report.repository.impl.spec.ts\" --coverage-include \"src/app/domain/**/*.ts\" --coverage-include \"src/app/infrastructure/repositories/**/*.ts\" --coverage-include \"src/app/infrastructure/mappers/**/*.ts\" --coverage-include \"src/app/infrastructure/services/**/*.ts\" --coverage-include \"src/app/infrastructure/guards/**/*.ts\" --coverage-include \"src/app/presentation/store/**/*.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/tenantProfile/tenantProfile.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/create/createIncidentReport.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/edit/editIncidentReport.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/list/incidentReportList.ts\""
+    "test:cov:scope": "ng test --watch=false --coverage --coverage-reporters lcov --coverage-reporters text --coverage-reporters text-summary --include \"src/app/domain/use-cases/**/*.spec.ts\" --include \"src/app/presentation/features/hotel/pages/tenantProfile/tenantProfile.spec.ts\" --include \"src/app/presentation/features/hotel/pages/incidentReport/**/*.spec.ts\" --include \"src/app/infrastructure/repositories/tenant.repository.impl.spec.ts\" --include \"src/app/infrastructure/repositories/incident-report.repository.impl.spec.ts\" --coverage-include \"src/app/domain/**/*.ts\" --coverage-include \"src/app/infrastructure/repositories/**/*.ts\" --coverage-include \"src/app/infrastructure/mappers/**/*.ts\" --coverage-include \"src/app/infrastructure/services/**/*.ts\" --coverage-include \"src/app/infrastructure/guards/**/*.ts\" --coverage-include \"src/app/presentation/store/**/*.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/tenantProfile/tenantProfile.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/create/createIncidentReport.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/edit/editIncidentReport.ts\" --coverage-include \"src/app/presentation/features/hotel/pages/incidentReport/list/incidentReportList.ts\"",
+    "test:e2e:ollama": "tsx tests/e2e/stagehand/run-all-ollama.ts",
+    "test:e2e:gemini": "tsx tests/e2e/stagehand/run-all-gemini.ts",
+    "test:e2e:openrouter": "tsx tests/e2e/stagehand/run-all-openrouter.ts",
+    "test:e2e:single": "tsx",
+    "install:browsers": "playwright install chromium"
   },
   "prettier": {
     "printWidth": 100,
@@ -42,12 +47,16 @@
     "@angular/build": "^21.1.1",
     "@angular/cli": "^21.1.1",
     "@angular/compiler-cli": "^21.1.0",
+    "@browserbasehq/stagehand": "^3.4.0",
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.6.0",
     "cypress": "^15.15.0",
     "dotenv": "^17.4.2",
     "jsdom": "^27.1.0",
+    "playwright": "^1.60.0",
+    "tsx": "^4.22.3",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "zod": "^4.4.3"
   }
 }

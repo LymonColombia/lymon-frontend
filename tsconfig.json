@@ -16,7 +16,7 @@
     "module": "preserve",
     "baseUrl": "src",
     "paths": {
-      "@/*": ["app/*"],
+      "@/*": ["app/*", "./*"],
       "@env": ["environments/environment"]
     }
   },
