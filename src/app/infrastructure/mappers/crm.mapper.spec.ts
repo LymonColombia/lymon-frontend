@@ -99,40 +99,17 @@ describe('CrmMapper.toGuestBookingOrigins', () => {
     expect(result.sources[1].percentage).toBe(40);
   });
 
-  it('normaliza DIRECT correctamente', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: 'DIRECT', count: 1, percentage: 100 }] }));
+  it.each([
+    ['DIRECT', 'DIRECT'],
+    ['AIRBNB', 'AIRBNB'],
+    ['BOOKING', 'BOOKING'],
+    ['VRBO', 'VRBO'],
+    ['MANUAL', 'MANUAL'],
+    ['EXPEDIA', 'MANUAL'],
+  ])('normaliza source "%s" a "%s"', (raw, expected) => {
+    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: raw, count: 1, percentage: 100 }] }));
 
-    expect(result.sources[0].source).toBe('DIRECT');
-  });
-
-  it('normaliza AIRBNB correctamente', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: 'AIRBNB', count: 1, percentage: 100 }] }));
-
-    expect(result.sources[0].source).toBe('AIRBNB');
-  });
-
-  it('normaliza BOOKING correctamente', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: 'BOOKING', count: 1, percentage: 100 }] }));
-
-    expect(result.sources[0].source).toBe('BOOKING');
-  });
-
-  it('normaliza VRBO correctamente', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: 'VRBO', count: 1, percentage: 100 }] }));
-
-    expect(result.sources[0].source).toBe('VRBO');
-  });
-
-  it('normaliza MANUAL correctamente', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: 'MANUAL', count: 1, percentage: 100 }] }));
-
-    expect(result.sources[0].source).toBe('MANUAL');
-  });
-
-  it('normaliza source desconocido a MANUAL', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: 'EXPEDIA', count: 1, percentage: 100 }] }));
-
-    expect(result.sources[0].source).toBe('MANUAL');
+    expect(result.sources[0].source).toBe(expected);
   });
 
   it('retorna total 0 y sources vacío cuando sources es []', () => {
