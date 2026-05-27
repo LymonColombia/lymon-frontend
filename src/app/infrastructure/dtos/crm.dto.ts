@@ -79,3 +79,14 @@ export interface CrmGuestRatingsResponseDto {
   averageRating: number;
   pagination: PaginationDto;
 }
+
+export interface CrmGuestBookingOriginDto {
+  source: string;
+  count: number;
+  percentage: number;
+}
+
+export interface CrmGuestBookingOriginsResponseDto {
+  total: number;
+  sources: CrmGuestBookingOriginDto[];
+}

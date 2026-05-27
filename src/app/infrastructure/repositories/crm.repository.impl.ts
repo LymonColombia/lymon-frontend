@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import {
   CreateCrmGuestNoteRequest,
+  GetCrmGuestBookingOriginsResponse,
   GetCrmGuestBookingsResponse,
   GetCrmGuestEmailsResponse,
   GetCrmGuestNotesResponse,
@@ -16,7 +17,7 @@ import {
 } from '@/domain/entities/crm-guest.model';
 import { CrmRepository } from '@/domain/repositories/crm.repository';
 import { CrmMapper } from '@/infrastructure/mappers/crm.mapper';
-import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto, CrmGuestRatingsResponseDto, PaginatedResponseDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestBookingDto, CrmGuestBookingOriginsResponseDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto, CrmGuestRatingsResponseDto, PaginatedResponseDto } from '@/infrastructure/dtos/crm.dto';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.crm.endpoint}`;
@@ -93,6 +94,12 @@ export class CrmRepositoryImpl extends CrmRepository {
       `${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/tags`,
       data,
     );
+  }
+
+  getGuestBookingOrigins(guestId: string): Observable<GetCrmGuestBookingOriginsResponse> {
+    return this.http
+      .get<{ data: CrmGuestBookingOriginsResponseDto }>(`${BASE_URL}${environment.crm.guestsEndpoint}/${guestId}/booking-origins`)
+      .pipe(map((res) => ({ data: CrmMapper.toGuestBookingOrigins(res.data) })));
   }
 
   getGuestRatings(guestId: string, params?: GetCrmGuestRatingsParams): Observable<GetCrmGuestRatingsResponse> {

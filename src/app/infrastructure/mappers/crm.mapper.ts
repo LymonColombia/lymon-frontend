@@ -8,10 +8,12 @@ import {
   CrmGuestNoteCategory,
   CrmGuestNoteStatus,
   CrmGuestStatus,
+  GetCrmGuestBookingOriginsResponse,
   GetCrmGuestRatingsResponse,
 } from '@/domain/entities/crm-guest.model';
 import {
   CrmGuestBookingDto,
+  CrmGuestBookingOriginsResponseDto,
   CrmGuestDto,
   CrmGuestEmailDto,
   CrmGuestNoteDto,
@@ -39,6 +41,17 @@ export class CrmMapper {
       sentById: dto.sentById,
       createdAt: dto.createdAt,
     }));
+  }
+
+  static toGuestBookingOrigins(dto: CrmGuestBookingOriginsResponseDto): GetCrmGuestBookingOriginsResponse['data'] {
+    return {
+      total: dto.total,
+      sources: dto.sources.map((s) => ({
+        source: CrmMapper.toBookingSource(s.source),
+        count: s.count,
+        percentage: s.percentage,
+      })),
+    };
   }
 
   static toGuestRatings(dto: CrmGuestRatingsResponseDto): GetCrmGuestRatingsResponse['data'] {
