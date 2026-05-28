@@ -1811,3 +1811,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+.monthly-spending-chart-wrapper {
+  position: relative;
+  height: 220px;
+}

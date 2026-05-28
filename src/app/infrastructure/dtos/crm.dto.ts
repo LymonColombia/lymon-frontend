@@ -90,3 +90,10 @@ export interface CrmGuestBookingOriginsResponseDto {
   total: number;
   sources: CrmGuestBookingOriginDto[];
 }
+
+export interface CrmGuestMonthlySpendDto {
+  year: number;
+  month: number;
+  label: string;
+  totalSpend: number;
+}

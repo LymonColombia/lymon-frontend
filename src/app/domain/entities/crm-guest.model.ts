@@ -142,3 +142,14 @@ export interface GetCrmGuestBookingOriginsResponse {
     sources: CrmGuestBookingOrigin[];
   };
 }
+
+export interface CrmGuestMonthlySpend {
+  year: number;
+  month: number;
+  label: string;
+  totalSpend: number;
+}
+
+export interface GetCrmGuestMonthlySpendingResponse {
+  data: CrmGuestMonthlySpend[];
+}

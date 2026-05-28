@@ -399,7 +399,7 @@
       </div>
     </section>
 
-    <!-- Spending trend placeholder (full width) -->
+    <!-- Spending trend (full width) -->
     <div class="metrics-card metrics-card--full">
       <div class="metrics-card-header">
         <div>
@@ -407,9 +407,17 @@
           <p class="metrics-card-subtitle">Gasto mensual del huésped en sus reservas</p>
         </div>
       </div>
-      <div class="metrics-chart-placeholder" aria-hidden="true">
-        <div class="metrics-chart-placeholder-inner"></div>
-      </div>
+      @if (isMonthlySpendingLoading()) {
+        <p class="page-feedback">Cargando tendencia de gasto...</p>
+      } @else if (monthlySpendingErrorMessage()) {
+        <p class="notes-feedback notes-feedback-error">{{ monthlySpendingErrorMessage() }}</p>
+      } @else if (monthlySpending().length === 0) {
+        <p class="notes-feedback">Sin datos de gasto disponibles.</p>
+      } @else {
+        <div class="monthly-spending-chart-wrapper">
+          <canvas #monthlySpendingCanvas></canvas>
+        </div>
+      }
     </div>
 
     <!-- Two-column row: booking source + ratings -->
