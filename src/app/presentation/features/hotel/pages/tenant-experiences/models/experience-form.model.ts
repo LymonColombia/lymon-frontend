@@ -13,15 +13,13 @@ export interface BlackoutRangeFormControls {
 
 export interface RecurrenceFormControls {
   daysOfWeek: FormControl<number[]>;
-  startTime: FormControl<string>;
+  startTime:  FormControl<string>;
   endTime: FormControl<string>;
 }
 
 export interface LocationFormControls {
   label: FormControl<string>;
   address: FormControl<string>;
-  lat: FormControl<number | null>;
-  lng: FormControl<number | null>;
 }
 
 export interface ExperienceFormControls {
@@ -41,8 +39,6 @@ export interface ExperienceFormControls {
   blackoutRanges: FormArray<FormGroup<BlackoutRangeFormControls>>;
   recurrence: FormGroup<RecurrenceFormControls>;
   location: FormGroup<LocationFormControls>;
-  allowStandalonePurchase: FormControl<boolean>;
-  allowReservationPurchase: FormControl<boolean>;
 }
 
 export type ExperienceRecurrenceFormControls = RecurrenceFormControls;

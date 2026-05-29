@@ -10,6 +10,8 @@ import { ExperienceAvailabilitySectionComponent } from '../experience-availabili
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/image-storage.use-case';
 import { ImageStorage } from '@/domain/entities/storage-img';
+import { HotelTooltipComponent } from "@/presentation/features/hotel/components/hotel-tooltip/hotel-tooltip";
+
 
 @Component({
   selector: 'app-experience-form',
@@ -21,11 +23,13 @@ import { ImageStorage } from '@/domain/entities/storage-img';
     SelectComponent,
     ExperienceLocationSectionComponent,
     ExperienceAvailabilitySectionComponent,
-  ],
+    HotelTooltipComponent
+],
   templateUrl: './experience-form.component.html',
   styleUrl: './experience-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
 export class ExperienceFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly createImageStorageUseCase = inject(CreateImageStorageUseCase);
@@ -100,11 +104,7 @@ export class ExperienceFormComponent {
     location: this.fb.group({
       label: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
       address: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-      lat: this.fb.control<number | null>(null, [Validators.required]),
-      lng: this.fb.control<number | null>(null, [Validators.required]),
     }),
-    allowStandalonePurchase: this.fb.control(true, { nonNullable: true }),
-    allowReservationPurchase: this.fb.control(false, { nonNullable: true }),
   });
 
   constructor() {
@@ -264,11 +264,7 @@ export class ExperienceFormComponent {
       location: {
         label: experience.location.label,
         address: experience.location.address,
-        lat: experience.location.lat,
-        lng: experience.location.lng,
       },
-      allowStandalonePurchase: experience.allowStandalonePurchase ?? true,
-      allowReservationPurchase: experience.allowReservationPurchase ?? false,
     });
 
     if (experience.scope === 'PROPERTY' && experience.propertyId) {
@@ -293,11 +289,11 @@ export class ExperienceFormComponent {
       location: {
         label: raw.location.label,
         address: raw.location.address,
-        lat: raw.location.lat ?? 0,
-        lng: raw.location.lng ?? 0,
+        lat: 100,
+        lng: 100,
       },
-      allowStandalonePurchase: raw.allowStandalonePurchase,
-      allowReservationPurchase: raw.allowReservationPurchase,
+      allowStandalonePurchase: true,
+      allowReservationPurchase: true,
     };
 
     if (raw.scope === 'PROPERTY') {

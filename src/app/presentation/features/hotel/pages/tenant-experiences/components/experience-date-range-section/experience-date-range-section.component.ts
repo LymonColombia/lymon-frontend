@@ -3,11 +3,14 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular
 
 import { BlackoutRange, Experience } from '@/domain/entities/experience.model';
 import { BlackoutRangeFormControls } from '../../models/experience-form.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapTrash } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-experience-date-range-section',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, NgIcon],
+  providers: [provideIcons({ bootstrapTrash })],
   templateUrl: './experience-date-range-section.component.html',
   styleUrl: './experience-date-range-section.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
