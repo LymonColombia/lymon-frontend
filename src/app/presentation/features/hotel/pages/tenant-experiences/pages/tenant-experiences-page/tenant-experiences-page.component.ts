@@ -13,6 +13,7 @@ import { ExperienceCardComponent } from '../../components/experience-card/experi
 import { ExperienceTableComponent } from '../../components/experience-table/experience-table.component';
 import { GetExperiencesUseCase } from '@/domain/use-cases/experience/get-experiences.use-case';
 import { DeleteExperienceUseCase } from '@/domain/use-cases/experience/delete-experience.use-case';
+import { MapPickerComponent } from "@/presentation/features/hotel/components/map-picker/map-picker";
 
 type ExperienceViewMode = 'CARDS' | 'TABLE';
 
@@ -26,7 +27,8 @@ type ExperienceViewMode = 'CARDS' | 'TABLE';
     ButtonComponent,
     ExperienceCardComponent,
     ExperienceTableComponent,
-    NgIcon
+    NgIcon,
+    MapPickerComponent
 ],
   providers: [provideIcons({ bootstrapStars, bootstrapPlus, bootstrapGrid, bootstrapListUl })],
   templateUrl: './tenant-experiences-page.component.html',
@@ -88,7 +90,6 @@ export class TenantExperiencesPageComponent {
       next: (experiences) => {
         this.experiences.set(experiences);
         this.isLoading.set(false);
-        console.log('Experiencias cargadas:', experiences);
       },
       error: () => {
         this.errorMessage.set('No se pudieron cargar las experiencias.');

@@ -35,6 +35,8 @@
     "@ng-icons/bootstrap-icons": "^33.1.0",
     "@ng-icons/core": "^33.1.0",
     "@vitest/coverage-v8": "^4.0.18",
+    "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -43,6 +45,7 @@
     "@angular/cli": "^21.1.1",
     "@angular/compiler-cli": "^21.1.0",
     "@playwright/test": "^1.59.1",
+    "@types/leaflet": "^1.9.21",
     "@types/node": "^25.6.0",
     "cypress": "^15.15.0",
     "dotenv": "^17.4.2",

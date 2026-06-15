@@ -5,6 +5,9 @@ import {
   bootstrapGeoAltFill,
   bootstrapPeopleFill,
   bootstrapTagFill,
+  bootstrapEye,
+  bootstrapPencilSquare,
+  bootstrapTrash
 } from '@ng-icons/bootstrap-icons';
 
 import { Experience } from '@/domain/entities/experience.model';
@@ -14,7 +17,7 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button.
   selector: 'app-experience-card',
   standalone: true,
   imports: [ButtonComponent, NgIcon],
-  providers: [provideIcons({ bootstrapGeoAltFill, bootstrapTagFill, bootstrapClockFill, bootstrapPeopleFill })],
+  providers: [provideIcons({ bootstrapGeoAltFill, bootstrapTagFill, bootstrapClockFill, bootstrapPeopleFill,bootstrapEye, bootstrapPencilSquare, bootstrapTrash })],
   templateUrl: './experience-card.component.html',
   styleUrl: './experience-card.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Experience } from '@/domain/entities/experience.model';
 import { provideIcons, NgIcon } from "@ng-icons/core";
-import {  bootstrapTrash } from '@ng-icons/bootstrap-icons';
+import {  bootstrapTrash ,bootstrapEye, bootstrapPencilSquare} from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-experience-table',
@@ -10,7 +10,7 @@ import {  bootstrapTrash } from '@ng-icons/bootstrap-icons';
   styleUrl: './experience-table.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgIcon],
-  providers: [provideIcons({ bootstrapTrash })],
+  providers: [provideIcons({ bootstrapTrash , bootstrapEye,bootstrapPencilSquare })],
 })
 export class ExperienceTableComponent {
 

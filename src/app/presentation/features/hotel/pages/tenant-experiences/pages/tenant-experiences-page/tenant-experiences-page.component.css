@@ -11,12 +11,11 @@
   gap: var(--spacing-xs);
   padding: var(--spacing-xs) var(--spacing-md);
   border-radius: var(--radius-full);
-  border: var(--input-border-width) solid color-mix(in srgb, var(--color-primary-dark) 30%, transparent);
-  background: var(--color-primary-gradient);
+  border: none;
+  background: var(--color-primary);
   color: var(--color-bg-primary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.35px;
   box-shadow: var(--shadow-primary);
 }
 

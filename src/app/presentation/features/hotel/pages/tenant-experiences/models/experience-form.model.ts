@@ -1,10 +1,30 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
+import { CreateExperienceDto, ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
 
 export interface DayOption {
   value: number;
   label: string;
 }
+
+export const DAY_OPTIONS: readonly DayOption[] = [
+  { value: 1, label: 'Lun' },
+  { value: 2, label: 'Mar' },
+  { value: 3, label: 'Mie' },
+  { value: 4, label: 'Jue' },
+  { value: 5, label: 'Vie' },
+  { value: 6, label: 'Sab' },
+  { value: 0, label: 'Dom' },
+];
+
+export const DAY_LABEL_BY_VALUE: Readonly<Record<number, string>> = {
+  0: 'Dom',
+  1: 'Lun',
+  2: 'Mar',
+  3: 'Mie',
+  4: 'Jue',
+  5: 'Vie',
+  6: 'Sab',
+};
 
 export interface BlackoutRangeFormControls {
   startAt: FormControl<string|null>;
@@ -20,6 +40,8 @@ export interface RecurrenceFormControls {
 export interface LocationFormControls {
   label: FormControl<string>;
   address: FormControl<string>;
+  lat: FormControl<number>; 
+  lng: FormControl<number>;
 }
 
 export interface ExperienceFormControls {
@@ -41,5 +63,18 @@ export interface ExperienceFormControls {
   location: FormGroup<LocationFormControls>;
 }
 
-export type ExperienceRecurrenceFormControls = RecurrenceFormControls;
-export type ExperienceLocationFormControls = LocationFormControls;
+export interface ExperienceFormSubmitPayload {
+  experience: CreateExperienceDto;
+  coverImageFile: File | null;
+}
+
+export function formatDayList(daysOfWeek: number[]): string {
+  if (daysOfWeek.length === 0) {
+    return 'Sin dias configurados';
+  }
+
+  return [...daysOfWeek]
+    .sort((a, b) => a - b)
+    .map((day) => DAY_LABEL_BY_VALUE[day] ?? `${day}`)
+    .join(', ');
+}

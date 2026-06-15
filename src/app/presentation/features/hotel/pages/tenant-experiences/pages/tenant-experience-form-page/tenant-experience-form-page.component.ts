@@ -3,9 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { provideIcons } from '@ng-icons/core';
 import { bootstrapStars } from '@ng-icons/bootstrap-icons';
+import { of, switchMap, map } from 'rxjs';
 
 import { CreateExperienceDto, Experience, UpdateExperienceDto } from '@/domain/entities/experience.model';
 import { CreateExperienceUseCase } from '@/domain/use-cases/experience/create-experience.use-case';
+import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/image-storage.use-case';
 import {
   HotelPageLayoutComponent,
   HotelPageMetaDirective,
@@ -16,16 +18,7 @@ import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { UpdateExperienceUseCase } from '@/domain/use-cases/experience/update-experience.use-case';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
-
-const EXPERIENCE_CATEGORIES = [
-  'TRANSPORTATION',
-  'Bienestar',
-  'Comida',
-  'Tour',
-  'Entretenimiento',
-  'Aventura',
-  'Al aire libre',
-];
+import { ExperienceFormSubmitPayload } from '../../models/experience-form.model';
 
 @Component({
   selector: 'app-tenant-experience-form-page',
@@ -45,6 +38,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly createExperienceUseCase = inject(CreateExperienceUseCase);
+  private readonly createImageStorageUseCase = inject(CreateImageStorageUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getPropertyUnitsUseCase = inject(GetUnitsUseCase);
   private readonly updateExperienceUseCase = inject(UpdateExperienceUseCase);
@@ -60,10 +54,6 @@ export class TenantExperienceFormPageComponent implements OnInit {
   readonly propertyOptions = signal<SelectOption[]>([]);
   readonly unitOptions = signal<SelectOption[]>([]);
 
-  readonly categoryOptions: SelectOption[] = EXPERIENCE_CATEGORIES.map((category) => ({
-    value: category,
-    label: category,
-  }));
 
   readonly isEditing = computed(() => Boolean(this.editingExperienceId()));
   readonly pageTitle = computed(() => (this.isEditing() ? 'Editar Experiencia' : 'Nueva Experiencia'));
@@ -78,11 +68,10 @@ export class TenantExperienceFormPageComponent implements OnInit {
       .execute()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (properties) => {
-          const options = this.transformToSelectOptions(properties);
-          this.propertyOptions.set(options);
-          console.log('Loaded properties:', options);
-        },
+      next: (properties) => {
+        const options = this.transformToSelectOptions(properties);
+        this.propertyOptions.set(options);
+      },
         error: () => {
           this.errorMessage.set('No se pudieron cargar las propiedades.');
         }
@@ -108,7 +97,6 @@ export class TenantExperienceFormPageComponent implements OnInit {
           const options = this.transformToSelectOptions(units);
           this.unitOptions.set(options);
           this.unitsLoading.set(false);
-          console.log('Loaded units for property:', propertyId, options);
         },
         error: () => {
           this.errorMessage.set('No se pudieron cargar las unidades.');
@@ -124,25 +112,34 @@ export class TenantExperienceFormPageComponent implements OnInit {
     }));
   }
 
-  onSubmitExperience(dto: CreateExperienceDto): void {
+  onSubmitExperience(payload: ExperienceFormSubmitPayload): void {
     this.startSaving();
 
-    const editingId = this.editingExperienceId();
-    if (editingId) {
-      const updateDto = this.toUpdateExperienceDto(dto);
-      console.log('Updating experience with ID:', editingId, 'and data:', updateDto);
-      this.updateExperienceUseCase.execute(editingId, updateDto).subscribe({
-        next: () => this.handleSaveSuccess('Experiencia actualizada correctamente.'),
-        error: (error) => this.handleSaveError('No se pudo actualizar la experiencia.', error.message ),
-      });
-      return;
-    }
+    const persistedExperience$ = payload.coverImageFile
+      ? this.createImageStorageUseCase.execute({ file: payload.coverImageFile }).pipe(
+          map(({ fileUrl }) => ({
+            ...payload.experience,
+            coverImageUrl: fileUrl,
+          })),
+        )
+      : of(payload.experience);
 
-    console.log('Creating experience with data:', dto);
-    this.createExperienceUseCase.execute(dto).subscribe({
-      next: () => this.handleSaveSuccess('Experiencia creada correctamente.'),
-      error: (error) => this.handleSaveError('No se pudo crear la experiencia.', error),
-    });
+    persistedExperience$
+      .pipe(
+        switchMap((experienceDto) => {
+          const editingId = this.editingExperienceId();
+          if (editingId) {
+            return this.updateExperienceUseCase.execute(editingId, this.toUpdateExperienceDto(experienceDto));
+          }
+
+          return this.createExperienceUseCase.execute(experienceDto);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: () => this.handleSaveSuccess('Experiencia guardada correctamente.'),
+        error: (error) => this.handleSaveError('No se pudo guardar la experiencia.', error),
+      });
   }
 
   onCancel(): void {
@@ -163,7 +160,8 @@ export class TenantExperienceFormPageComponent implements OnInit {
 
   private handleSaveError(message: string, error: any): void {
     this.isSaving.set(false);
-    this.errorMessage.set(message + ' ' + error.error.message);
+    const detail = error?.error?.message ?? error?.message ?? '';
+    this.errorMessage.set(detail ? `${message} ${detail}` : message);
     console.error('Error saving experience:', error);
   }
 

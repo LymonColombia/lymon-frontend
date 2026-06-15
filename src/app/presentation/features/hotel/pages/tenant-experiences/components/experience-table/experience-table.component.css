@@ -89,14 +89,15 @@ tbody tr:last-child td {
   border: var(--input-border-width) solid var(--color-border-light);
   border-radius: var(--radius-sm);
   background: var(--color-bg-primary);
-  color: var(--color-text-secondary);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: var(--font-size-xs);
+  color: var(--color-primary-gradient);
+  padding: var(--btn-padding-sm);
   cursor: pointer;
 }
 
-.row-actions button.edit {
-  border-color: color-mix(in srgb, var(--color-primary-dark) 40%, transparent);
-  color: var(--color-primary-dark);
+.row-actions button:hover {
+  background: var(--color-primary);
+  color: var(--color-bg-primary);
+  border-color: var(--color-primary);
 }
+
 

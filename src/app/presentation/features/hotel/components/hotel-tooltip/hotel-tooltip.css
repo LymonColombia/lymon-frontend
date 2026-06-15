@@ -4,6 +4,7 @@
   align-items: center;
   width: fit-content;
   isolation: isolate;
+  z-index: var(--z-tooltip);
 }
 
 .tooltip-trigger {
@@ -14,7 +15,7 @@
   display: inline-grid;
   place-items: center;
   padding: 0;
-  background: rgba(46, 192, 148, 0.12);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
   color: var(--color-primary-dark);
   cursor: help;
   transition:
@@ -34,13 +35,13 @@
 }
 
 .tooltip-trigger ng-icon {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .tooltip-panel {
   position: absolute;
-  width: min(280px, calc(100vw - 32px));
-  border: var(--input-border-width) solid rgba(46, 192, 148, 0.24);
+  width: min(280px, calc(100vw - var(--spacing-3xl)));
+  border: var(--input-border-width) solid color-mix(in srgb, var(--color-primary) 24%, transparent);
   border-radius: var(--radius-lg);
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
@@ -65,10 +66,10 @@
 .tooltip-panel::before {
   content: '';
   position: absolute;
-  width: 12px;
-  height: 12px;
-  border-right: var(--input-border-width) solid rgba(46, 192, 148, 0.24);
-  border-bottom: var(--input-border-width) solid rgba(46, 192, 148, 0.24);
+  width: var(--spacing-md);
+  height: var(--spacing-md);
+  border-right: var(--input-border-width) solid color-mix(in srgb, var(--color-primary) 24%, transparent);
+  border-bottom: var(--input-border-width) solid color-mix(in srgb, var(--color-primary) 24%, transparent);
   background: var(--color-bg-primary);
 }
 
@@ -86,17 +87,18 @@
   visibility: visible;
 }
 
+
 .tooltip-top .tooltip-panel {
-  bottom: calc(100% + 12px);
+  bottom: calc(100% + var(--spacing-md));
   left: 50%;
-  transform: translate(-50%, 8px) scale(0.98);
+  transform: translate(-50%, var(--spacing-sm)) scale(0.98);
   transform-origin: bottom center;
 }
 
 .tooltip-top .tooltip-panel::before {
   top: 100%;
   left: 50%;
-  transform: translate(-50%, -6px) rotate(45deg);
+  transform: translate(-50%, calc(var(--spacing-md) / -2)) rotate(45deg);
 }
 
 .tooltip-top:hover .tooltip-panel,
@@ -104,17 +106,18 @@
   transform: translate(-50%, 0) scale(1);
 }
 
+
 .tooltip-bottom .tooltip-panel {
-  top: calc(100% + 12px);
+  top: calc(100% + var(--spacing-md));
   left: 50%;
-  transform: translate(-50%, -8px) scale(0.98);
+  transform: translate(-50%, calc(var(--spacing-sm) * -1)) scale(0.98);
   transform-origin: top center;
 }
 
 .tooltip-bottom .tooltip-panel::before {
   bottom: 100%;
   left: 50%;
-  transform: translate(-50%, 6px) rotate(225deg);
+  transform: translate(-50%, calc(var(--spacing-md) / 2)) rotate(225deg);
 }
 
 .tooltip-bottom:hover .tooltip-panel,
@@ -122,17 +125,18 @@
   transform: translate(-50%, 0) scale(1);
 }
 
+
 .tooltip-right .tooltip-panel {
   top: 50%;
-  left: calc(100% + 12px);
-  transform: translate(-8px, -50%) scale(0.98);
+  left: calc(100% + var(--spacing-md));
+  transform: translate(calc(var(--spacing-sm) * -1), -50%) scale(0.98);
   transform-origin: left center;
 }
 
 .tooltip-right .tooltip-panel::before {
   top: 50%;
   right: 100%;
-  transform: translate(6px, -50%) rotate(135deg);
+  transform: translate(calc(var(--spacing-md) / 2), -50%) rotate(135deg);
 }
 
 .tooltip-right:hover .tooltip-panel,
@@ -142,15 +146,15 @@
 
 .tooltip-left .tooltip-panel {
   top: 50%;
-  right: calc(100% + 12px);
-  transform: translate(8px, -50%) scale(0.98);
+  right: calc(100% + var(--spacing-md));
+  transform: translate(var(--spacing-sm), -50%) scale(0.98);
   transform-origin: right center;
 }
 
 .tooltip-left .tooltip-panel::before {
   top: 50%;
   left: 100%;
-  transform: translate(-6px, -50%) rotate(315deg);
+  transform: translate(calc(var(--spacing-md) / -2), -50%) rotate(315deg);
 }
 
 .tooltip-left:hover .tooltip-panel,
@@ -158,9 +162,10 @@
   transform: translate(0, -50%) scale(1);
 }
 
+
 @media (max-width: 480px) {
   .tooltip-panel {
-    width: min(260px, calc(100vw - 24px));
+    width: min(260px, calc(100vw - var(--spacing-2xl)));
   }
 
   .tooltip-top .tooltip-panel,
@@ -170,19 +175,19 @@
   }
 
   .tooltip-top .tooltip-panel {
-    transform: translate(0, 8px) scale(0.98);
+    transform: translate(0, var(--spacing-sm)) scale(0.98);
     transform-origin: bottom right;
   }
 
   .tooltip-bottom .tooltip-panel {
-    transform: translate(0, -8px) scale(0.98);
+    transform: translate(0, calc(var(--spacing-sm) * -1)) scale(0.98);
     transform-origin: top right;
   }
 
   .tooltip-top .tooltip-panel::before,
   .tooltip-bottom .tooltip-panel::before {
     left: auto;
-    right: 10px;
+    right: var(--spacing-sm);
   }
 
   .tooltip-top:hover .tooltip-panel,
