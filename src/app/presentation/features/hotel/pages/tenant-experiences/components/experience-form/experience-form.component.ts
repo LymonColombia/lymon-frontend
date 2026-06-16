@@ -1,63 +1,76 @@
-import {ChangeDetectionStrategy,Component,DestroyRef,computed,effect,inject,input,output,signal} from '@angular/core';
+import { ChangeDetectionStrategy,ChangeDetectorRef,Component,DestroyRef,Input,OnChanges,SimpleChanges,computed,inject,output,signal} from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload } from '@ng-icons/bootstrap-icons';
-import {CreateExperienceDto,Experience,ExperienceAvailabilityType,ExperienceScope} from '@/domain/entities/experience.model';
-import {DAY_OPTIONS,BlackoutRangeFormControls,ExperienceFormControls,ExperienceFormSubmitPayload} from '../../models/experience-form.model';
+import { CreateExperienceDto,Experience,ExperienceAvailabilityType,ExperienceScope} from '@/domain/entities/experience.model';
+import {
+  DAY_OPTIONS,
+  BlackoutRangeFormControls,
+  ExperienceFormControls,
+  ExperienceFormSubmitPayload,
+} from '../../models/experience-form.model';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { HotelTooltipComponent } from '@/presentation/features/hotel/components/hotel-tooltip/hotel-tooltip';
 import { MapPickerComponent, MapPickerLocation } from '@/presentation/features/hotel/components/map-picker/map-picker';
+
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 @Component({
   selector: 'app-experience-form',
   standalone: true,
-  imports: [ReactiveFormsModule,InputComponent,ButtonComponent,SelectComponent,HotelTooltipComponent,NgIcon,MapPickerComponent],
+  imports: [ReactiveFormsModule,InputComponent,ButtonComponent,SelectComponent,HotelTooltipComponent,NgIcon,MapPickerComponent ],
   providers: [provideIcons({ bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload })],
   templateUrl: './experience-form.component.html',
   styleUrl: './experience-form.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExperienceFormComponent {
+export class ExperienceFormComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  readonly initialExperience = input<Experience | null>(null);
-  readonly isSaving = input(false);
-  readonly propertyOptions = input<SelectOption[]>([]);
-  readonly unitOptions = input<SelectOption[]>([]);
-  readonly unitsLoading = input(false);
+  @Input() initialExperience: Experience | null = null;
+  @Input() isSaving = false;
+  @Input() propertyOptions: SelectOption[] = [];
+  @Input() unitOptions: SelectOption[] = [];
+  @Input() unitsLoading = false;
 
   readonly submitted = output<ExperienceFormSubmitPayload>();
   readonly cancelled = output<void>();
   readonly propertyChanged = output<string>();
 
-  // States
   readonly coverImagePreviewUrl = signal<string | null>(null);
   readonly selectedCoverImageFile = signal<File | null>(null);
 
-  readonly isEditingMode = computed(() => Boolean(this.initialExperience()));
-  get hasCoverImage(): boolean { return Boolean(this.coverImagePreviewUrl()); }
 
+  readonly initialLocationSignal = signal<MapPickerLocation | null>(null);
+  readonly scopeSignal = signal<ExperienceScope>('TENANT');
+  readonly availabilityTypeSignal = signal<ExperienceAvailabilityType>('DATE_RANGE');
+
+
+  readonly isEditingMode = computed(() => Boolean(this.initialExperience));
+  readonly isPropertyScope = computed(() => this.scopeSignal() === 'PROPERTY');
+  readonly isDateRange = computed(() => this.availabilityTypeSignal() === 'DATE_RANGE');
+  readonly isRecurring = computed(() => this.availabilityTypeSignal() === 'RECURRING');
+  readonly isOneTime = computed(() => this.availabilityTypeSignal() === 'ONE_TIME');
+
+  private appliedExperienceId: string | null = null;
 
   readonly categoryOptions: SelectOption[] = [
     { value: 'TRANSPORTATION', label: 'Transporte' },
   ];
-
   readonly scopeOptions: SelectOption[] = [
     { value: 'TENANT', label: 'Global' },
     { value: 'PROPERTY', label: 'Propiedad' },
   ];
-
   readonly availabilityTypeOptions: SelectOption[] = [
     { value: 'DATE_RANGE', label: 'Rango de Fechas' },
     { value: 'RECURRING', label: 'Recurrencia' },
     { value: 'ONE_TIME', label: 'Una sola vez' },
   ];
-
   readonly dayOptions = DAY_OPTIONS;
 
   readonly form = this.fb.group<ExperienceFormControls>({
@@ -91,43 +104,70 @@ export class ExperienceFormComponent {
     endAt: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
     blackoutRanges: this.fb.array<FormGroup<BlackoutRangeFormControls>>([]),
     recurrence: this.fb.group({
-      daysOfWeek: this.fb.control<number[]>([], { nonNullable: true, validators: [Validators.required] }),
+      daysOfWeek: this.fb.control<number[]>([], {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
       startTime: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
       endTime: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
     }),
     location: this.fb.group({
       label: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
       address: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-      lat: this.fb.control<number>(0, { nonNullable: true, validators: [Validators.required] }),
-      lng: this.fb.control<number>(0, { nonNullable: true, validators: [Validators.required] }),
+      lat: this.fb.control<number|null>(null, { nonNullable: true, validators: [Validators.required] }),
+      lng: this.fb.control<number|null>(null, { nonNullable: true, validators: [Validators.required] }),
     }),
   });
-
-  get isPropertyScope(): boolean { return this.form.controls.scope.value === 'PROPERTY'; }
-  get isDateRange(): boolean { return this.form.controls.availabilityType.value === 'DATE_RANGE'; }
-  get isRecurring(): boolean { return this.form.controls.availabilityType.value === 'RECURRING'; }
-  get isOneTime(): boolean { return this.form.controls.availabilityType.value === 'ONE_TIME'; }
 
   get blackoutRanges(): FormArray<FormGroup<BlackoutRangeFormControls>> {
     return this.form.controls.blackoutRanges;
   }
 
-  
+
   constructor() {
     this.destroyRef.onDestroy(() => this.revokeCoverImageObjectUrl());
     this.syncAvailabilityValidators(this.form.controls.availabilityType.value);
 
+    
+    this.form.controls.scope.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => this.scopeSignal.set(value));
+
     this.form.controls.availabilityType.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((type) => this.syncAvailabilityValidators(type));
+      .subscribe((type) => {
+        this.availabilityTypeSignal.set(type);
+        this.syncAvailabilityValidators(type);
+      });
+  }
 
-    effect(() => {
-      const experience = this.initialExperience();
-      if (!experience) return;
-      if (experience.id && experience.id === this.patchedExperienceId) return;
-      this.patchFormFromExperience(experience);
-      this.patchedExperienceId = experience.id ?? null;
-    });
+  ngOnChanges(changes: SimpleChanges): void {
+    const experienceChanged = changes['initialExperience'];
+    const optionsChanged = changes['propertyOptions'];
+
+    if (experienceChanged) {
+      const experience = experienceChanged.currentValue as Experience | null;
+
+      if (!experience) {
+        this.appliedExperienceId = null;
+        this.resetFormToDefaults();
+        return;
+      }
+
+      const isNew = experience.id !== this.appliedExperienceId;
+      if (!isNew) return;
+
+      this.applyExperience(experience);
+      this.appliedExperienceId = experience.id ?? null;
+    }
+
+  
+    if (optionsChanged && !optionsChanged.firstChange) {
+      const exp = this.initialExperience;
+      if (exp?.scope === 'PROPERTY' && exp.propertyId) {
+        this.propertyChanged.emit(exp.propertyId);
+      }
+    }
   }
 
 
@@ -136,23 +176,33 @@ export class ExperienceFormComponent {
       this.form.markAllAsTouched();
       return;
     }
-    this.submitted.emit({ experience: this.buildPayload(), coverImageFile: this.selectedCoverImageFile() });
+    this.submitted.emit({
+      experience: this.buildPayload(),
+      coverImageFile: this.selectedCoverImageFile(),
+    });
   }
 
   onCancel(): void {
     this.cancelled.emit();
   }
 
-
   onLocationChanged(location: MapPickerLocation | null): void {
     this.form.controls.location.patchValue(
-      location
-        ? { lat: location.lat, lng: location.lng }
-        : ({ lat: 0, lng: 0 }),
+      location ? { lat: location.lat, lng: location.lng } : { lat: null, lng: null },
     );
   }
 
- 
+  private getInitialLocationFromExperience(experience: Experience): MapPickerLocation | null {
+    const loc = experience.location;
+    if (!loc || loc.lat === null || loc.lng === null) return null;
+
+    return {
+      lat: loc.lat,
+      lng: loc.lng,
+      address: loc.address,
+    };
+  }
+
   onPropertyChanged(value: string | number): void {
     const propertyId = String(value);
     this.form.controls.unitIds.setValue([]);
@@ -173,7 +223,6 @@ export class ExperienceFormComponent {
     return this.form.controls.unitIds.value.includes(unitId);
   }
 
-  
   isDaySelected(day: number): boolean {
     return this.form.controls.recurrence.controls.daysOfWeek.value.includes(day);
   }
@@ -189,7 +238,6 @@ export class ExperienceFormComponent {
     control.updateValueAndValidity();
   }
 
- 
   onAddBlackoutRange(): void {
     this.blackoutRanges.push(this.createBlackoutRangeGroup());
     this.blackoutRanges.markAsDirty();
@@ -203,7 +251,6 @@ export class ExperienceFormComponent {
     this.blackoutRanges.updateValueAndValidity();
   }
 
- 
   onCoverImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     const file = input?.files?.[0];
@@ -225,51 +272,32 @@ export class ExperienceFormComponent {
     if (input) input.value = '';
   }
 
-  //setup
 
-  private patchedExperienceId: string | null = null;
-
-  private patchFormFromExperience(experience: Experience): void {
+  private applyExperience(experience: Experience): void {
+    
     const blackoutControls = (experience.blackoutRanges ?? []).map((range) =>
       this.createBlackoutRangeGroup(
         this.toLocalDateTime(range.startAt),
         this.toLocalDateTime(range.endAt),
       ),
     );
-
     this.form.setControl('blackoutRanges', this.fb.array(blackoutControls));
-    this.form.patchValue({
-      scope: experience.scope,
-      propertyId: experience.propertyId ?? '',
-      unitIds: experience.unitIds ?? [],
-      name: experience.name,
-      description: experience.description,
-      category: experience.category,
-      priceCop: experience.priceCop,
-      durationHours: experience.durationHours,
-      capacity: experience.capacity,
-      coverImageUrl: experience.coverImageUrl,
-      availabilityType: experience.availabilityType,
-      startAt: this.toLocalDateTime(experience.startAt),
-      endAt: this.toLocalDateTime(experience.endAt),
-      recurrence: {
-        daysOfWeek: experience.recurrence?.daysOfWeek ?? [],
-        startTime: experience.recurrence?.startTime ?? '',
-        endTime: experience.recurrence?.endTime ?? '',
-      },
-      location: {
-        label: experience.location.label,
-        address: experience.location.address,
-        lat: experience.location.lat,
-        lng: experience.location.lng,
-      },
-    });
+
+    this.form.patchValue(this.toFormValue(experience));
+
+    this.scopeSignal.set(experience.scope);
+    this.availabilityTypeSignal.set(experience.availabilityType);
+    this.syncAvailabilityValidators(experience.availabilityType);
 
     this.setCoverImagePreviewFromExperience(experience);
+
+    this.initialLocationSignal.set(this.getInitialLocationFromExperience(experience));
 
     if (experience.scope === 'PROPERTY' && experience.propertyId) {
       this.propertyChanged.emit(experience.propertyId);
     }
+
+    this.cdr.markForCheck();
   }
 
   private syncAvailabilityValidators(type: ExperienceAvailabilityType): void {
@@ -295,10 +323,10 @@ export class ExperienceFormComponent {
     );
   }
 
+
   private buildPayload(): CreateExperienceDto {
     const raw = this.form.getRawValue();
-
-    const payload: Partial<CreateExperienceDto> = {
+    return {
       scope: raw.scope,
       name: raw.name,
       description: raw.description,
@@ -308,6 +336,12 @@ export class ExperienceFormComponent {
       capacity: raw.capacity,
       coverImageUrl: raw.coverImageUrl,
       availabilityType: raw.availabilityType,
+      propertyId: raw.scope === 'PROPERTY' ? raw.propertyId || undefined : undefined,
+      unitIds: raw.scope === 'PROPERTY' && raw.unitIds?.length ? raw.unitIds : undefined,
+      startAt: this.resolveStartAt(raw.availabilityType, raw.startAt),
+      endAt: this.resolveEndAt(raw.availabilityType, raw.endAt),
+      blackoutRanges: this.resolveBlackoutRanges(raw.availabilityType, raw.blackoutRanges),
+      recurrence: this.resolveRecurrence(raw.availabilityType, raw.recurrence),
       location: {
         label: raw.location.label,
         address: raw.location.address,
@@ -316,37 +350,39 @@ export class ExperienceFormComponent {
       },
       allowStandalonePurchase: true,
       allowReservationPurchase: true,
-    };
-
-    if (raw.scope === 'PROPERTY') {
-      payload.propertyId = raw.propertyId || undefined;
-      payload.unitIds = raw.unitIds?.length ? raw.unitIds : undefined;
-    }
-
-    if (raw.availabilityType === 'DATE_RANGE') {
-      payload.startAt = this.toIsoDateTime(raw.startAt);
-      payload.endAt = this.toIsoDateTime(raw.endAt);
-      payload.blackoutRanges = raw.blackoutRanges.map((range) => ({
-        startAt: this.toIsoDateTime(range.startAt ?? ''),
-        endAt: this.toIsoDateTime(range.endAt ?? ''),
-      }));
-    }
-
-    if (raw.availabilityType === 'RECURRING') {
-      payload.recurrence = {
-        daysOfWeek: raw.recurrence.daysOfWeek,
-        startTime: raw.recurrence.startTime,
-        endTime: raw.recurrence.endTime,
-      };
-    }
-
-    if (raw.availabilityType === 'ONE_TIME') {
-      payload.startAt = this.toIsoDateTime(raw.startAt);
-      payload.endAt = this.toIsoDateTime(raw.endAt);
-    }
-
-    return payload as CreateExperienceDto;
+    } as CreateExperienceDto;
   }
+
+
+  private toFormValue(experience: Experience) {
+    return {
+      scope: experience.scope,
+      propertyId: experience.propertyId ?? '',
+      unitIds: experience.unitIds ?? [],
+      name: experience.name,
+      description: experience.description,
+      category: experience.category,
+      priceCop: experience.priceCop,
+      durationHours: experience.durationHours,
+      capacity: experience.capacity,
+      coverImageUrl: experience.coverImageUrl,
+      availabilityType: experience.availabilityType,
+      startAt: this.toLocalDateTime(experience.startAt),
+      endAt: this.toLocalDateTime(experience.endAt),
+      recurrence: {
+        daysOfWeek: experience.recurrence?.daysOfWeek ?? [],
+        startTime: experience.recurrence?.startTime ?? '',
+        endTime: experience.recurrence?.endTime ?? '',
+      },
+      location: {
+        label: experience.location.label,
+        address: experience.location.address,
+        lat: experience.location.lat,
+        lng: experience.location.lng,
+      },
+    };
+  }
+
 
   private createBlackoutRangeGroup(
     startAt: string | null = null,
@@ -358,7 +394,67 @@ export class ExperienceFormComponent {
     });
   }
 
-  // ─── Private — date helpers ────────────────────────────────────────────────
+  private resolveStartAt(type: ExperienceAvailabilityType, value: string): string | undefined {
+    return type === 'RECURRING' ? undefined : this.toIsoDateTime(value);
+  }
+
+  private resolveEndAt(type: ExperienceAvailabilityType, value: string): string | undefined {
+    return type === 'RECURRING' ? undefined : this.toIsoDateTime(value);
+  }
+
+  private resolveBlackoutRanges(
+    type: ExperienceAvailabilityType,
+    ranges: Array<{ startAt: string | null; endAt: string | null }>,
+  ): Array<{ startAt: string; endAt: string }> | undefined {
+    if (type !== 'DATE_RANGE') return undefined;
+    return ranges.map((range) => ({
+      startAt: this.toIsoDateTime(range.startAt ?? ''),
+      endAt: this.toIsoDateTime(range.endAt ?? ''),
+    }));
+  }
+
+  private resolveRecurrence(
+    type: ExperienceAvailabilityType,
+    recurrence: Experience['recurrence'],
+  ): Experience['recurrence'] | undefined {
+    if (type !== 'RECURRING' || !recurrence) return undefined;
+    return {
+      daysOfWeek: recurrence.daysOfWeek,
+      startTime: recurrence.startTime,
+      endTime: recurrence.endTime,
+    };
+  }
+
+  private resetFormToDefaults(): void {
+    this.form.reset({
+      scope: 'TENANT',
+      propertyId: '',
+      unitIds: [],
+      name: '',
+      description: '',
+      category: '',
+      priceCop: undefined,
+      durationHours: undefined,
+      capacity: undefined,
+      coverImageUrl: '',
+      availabilityType: 'DATE_RANGE',
+      startAt: '',
+      endAt: '',
+      recurrence: { daysOfWeek: [], startTime: '', endTime: '' },
+      location: { label: '', address: '', lat: 0, lng: 0 },
+    }, { emitEvent: false });
+
+    this.form.setControl('blackoutRanges', this.fb.array<FormGroup<BlackoutRangeFormControls>>([]));
+
+   
+    this.scopeSignal.set('TENANT');
+    this.availabilityTypeSignal.set('DATE_RANGE');
+    this.syncAvailabilityValidators('DATE_RANGE');
+    this.revokeCoverImageObjectUrl();
+    this.coverImagePreviewUrl.set(null);
+    this.selectedCoverImageFile.set(null);
+    this.initialLocationSignal.set(null);
+  }
 
   private toLocalDateTime(value?: string): string {
     if (!value) return '';
@@ -373,7 +469,6 @@ export class ExperienceFormComponent {
     return Number.isNaN(date.getTime()) ? localValue : date.toISOString();
   }
 
-  // ─── Private — cover image ─────────────────────────────────────────────────
 
   private coverImageObjectUrl: string | null = null;
 

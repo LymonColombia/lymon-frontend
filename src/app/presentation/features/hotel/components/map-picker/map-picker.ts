@@ -1,4 +1,4 @@
-import {AfterViewInit,ChangeDetectionStrategy,Component,DestroyRef,ElementRef,ViewChild,ViewEncapsulation,computed,effect,inject,output,signal} from '@angular/core';
+import {AfterViewInit,ChangeDetectionStrategy,Component,DestroyRef,ElementRef,ViewChild,ViewEncapsulation,computed,effect,inject,input,output,signal} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import * as Leaflet from 'leaflet';
@@ -50,6 +50,8 @@ export class MapPickerComponent implements AfterViewInit {
 
   private map: Leaflet.Map | null = null;
   private marker: Leaflet.Marker | null = null;
+  private readonly mapReady = signal(false);
+  private lastAppliedLocationKey: string | null = null;
 
   readonly locationChanged = output<MapPickerLocation | null>();
 
@@ -63,9 +65,34 @@ export class MapPickerComponent implements AfterViewInit {
     return Boolean(address) && lat !== null && lng !== null;
   });
 
+  readonly initialLocation = input<MapPickerLocation | null>(null);
  
   constructor() {
     this.destroyRef.onDestroy(() => this.teardown());
+
+    effect(() => {
+      const location = this.initialLocation();
+      const mapReady = this.mapReady();
+
+      if (!mapReady || !location) {
+        return;
+      }
+
+      const locationKey = `${location.lat}:${location.lng}:${location.address}`;
+      if (locationKey === this.lastAppliedLocationKey) {
+        return;
+      }
+
+      this.lastAppliedLocationKey = locationKey;
+
+      requestAnimationFrame(() => {
+        if (!this.map) return;
+
+        this.setLocation(location.lat, location.lng, location.address);
+
+        requestAnimationFrame(() => this.map?.invalidateSize());
+      });
+    });
 
     effect(() => {
       const { address, lat, lng } = this.state();
@@ -81,7 +108,34 @@ export class MapPickerComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initMap();
+    this.mapReady.set(true);
+}
+
+  private setLocation(
+  lat: number,
+  lng: number,
+  address: string,
+): void {
+  if (!this.map) return;
+
+  if (!this.marker) {
+    this.marker = Leaflet.marker([lat, lng], {
+      draggable: true,
+    }).addTo(this.map);
+
+    this.marker.on('dragend', this.onMarkerDragEnd);
+  } else {
+    this.marker.setLatLng([lat, lng]);
   }
+
+  this.map.setView([lat, lng], 17);
+
+  this.state.set({
+    lat,
+    lng,
+    address,
+  });
+}
 
 
   private initMap(): void {
@@ -180,6 +234,8 @@ export class MapPickerComponent implements AfterViewInit {
     this.marker = null;
     this.map?.remove();
     this.map = null;
+    this.mapReady.set(false);
+    this.lastAppliedLocationKey = null;
   }
 
   private configureDefaultIcon(): void {

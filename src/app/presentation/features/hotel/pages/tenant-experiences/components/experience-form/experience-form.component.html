@@ -2,7 +2,6 @@
   <div class="form-card">
     <div class="section-separator">Informacion General</div>
 
-    @if (!isEditingMode()) {
     <div class="form-row">
       <div class="form-group">
         <label for="scope">Disponibilidad
@@ -23,20 +22,20 @@
       </div>
     </div>
 
-    @if (isPropertyScope) {
+    @if (isPropertyScope()) {
     <div class="form-row">
       <div class="form-group">
         <label for="propertyId">Propiedad</label>
-        <app-select id="propertyId" [options]="propertyOptions()" formControlName="propertyId"
+        <app-select id="propertyId" [options]="propertyOptions" formControlName="propertyId"
           (valueChange)="onPropertyChanged($event)" />
       </div>
       <div class="form-group">
         <legend>Unidades</legend>
-        @if (unitsLoading()) {
+        @if (unitsLoading) {
         <p class="field-hint">Cargando unidades...</p>
         } @else {
         <div class="checklist-shell">
-          @for (unit of unitOptions(); track unit.value) {
+          @for (unit of unitOptions; track unit.value) {
           <label class="checklist-item">
             <input type="checkbox" [checked]="isUnitSelected(unit.value.toString())" (change)="
                         onUnitChecklistToggle(unit.value.toString(), $any($event.target).checked)
@@ -49,7 +48,7 @@
       </div>
     </div>
     }
-    }
+    
 
     <div class="form-row">
       <div class="form-group">
@@ -90,7 +89,7 @@
     <div class="form-row">
       <div class="form-group">
         <label for="precioCop">Precio (COP) <span class="required">*</span></label>
-        <app-input type="number" formControlName="priceCop" placeholder="120000" />
+        <app-input type="currency" formControlName="priceCop" placeholder="120.000" />
       </div>
       <div class="form-group">
         <label for="duracion">Duracion (horas) <span class="required">*</span></label>
@@ -114,7 +113,7 @@
           </app-hotel-tooltip>
           <span class="required">*</span>
         </label>
-        <app-map-picker formControlName="coordinates" (locationChanged)="onLocationChanged($event)"></app-map-picker>
+        <app-map-picker [initialLocation]="initialLocationSignal()" (locationChanged)="onLocationChanged($event)"></app-map-picker>
       </div>
       
 
@@ -166,7 +165,7 @@
     </div>
 
 
-    @if (isDateRange || isOneTime) {
+    @if (isDateRange() || isOneTime()) {
       <div class="form-row">
         <div class="form-group">
           <label for="startAt">Inicio <span class="required">*</span></label>
@@ -186,7 +185,7 @@
       </div>
     }
 
-    @if (isDateRange) {
+    @if (isDateRange()) {
       <div class="blackout-editor">
         <div class="blackout-header">
           <p class="section-caption">Fechas bloqueadas</p>
@@ -211,7 +210,7 @@
       </div>
     }
 
-    @if (isRecurring) {
+    @if (isRecurring()) {
       <div class="form-group">
         <label for="daysOfWeek">Dias de la semana <span class="required">*</span></label>
         <div class="day-chip-list">
@@ -253,7 +252,7 @@
 
     <div class="form-actions">
       <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
-      <app-button type="submit" variant="primary" [disabled]="isSaving()" [loading]="isSaving()">
+      <app-button type="submit" variant="primary" [disabled]="isSaving" [loading]="isSaving">
         Guardar
       </app-button>
     </div>

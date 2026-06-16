@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-export type InputType = 'text' | 'email' | 'password' | 'number' | 'date' | 'time' | 'tel' | 'url';
+export type InputType = 'text' | 'email' | 'password' | 'number' | 'date' | 'time' | 'tel' | 'url'|'currency';
 export type InputSize = 'small' | 'medium' | 'large';
 
 @Component({
@@ -35,7 +35,6 @@ export type InputSize = 'small' | 'medium' | 'large';
 export class InputComponent implements ControlValueAccessor {
   @ViewChild('inputElement', { static: false }) inputElement?: ElementRef<HTMLInputElement>;
 
-  // Signal Inputs
   readonly type = input<InputType>('text');
   readonly size = input<InputSize>('medium');
   readonly placeholder = input<string>('');
@@ -47,16 +46,20 @@ export class InputComponent implements ControlValueAccessor {
   readonly name = input<string>('');
   readonly id = input<string>('');
 
-  // Signal Outputs
   readonly valueChange = output<string | number | null>();
   readonly focused = output<void>();
   readonly blurred = output<void>();
 
-  // Internal state
-  readonly value = signal<string>('');
+  readonly value = signal('');
   readonly isFocused = signal<boolean>(false);
 
-  // Computed host classes
+
+  readonly nativeType = computed(() => {
+    return this.type() === 'currency'
+      ? 'text'
+      : this.type();
+  });
+
   readonly hostClasses = computed(() => {
     const classes = ['input-wrapper'];
     classes.push(`input-${this.size()}`);
@@ -66,12 +69,23 @@ export class InputComponent implements ControlValueAccessor {
     return classes.join(' ');
   });
 
-  // ControlValueAccessor implementation
   private onChange: (value: string | number | null) => void = () => {};
   private onTouched: () => void = () => {};
 
   writeValue(value: string | number | null): void {
-    this.value.set(value === null ? '' : String(value));
+    if (value === null || value === undefined || value === '') {
+      this.value.set('');
+      return;
+    }
+
+    if (this.type() === 'currency') {
+      this.value.set(
+        this.formatCurrency(String(value))
+      );
+      return;
+    }
+
+    this.value.set(String(value));
   }
 
   registerOnChange(fn: (value: string | number | null) => void): void {
@@ -84,19 +98,47 @@ export class InputComponent implements ControlValueAccessor {
 
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
-    const newValue = target.value;
-    this.value.set(newValue);
+    const inputValue = target.value;
 
+   
+    if (this.type() === 'currency') {
+      const digits = inputValue.replace(/\D/g, '');
+
+      const formatted = this.formatCurrency(digits);
+
+      this.value.set(formatted);
+
+      const numericValue =
+        digits === '' ? null : Number(digits);
+
+      this.onChange(numericValue);
+      this.valueChange.emit(numericValue);
+
+      return;
+    }
+
+    
     if (this.type() === 'number') {
-      const parsedValue = newValue === '' ? null : Number(newValue);
-      const normalizedValue = Number.isNaN(parsedValue) ? null : parsedValue;
+      this.value.set(inputValue);
+
+      const parsedValue =
+        inputValue === ''
+          ? null
+          : Number(inputValue);
+
+      const normalizedValue = Number.isNaN(parsedValue)
+        ? null
+        : parsedValue;
+
       this.onChange(normalizedValue);
       this.valueChange.emit(normalizedValue);
       return;
     }
 
-    this.onChange(newValue);
-    this.valueChange.emit(newValue);
+    
+    this.value.set(inputValue);
+    this.onChange(inputValue);
+    this.valueChange.emit(inputValue);
   }
 
   onFocus(): void {
@@ -116,5 +158,16 @@ export class InputComponent implements ControlValueAccessor {
 
   blur(): void {
     this.inputElement?.nativeElement.blur();
+  }
+
+  private formatCurrency(value: string): string {
+    const digits = value.replace(/\D/g, '');
+
+    if (!digits) return '';
+
+    return digits.replace(
+      /\B(?=(\d{3})+(?!\d))/g,
+      '.',
+    );
   }
 }

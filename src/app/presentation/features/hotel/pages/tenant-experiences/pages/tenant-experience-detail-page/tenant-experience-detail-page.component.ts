@@ -6,20 +6,17 @@ import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, b
 import { Experience } from '@/domain/entities/experience.model';
 import {
   HotelPageActionsDirective,
-  HotelPageLayoutComponent,
-  HotelPageMetaDirective,
+  HotelPageLayoutComponent
 } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
-import { formatDayList } from '../../models/experience-form.model';
 import { LocationMap } from "@/presentation/features/hotel/components/location-map/location-map";
-
+import {formatDayList, formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,} from '../../models/experience-form.model';
 @Component({
   selector: 'app-tenant-experience-detail-page',
   standalone: true,
   imports: [
     HotelPageLayoutComponent,
-    HotelPageMetaDirective,
     HotelPageActionsDirective,
     ButtonComponent,
     NgIcon,
@@ -42,23 +39,19 @@ export class TenantExperienceDetailPageComponent {
 
   readonly scopeBadge = computed(() => {
     const item = this.experience();
-    return item ? this.getScopeBadgeLabel(item.scope) : '';
+    return item ? getScopeBadgeLabel(item.scope) : '';
   });
 
   readonly categoryLabel = computed(() => {
     const item = this.experience();
-    return item ? this.getCategoryLabel(item.category) : '';
+    return item ? getCategoryLabel(item.category) : '';
   });
 
   readonly priceLabel = computed(() => {
     const item = this.experience();
-    return item ? this.formatCurrencyCop(item.priceCop) : '';
+    return item ? formatCurrencyCop(item.priceCop) : '';
   });
 
-  readonly availabilityLabel = computed(() => {
-    const item = this.experience();
-    return item ? this.getAvailabilityLabel(item.availabilityType) : '';
-  });
 
   constructor() {
     this.loadExperience();
@@ -93,33 +86,6 @@ export class TenantExperienceDetailPageComponent {
           this.isLoading.set(false);
         },
       });
-  }
-
-  private formatCurrencyCop(priceCop: number): string {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0,
-    }).format(priceCop);
-  }
-
-  private getScopeBadgeLabel(scope: Experience['scope']): string {
-    return scope === 'PROPERTY' ? 'Propiedad' : 'Tenant';
-  }
-
-  private getCategoryLabel(category: string): string {
-    const normalized = category.toLowerCase();
-    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-  }
-
-  private getAvailabilityLabel(type: Experience['availabilityType']): string {
-    if (type === 'DATE_RANGE') {
-      return 'Rango de Fechas';
-    }
-    if (type === 'RECURRING') {
-      return 'Recurrencia';
-    }
-    return 'Una sola vez';
   }
 
   formatDateTime(value?: string): string {

@@ -35,6 +35,44 @@
     @if (errorMessage()) {
       <div class="alert alert-error">{{ errorMessage() }}</div>
     }
+    @if (successMessage()) {
+      <div class="alert alert-success">{{ successMessage() }}</div>
+    }
+
+    <app-modal
+      [open]="showDeleteConfirm()"
+      title="Confirmar eliminación"
+      size="small"
+      (closed)="cancelDeleteExperience()"
+    >
+      <div class="delete-confirmation">
+        <p class="delete-confirm-message">
+          ¿Estás seguro de que deseas eliminar
+          <strong>{{ experienceToDelete()?.name }}</strong>?
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+
+      <div modal-footer class="form-actions">
+        <app-button
+          type="button"
+          variant="secondary"
+          (clicked)="cancelDeleteExperience()"
+          [disabled]="isDeleting()"
+        >
+          Cancelar
+        </app-button>
+        <app-button
+          type="button"
+          variant="danger"
+          (clicked)="confirmDeleteExperience()"
+          [loading]="isDeleting()"
+          [disabled]="isDeleting()"
+        >
+          Eliminar
+        </app-button>
+      </div>
+    </app-modal>
 
     @if (isLoading()) {
       <div class="loading-state">
