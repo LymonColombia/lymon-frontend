@@ -198,8 +198,8 @@
           <div class="blackout-grid">
             @for (rangeGroup of blackoutRanges.controls; track $index) {
               <div class="blackout-row" [formGroup]="rangeGroup">
-                <input type="datetime-local" formControlName="startAt" />
-                <input type="datetime-local" formControlName="endAt" />
+                <input type="datetime-local" formControlName="startAt" aria-label="Fecha inicio"/>
+                <input type="datetime-local" formControlName="endAt" aria-label="Fecha fin"/>
                 <button class="icon-button" type="button" (click)="onRemoveBlackoutRange($index)" aria-label="Eliminar rango">
                   <ng-icon name="bootstrapTrash" />
                 </button>

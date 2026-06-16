@@ -194,7 +194,7 @@ export class ExperienceFormComponent implements OnChanges {
 
   private getInitialLocationFromExperience(experience: Experience): MapPickerLocation | null {
     const loc = experience.location;
-    if (!loc || loc.lat === null || loc.lng === null) return null;
+    if (loc?.lat === null || loc?.lng === null) return null;
 
     return {
       lat: loc.lat,

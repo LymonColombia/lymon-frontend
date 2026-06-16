@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signa
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapCurrencyDollar, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStars } from '@ng-icons/bootstrap-icons';
+import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStars } from '@ng-icons/bootstrap-icons';
 import { Experience } from '@/domain/entities/experience.model';
 import {
   HotelPageActionsDirective,

@@ -14,6 +14,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'date' | 'time' | 'tel' | 'url'|'currency';
 export type InputSize = 'small' | 'medium' | 'large';
 
+type TypeValue = string | number | null;
+
 @Component({
   selector: 'app-input',
   standalone: true,
@@ -69,10 +71,10 @@ export class InputComponent implements ControlValueAccessor {
     return classes.join(' ');
   });
 
-  private onChange: (value: string | number | null) => void = () => {};
+  private onChange: (value: TypeValue) => void = () => {};
   private onTouched: () => void = () => {};
 
-  writeValue(value: string | number | null): void {
+  writeValue(value:TypeValue): void {
     if (value === null || value === undefined || value === '') {
       this.value.set('');
       return;
@@ -88,7 +90,7 @@ export class InputComponent implements ControlValueAccessor {
     this.value.set(String(value));
   }
 
-  registerOnChange(fn: (value: string | number | null) => void): void {
+  registerOnChange(fn: (value: TypeValue) => void): void {
     this.onChange = fn;
   }
 
@@ -160,14 +162,13 @@ export class InputComponent implements ControlValueAccessor {
     this.inputElement?.nativeElement.blur();
   }
 
-  private formatCurrency(value: string): string {
-    const digits = value.replace(/\D/g, '');
+private formatCurrency(value: string): string {
+  const digits = value.replace(/\D/g, '');
 
-    if (!digits) return '';
+  if (!digits) return '';
 
-    return digits.replace(
-      /\B(?=(\d{3})+(?!\d))/g,
-      '.',
-    );
-  }
+  return new Intl.NumberFormat('es-CO', {
+    maximumFractionDigits: 0,
+  }).format(Number(digits));
+}
 }

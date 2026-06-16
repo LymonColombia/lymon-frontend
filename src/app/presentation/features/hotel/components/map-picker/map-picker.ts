@@ -118,14 +118,14 @@ export class MapPickerComponent implements AfterViewInit {
 ): void {
   if (!this.map) return;
 
-  if (!this.marker) {
+  if (this.marker) {
+    this.marker.setLatLng([lat, lng]);
+  } else {
     this.marker = Leaflet.marker([lat, lng], {
       draggable: true,
     }).addTo(this.map);
 
     this.marker.on('dragend', this.onMarkerDragEnd);
-  } else {
-    this.marker.setLatLng([lat, lng]);
   }
 
   this.map.setView([lat, lng], 17);
