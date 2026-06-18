@@ -1,0 +1,184 @@
+<div class="form-card" [formGroup]="form()">
+  <div class="section-title">
+    <span class="section-icon">
+      <ng-icon name="bootstrapHouseFill" size="16px"></ng-icon>
+    </span>
+    Información de la Propiedad
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Nombre <span class="required">*</span></label>
+      <app-input
+        type="text"
+        formControlName="name"
+        placeholder="Hotel Paraíso"
+      />
+      @if (form().controls['name'].invalid && form().controls['name'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Tipo <span class="required">*</span></label>
+      <app-select [options]="propertyTypeOptions()" formControlName="propertyType" />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Descripción <span class="required">*</span></label>
+    <textarea
+      formControlName="description"
+      rows="3"
+      placeholder="Describe tu propiedad..."
+      [class.input-invalid]="
+        form().controls['description'].invalid && form().controls['description'].touched
+      "
+    ></textarea>
+    @if (form().controls['description'].invalid && form().controls['description'].touched) {
+      <span class="field-error">Campo requerido</span>
+    }
+  </div>
+
+  <div class="section-separator">Dirección</div>
+
+  <div class="form-group">
+    <label>Dirección <span class="required">*</span></label>
+    <app-input
+      type="text"
+      formControlName="address"
+      placeholder="Calle 123 #45-67"
+    />
+    @if (form().controls['address'].invalid && form().controls['address'].touched) {
+      <span class="field-error">Campo requerido</span>
+    }
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Ciudad <span class="required">*</span></label>
+      <app-input
+        type="text"
+        formControlName="city"
+        placeholder="Bogotá"
+      />
+      @if (form().controls['city'].invalid && form().controls['city'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Departamento / Estado <span class="required">*</span></label>
+      <app-input
+        type="text"
+        formControlName="state"
+        placeholder="Cundinamarca"
+      />
+      @if (form().controls['state'].invalid && form().controls['state'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>País <span class="required">*</span></label>
+      <app-input
+        type="text"
+        formControlName="country"
+        placeholder="Colombia"
+      />
+      @if (form().controls['country'].invalid && form().controls['country'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Código Postal <span class="required">*</span></label>
+      <app-input
+        type="text"
+        formControlName="zipCode"
+        placeholder="110111"
+      />
+      @if (form().controls['zipCode'].invalid && form().controls['zipCode'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Latitud <span class="required">*</span></label>
+      <app-input
+        type="number"
+        formControlName="lat"
+        placeholder="4.7110"
+      />
+      @if (form().controls['lat'].invalid && form().controls['lat'].touched) {
+        <span class="field-error">Valor entre -90 y 90</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Longitud <span class="required">*</span></label>
+      <app-input
+        type="number"
+        formControlName="lng"
+        placeholder="-74.0721"
+      />
+      @if (form().controls['lng'].invalid && form().controls['lng'].touched) {
+        <span class="field-error">Valor entre -180 y 180</span>
+      }
+    </div>
+  </div>
+
+  <div class="section-separator">Políticas y Contacto</div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Check-in <span class="required">*</span></label>
+      <app-input
+        type="time"
+        formControlName="checkInTime"
+      />
+      @if (form().controls['checkInTime'].invalid && form().controls['checkInTime'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Check-out <span class="required">*</span></label>
+      <app-input
+        type="time"
+        formControlName="checkOutTime"
+      />
+      @if (form().controls['checkOutTime'].invalid && form().controls['checkOutTime'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Política de Cancelación <span class="required">*</span></label>
+      <app-select [options]="cancellationPolicyOptions()" formControlName="cancellationPolicy" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Teléfono del Anfitrión <span class="required">*</span></label>
+      <app-input
+        type="tel"
+        formControlName="hostPhone"
+        placeholder="+57 300 000 0000"
+      />
+      @if (form().controls['hostPhone'].invalid && form().controls['hostPhone'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>Correo del Anfitrión <span class="required">*</span></label>
+      <app-input
+        type="email"
+        formControlName="hostEmail"
+        placeholder="host@hotel.com"
+      />
+      @if (form().controls['hostEmail'].invalid && form().controls['hostEmail'].touched) {
+        <span class="field-error">Correo inválido</span>
+      }
+    </div>
+  </div>
+</div>

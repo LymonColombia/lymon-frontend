@@ -1,0 +1,57 @@
+<div class="auth-container">
+  <div class="auth-background">
+    <div class="logo-background">LYMON</div>
+  </div>
+
+  <div class="auth-content">
+    <div class="auth-card" style="text-align: center">
+      <div class="logo-small">
+        <a routerLink="/lyhost"><img src="/images/LyHost.svg" alt="LyHost" width="140px" /></a>
+      </div>
+
+      @if (status() === 'loading') {
+        <div style="font-size: 48px; margin: 16px 0">⏳</div>
+        <h1 class="auth-title">Verificando tu correo</h1>
+        <p class="auth-subtitle">Por favor espera un momento…</p>
+      }
+
+      @if (status() === 'success') {
+        <div style="font-size: 48px; margin: 16px 0">✅</div>
+        <h1 class="auth-title">¡Correo verificado!</h1>
+        <p class="auth-subtitle" style="margin-bottom: 24px">
+          Tu cuenta ha sido confirmada. Ya puedes iniciar sesión.
+        </p>
+        <a routerLink="/guest/login" class="btn-primary" style="display: inline-flex">
+          Iniciar Sesión
+        </a>
+      }
+
+      @if (status() === 'already-verified') {
+        <div style="font-size: 48px; margin: 16px 0">✔️</div>
+        <h1 class="auth-title">Correo ya verificado</h1>
+        <p class="auth-subtitle" style="margin-bottom: 24px">
+          Tu correo ya había sido verificado anteriormente. Puedes iniciar sesión normalmente.
+        </p>
+        <a routerLink="/guest/login" class="btn-primary" style="display: inline-flex">
+          Iniciar Sesión
+        </a>
+      }
+
+      @if (status() === 'error') {
+        <div style="font-size: 48px; margin: 16px 0">❌</div>
+        <h1 class="auth-title">No se pudo verificar</h1>
+        <p class="auth-subtitle" style="margin-bottom: 8px; color: #e53e3e">
+          {{ errorMessage() }}
+        </p>
+        <p
+          style="font-family: 'Syne', sans-serif; font-size: 14px; color: #666; margin-bottom: 24px"
+        >
+          Solicita un nuevo enlace de verificación desde la pantalla de inicio de sesión.
+        </p>
+        <a routerLink="/guest/login" class="btn-primary" style="display: inline-flex">
+          Volver al Inicio de Sesión
+        </a>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,64 @@
+<app-modal
+  [open]="open()"
+  title="Valorar estadía"
+  size="small"
+  (closed)="onClose()"
+>
+  @if (reservation(); as res) {
+    <div class="rating-modal-body">
+      <p class="rating-modal-unit">{{ res.unitName ?? res.propertyName }}</p>
+
+      <div class="star-selector" (mouseleave)="onStarLeave()">
+        @for (star of starIndices; track star) {
+          <button
+            type="button"
+            class="star-btn"
+            [attr.aria-label]="star + ' estrella' + (star !== 1 ? 's' : '')"
+            (click)="onStarClick(star)"
+            (mouseenter)="onStarHover(star)"
+          >
+            <ng-icon
+              [name]="isStarFilled(star) ? 'bootstrapStarFill' : 'bootstrapStar'"
+              size="32px"
+              class="star-icon"
+              aria-hidden="true"
+            ></ng-icon>
+          </button>
+        }
+      </div>
+
+      @if (selectedRate() > 0) {
+        <p class="rating-label">{{ ratingLabel() }}</p>
+      } @else {
+        <p class="rating-label rating-label--placeholder">Selecciona una calificación</p>
+      }
+
+      <textarea
+        class="rating-message"
+        placeholder="Cuéntanos sobre tu experiencia (opcional)"
+        [value]="message()"
+        (input)="message.set($any($event.target).value)"
+        rows="3"
+        maxlength="500"
+      ></textarea>
+
+      @if (errorMessage()) {
+        <p class="rating-error">{{ errorMessage() }}</p>
+      }
+
+      <div class="rating-modal-actions">
+        <app-button variant="secondary" size="medium" (clicked)="onClose()" [disabled]="isSubmitting()">
+          Cancelar
+        </app-button>
+        <app-button
+          variant="primary"
+          size="medium"
+          [disabled]="selectedRate() === 0 || isSubmitting()"
+          (clicked)="onSubmit()"
+        >
+          {{ isSubmitting() ? 'Enviando...' : 'Enviar valoración' }}
+        </app-button>
+      </div>
+    </div>
+  }
+</app-modal>
