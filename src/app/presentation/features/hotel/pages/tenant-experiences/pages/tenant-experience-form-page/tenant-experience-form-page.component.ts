@@ -12,6 +12,7 @@ import {
   HotelPageLayoutComponent,
   HotelPageMetaDirective,
 } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ExperienceFormComponent } from '../../components/experience-form/experience-form.component';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
@@ -27,6 +28,7 @@ import { ExperienceFormSubmitPayload } from '../../models/experience-form.model'
     HotelPageLayoutComponent,
     HotelPageMetaDirective,
     ExperienceFormComponent,
+    ModalComponent,
   ],
   providers: [provideIcons({ bootstrapStars })],
   templateUrl: './tenant-experience-form-page.component.html',
@@ -49,6 +51,9 @@ export class TenantExperienceFormPageComponent implements OnInit {
   readonly unitsLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
+  readonly saveErrorModalOpen = signal(false);
+  readonly saveErrorTitle = signal('No se pudo guardar la experiencia');
+  readonly saveErrorMessage = signal('');
   readonly editingExperienceId = signal<string | null>(null);
   readonly editingExperience = signal<Experience | null>(null);
   readonly propertyOptions = signal<SelectOption[]>([]);
@@ -150,19 +155,60 @@ export class TenantExperienceFormPageComponent implements OnInit {
     this.isSaving.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
+    this.saveErrorModalOpen.set(false);
   }
 
   private handleSaveSuccess(message: string): void {
     this.isSaving.set(false);
     this.successMessage.set(message);
+    this.saveErrorModalOpen.set(false);
     this.router.navigate(['/tenant-experiences']);
   }
 
   private handleSaveError(message: string, error: any): void {
     this.isSaving.set(false);
-    const detail = error?.error?.message ?? error?.message ?? '';
-    this.errorMessage.set(detail ? `${message} ${detail}` : message);
-    console.error('Error saving experience:', error);
+    this.saveErrorTitle.set('No se pudo guardar la experiencia');
+    this.saveErrorMessage.set(this.translateSaveError(error) || message);
+    this.saveErrorModalOpen.set(true);
+  }
+
+  closeSaveErrorModal(): void {
+    this.saveErrorModalOpen.set(false);
+  }
+
+  private translateSaveError(error: any): string {
+    const statusCode = Number(error?.error?.statusCode ?? error?.status);
+    const rawMessage = this.normalizeErrorMessage(error?.error?.message ?? error?.message).toLowerCase();
+
+    if (statusCode === 409 || rawMessage.includes('an experience with this name already exists for this property')) {
+      return 'Ya existe una experiencia con este nombre para esta propiedad.';
+    }
+
+    if (
+      statusCode === 400 &&
+      rawMessage.includes('experience start must be at least 24 hours in the future')
+    ) {
+      return 'La experiencia debe iniciar al menos 24 horas en el futuro.';
+    }
+
+    if (statusCode === 400 && rawMessage.includes('availability endat must be after startat')) {
+      return 'La fecha de fin debe ser posterior a la fecha de inicio.';
+    }
+
+    const fallbackMessage = this.normalizeErrorMessage(error?.error?.message ?? error?.message);
+    return fallbackMessage || 'Ocurrió un error al guardar la experiencia. Inténtalo de nuevo.';
+  }
+
+  private normalizeErrorMessage(message: unknown): string {
+    if (Array.isArray(message)) {
+      return message.filter(Boolean).join(' ');
+    }
+
+    if (typeof message === 'string') {
+      return message.trim();
+    }
+
+    return '';
   }
 
   private loadEditValueIfNeeded(): void {
@@ -174,6 +220,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
     this.editingExperienceId.set(experienceId);
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    this.saveErrorModalOpen.set(false);
 
     this.getExperienceByIdUseCase
       .execute(experienceId)

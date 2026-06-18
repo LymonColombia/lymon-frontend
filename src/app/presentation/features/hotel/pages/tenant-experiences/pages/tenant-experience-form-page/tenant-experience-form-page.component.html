@@ -8,12 +8,27 @@
     <span hotelPageMeta class="edit-chip">Modo edicion</span>
   }
 
-  @if (errorMessage()) {
-    <div class="alert alert-error">{{ errorMessage() }}</div>
-  }
   @if (successMessage()) {
     <div class="alert alert-success">{{ successMessage() }}</div>
   }
+
+  <app-modal
+    [open]="saveErrorModalOpen()"
+    [title]="saveErrorTitle()"
+    size="small"
+    (closed)="closeSaveErrorModal()"
+  >
+    <div class="save-error-content">
+      <p class="save-error-message">{{ saveErrorMessage() }}</p>
+      <p class="save-error-help">Revisa los datos del formulario e inténtalo nuevamente.</p>
+    </div>
+
+    <div modal-footer class="modal-actions">
+      <button type="button" class="close-error-button" (click)="closeSaveErrorModal()">
+        Entendido
+      </button>
+    </div>
+  </app-modal>
 
   @if (isLoading()) {
     <div class="loading-state">
