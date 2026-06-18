@@ -112,7 +112,7 @@
   height: 28px;
   border-radius: 50%;
   background: #f1f5f9;
-  color: #94a3b8;
+  color: #475569;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,13 +123,13 @@
 }
 
 .step-item.active .step-icon {
-  background: var(--color-primary, #6366f1);
-  color: white;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
+  background: var(--color-primary, #2ec094);
+  color: var(--color-primary-dark, #084539);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #2ec094) 15%, transparent);
 }
 
 .step-item.completed .step-icon {
-  background: var(--color-success-text, #10b981);
+  background: var(--color-success-text, #15803d);
   color: white;
 }
 
@@ -340,13 +340,14 @@ select {
 }
 
 .btn-primary {
-  background: var(--color-primary, #6366f1);
-  color: white;
-  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  background: var(--color-primary, #2ec094);
+  color: var(--color-primary-dark, #084539);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-primary, #2ec094) 20%, transparent);
 }
 
 .btn-primary:hover {
-  background: var(--color-primary-dark);
+  background: var(--color-primary-dark, #084539);
+  color: white;
   transform: translateY(-1px);
 }
 
@@ -372,12 +373,12 @@ select {
 }
 
 .btn-emerald {
-  background: var(--color-success-text, #10b981);
+  background: var(--color-success-text, #15803d);
   color: white;
 }
 
 .btn-emerald:hover {
-  background: #059669;
+  background: #166534;
   transform: translateY(-1px);
 }
 

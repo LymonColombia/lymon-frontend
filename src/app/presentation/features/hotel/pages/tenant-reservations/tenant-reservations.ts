@@ -5,6 +5,20 @@ import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlus
 import { HotelPageLayoutComponent } from '../../components/hotel-page-layout/hotel-page-layout';
 import { CreateReservationWizardComponent } from './components/create-reservation-wizard/create-reservation-wizard';
 
+export interface Reservation {
+  id: string;
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string;
+  propertyName: string;
+  unitName: string;
+  checkIn: string;
+  checkOut: string;
+  status: string;
+  totalAmount: number;
+  createdAt: string;
+}
+
 @Component({
   selector: 'app-tenant-reservations',
   standalone: true,
@@ -24,7 +38,7 @@ import { CreateReservationWizardComponent } from './components/create-reservatio
   ]
 })
 export class TenantReservations {
-  reservations = signal([
+  reservations = signal<Reservation[]>([
     {
       id: 'RES-001',
       guestName: 'Juan Pérez',
@@ -35,7 +49,7 @@ export class TenantReservations {
       checkIn: '2026-06-01',
       checkOut: '2026-06-05',
       status: 'Confirmada',
-      totalAmount: 1250.00,
+      totalAmount: 1250,
       createdAt: '2026-05-10T10:00:00.000Z'
     },
     {
@@ -48,7 +62,7 @@ export class TenantReservations {
       checkIn: '2026-06-10',
       checkOut: '2026-06-12',
       status: 'Pendiente',
-      totalAmount: 340.50,
+      totalAmount: 340.5,
       createdAt: '2026-05-12T14:30:00.000Z'
     },
     {
@@ -61,7 +75,7 @@ export class TenantReservations {
       checkIn: '2026-05-15',
       checkOut: '2026-05-20',
       status: 'Check-in',
-      totalAmount: 450.00,
+      totalAmount: 450,
       createdAt: '2026-05-01T09:15:00.000Z'
     }
   ]);
@@ -71,7 +85,7 @@ export class TenantReservations {
   isLoading = signal(false);
   errorMessage = signal('');
 
-  selectedReservation = signal<any | null>(null);
+  selectedReservation = signal<Reservation | null>(null);
   showWizard = signal(false);
 
   constructor() {
@@ -79,7 +93,7 @@ export class TenantReservations {
     this.activeCheckins.set(this.reservations().filter(r => r.status.toLowerCase() === 'check-in').length);
   }
 
-  openDetails(reservation: any) {
+  openDetails(reservation: Reservation) {
     this.selectedReservation.set(reservation);
   }
 
