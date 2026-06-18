@@ -5,6 +5,7 @@ import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlus
 import { HotelPageLayoutComponent } from '../../components/hotel-page-layout/hotel-page-layout';
 import { CreateReservationWizardComponent } from './components/create-reservation-wizard/create-reservation-wizard';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
+import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 
 export interface ReservationViewModel {
@@ -41,6 +42,7 @@ export interface ReservationViewModel {
 })
 export class TenantReservations implements OnInit {
   private readonly getReservationsUseCase = inject(GetReservationsUseCase);
+  private readonly confirmReservationUseCase = inject(ConfirmReservationUseCase);
 
   reservations = signal<ReservationViewModel[]>([]);
 
@@ -50,6 +52,8 @@ export class TenantReservations implements OnInit {
   errorMessage = signal('');
 
   selectedReservation = signal<ReservationViewModel | null>(null);
+  isConfirming = signal(false);
+  confirmError = signal<string | null>(null);
   showWizard = signal(false);
 
   ngOnInit(): void {
@@ -77,11 +81,13 @@ export class TenantReservations implements OnInit {
   }
 
   openDetails(reservation: ReservationViewModel) {
+    this.confirmError.set(null);
     this.selectedReservation.set(reservation);
   }
 
   closeDetails() {
     this.selectedReservation.set(null);
+    this.confirmError.set(null);
   }
 
   onSearchChange(event: Event) {
@@ -99,6 +105,31 @@ export class TenantReservations implements OnInit {
   onReservationCreated() {
     this.closeWizard();
     this.loadReservations();
+  }
+
+  confirmReservation() {
+    const reservation = this.selectedReservation();
+    if (!reservation || this.isConfirming()) return;
+
+    this.isConfirming.set(true);
+    this.confirmError.set(null);
+
+    this.confirmReservationUseCase.execute(reservation.id).subscribe({
+      next: () => {
+        this.isConfirming.set(false);
+        this.closeDetails();
+        this.loadReservations();
+      },
+      error: (err) => {
+        this.isConfirming.set(false);
+        this.confirmError.set(this.extractErrorMessage(err));
+        console.error('Error confirming reservation:', err);
+      }
+    });
+  }
+
+  canConfirmReservation(status: string): boolean {
+    return status.toLowerCase() === 'pendiente';
   }
 
   private mapToViewModel(res: DomainReservation): ReservationViewModel {
@@ -129,5 +160,14 @@ export class TenantReservations implements OnInit {
     };
 
     return map[status?.toLowerCase() ?? ''] || status || 'Pendiente';
+  }
+
+  private extractErrorMessage(err: unknown): string {
+    if (typeof err === 'object' && err !== null) {
+      const error = err as { message?: string; error?: { message?: string }; msg?: string };
+      return error.message || error.error?.message || error.msg || 'Error al confirmar la reserva. Por favor intenta de nuevo.';
+    }
+
+    return 'Error al confirmar la reserva. Por favor intenta de nuevo.';
   }
 }

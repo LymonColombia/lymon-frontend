@@ -17,7 +17,8 @@ describe('TenantReservations', () => {
           useValue: {
             getReservations: () => of([]),
             getReservationById: () => of(),
-            create: () => of()
+            create: () => of(),
+            confirm: () => of(undefined)
           }
         }
       ]

@@ -35,6 +35,10 @@ export class ReservationRepositoryImpl extends ReservationRepository {
       .pipe(map((response) => this.toCreatedReservation(response, input)));
   }
 
+  confirm(reservationId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}${this.endpoint}/${reservationId}/confirm`, {});
+  }
+
   private toCreatedReservation(response: unknown, input: CreateReservationInput): Reservation {
     if (this.isReservation(response)) {
       return response;

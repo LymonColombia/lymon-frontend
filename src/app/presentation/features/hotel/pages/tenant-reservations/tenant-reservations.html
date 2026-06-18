@@ -181,17 +181,31 @@
                       </section>
                   </div>
                   
-                  <div class="modal-actions-bar">
-                      <div class="primary-actions">
-                          <button class="btn btn-emerald"><ng-icon name="bootstrapCheck"></ng-icon> Confirmar Reserva</button>
-                      </div>
-                      <div class="secondary-actions">
-                          <button class="btn btn-blue">Check-in</button>
-                          <button class="btn btn-purple">Check-out</button>
-                          <button class="btn btn-amber"><ng-icon name="bootstrapPencil"></ng-icon> Editar</button>
-                          <button class="btn btn-danger">Cancelar Reserva</button>
-                      </div>
-                  </div>
+                   @if (confirmError()) {
+                   <div class="confirm-error">
+                     <ng-icon name="bootstrapInfoCircle"></ng-icon>
+                     {{ confirmError() }}
+                   </div>
+                   }
+                   <div class="modal-actions-bar">
+                       <div class="primary-actions">
+                           @if (canConfirmReservation(res.status)) {
+                           <button class="btn btn-emerald" (click)="confirmReservation()" [disabled]="isConfirming()">
+                             @if (isConfirming()) {
+                             Confirmando...
+                             } @else {
+                             <ng-icon name="bootstrapCheck"></ng-icon> Confirmar Reserva
+                             }
+                           </button>
+                           }
+                       </div>
+                       <div class="secondary-actions">
+                           <button class="btn btn-blue">Check-in</button>
+                           <button class="btn btn-purple">Check-out</button>
+                           <button class="btn btn-amber"><ng-icon name="bootstrapPencil"></ng-icon> Editar</button>
+                           <button class="btn btn-danger">Cancelar Reserva</button>
+                       </div>
+                   </div>
               </div>
           </div>
       </div>
