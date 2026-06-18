@@ -7,4 +7,6 @@ export abstract class ReservationRepository {
   abstract getReservationById(reservationId: string): Observable<Reservation>;
   abstract create(input: CreateReservationInput): Observable<Reservation>;
   abstract confirm(reservationId: string): Observable<void>;
+  abstract checkIn(reservationId: string): Observable<void>;
+  abstract checkOut(reservationId: string): Observable<void>;
 }

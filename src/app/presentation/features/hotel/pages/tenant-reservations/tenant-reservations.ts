@@ -6,6 +6,8 @@ import { HotelPageLayoutComponent } from '../../components/hotel-page-layout/hot
 import { CreateReservationWizardComponent } from './components/create-reservation-wizard/create-reservation-wizard';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
 import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
+import { CheckInReservationUseCase } from '@/domain/use-cases/reservation/check-in-reservation.use-case';
+import { CheckOutReservationUseCase } from '@/domain/use-cases/reservation/check-out-reservation.use-case';
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 
 export interface ReservationViewModel {
@@ -43,6 +45,8 @@ export interface ReservationViewModel {
 export class TenantReservations implements OnInit {
   private readonly getReservationsUseCase = inject(GetReservationsUseCase);
   private readonly confirmReservationUseCase = inject(ConfirmReservationUseCase);
+  private readonly checkInReservationUseCase = inject(CheckInReservationUseCase);
+  private readonly checkOutReservationUseCase = inject(CheckOutReservationUseCase);
 
   reservations = signal<ReservationViewModel[]>([]);
 
@@ -52,8 +56,8 @@ export class TenantReservations implements OnInit {
   errorMessage = signal('');
 
   selectedReservation = signal<ReservationViewModel | null>(null);
-  isConfirming = signal(false);
-  confirmError = signal<string | null>(null);
+  isProcessingStatus = signal(false);
+  statusActionError = signal<string | null>(null);
   showWizard = signal(false);
 
   ngOnInit(): void {
@@ -81,13 +85,13 @@ export class TenantReservations implements OnInit {
   }
 
   openDetails(reservation: ReservationViewModel) {
-    this.confirmError.set(null);
+    this.statusActionError.set(null);
     this.selectedReservation.set(reservation);
   }
 
   closeDetails() {
     this.selectedReservation.set(null);
-    this.confirmError.set(null);
+    this.statusActionError.set(null);
   }
 
   onSearchChange(event: Event) {
@@ -109,27 +113,78 @@ export class TenantReservations implements OnInit {
 
   confirmReservation() {
     const reservation = this.selectedReservation();
-    if (!reservation || this.isConfirming()) return;
+    if (!reservation || this.isProcessingStatus()) return;
 
-    this.isConfirming.set(true);
-    this.confirmError.set(null);
+    this.isProcessingStatus.set(true);
+    this.statusActionError.set(null);
 
     this.confirmReservationUseCase.execute(reservation.id).subscribe({
       next: () => {
-        this.isConfirming.set(false);
+        this.isProcessingStatus.set(false);
         this.closeDetails();
         this.loadReservations();
       },
       error: (err) => {
-        this.isConfirming.set(false);
-        this.confirmError.set(this.extractErrorMessage(err));
+        this.isProcessingStatus.set(false);
+        this.statusActionError.set(this.extractErrorMessage(err, 'confirmar'));
         console.error('Error confirming reservation:', err);
       }
     });
   }
 
+  checkInReservation() {
+    const reservation = this.selectedReservation();
+    if (!reservation || this.isProcessingStatus()) return;
+
+    this.isProcessingStatus.set(true);
+    this.statusActionError.set(null);
+
+    this.checkInReservationUseCase.execute(reservation.id).subscribe({
+      next: () => {
+        this.isProcessingStatus.set(false);
+        this.closeDetails();
+        this.loadReservations();
+      },
+      error: (err) => {
+        this.isProcessingStatus.set(false);
+        this.statusActionError.set(this.extractErrorMessage(err, 'hacer check-in'));
+        console.error('Error checking in reservation:', err);
+      }
+    });
+  }
+
+  checkOutReservation() {
+    const reservation = this.selectedReservation();
+    if (!reservation || this.isProcessingStatus()) return;
+
+    this.isProcessingStatus.set(true);
+    this.statusActionError.set(null);
+
+    this.checkOutReservationUseCase.execute(reservation.id).subscribe({
+      next: () => {
+        this.isProcessingStatus.set(false);
+        this.closeDetails();
+        this.loadReservations();
+      },
+      error: (err) => {
+        this.isProcessingStatus.set(false);
+        this.statusActionError.set(this.extractErrorMessage(err, 'hacer check-out'));
+        console.error('Error checking out reservation:', err);
+      }
+    });
+  }
+
   canConfirmReservation(status: string): boolean {
-    return status.toLowerCase() === 'pendiente';
+    return status.toLowerCase().replace(/_/g, '-') === 'pendiente';
+  }
+
+  canCheckInReservation(status: string): boolean {
+    return status.toLowerCase().replace(/_/g, '-') === 'confirmada';
+  }
+
+  canCheckOutReservation(status: string): boolean {
+    const normalized = status.toLowerCase().replace(/_/g, '-');
+    return normalized === 'check-in' || normalized === 'checked-in';
   }
 
   private mapToViewModel(res: DomainReservation): ReservationViewModel {
@@ -155,19 +210,22 @@ export class TenantReservations implements OnInit {
       confirmed: 'Confirmada',
       pending: 'Pendiente',
       active: 'Check-in',
+      'checked-in': 'Check-in',
+      'checked-out': 'Finalizada',
       cancelled: 'Cancelada',
       finished: 'Finalizada'
     };
 
-    return map[status?.toLowerCase() ?? ''] || status || 'Pendiente';
+    const normalized = status?.toLowerCase().replace(/_/g, '-');
+    return map[normalized ?? ''] || status || 'Pendiente';
   }
 
-  private extractErrorMessage(err: unknown): string {
+  private extractErrorMessage(err: unknown, action: string): string {
     if (typeof err === 'object' && err !== null) {
       const error = err as { message?: string; error?: { message?: string }; msg?: string };
-      return error.message || error.error?.message || error.msg || 'Error al confirmar la reserva. Por favor intenta de nuevo.';
+      return error.message || error.error?.message || error.msg || `Error al ${action} la reserva. Por favor intenta de nuevo.`;
     }
 
-    return 'Error al confirmar la reserva. Por favor intenta de nuevo.';
+    return `Error al ${action} la reserva. Por favor intenta de nuevo.`;
   }
 }

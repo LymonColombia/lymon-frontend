@@ -181,18 +181,18 @@
                       </section>
                   </div>
                   
-                   @if (confirmError()) {
+                   @if (statusActionError()) {
                    <div class="confirm-error">
                      <ng-icon name="bootstrapInfoCircle"></ng-icon>
-                     {{ confirmError() }}
+                     {{ statusActionError() }}
                    </div>
                    }
                    <div class="modal-actions-bar">
                        <div class="primary-actions">
                            @if (canConfirmReservation(res.status)) {
-                           <button class="btn btn-emerald" (click)="confirmReservation()" [disabled]="isConfirming()">
-                             @if (isConfirming()) {
-                             Confirmando...
+                           <button class="btn btn-emerald" (click)="confirmReservation()" [disabled]="isProcessingStatus()">
+                             @if (isProcessingStatus()) {
+                             Procesando...
                              } @else {
                              <ng-icon name="bootstrapCheck"></ng-icon> Confirmar Reserva
                              }
@@ -200,10 +200,14 @@
                            }
                        </div>
                        <div class="secondary-actions">
-                           <button class="btn btn-blue">Check-in</button>
-                           <button class="btn btn-purple">Check-out</button>
-                           <button class="btn btn-amber"><ng-icon name="bootstrapPencil"></ng-icon> Editar</button>
-                           <button class="btn btn-danger">Cancelar Reserva</button>
+                           @if (canCheckInReservation(res.status)) {
+                           <button class="btn btn-blue" (click)="checkInReservation()" [disabled]="isProcessingStatus()">Check-in</button>
+                           }
+                           @if (canCheckOutReservation(res.status)) {
+                           <button class="btn btn-purple" (click)="checkOutReservation()" [disabled]="isProcessingStatus()">Check-out</button>
+                           }
+                           <button class="btn btn-amber" [disabled]="isProcessingStatus()"><ng-icon name="bootstrapPencil"></ng-icon> Editar</button>
+                           <button class="btn btn-danger" [disabled]="isProcessingStatus()">Cancelar Reserva</button>
                        </div>
                    </div>
               </div>

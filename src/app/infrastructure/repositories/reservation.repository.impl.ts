@@ -39,6 +39,14 @@ export class ReservationRepositoryImpl extends ReservationRepository {
     return this.http.post<void>(`${this.baseUrl}${this.endpoint}/${reservationId}/confirm`, {});
   }
 
+  checkIn(reservationId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}${this.endpoint}/${reservationId}/check-in`, {});
+  }
+
+  checkOut(reservationId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}${this.endpoint}/${reservationId}/check-out`, {});
+  }
+
   private toCreatedReservation(response: unknown, input: CreateReservationInput): Reservation {
     if (this.isReservation(response)) {
       return response;
