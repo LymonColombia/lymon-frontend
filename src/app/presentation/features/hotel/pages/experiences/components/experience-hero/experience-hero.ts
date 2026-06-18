@@ -1,17 +1,12 @@
-import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
-import { NgIcon, provideIcons } from "@ng-icons/core";
-import { bootstrapClipboard2Check, bootstrapPerson, bootstrapSearch } from '@ng-icons/bootstrap-icons';
-import {
-  ExperienceCategoryFilter,
-  ExperienceOwnerTypeFilter,
-} from '../experience-toolbar/experience-toolbar.component';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapClipboard2Check, bootstrapGeoAlt, bootstrapSearch } from '@ng-icons/bootstrap-icons';
+import { ExperienceCategoryFilter } from '../experience-toolbar/experience-toolbar.component';
 
 export interface ExperienceHeroFilters {
   category: ExperienceCategoryFilter;
-  ownerType: ExperienceOwnerTypeFilter;
 }
-
 
 @Component({
   selector: 'experience-hero',
@@ -20,51 +15,36 @@ export interface ExperienceHeroFilters {
   styleUrl: './experience-hero.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SelectComponent, NgIcon],
-  providers: [provideIcons({ bootstrapSearch , bootstrapClipboard2Check,bootstrapPerson})],
-
+  providers: [provideIcons({ bootstrapSearch, bootstrapClipboard2Check, bootstrapGeoAlt })],
 })
 export class ExperienceHeroComponent {
-    readonly selectedCategory = input<ExperienceCategoryFilter>('all');
-    readonly selectedOwnerType = input<ExperienceOwnerTypeFilter>('all');
-    readonly filtersApply = output<ExperienceHeroFilters>();
+  private readonly destroyRef = inject(DestroyRef);
 
-    readonly categoryFilter = signal<ExperienceCategoryFilter>('all');
-    readonly ownerTypeFilter = signal<ExperienceOwnerTypeFilter>('all');
+  readonly selectedCategory = input<ExperienceCategoryFilter>(null);
+  readonly filtersApply = output<ExperienceHeroFilters>();
 
-    constructor() {
-      effect(() => {
-        this.categoryFilter.set(this.selectedCategory());
-        this.ownerTypeFilter.set(this.selectedOwnerType());
-      });
-    }
+  readonly categoryFilter = signal<ExperienceCategoryFilter>(null);
 
-    readonly categoryOptions:  SelectOption[] = [
-        { value: 'all', label: 'Todas las categorias' },
-        { value: 'Gastronomia', label: 'Gastronomia' },
-        { value: 'Cultura', label: 'Cultura' },
-        { value: 'Naturaleza', label: 'Naturaleza' },
-        { value: 'Aventura', label: 'Aventura' },
-      ];
-    readonly ownerTypeOptions:  SelectOption[] = [
-        { value: 'all', label: 'Todos los propietarios' },
-        { value: 'Agencia', label: 'Agencia' },
-        { value: 'Host', label: 'Host' },
-        { value: 'Guia certificado', label: 'Guia certificado' },
-      ];
+  readonly categoryOptions: SelectOption[] = [
+    { value: '', label: 'Todas las categorias' },
+    { value: 'TRANSPORTATION' , label: 'Transporte' },
+  ];
 
-    onCategoryFilterChange(value: string | number | null): void {
-      this.categoryFilter.set((typeof value === 'string' ? value : 'all') as ExperienceCategoryFilter);
-    }
+  constructor() {
+    effect(() => {
+      this.categoryFilter.set(this.selectedCategory());
+    });
 
-    onOwnerTypeFilterChange(value: string | number | null): void {
-       this.ownerTypeFilter.set((typeof value === 'string' ? value : 'all') as ExperienceOwnerTypeFilter);
-    }
+  }
 
-    onSearch(): void {
-      this.filtersApply.emit({
-        category: this.categoryFilter(),
-        ownerType: this.ownerTypeFilter(),
-      });
-    }
-  
+  onCategoryFilterChange(value: string | number | null): void {
+    this.categoryFilter.set((typeof value === 'string' ? value : null) as ExperienceCategoryFilter);
+  }
+
+  onSearch(): void {
+  this.filtersApply.emit({
+    category: this.categoryFilter(),
+  });
+}
+
 }

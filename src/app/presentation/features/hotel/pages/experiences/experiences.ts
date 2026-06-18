@@ -1,19 +1,23 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { ExperienceHeroComponent ,ExperienceHeroFilters} from './components/experience-hero/experience-hero';
+import { Subscription } from 'rxjs';
+import { BookingNavComponent } from '../booking/components/booking-nav/booking-nav.component';
+import { BookingPaginationComponent } from '../booking/components/booking-pagination/booking-pagination.component';
+import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GetGuestExperiencesUseCase } from '@/domain/use-cases/experience/get-guest-experiences.use-case';
+import { GuestExperience } from '@/domain/entities/guest-experience.model';
+import { ExperienceHeroComponent, ExperienceHeroFilters } from './components/experience-hero/experience-hero';
 import {
   ExperienceToolbarComponent,
   ExperienceCategoryFilter,
-  ExperienceOwnerTypeFilter,
   ExperienceSortOption,
 } from './components/experience-toolbar/experience-toolbar.component';
 import { ExperienceCardComponent } from './components/experience-card/experience-card.component';
 import { ExperienceEmptyStateComponent } from './components/experience-empty-state/experience-empty-state.component';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
-import { EXPERIENCE_CATALOG } from './experiences.data';
-import { ExperienceDetail } from '@/domain/entities/experience.model';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
-import { BookingNavComponent } from "../booking/components/booking-nav/booking-nav.component";
+
+const ITEMS_PER_PAGE = 12;
 
 @Component({
   selector: 'app-experiences',
@@ -24,31 +28,43 @@ import { BookingNavComponent } from "../booking/components/booking-nav/booking-n
     ExperienceCardComponent,
     ExperienceEmptyStateComponent,
     FooterComponent,
-    BookingNavComponent
-],
+    BookingNavComponent,
+    BookingPaginationComponent,
+  ],
   templateUrl: './experiences.html',
   styleUrl: './experiences.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
-export class ExperienceComponent implements OnInit {
+export class ExperienceComponent {
   private readonly router = inject(Router);
-   readonly guestTokenService = inject(GuestTokenService);
+  private readonly destroyRef = inject(DestroyRef);
+  readonly guestTokenService = inject(GuestTokenService);
+  private readonly getGuestExperiencesUseCase = inject(GetGuestExperiencesUseCase);
+  private experiencesLoadSubscription?: Subscription;
 
   readonly isExperienceLoading = signal(false);
-
+  readonly currentPage = signal(1);
+  readonly totalPages = signal(1);
   readonly searchQuery = signal('');
   readonly sortBy = signal<ExperienceSortOption>('rating');
-  readonly selectedCategory = signal<ExperienceCategoryFilter>('all');
-  readonly selectedOwnerType = signal<ExperienceOwnerTypeFilter>('all');
+  readonly selectedCategory = signal<ExperienceCategoryFilter>(null);
+  readonly tenantId = signal('');
+  readonly propertyId = signal('');
+
   readonly likedExperiencesIds = signal(new Set<string>());
-  
-  readonly experiences = signal<ExperienceDetail[]>([]);
+  readonly experiences = signal<GuestExperience[]>([]);
+
+  readonly guestEmail = this.guestTokenService.getGuestEmail();
+
+  readonly backendFilters = computed(() => ({
+    category: this.selectedCategory(),
+    tenantId: this.tenantId().trim(),
+    propertyId: this.propertyId().trim(),
+  }));
 
   readonly filteredExperiences = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const category = this.selectedCategory();
-    const ownerType = this.selectedOwnerType();
     const sort = this.sortBy();
 
     let result = this.experiences();
@@ -56,42 +72,30 @@ export class ExperienceComponent implements OnInit {
     if (query) {
       result = result.filter(
         (experience) =>
-          experience.title.toLowerCase().includes(query) ||
-          experience.location.toLowerCase().includes(query) ||
-          experience.ownerName.toLowerCase().includes(query),
+          experience.name.toLowerCase().includes(query) ||
+          experience.description.toLowerCase().includes(query) ||
+          experience.location.label.toLowerCase().includes(query) ||
+          experience.location.address.toLowerCase().includes(query),
       );
     }
 
-    if (category !== 'all') {
+    if (category !== null) {
       result = result.filter((experience) => experience.category === category);
     }
 
-    if (ownerType !== 'all') {
-      result = result.filter((experience) => experience.ownerType === ownerType);
-    }
-
     if (sort === 'price-asc') {
-      return [...result].sort((a, b) => a.priceFrom - b.priceFrom);
+      return [...result].sort((a, b) => a.priceCop - b.priceCop);
     }
 
     if (sort === 'price-desc') {
-      return [...result].sort((a, b) => b.priceFrom - a.priceFrom);
+      return [...result].sort((a, b) => b.priceCop - a.priceCop);
     }
 
-    return [...result].sort((a, b) => b.rating - a.rating);
+    return [...result];
   });
- 
 
-  ngOnInit(): void {
-    this.loadExperiences();
-  }
-
-  private loadExperiences(): void {
-    this.isExperienceLoading.set(true);
-    setTimeout(() => {
-      this.experiences.set(EXPERIENCE_CATALOG);
-      this.isExperienceLoading.set(false);
-    }, 1000);
+  constructor() {
+    this.loadExperiences(1);
   }
 
   onSearchQueryChange(query: string): void {
@@ -104,15 +108,23 @@ export class ExperienceComponent implements OnInit {
 
   onCategoryChange(category: ExperienceCategoryFilter): void {
     this.selectedCategory.set(category);
+    this.loadExperiences(1);
   }
 
-  onOwnerTypeChange(ownerType: ExperienceOwnerTypeFilter): void {
-    this.selectedOwnerType.set(ownerType);
-  }
 
   onHeroFiltersApply(filters: ExperienceHeroFilters): void {
     this.selectedCategory.set(filters.category);
-    this.selectedOwnerType.set(filters.ownerType);
+    this.loadExperiences(1);
+  }
+
+  onTenantIdChange(tenantId: string): void {
+    this.tenantId.set(tenantId);
+    this.loadExperiences(1);
+  }
+
+  onPropertyIdChange(propertyId: string): void {
+    this.propertyId.set(propertyId);
+    this.loadExperiences(1);
   }
 
   onToggleLike(experienceId: string): void {
@@ -127,19 +139,50 @@ export class ExperienceComponent implements OnInit {
     });
   }
 
+  onPageChange(page: number): void {
+    this.loadExperiences(page);
+  }
+
+  private loadExperiences(page: number): void {
+    this.experiencesLoadSubscription?.unsubscribe();
+    this.isExperienceLoading.set(true);
+
+    const filters = this.backendFilters();
+    this.experiencesLoadSubscription = this.getGuestExperiencesUseCase
+      .execute({
+        category: filters.category ?? undefined,
+        tenantId: filters.tenantId || undefined,
+        propertyId: filters.propertyId || undefined,
+        page,
+        limit: ITEMS_PER_PAGE,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.experiences.set(response.experiences);
+          this.currentPage.set(response.page);
+          this.totalPages.set(response.totalPages);
+          this.isExperienceLoading.set(false);
+        },
+        error: () => {
+          this.experiences.set([]);
+          this.currentPage.set(1);
+          this.totalPages.set(1);
+          this.isExperienceLoading.set(false);
+        },
+      });
+  }
+
   goToExperienceDetails(experienceId: string): void {
     void this.router.navigate(['/experiences', experienceId]);
   }
 
-
-  readonly guestEmail = this.guestTokenService.getGuestEmail();
-  
-   onGuestLogin(): void {
-    this.router.navigate(['/guest/login']);
+  onGuestLogin(): void {
+    void this.router.navigate(['/guest/login']);
   }
 
   onMyReservations(): void {
-    this.router.navigate(['/guest/reservations']);
+    void this.router.navigate(['/guest/reservations']);
   }
 
   onGuestLogout(): void {
@@ -147,7 +190,6 @@ export class ExperienceComponent implements OnInit {
   }
 
   goToRoomDetails(unitId: string): void {
-    this.router.navigate(['/room-details', unitId]);
+    void this.router.navigate(['/room-details', unitId]);
   }
-
 }

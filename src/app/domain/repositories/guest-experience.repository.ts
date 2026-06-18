@@ -1,10 +1,14 @@
 import { Observable } from 'rxjs';
-import { GuestExperiencePage } from '@/domain/entities/guest-experience.model';
+import { GuestExperience, GuestExperiencePage } from '@/domain/entities/guest-experience.model';
 
 export abstract class GuestExperienceRepository {
   abstract getExperiences(params: {
-    propertyId: string;
+    tenantId?: string;
+    propertyId?: string;
+    category?: string;
     page: number;
     limit: number;
   }): Observable<GuestExperiencePage>;
+
+  abstract getExperienceById(id: string): Observable<GuestExperience>;
 }

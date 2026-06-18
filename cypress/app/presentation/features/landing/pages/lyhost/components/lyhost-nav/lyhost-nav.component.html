@@ -1,0 +1,49 @@
+<nav class="lyhost-nav">
+  <div class="container nav-inner">
+    <div class="brand-group">
+      <img
+        ngSrc="images/LyHost.svg"
+        width="180"
+        height="42"
+        priority
+        alt="LyHost"
+        class="brand-logo"
+      />
+    </div>
+
+    <div class="desktop-links" aria-label="Primary navigation">
+      @for (link of links; track link.sectionId) {
+        <button type="button" class="desktop-link" (click)="navigateToSection(link.sectionId)">{{ link.label }}</button>
+      }
+    </div>
+
+    <div class="desktop-actions">
+      <app-button variant="secondary" size="medium" (clicked)="goToManagerLogin()">Acceder como gestor</app-button>
+      <app-button variant="primary" size="medium" (clicked)="goToGuestLogin()">Acceder como huésped</app-button>
+    </div>
+
+    <button type="button" class="mobile-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileOpen()">
+      @if (mobileOpen()) {
+        <ng-icon name="bootstrapXLg" size="20" aria-hidden="true" />
+        <span class="sr-only">Cerrar menú</span>
+      } @else {
+        <ng-icon name="bootstrapList" size="20" aria-hidden="true" />
+        <span class="sr-only">Abrir menú</span>
+      }
+    </button>
+  </div>
+
+  @if (mobileOpen()) {
+    <div class="mobile-panel">
+      <div class="mobile-links">
+        @for (link of links; track link.sectionId) {
+          <button type="button" class="mobile-link" (click)="navigateToSection(link.sectionId)">{{ link.label }}</button>
+        }
+      </div>
+      <div class="mobile-actions">
+        <app-button variant="secondary" size="medium" [fullWidth]="true" (clicked)="goToManagerLogin()">Acceder como gestor</app-button>
+        <app-button variant="primary" size="medium" [fullWidth]="true" (clicked)="goToGuestLogin()">Acceder como huésped</app-button>
+      </div>
+    </div>
+  }
+</nav>

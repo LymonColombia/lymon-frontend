@@ -1,4 +1,3 @@
-
 <booking-nav
   [isAuthenticated]="guestTokenService.isAuthenticated()"
   [guestEmail]="guestEmail"
@@ -9,7 +8,6 @@
 
 <experience-hero
   [selectedCategory]="selectedCategory()"
-  [selectedOwnerType]="selectedOwnerType()"
   (filtersApply)="onHeroFiltersApply($event)">
 </experience-hero>
 
@@ -19,20 +17,18 @@
       [resultsCount]="filteredExperiences().length"
       [sortBy]="sortBy()"
       [selectedCategory]="selectedCategory()"
-      [selectedOwnerType]="selectedOwnerType()"
       (searchQueryChange)="onSearchQueryChange($event)"
       (sortChange)="onSortChange($event)"
-      (categoryChange)="onCategoryChange($event)"
-      (ownerTypeChange)="onOwnerTypeChange($event)"
-    ></experience-toolbar>
+      (categoryChange)="onCategoryChange($event)">
+       </experience-toolbar>
 
     @if (isExperienceLoading()) {
       <div class="loading">Cargando experiencias...</div>
     } @else if (filteredExperiences().length === 0) {
       <experience-empty-state
         title="No encontramos experiencias"
-        message="Intenta ajustar tu busqueda o tus filtros para ver mas opciones."
-      ></experience-empty-state>
+        message="Intenta ajustar tu busqueda o tus filtros para ver mas opciones.">
+      </experience-empty-state>
     } @else {
       <div class="experiences-grid">
         @for (experience of filteredExperiences(); track experience.id) {
@@ -40,14 +36,18 @@
             [experience]="experience"
             [isLiked]="likedExperiencesIds().has(experience.id)"
             (viewDetails)="goToExperienceDetails($event)"
-            (toggleLike)="onToggleLike($event)"
-          ></experience-card>
+            (toggleLike)="onToggleLike($event)">
+          </experience-card>
         }
       </div>
-    }
 
+      <booking-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChange)="onPageChange($event)">
+      </booking-pagination>
+    }
   </div>
 </section>
 
 <app-footer></app-footer>
-

@@ -23,20 +23,6 @@
     </div>
 
     <app-select
-      [options]="categoryOptions"
-      [value]="selectedCategory()"
-      placeholder="Categoria"
-      (valueChange)="onCategoryChange($event)"
-    ></app-select>
-
-    <app-select
-      [options]="ownerTypeOptions"
-      [value]="selectedOwnerType()"
-      placeholder="Host"
-      (valueChange)="onOwnerTypeChange($event)"
-    ></app-select>
-
-    <app-select
       [options]="sortOptions"
       [value]="sortBy()"
       placeholder="Ordenar por"

@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+.lyhost-page {
+  min-height: 100vh;
+  background: var(--color-bg-primary);
+}
+
+.reveal-section {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+:host.scroll-reveal-enabled .reveal-section {
+  opacity: 0;
+  transform: translateY(var(--spacing-3xl));
+  transition:
+    opacity 700ms ease-out,
+    transform 700ms ease-out;
+}
+
+:host.scroll-reveal-enabled .reveal-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

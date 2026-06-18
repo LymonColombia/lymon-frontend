@@ -1,0 +1,153 @@
+<div class="reservation-detail-page">
+  <app-guest-nav
+    [guestEmail]="guestEmail"
+    [backButtonLabel]="'Mis reservas'"
+    (explore)="goBackToReservations()"
+    (logout)="onLogout()"
+  />
+
+  @if (isLoading()) {
+    <div class="detail-container detail-container--state fade-section fade-delay-1">
+      <div class="state-center">
+        <div class="spinner"></div>
+        <p class="state-text">Cargando detalle de la reserva...</p>
+      </div>
+    </div>
+  }
+
+  @if (!isLoading() && errorMessage()) {
+    <div class="detail-container detail-container--state fade-section fade-delay-1">
+      <div class="state-card">
+        <div class="state-icon state-icon--error">
+          <ng-icon name="bootstrapExclamationTriangle" size="28px" aria-hidden="true" />
+        </div>
+        <p class="state-text">{{ errorMessage() }}</p>
+        <app-button variant="primary" size="medium" (clicked)="retryLoad()">
+          Reintentar
+        </app-button>
+      </div>
+    </div>
+  }
+
+  @if (!isLoading() && !errorMessage() && reservation(); as currentReservation) {
+    <section class="hero fade-section fade-delay-1" [class]="'hero fade-section fade-delay-1 ' + statusClass()">
+      <div class="hero-container">
+        <div class="hero-status-row">
+          <span class="hero-status-pill" [class]="'hero-status-pill ' + statusClass()">
+            <span class="hero-status-dot" aria-hidden="true"></span>
+            {{ statusLabel() }}
+          </span>
+          <span class="hero-reference">
+            <ng-icon name="bootstrapHash" size="11px" aria-hidden="true" />
+            {{ shortBookingReference() }}
+          </span>
+        </div>
+
+        <h1 class="hero-title">{{ currentReservation.propertyName ?? 'Reserva' }}</h1>
+
+        <span class="hero-unit-chip">
+          <ng-icon name="bootstrapHouseDoorFill" size="12px" aria-hidden="true" />
+          {{ currentReservation.unitName ?? 'Unidad no especificada' }}
+        </span>
+      </div>
+    </section>
+
+    <div class="detail-container">
+      <section class="panel panel--dates fade-section fade-delay-2">
+        <header class="panel-header">
+          <ng-icon name="bootstrapCalendar" size="14px" aria-hidden="true" />
+          <span>Fechas de estadia</span>
+        </header>
+
+        <div class="panel-body">
+          <div class="dates-layout">
+            <div class="date-block">
+              <span class="date-label">Check-in</span>
+              <div class="date-box">
+                <span class="date-day-name">{{ formatDayName(currentReservation.checkIn) }}</span>
+                <span class="date-day-number">{{ formatDayNumber(currentReservation.checkIn) }}</span>
+                <span class="date-month-year">{{ formatMonthYear(currentReservation.checkIn) }}</span>
+              </div>
+              <span class="date-full">{{ formatFullDate(currentReservation.checkIn) }}</span>
+            </div>
+
+            <div class="nights-center">
+              <div class="nights-line"></div>
+              <div class="nights-pill">
+                <ng-icon name="bootstrapMoon" size="13px" aria-hidden="true" />
+                <span class="nights-value">{{ nights() }}</span>
+                <span class="nights-label">{{ nights() === 1 ? 'noche' : 'noches' }}</span>
+              </div>
+              <div class="nights-line"></div>
+            </div>
+
+            <div class="date-block date-block--end">
+              <span class="date-label">Check-out</span>
+              <div class="date-box">
+                <span class="date-day-name">{{ formatDayName(currentReservation.checkOut) }}</span>
+                <span class="date-day-number">{{ formatDayNumber(currentReservation.checkOut) }}</span>
+                <span class="date-month-year">{{ formatMonthYear(currentReservation.checkOut) }}</span>
+              </div>
+              <span class="date-full">{{ formatFullDate(currentReservation.checkOut) }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="detail-grid-columns fade-section fade-delay-3">
+        <section class="panel">
+          <header class="panel-header">
+            <ng-icon name="bootstrapBuilding" size="14px" aria-hidden="true" />
+            <span>Propiedad</span>
+          </header>
+          <div class="panel-body panel-body--stack">
+            <div class="info-item">
+              <span class="info-label">Nombre</span>
+              <span class="info-value">{{ currentReservation.propertyName ?? '-' }}</span>
+            </div>
+            <div class="panel-divider"></div>
+            <div class="info-item">
+              <span class="info-label">Unidad</span>
+              <span class="info-value info-value--inline">
+                <ng-icon name="bootstrapHouseDoorFill" size="13px" aria-hidden="true" />
+                {{ currentReservation.unitName ?? '-' }}
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <header class="panel-header">
+            <ng-icon name="bootstrapCalendarCheck" size="14px" aria-hidden="true" />
+            <span>Reserva</span>
+          </header>
+          <div class="panel-body panel-body--stack">
+            <div class="info-item">
+              <span class="info-label">Referencia</span>
+              <span class="info-value info-value--mono">{{ bookingReference() }}</span>
+            </div>
+            <div class="panel-divider"></div>
+            <div class="info-item">
+              <span class="info-label">Estado</span>
+              <span class="status-inline" [class]="'status-inline ' + statusClass()">
+                <ng-icon [name]="statusIcon()" size="12px" aria-hidden="true" />
+                {{ statusLabel() }}
+              </span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="detail-actions fade-section fade-delay-4">
+        @if (hasPendingStatus()) {
+          <app-button variant="primary" size="medium" (clicked)="goToCheckin()">
+            <ng-icon name="bootstrapCheckCircle" size="14px" aria-hidden="true" class="action-icon" />
+            Confirmar reserva
+          </app-button>
+        }
+      </div>
+    </div>
+  }
+
+  <app-footer />
+</div>

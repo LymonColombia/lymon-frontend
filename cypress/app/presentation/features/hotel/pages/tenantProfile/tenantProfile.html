@@ -1,0 +1,118 @@
+<app-hotel-page-layout
+  title="Perfil del Negocio"
+  subtitle="Actualiza la información pública de tu establecimiento."
+>
+
+    @if (isLoadingProfile()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando perfil...</p>
+      </div>
+    } @else {
+      <div class="form-card">
+        @if (successMessage()) {
+          <div class="alert alert-success">{{ successMessage() }}</div>
+        }
+        @if (errorMessage()) {
+          <div class="alert alert-error">{{ errorMessage() }}</div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <!-- Nombre -->
+          <div class="form-group">
+            <label for="name">Nombre del negocio <span class="required">*</span></label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              placeholder="Ej: Hotel Paradise"
+              [class.input-error]="nameControl.invalid && nameControl.touched"
+            />
+            @if (nameControl.invalid && nameControl.touched) {
+              <span class="field-error">
+                @if (nameControl.hasError('required')) { El nombre es requerido. }
+                @else if (nameControl.hasError('minlength')) { Mínimo 3 caracteres. }
+                @else if (nameControl.hasError('maxlength')) { Máximo 100 caracteres. }
+              </span>
+            }
+          </div>
+
+          <!-- Teléfono -->
+          <div class="form-group">
+            <label for="contactPhone">Teléfono de contacto</label>
+            <input
+              type="text"
+              id="contactPhone"
+              formControlName="contactPhone"
+              placeholder="Ej: +52 55 1234 5678"
+              [class.input-error]="contactPhoneControl.invalid && contactPhoneControl.touched"
+            />
+            @if (contactPhoneControl.invalid && contactPhoneControl.touched) {
+              <span class="field-error">
+                @if (contactPhoneControl.hasError('minlength')) { Mínimo 7 caracteres. }
+                @else if (contactPhoneControl.hasError('maxlength')) { Máximo 30 caracteres. }
+              </span>
+            }
+          </div>
+
+          <!-- Dirección -->
+          <div class="form-group">
+            <label for="address">Dirección</label>
+            <input
+              type="text"
+              id="address"
+              formControlName="address"
+              placeholder="Ej: Av. Reforma 123, Ciudad de México"
+              [class.input-error]="addressControl.invalid && addressControl.touched"
+            />
+            @if (addressControl.invalid && addressControl.touched) {
+              <span class="field-error">
+                @if (addressControl.hasError('maxlength')) { Máximo 200 caracteres. }
+              </span>
+            }
+          </div>
+
+          <!-- Sitio web -->
+          <div class="form-group">
+            <label for="website">Sitio web</label>
+            <input
+              type="text"
+              id="website"
+              formControlName="website"
+              placeholder="Ej: https://www.mihotel.com"
+              [class.input-error]="websiteControl.invalid && websiteControl.touched"
+            />
+            @if (websiteControl.invalid && websiteControl.touched) {
+              <span class="field-error">Ingresa una URL válida.</span>
+            }
+          </div>
+
+          <!-- Logo URL -->
+          <div class="form-group">
+            <label for="logoUrl">URL del logo</label>
+            <input
+              type="text"
+              id="logoUrl"
+              formControlName="logoUrl"
+              placeholder="Ej: https://storage.ejemplo.com/logo.png"
+              [class.input-error]="logoUrlControl.invalid && logoUrlControl.touched"
+            />
+            @if (logoUrlControl.invalid && logoUrlControl.touched) {
+              <span class="field-error">Ingresa una URL válida.</span>
+            }
+            @if (logoUrlControl.value && logoUrlControl.valid) {
+              <div class="logo-preview">
+                <img [src]="logoUrlControl.value" alt="Vista previa del logo" />
+              </div>
+            }
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+              @if (isSubmitting()) { Guardando... } @else { Guardar Cambios }
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+</app-hotel-page-layout>

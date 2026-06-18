@@ -1,0 +1,368 @@
+
+/* ── Layout ───────────────────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Cards ───────────────────────────────────────── */
+.form-card {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-subtle);
+  height: 100%;
+}
+
+/* ── Form Groups ─────────────────────────────────── */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* ── Role Assignments ────────────────────────────── */
+.role-assignments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.role-row {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.role-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px dashed var(--color-border-subtle);
+}
+
+.role-row-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-icon-remove {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.btn-icon-remove:hover {
+  opacity: 0.7;
+}
+
+.add-role-container {
+  margin-top: var(--spacing-xl);
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Multi-select ────────────────────────────────── */
+.select-multiple {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: var(--input-border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-primary);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  min-height: 100px;
+}
+
+.property-unit-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* ── Actions ─────────────────────────────────────── */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-2xl);
+  padding-top: var(--spacing-xl);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ── Utility ─────────────────────────────────────── */
+.required {
+  color: var(--color-danger);
+}
+
+.field-error {
+  color: var(--color-danger);
+  font-size: var(--font-size-xs);
+  margin-top: var(--spacing-xs);
+  display: block;
+}
+
+.field-hint {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+  margin-top: var(--spacing-xs);
+  display: block;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.alert {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+}
+
+.alert-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.alert-success {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-xl);
+  color: var(--color-text-primary);
+}
+
+.section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-bg-secondary);
+  border-radius: 8px;
+  color: var(--color-primary);
+}
+
+.section-icon {
+  width: calc(var(--spacing-xl) + var(--spacing-md));
+  height: calc(var(--spacing-xl) + var(--spacing-md));
+  border-radius: 50%;
+  background: var(--color-primary-dark);
+  color: var(--color-bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Form layout ─────────────────────────────────── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+}
+
+.form-group {
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-group label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.required {
+  color: var(--color-primary-dark);
+}
+
+.form-group select {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-md);
+  border: var(--input-border-width) solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: all var(--transition-fast);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+.form-group select:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--input-focus-ring);
+}
+
+.form-group select.input-invalid {
+  border-color: var(--color-error);
+}
+
+.form-group app-input.input-invalid ::ng-deep .input-field,
+.form-group app-select.input-invalid ::ng-deep .select-field {
+  border-color: var(--color-error);
+}
+
+.form-group select.select-multiple {
+  min-height: calc(var(--spacing-4xl) * 3);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  resize: vertical;
+}
+
+/* ── Password field ──────────────────────────────── */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper app-input {
+  display: block;
+}
+
+.password-wrapper app-input ::ng-deep .input-field {
+  padding-right: calc(var(--spacing-4xl) + var(--spacing-sm));
+}
+
+.toggle-password {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+
+.toggle-password:hover {
+  color: var(--color-primary-dark);
+}
+
+/* ── Field messages ──────────────────────────────── */
+.field-error {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  margin-top: var(--spacing-xs);
+}
+
+.field-hint {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--spacing-xs);
+}
+
+/* ── Role assignment rows ────────────────────────── */
+.role-row {
+  background: var(--color-bg-tertiary);
+  border: var(--input-border-width) solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.role-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.role-row-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.btn-remove-role {
+  --color-primary-dark: var(--color-danger);
+}
+
+.btn-add-role {
+  display: inline-block;
+  margin-top: var(--spacing-xs);
+}
+
+/* ── Actions bar ─────────────────────────────────── */
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-3xl);
+}
+
+.form-actions app-button {
+  min-width: calc(var(--spacing-6xl) * 2 + var(--spacing-lg));
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions app-button {
+    width: 100%;
+  }
+}

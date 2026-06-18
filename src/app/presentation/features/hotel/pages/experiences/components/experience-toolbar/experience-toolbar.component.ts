@@ -4,8 +4,7 @@ import { bootstrapSearch, bootstrapX } from '@ng-icons/bootstrap-icons';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 
 export type ExperienceSortOption = 'price-asc' | 'price-desc' | 'rating';
-export type ExperienceCategoryFilter = 'all' | 'Aventura' | 'Naturaleza' | 'Cultura' | 'Gastronomia';
-export type ExperienceOwnerTypeFilter = 'all' | 'Host' | 'Agencia' | 'Guia certificado';
+export type ExperienceCategoryFilter = null | 'TRANSPORTATION' ;
 
 @Component({
   selector: 'experience-toolbar',
@@ -19,13 +18,11 @@ export type ExperienceOwnerTypeFilter = 'all' | 'Host' | 'Agencia' | 'Guia certi
 export class ExperienceToolbarComponent {
   readonly resultsCount = input.required<number>();
   readonly sortBy = input.required<ExperienceSortOption>();
-  readonly selectedCategory = input<ExperienceCategoryFilter>('all');
-  readonly selectedOwnerType = input<ExperienceOwnerTypeFilter>('all');
+  readonly selectedCategory = input<ExperienceCategoryFilter>(null);
 
   readonly searchQueryChange = output<string>();
   readonly sortChange = output<ExperienceSortOption>();
   readonly categoryChange = output<ExperienceCategoryFilter>();
-  readonly ownerTypeChange = output<ExperienceOwnerTypeFilter>();
 
   readonly internalQuery = signal('');
 
@@ -35,20 +32,6 @@ export class ExperienceToolbarComponent {
     { value: 'price-desc', label: 'Precio: mayor a menor' },
   ];
 
-  readonly categoryOptions: SelectOption[] = [
-    { value: 'all', label: 'Todas las categorias' },
-    { value: 'Aventura', label: 'Aventura' },
-    { value: 'Naturaleza', label: 'Naturaleza' },
-    { value: 'Cultura', label: 'Cultura' },
-    { value: 'Gastronomia', label: 'Gastronomia' },
-  ];
-
-  readonly ownerTypeOptions: SelectOption[] = [
-    { value: 'all', label: 'Todos los hosts' },
-    { value: 'Host', label: 'Host' },
-    { value: 'Agencia', label: 'Agencia' },
-    { value: 'Guia certificado', label: 'Guia certificado' },
-  ];
 
   onQueryInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
@@ -69,7 +52,4 @@ export class ExperienceToolbarComponent {
     this.categoryChange.emit(value as ExperienceCategoryFilter);
   }
 
-  onOwnerTypeChange(value: string | number): void {
-    this.ownerTypeChange.emit(value as ExperienceOwnerTypeFilter);
-  }
 }

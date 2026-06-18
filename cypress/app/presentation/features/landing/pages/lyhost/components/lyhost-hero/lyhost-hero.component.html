@@ -1,0 +1,85 @@
+<section id="explorar" class="lyhost-hero">
+  <div class="hero-grid-bg" aria-hidden="true">
+    <svg class="hero-grid-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <defs>
+        <pattern id="lyhost-grid" width="16" height="16" patternUnits="userSpaceOnUse">
+          <path d="M 16 0 L 0 0 0 16" fill="none" stroke="var(--color-text-primary)" stroke-width="0.2" />
+        </pattern>
+      </defs>
+      <rect width="100" height="100" fill="url(#lyhost-grid)"></rect>
+    </svg>
+  </div>
+
+  <div class="shape shape-circle"></div>
+  <div class="shape shape-rounded"></div>
+  <div class="shape shape-dot"></div>
+
+  <div class="floating-card floating-right" aria-hidden="true">
+    <div class="floating-card-content">
+      <div class="floating-row">
+        <span class="floating-indicator"></span>
+        <span class="floating-label">Disponible ahora</span>
+      </div>
+      <span class="floating-line line-lg"></span>
+      <span class="floating-line line-sm"></span>
+      <div class="floating-stars">
+        @for (star of [0, 1, 2, 3, 4]; track star) {
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="var(--color-primary)" stroke-width="1">
+            <polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9,11 6,9.5 3,11 3.5,7.5 1,5 4.5,4.5" [attr.fill]="star < 4 ? 'var(--color-primary)' : 'none'" />
+          </svg>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="floating-card floating-left" aria-hidden="true">
+    <div class="floating-card-content floating-calendar">
+      <div class="floating-row">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
+          <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+          <path d="M16 3V7M8 3V7M3 11H21"></path>
+        </svg>
+        <span class="floating-label">Check-in</span>
+      </div>
+      <div class="calendar-grid">
+        @for (day of [10,11,12,13,14,15,16,17,18,19,20,21,22,23]; track day; let i = $index) {
+          <span class="calendar-day" [class.calendar-day-active]="i === 5 || i === 6 || i === 7">{{ day }}</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="container hero-content">
+    <div class="hero-tag">
+      <span class="hero-tag-dot"></span>
+      <span>Plataforma de alojamientos turísticos</span>
+    </div>
+
+    <h1 class="hero-title">
+      Tu próxima estancia,
+      <br />
+      <span class="hero-title-accent">sin intermediarios</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Reserva directamente con los mejores alojamientos turísticos.
+      Mejor precio, mejor experiencia, mejor servicio.
+    </p>
+
+    <div class="hero-cta">
+      <app-button variant="primary" size="large" (clicked)="goToBooking()">
+        <ng-icon name="bootstrapSearch" size="18px" aria-hidden="true"></ng-icon>
+        Explorar Habitaciones
+      </app-button>
+    </div>
+
+    <div class="trust-list">
+      @for (item of trustItems; track item) {
+        <div class="trust-item">
+          <span class="trust-dot"></span>
+          <span>{{ item }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</section>

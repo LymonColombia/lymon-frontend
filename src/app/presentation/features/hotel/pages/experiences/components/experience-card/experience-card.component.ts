@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { ExperienceCard } from '@/domain/entities/experience.model';
+import { GuestExperience } from '@/domain/entities/guest-experience.model';
 import {
   bootstrapAward,
   bootstrapClock,
@@ -35,13 +35,33 @@ import {
   ],
 })
 export class ExperienceCardComponent {
-  readonly experience = input.required<ExperienceCard>();
+  readonly experience = input.required<GuestExperience>();
   readonly isLiked = input<boolean>(false);
   readonly viewDetails = output<string>();
   readonly toggleLike = output<string>();
 
-  private readonly titleMaxChars = 30;
-  private readonly descriptionMaxChars = 130;
+  private readonly titleMaxChars = 25;
+  private readonly descriptionMaxChars = 80;
+
+  readonly imageUrl = computed(() => this.experience().coverImageUrl);
+  readonly titleLabel = computed(() => this.experience().name);
+  readonly locationLabel = computed(() => {
+    const location = this.experience().location;
+    return location.label?.trim() || location.address?.trim() || 'Ubicacion no disponible';
+  });
+
+  readonly priceLabel = computed(() =>
+    new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0,
+    }).format(this.experience().priceCop),
+  );
+
+  readonly durationLabel = computed(() => `${this.experience().durationHours} hora${this.experience().durationHours === 1 ? '' : 's'}`);
+  readonly capacityLabel = computed(() => `Max. ${this.experience().capacity} persona${this.experience().capacity === 1 ? '' : 's'}`);
+  readonly hostCertified = computed(() => this.experience().scope === 'PROPERTY');
+  readonly categoryLabel = computed(() => this.experience().category);
 
   onViewDetails(): void {
     this.viewDetails.emit(this.experience().id);
@@ -65,7 +85,7 @@ export class ExperienceCardComponent {
   }
 
   getTitlePreview(): string {
-    return this.truncateText(this.experience().title, this.titleMaxChars);
+    return this.truncateText(this.experience().name, this.titleMaxChars);
   }
 
   getDescriptionPreview(): string {

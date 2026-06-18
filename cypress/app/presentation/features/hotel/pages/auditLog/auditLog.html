@@ -1,0 +1,187 @@
+<app-hotel-page-layout
+  title="Registros de Auditoría"
+  subtitle="Historial de acciones realizadas en tu organización."
+  iconName="bootstrapInfoCircle"
+>
+
+    <!-- Forbidden -->
+    @if (forbiddenError()) {
+      <div class="alert alert-forbidden">
+        <ng-icon name="bootstrapInfoCircle" class="icon-forbidden" size="20px"></ng-icon>
+        No tienes permiso para ver los registros de auditoría. Se requiere el permiso
+        <strong>AUDIT_VIEW</strong>.
+      </div>
+    }
+
+    <!-- Error -->
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    }
+
+    @if (!forbiddenError()) {
+      <!-- Filter bar -->
+      <div class="filter-bar" [formGroup]="filters">
+        <div class="filter-fields">
+          <select formControlName="entityType" class="filter-select">
+            <option value="">Todos los tipos</option>
+            @for (type of ENTITY_TYPES; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          </select>
+
+          <select formControlName="action" class="filter-select">
+            <option value="">Todas las acciones</option>
+            @for (action of AUDIT_ACTIONS; track action) {
+              <option [value]="action">{{ formatAction(action) }}</option>
+            }
+          </select>
+
+          <input
+            type="datetime-local"
+            formControlName="dateFrom"
+            class="filter-input"
+            title="Desde"
+            placeholder="Desde"
+          />
+
+          <input
+            type="datetime-local"
+            formControlName="dateTo"
+            class="filter-input"
+            title="Hasta"
+            placeholder="Hasta"
+          />
+
+          <input
+            type="text"
+            formControlName="userId"
+            class="filter-input"
+            placeholder="ID de usuario"
+          />
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn-search" (click)="applyFilters()">
+            <ng-icon name="bootstrapSearch" size="14px"></ng-icon>
+            Buscar
+          </button>
+          @if (hasFilters()) {
+            <button class="btn-clear" (click)="clearFilters()">Limpiar filtros</button>
+          }
+        </div>
+      </div>
+
+      <!-- Loading -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Cargando registros…</p>
+        </div>
+      } @else {
+        <!-- Count -->
+        @if (total() > 0) {
+          <p class="results-count">
+            Mostrando <strong>{{ showingFrom() }}–{{ showingTo() }}</strong> de
+            <strong>{{ total() }}</strong> registros
+          </p>
+        }
+
+        <!-- Table -->
+        @if (items().length === 0) {
+          <div class="empty-state">
+            <ng-icon
+              name="bootstrapFileEarmarkText"
+              size="48px"
+              class="icon-empty"
+              style="color: #ccc"
+            ></ng-icon>
+            <p>No se encontraron registros con los filtros aplicados.</p>
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table class="audit-table">
+              <thead>
+                <tr>
+                  <th>Fecha y hora</th>
+                  <th>Usuario</th>
+                  <th>Acción</th>
+                  <th>Entidad</th>
+                  <th>ID Entidad</th>
+                  <th>Detalles</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of items(); track entry.id) {
+                  <tr>
+                    <td class="cell-date">{{ formatDate(entry.createdAt) }}</td>
+                    <td class="cell-email">
+                      <button
+                        class="email-link"
+                        (click)="filters.patchValue({ userId: entry.userId }); applyFilters()"
+                        title="Filtrar por este usuario"
+                      >
+                        {{ entry.userEmail }}
+                      </button>
+                    </td>
+                    <td>
+                      <span [class]="actionBadgeClass(entry.action)">
+                        {{ formatAction(entry.action) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="entity-chip">{{ entry.entityType }}</span>
+                    </td>
+                    <td class="cell-id">{{ entry.entityId ?? '—' }}</td>
+                    <td class="cell-meta">{{ formatMetadata(entry.metadata) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          @if (totalPages() > 1) {
+            <div class="pagination">
+              <button
+                class="page-btn"
+                [disabled]="currentPage() === 1"
+                (click)="goToPage(currentPage() - 1)"
+              >
+                ‹
+              </button>
+
+              @if (pageNumbers()[0] > 1) {
+                <button class="page-btn" (click)="goToPage(1)">1</button>
+                @if (pageNumbers()[0] > 2) {
+                  <span class="page-ellipsis">…</span>
+                }
+              }
+
+              @for (p of pageNumbers(); track p) {
+                <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">
+                  {{ p }}
+                </button>
+              }
+
+              @if (pageNumbers()[pageNumbers().length - 1] < totalPages()) {
+                @if (pageNumbers()[pageNumbers().length - 1] < totalPages() - 1) {
+                  <span class="page-ellipsis">…</span>
+                }
+                <button class="page-btn" (click)="goToPage(totalPages())">
+                  {{ totalPages() }}
+                </button>
+              }
+
+              <button
+                class="page-btn"
+                [disabled]="currentPage() === totalPages()"
+                (click)="goToPage(currentPage() + 1)"
+              >
+                ›
+              </button>
+            </div>
+          }
+        }
+      }
+    }
+</app-hotel-page-layout>

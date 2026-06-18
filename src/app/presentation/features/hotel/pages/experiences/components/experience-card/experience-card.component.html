@@ -1,9 +1,8 @@
 <article class="experience-card">
   <div class="experience-image">
-    <img
-      class="experience-image-photo"
-      [src]="experience().imageUrl"
-      [alt]="'Imagen de ' + experience().title"
+    <img class="experience-image-photo"
+      [src]="imageUrl()"
+      [alt]="titleLabel()"
     />
 
     <div class="image-gradient" aria-hidden="true"></div>
@@ -23,38 +22,26 @@
     </button>
 
     <div class="price-overlay">
-      <span class="price-amount">${{ experience().priceFrom }}</span>
+      <span class="price-amount">{{ priceLabel() }}</span>
       <span class="price-period">/persona</span>
     </div>
   </div>
 
   <div class="experience-content">
     <div class="experience-meta">
-      @if (experience().location) {
-        <span class="experience-location">
-          <ng-icon name="bootstrapGeoAlt" size="12px" aria-hidden="true"></ng-icon>
-          {{ experience().location }}
-        </span>
-      }
-      @if (experience().rating) {
-        <span class="experience-rating">
-          <ng-icon
-            name="bootstrapStarFill"
-            size="12px"
-            class="star-icon"
-            aria-hidden="true"
-          ></ng-icon>
-          <span class="rating-value">{{ experience().rating }}</span>
-          @if (experience().reviewCount) {
-            <span class="rating-reviews">({{ experience().reviewCount }})</span>
-          }
-        </span>
-      }
+      <span class="experience-location">
+        <ng-icon name="bootstrapGeoAlt" size="12px" aria-hidden="true"></ng-icon>
+        {{ locationLabel() }}
+      </span>
+      <span class="experience-location">
+        <ng-icon name="bootstrapClock" size="12px" aria-hidden="true"></ng-icon>
+        {{ durationLabel() }}
+      </span>
     </div>
 
     <div class="title-row">
-      <h3 class="experience-title" [title]="experience().title">{{ getTitlePreview() }}</h3>
-      @if (experience().hostCertified) {
+      <h3 class="experience-title" [title]="experience().name">{{ getTitlePreview() }}</h3>
+      @if (hostCertified()) {
         <span class="cert-medal" aria-label="Host certificado">
           <ng-icon name="bootstrapPatchCheckFill" size="20px" aria-hidden="true"></ng-icon>
         </span>
@@ -65,35 +52,21 @@
 
     <div class="experience-features">
       <div class="feature">
-        <ng-icon
-          class="feature-icon"
-          name="bootstrapClock"
-          size="14px"
-          aria-hidden="true"
-        ></ng-icon>
-        <span>{{ experience().duration }}</span>
+        <ng-icon class="feature-icon" name="bootstrapClock" size="14px" aria-hidden="true"></ng-icon>
+        <span>{{ durationLabel() }}</span>
       </div>
+
       <div class="feature">
-        <ng-icon
-          class="feature-icon"
-          name="bootstrapPeopleFill"
-          size="14px"
-          aria-hidden="true"
-        ></ng-icon>
-        <span>Max. {{ experience().maxGuests }} personas</span>
+        <ng-icon class="feature-icon" name="bootstrapPeopleFill" size="14px" aria-hidden="true"></ng-icon>
+        <span>{{ capacityLabel() }}</span>
       </div>
     </div>
 
     <div class="experience-categories">
-      @for (tag of experience().categories.slice(0, 4); track tag) {
-        <span class="experience">{{ tag }}</span>
-      }
-      @if (experience().categories.length > 4) {
-        <span class="experience-more">+{{ experience().categories.length - 4 }}</span>
-      }
+        <span class="experience">{{ categoryLabel() }}</span>
     </div>
 
-    <app-button type="button" variant="primary" size="medium" [fullWidth]="true" (clicked)="onViewDetails()">
+    <app-button type="button" variant="primary" size="small" [fullWidth]="true" (clicked)="onViewDetails()">
       Ver detalles
     </app-button>
   </div>

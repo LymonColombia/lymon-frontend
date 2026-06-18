@@ -4,12 +4,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { ExperienceDetailComponent } from '../experience-detail-page/experience-detail.component';
-import { EXPERIENCE_CATALOG } from '../experiences.data';
-import { ExperienceDetail } from '@/domain/entities/experience.model';
 import { HeaderComponent } from "@/presentation/shared/components/header/header.component";
 import { ButtonComponent } from "@/presentation/shared/components/button/button.component";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { bootstrapChevronLeft } from '@ng-icons/bootstrap-icons';
+import { GetGuestExperienceByIdUseCase } from '@/domain/use-cases/experience/get-guest-experience-by-id.use-case';
+import { GuestExperience } from '@/domain/entities/guest-experience.model';
 
 @Component({
   selector: 'app-experience-detail-page',
@@ -24,9 +24,10 @@ export class ExperienceDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly getGuestExperienceByIdUseCase = inject(GetGuestExperienceByIdUseCase);
 
   readonly isLoading = signal(true);
-  readonly experience = signal<ExperienceDetail | null>(null);
+  readonly experience = signal<GuestExperience | null>(null);
 
   constructor() {
     this.route.paramMap
@@ -45,7 +46,6 @@ export class ExperienceDetailPageComponent {
   }
 
   private loadExperience(experienceId: string | null): void {
-    this.isLoading.set(true);
 
     if (!experienceId) {
       this.experience.set(null);
@@ -53,8 +53,23 @@ export class ExperienceDetailPageComponent {
       return;
     }
 
-    const selectedExperience = EXPERIENCE_CATALOG.find((item) => item.id === experienceId) ?? null;
-    this.experience.set(selectedExperience);
-    this.isLoading.set(false);
+    this.isLoading.set(true);
+
+    this.getGuestExperienceByIdUseCase
+      .execute(experienceId)
+      .subscribe({
+        next:(response)=>{
+          this.isLoading.set(false)
+          this.experience.set(response);
+          console.log(this.experience)
+        },
+        error:(err)=>{
+          console.error('Error cargando experiencia:', err);
+          this.experience.set(null);
+          this.isLoading.set(false)
+        }
+      }
+        
+      );
   }
 }

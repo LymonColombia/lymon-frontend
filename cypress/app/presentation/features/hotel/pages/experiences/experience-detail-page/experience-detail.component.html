@@ -1,0 +1,181 @@
+
+<section class="experience-detail-section" aria-label="Detalle de experiencia">
+  
+  <article class="experience-detail-card">
+    <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
+    <div class="detail-header">
+      <div class="detail-header-main">
+        <h2 class="detail-title">{{ experience().title }}</h2>
+
+        <div class="detail-host">
+          <div class="detail-host-info">
+            <div class="detail-host-top">
+              <p class="detail-host-name">{{ experience().ownerName }}</p>
+              @if (experience().hostCertified) {
+                <span class="detail-host-certified">
+                  <ng-icon
+                    name="bootstrapPatchCheckFill"
+                    size="12px"
+                    aria-hidden="true"
+                  ></ng-icon>
+                  Certificado
+                </span>
+              }
+            </div>
+            <span class="detail-host-type">{{ experience().ownerType }}</span>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="hero-image-container">
+          <img
+            class="hero-image"
+            [src]="experience().imageUrl"
+            [alt]="'Imagen de ' + experience().title"
+          />
+          @if (experience().location) {
+            <span class="image-location-tag">
+              <ng-icon name="bootstrapGeoAlt" size="14px" aria-hidden="true"></ng-icon>
+              {{ experience().location }}
+            </span>
+          }
+        </div>
+
+        <div class="experience-meta">
+          <div class="experience-rating">
+            <span class="experience-rating-text">
+              <ng-icon name="bootstrapStarFill" size="20px" aria-hidden="true" class="star"></ng-icon>
+              {{ experience().rating }} ({{ experience().reviewCount }})
+            </span>
+          </div>
+          <div class="experience-price">
+            <span class="experience-price-text"> $ {{ experience().priceFrom }} </span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="booking-card">
+        <h3 class="booking-title">Reserva tu cupo</h3>
+
+        <div class="booking-field">
+          <label class="field-label">Fecha</label>
+          <app-select
+            [options]="availableDateOptions()"
+            [value]="selectedDate()"
+            [hasIcon]="true"
+            size="small"
+            (valueChange)="onDateChange($event)"
+          >
+            <ng-icon icon name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
+          </app-select>
+        </div>
+
+        <div class="booking-field">
+          <label class="field-label">Participantes</label>
+          <app-select
+            [options]="guestOptions()"
+            [value]="guestsCount()"
+            [hasIcon]="true"
+            size="small"
+            (valueChange)="onGuestChange($event)"
+          >
+            <ng-icon icon name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
+          </app-select>
+        </div>
+
+        <div class="booking-summary">
+          <div class="summary-row">
+            <span class="summary-label">Fecha seleccionada</span>
+            <span class="summary-value">{{ selectedDateLabel() }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Precio / persona</span>
+            <span class="summary-value">{{ pricePerGuestLabel() }}</span>
+          </div>
+          <div class="summary-row total">
+            <span class="summary-label">Total</span>
+            <span class="summary-value">{{ totalPriceLabel() }}</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="btn-reserve-now"
+          [disabled]="!canReserve()"
+          (click)="onReserveNow()"
+        >
+          Reservar ahora
+        </button>
+
+        <p class="booking-note">
+          <ng-icon name="bootstrapInfoCircle" size="14px" aria-hidden="true"></ng-icon>
+          No se realizara ningun cargo hasta confirmar tu reserva.
+        </p>
+
+        @if (reservationMessage(); as message) {
+          <p class="reservation-message">{{ message }}</p>
+        }
+      </aside>
+    </div>
+
+    <section class="info-card">
+      <h3 class="info-title">Descripcion</h3>
+      <p class="info-text">
+        {{
+          experience().description ||
+            'Esta experiencia no tiene descripcion disponible por el momento.'
+        }}
+      </p>
+    </section>
+
+    <section class="info-card">
+      <h3 class="info-title">Informacion general</h3>
+      <div class="fact-list">
+        @for (item of generalInfoItems(); track item.label) {
+          <div class="fact-row">
+            <span class="fact-label">{{ item.label }}</span>
+            <span class="fact-value">{{ item.value }}</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="info-card">
+      <h3 class="info-title">Ubicacion</h3>
+      <p class="info-text">
+      <ng-icon name="bootstrapGeoAlt" size="16px" aria-hidden="true" class="icons"></ng-icon>
+       {{ experience().location }}</p>
+
+       <app-location-map
+        [latitude]="experience().latitude"
+        [longitude]="experience().longitude"
+        label="Ubicación de la experiencia"
+      ></app-location-map>
+
+    </section>
+
+    <section class="info-card">
+      <h3 class="info-title">Que incluye</h3>
+        @for (item of experience().includes; track item) {
+          <div class="policy-item">
+            <ng-icon name="bootstrapCheckLg" size="20px" aria-hidden="true" class="icons"></ng-icon>
+            <span>{{ item }}</span>
+          </div>
+        }
+    </section>
+
+    <section class="info-card">
+      <h3 class="info-title">Politicas</h3>
+        @for (policy of policyItems(); track policy) {
+          <div class="policy-item">
+            <ng-icon name="bootstrapCheckLg" size="20px" aria-hidden="true" class="icons"></ng-icon>
+            <span>{{ policy }}</span>
+          </div>
+        }
+    </section>
+  </article>
+</section>

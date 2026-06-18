@@ -1,0 +1,216 @@
+<app-hotel-page-layout
+  title="Configuración de Correos"
+  subtitle="Configura correos automáticos para mejorar la atención al cliente"
+  iconName="bootstrapEnvelopeAt"
+>
+    <div hotelPageActions class="email-header-actions">
+      <button class="btn-new-template" (click)="openModal()">
+        <ng-icon name="bootstrapPlusLg" size="18px" style="color: white"></ng-icon>
+        Nueva Plantilla
+      </button>
+    </div>
+
+    <div class="metrics-grid">
+      @for (metric of metrics; track metric.label) {
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-label">{{ metric.label }}</span>
+            @if (metric.icon === 'mail') {
+              <ng-icon
+                name="bootstrapEnvelope"
+                size="20px"
+                class="metric-icon"
+                [style.color]="metric.color"
+              ></ng-icon>
+            }
+            @if (metric.icon === 'check') {
+              <ng-icon
+                name="bootstrapCheckLg"
+                size="20px"
+                class="metric-icon"
+                [style.color]="metric.color"
+              ></ng-icon>
+            }
+            @if (metric.icon === 'send') {
+              <ng-icon
+                name="bootstrapSend"
+                size="20px"
+                class="metric-icon"
+                [style.color]="metric.color"
+              ></ng-icon>
+            }
+          </div>
+          <div class="metric-value">{{ metric.value }}</div>
+          <div class="metric-subtitle">{{ metric.subtitle }}</div>
+        </div>
+      }
+    </div>
+
+    <div class="templates-section">
+      <h3 class="section-title">Plantillas de Correo</h3>
+
+      <div class="templates-list">
+        @for (template of templates; track template.id) {
+          <div class="template-card">
+            <div class="template-main">
+              <div class="template-icon">
+                <ng-icon name="bootstrapEnvelope" size="24px" style="color: #009a44"></ng-icon>
+              </div>
+              <div class="template-info">
+                <div class="template-header-row">
+                  <h4 class="template-name">{{ template.name }}</h4>
+                  <span class="status-badge active">Activo</span>
+                </div>
+                <p class="template-subject">{{ template.subject }}</p>
+                <div class="template-trigger">
+                  <ng-icon name="bootstrapCalendar" size="16px" style="color: #666"></ng-icon>
+                  <span>Se envía: {{ template.trigger }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="template-actions">
+              <button class="action-btn" (click)="viewTemplate(template.id)" title="Ver">
+                <ng-icon name="bootstrapEye" size="20px" style="color: #666"></ng-icon>
+              </button>
+              <button class="action-btn" (click)="sendTestEmail(template.id)" title="Enviar prueba">
+                <ng-icon name="bootstrapSend" size="20px" style="color: #666"></ng-icon>
+              </button>
+              <button class="action-btn" (click)="editTemplate(template.id)" title="Editar">
+                <ng-icon name="bootstrapPencilSquare" size="20px" style="color: #666"></ng-icon>
+              </button>
+              <button
+                class="action-btn delete"
+                (click)="deleteTemplate(template.id)"
+                title="Eliminar"
+              >
+                <ng-icon name="bootstrapTrash3" size="20px" style="color: red"></ng-icon>
+              </button>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  [checked]="template.active"
+                  (change)="toggleTemplate(template)"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+</app-hotel-page-layout>
+
+@if (showModal) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-row">
+          <ng-icon name="bootstrapPlusLg" size="24px" style="color: #009a44"></ng-icon>
+          <h2 class="modal-title">Nueva Plantilla</h2>
+        </div>
+        <button class="modal-close" (click)="closeModal()">
+          <ng-icon name="bootstrapXCircleFill" size="24px" style="color: #666"></ng-icon>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-form">
+          <div class="form-section">
+            <div class="form-group">
+              <label for="template-name">Nombre de la Plantilla *</label>
+              <input type="text" id="template-name" placeholder="Ej: Correo de Bienvenida" />
+            </div>
+
+            <div class="form-group">
+              <label for="template-subject">Asunto del Correo *</label>
+              <input
+                type="text"
+                id="template-subject"
+                placeholder="Ej: ¡Bienvenido a {NOMBRE_HOTEL}!"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="template-trigger">Momento de Envío *</label>
+              <select id="template-trigger">
+                <option value="">Seleccionar...</option>
+                <option value="on-booking">Al confirmar la reserva</option>
+                <option value="before-checkin">24 horas antes del check-in</option>
+                <option value="on-checkin">Al realizar check-in</option>
+                <option value="after-checkout">Después del check-out</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="template-content">Contenido del Correo *</label>
+              <textarea
+                id="template-content"
+                rows="12"
+                placeholder="Escribe el contenido del correo aquí..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="variables-panel">
+            <h3 class="panel-title">Variables Disponibles</h3>
+            <p class="panel-subtitle">Haz clic en una variable para insertarla en el contenido</p>
+
+            <div class="variables-list">
+              @for (variable of variables; track variable.code) {
+                <button class="variable-btn" (click)="insertVariable(variable.code)">
+                  {{ variable.code }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
+        <button class="btn-save" (click)="saveTemplate()">Guardar Plantilla</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showPreviewModal && selectedTemplate) {
+  <div class="modal-overlay" (click)="closePreviewModal()">
+    <div class="preview-modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Vista Previa</h2>
+        <button class="modal-close" (click)="closePreviewModal()">
+          <ng-icon name="bootstrapXCircleFill" size="24px" style="color: #666"></ng-icon>
+        </button>
+      </div>
+
+      <div class="preview-body">
+        <div class="email-preview">
+          <div class="preview-field">
+            <span class="field-label">Asunto:</span>
+            <span class="field-value">{{ selectedTemplate.subject }}</span>
+          </div>
+
+          <div class="preview-content">
+            <p [innerHTML]="getFormattedContent(selectedTemplate.content)"></p>
+          </div>
+
+          <div class="preview-note">
+            <ng-icon name="bootstrapInfoCircle" size="20px" style="color: #0066CC"></ng-icon>
+            <span
+              >Las variables entre llaves se reemplazarán automáticamente con la información del
+              huésped y la reserva al enviar el correo.</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closePreviewModal()">Cerrar</button>
+        <button class="btn-save" (click)="sendTestEmail(selectedTemplate.id)">
+          Enviar Correo de Prueba
+        </button>
+      </div>
+    </div>
+  </div>
+}
