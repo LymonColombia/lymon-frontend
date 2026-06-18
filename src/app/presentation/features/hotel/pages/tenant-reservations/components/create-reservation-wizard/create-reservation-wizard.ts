@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -12,6 +12,7 @@ import {
   bootstrapArrowRight,
   bootstrapInfoCircle
 } from '@ng-icons/bootstrap-icons';
+import { CreateTenantGuestUseCase } from '@/domain/use-cases/reservation/create-tenant-guest.use-case';
 
 @Component({
   selector: 'app-create-reservation-wizard',
@@ -34,17 +35,19 @@ import {
   ]
 })
 export class CreateReservationWizardComponent {
+  private readonly createTenantGuestUseCase = inject(CreateTenantGuestUseCase);
+
   currentStep = signal(1);
   closeWizard = output<void>();
 
   guestIsRegistered = signal<boolean | null>(null);
 
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
+
   guestForm = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    documentId: ''
+    fullName: '',
+    primaryEmail: ''
   };
 
   reservationForm = {
@@ -94,12 +97,36 @@ export class CreateReservationWizardComponent {
     this.nextStep();
   }
 
+  registerAndNext() {
+    if (!this.guestForm.fullName || !this.guestForm.primaryEmail) {
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    this.errorMessage.set(null);
+
+    this.createTenantGuestUseCase.execute(this.guestForm).subscribe({
+      next: (res) => {
+        this.guests.update(list => [...list, { id: res.guestId, name: res.fullName }]);
+        this.reservationForm.guestId = res.guestId;
+
+        this.isSubmitting.set(false);
+        this.nextStep();
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set('Error al registrar el huésped. Por favor intenta de nuevo.');
+        console.error('Error creating guest:', err);
+      }
+    });
+  }
+
   onClose() {
     this.closeWizard.emit();
   }
 
   onSubmit() {
-    console.log('Reservation created (simulated)');
+    console.log('Reservation created (simulated)', this.reservationForm);
     this.onClose();
   }
 }
