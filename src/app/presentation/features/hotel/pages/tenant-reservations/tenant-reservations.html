@@ -106,7 +106,8 @@
   </section>
   
   @if (selectedReservation(); as res) {
-      <div class="modal-overlay" (click)="$event.target === $event.currentTarget && closeDetails()" (keydown.escape)="closeDetails()" tabindex="-1" role="button" aria-label="Cerrar detalles">
+      <div class="modal-overlay-wrapper" (keydown.escape)="closeDetails()">
+          <button type="button" class="modal-overlay-backdrop" (click)="closeDetails()" aria-label="Cerrar detalles"></button>
           <div class="modal-container">
               <header class="modal-header">
                   <div class="modal-title-group">

@@ -1,4 +1,5 @@
-<div class="wizard-overlay" (click)="$event.target === $event.currentTarget && onClose()" (keydown.escape)="onClose()" tabindex="-1" role="button" aria-label="Cerrar modal">
+<div class="wizard-overlay-wrapper" (keydown.escape)="onClose()">
+  <button type="button" class="wizard-overlay-backdrop" (click)="onClose()" aria-label="Cerrar modal"></button>
   <div class="wizard-container">
     <header class="wizard-header">
       <div class="header-title">
