@@ -291,7 +291,8 @@
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   padding: 0.625rem 0.875rem;
   border-radius: var(--radius-md, 8px);
   border: 1px solid var(--color-border-light, #e2e8f0);
@@ -299,14 +300,21 @@
   transition: all 0.2s;
   background: var(--color-bg-primary, #f8fafc);
   color: var(--color-text-primary);
+  font-family: inherit;
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   background: white;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .readonly-input {

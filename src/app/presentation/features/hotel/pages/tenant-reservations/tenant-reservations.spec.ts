@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { TenantReservations } from './tenant-reservations';
+import { ReservationRepository } from '@/domain/repositories/reservation.repository';
 
 describe('TenantReservations', () => {
   let component: TenantReservations;
@@ -8,7 +10,17 @@ describe('TenantReservations', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TenantReservations]
+      imports: [TenantReservations],
+      providers: [
+        {
+          provide: ReservationRepository,
+          useValue: {
+            getReservations: () => of([]),
+            getReservationById: () => of(),
+            create: () => of()
+          }
+        }
+      ]
     })
     .compileComponents();
 

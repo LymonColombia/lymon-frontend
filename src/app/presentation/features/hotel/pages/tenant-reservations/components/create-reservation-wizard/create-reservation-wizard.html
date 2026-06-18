@@ -108,6 +108,12 @@
         </header>
 
         <form class="wizard-form grid-2-cols">
+          @if (errorMessage()) {
+          <div class="error-message">
+            <ng-icon name="bootstrapInfoCircle"></ng-icon>
+            {{ errorMessage() }}
+          </div>
+          }
           <div class="form-group full-width">
             <label for="guestSelect">Seleccionar Huésped</label>
             <div class="select-wrapper">
@@ -149,14 +155,14 @@
           </div>
 
           <div class="form-group">
-            <label for="guestCount">Cantidad de Huéspedes</label>
-            <input type="number" id="guestCount" [(ngModel)]="reservationForm.guestCount" name="guestCount" min="1"
+            <label for="guestsCount">Cantidad de Huéspedes</label>
+            <input type="number" id="guestsCount" [(ngModel)]="reservationForm.guestsCount" name="guestsCount" min="1"
               max="20">
           </div>
 
           <div class="form-group">
-            <label for="medium">Medio de Reserva</label>
-            <input type="text" id="medium" [value]="reservationForm.medium" readonly class="readonly-input">
+            <label for="source">Medio de Reserva</label>
+            <input type="text" id="source" [value]="reservationForm.source" readonly class="readonly-input">
             <span class="input-hint"><ng-icon name="bootstrapInfoCircle"></ng-icon> Las reservas administrativas son
               siempre manuales</span>
           </div>
@@ -169,6 +175,12 @@
           <div class="form-group">
             <label for="checkOut">Fecha de Salida</label>
             <input type="date" id="checkOut" [(ngModel)]="reservationForm.checkOut" name="checkOut">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="notes">Notas</label>
+            <textarea id="notes" [(ngModel)]="reservationForm.notes" name="notes" rows="3"
+              placeholder="Notas adicionales sobre la reserva..."></textarea>
           </div>
         </form>
       </section>
@@ -186,8 +198,8 @@
       </div>
       <div class="footer-right">
         @if (currentStep() === 2) {
-        <button class="btn btn-primary" (click)="registerAndNext()" [disabled]="isSubmitting() || !guestForm.fullName || !guestForm.primaryEmail">
-          @if (isSubmitting()) {
+        <button class="btn btn-primary" (click)="registerAndNext()" [disabled]="isCreatingGuest() || !guestForm.fullName || !guestForm.primaryEmail">
+          @if (isCreatingGuest()) {
           Registrando...
           } @else {
           Siguiente
@@ -196,9 +208,13 @@
         </button>
         }
         @if (currentStep() === 3) {
-        <button class="btn btn-emerald" (click)="onSubmit()">
+        <button class="btn btn-emerald" (click)="onSubmit()" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+          Creando...
+          } @else {
           <ng-icon name="bootstrapCheck"></ng-icon>
           Confirmar Reserva
+          }
         </button>
         }
       </div>

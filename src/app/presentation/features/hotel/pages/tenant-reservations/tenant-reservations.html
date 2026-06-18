@@ -46,62 +46,70 @@
     </header>
 
     <div class="table-wrapper">
-      <table class="employees-table">
-        <thead>
-          <tr>
-            <th class="col-name">Reserva / Huésped</th>
-            <th class="col-email">Propiedad / Unidad</th>
-            <th class="col-role">Check In / Out</th>
-            <th class="col-status">Estado</th>
-            <th class="col-actions">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (res of reservations(); track res.id) {
-            <tr
-              class="employee-row"
-              (click)="openDetails(res)"
-              (keydown.enter)="openDetails(res)"
-              tabindex="0"
-              aria-label="Ver detalles de reserva"
-            >
-              <td>
-                <div class="name-cell">
-                  <span class="avatar reservation-avatar">
-                     <ng-icon name="bootstrapCalendarEvent"></ng-icon>
-                  </span>
-                  <div class="guest-info flex flex-col items-start gap-1 ml-4">
-                    <span class="main-text font-medium">{{ res.id }}</span>
-                    <span class="sub-text text-sm text-gray-500">{{ res.guestName }}</span>
-                  </div>
-                </div>
-              </td>
-              <td>
-                 <div class="stacked-cell flex flex-col items-start gap-1">
-                   <span class="main-text font-medium">{{ res.propertyName }}</span>
-                   <span class="sub-text text-sm text-gray-500">{{ res.unitName }}</span>
-                 </div>
-              </td>
-              <td>
-                 <div class="stacked-cell flex flex-col items-start gap-1">
-                   <span class="main-text font-medium">{{ res.checkIn }}</span>
-                   <span class="sub-text text-sm text-gray-500">al {{ res.checkOut }}</span>
-                 </div>
-              </td>
-              <td>
-                <span class="status-pill" [ngClass]="'status-' + res.status.toLowerCase()">
-                  {{ res.status }}
-                </span>
-              </td>
-              <td>
-                 <button type="button" class="btn-outline-small" (click)="$event.stopPropagation(); openDetails(res)">
-                    Detalles
-                 </button>
-              </td>
+      @if (isLoading()) {
+        <p class="empty-state">Cargando reservas...</p>
+      } @else if (errorMessage()) {
+        <p class="empty-state error">{{ errorMessage() }}</p>
+      } @else if (reservations().length === 0) {
+        <p class="empty-state">No hay reservas registradas.</p>
+      } @else {
+        <table class="employees-table">
+          <thead>
+            <tr>
+              <th class="col-name">Reserva / Huésped</th>
+              <th class="col-email">Propiedad / Unidad</th>
+              <th class="col-role">Check In / Out</th>
+              <th class="col-status">Estado</th>
+              <th class="col-actions">Acciones</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (res of reservations(); track res.id) {
+              <tr
+                class="employee-row"
+                (click)="openDetails(res)"
+                (keydown.enter)="openDetails(res)"
+                tabindex="0"
+                aria-label="Ver detalles de reserva"
+              >
+                <td>
+                  <div class="name-cell">
+                    <span class="avatar reservation-avatar">
+                       <ng-icon name="bootstrapCalendarEvent"></ng-icon>
+                    </span>
+                    <div class="guest-info flex flex-col items-start gap-1 ml-4">
+                      <span class="main-text font-medium">{{ res.id }}</span>
+                      <span class="sub-text text-sm text-gray-500">{{ res.guestName }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                   <div class="stacked-cell flex flex-col items-start gap-1">
+                     <span class="main-text font-medium">{{ res.propertyName }}</span>
+                     <span class="sub-text text-sm text-gray-500">{{ res.unitName }}</span>
+                   </div>
+                </td>
+                <td>
+                   <div class="stacked-cell flex flex-col items-start gap-1">
+                     <span class="main-text font-medium">{{ res.checkIn }}</span>
+                     <span class="sub-text text-sm text-gray-500">al {{ res.checkOut }}</span>
+                   </div>
+                </td>
+                <td>
+                  <span class="status-pill" [ngClass]="'status-' + res.status.toLowerCase()">
+                    {{ res.status }}
+                  </span>
+                </td>
+                <td>
+                   <button type="button" class="btn-outline-small" (click)="$event.stopPropagation(); openDetails(res)">
+                      Detalles
+                   </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
   </section>
   
@@ -190,6 +198,6 @@
   }
 
   @if (showWizard()) {
-    <app-create-reservation-wizard (closeWizard)="closeWizard()"></app-create-reservation-wizard>
+    <app-create-reservation-wizard (closeWizard)="closeWizard()" (reservationCreated)="onReservationCreated()"></app-create-reservation-wizard>
   }
 </app-hotel-page-layout>

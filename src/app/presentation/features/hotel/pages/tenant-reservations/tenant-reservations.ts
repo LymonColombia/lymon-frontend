@@ -1,11 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlusCircle, bootstrapX, bootstrapCheck, bootstrapPencil } from '@ng-icons/bootstrap-icons';
 import { HotelPageLayoutComponent } from '../../components/hotel-page-layout/hotel-page-layout';
 import { CreateReservationWizardComponent } from './components/create-reservation-wizard/create-reservation-wizard';
+import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
+import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 
-export interface Reservation {
+export interface ReservationViewModel {
   id: string;
   guestName: string;
   guestEmail: string;
@@ -28,7 +30,7 @@ export interface Reservation {
   viewProviders: [
     provideIcons({
       bootstrapPeople,
-      bootstrapSearch, 
+      bootstrapSearch,
       bootstrapCalendarEvent,
       bootstrapPlusCircle,
       bootstrapX,
@@ -37,63 +39,44 @@ export interface Reservation {
     })
   ]
 })
-export class TenantReservations {
-  reservations = signal<Reservation[]>([
-    {
-      id: 'RES-001',
-      guestName: 'Juan Pérez',
-      guestEmail: 'juan.perez@email.com',
-      guestPhone: '+52 555 123 4567',
-      propertyName: 'Hotel Sol y Mar',
-      unitName: 'Suite Presidencial (Hab. 204)',
-      checkIn: '2026-06-01',
-      checkOut: '2026-06-05',
-      status: 'Confirmada',
-      totalAmount: 1250,
-      createdAt: '2026-05-10T10:00:00.000Z'
-    },
-    {
-      id: 'RES-002',
-      guestName: 'Maria Garcia',
-      guestEmail: 'maria.g@email.com',
-      guestPhone: '+52 555 987 6543',
-      propertyName: 'Vista Hermosa Cabins',
-      unitName: 'Cabaña 5',
-      checkIn: '2026-06-10',
-      checkOut: '2026-06-12',
-      status: 'Pendiente',
-      totalAmount: 340.5,
-      createdAt: '2026-05-12T14:30:00.000Z'
-    },
-    {
-      id: 'RES-003',
-      guestName: 'Carlos López',
-      guestEmail: 'carlos.lopez@email.com',
-      guestPhone: '+34 600 111 222',
-      propertyName: 'Hotel Sol y Mar',
-      unitName: 'Habitación Doble (Hab. 101)',
-      checkIn: '2026-05-15',
-      checkOut: '2026-05-20',
-      status: 'Check-in',
-      totalAmount: 450,
-      createdAt: '2026-05-01T09:15:00.000Z'
-    }
-  ]);
-  
+export class TenantReservations implements OnInit {
+  private readonly getReservationsUseCase = inject(GetReservationsUseCase);
+
+  reservations = signal<ReservationViewModel[]>([]);
+
   totalReservations = signal(0);
   activeCheckins = signal(0);
   isLoading = signal(false);
   errorMessage = signal('');
 
-  selectedReservation = signal<Reservation | null>(null);
+  selectedReservation = signal<ReservationViewModel | null>(null);
   showWizard = signal(false);
 
-  constructor() {
-    this.totalReservations.set(this.reservations().length);
-    this.activeCheckins.set(this.reservations().filter(r => r.status.toLowerCase() === 'check-in').length);
+  ngOnInit(): void {
+    this.loadReservations();
   }
 
-  openDetails(reservation: Reservation) {
+  loadReservations(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
+    this.getReservationsUseCase.execute().subscribe({
+      next: (data) => {
+        const mapped = data.map((res) => this.mapToViewModel(res));
+        this.reservations.set(mapped);
+        this.totalReservations.set(mapped.length);
+        this.activeCheckins.set(mapped.filter(r => r.status.toLowerCase() === 'check-in').length);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set('Error al cargar las reservas. Por favor intenta de nuevo.');
+        console.error('Error fetching reservations:', err);
+      }
+    });
+  }
+
+  openDetails(reservation: ReservationViewModel) {
     this.selectedReservation.set(reservation);
   }
 
@@ -111,5 +94,40 @@ export class TenantReservations {
 
   closeWizard() {
     this.showWizard.set(false);
+  }
+
+  onReservationCreated() {
+    this.closeWizard();
+    this.loadReservations();
+  }
+
+  private mapToViewModel(res: DomainReservation): ReservationViewModel {
+    const statusLabel = this.toStatusLabel(res.status);
+
+    return {
+      id: res.id,
+      guestName: res.guestName || res.guestId || 'Huésped desconocido',
+      guestEmail: '',
+      guestPhone: '',
+      propertyName: res.propertyId || 'Propiedad desconocida',
+      unitName: res.room || res.unitId || 'Unidad desconocida',
+      checkIn: res.checkIn,
+      checkOut: res.checkOut,
+      status: statusLabel,
+      totalAmount: res.totalPrice ?? 0,
+      createdAt: res.createdAt
+    };
+  }
+
+  private toStatusLabel(status: string | undefined): string {
+    const map: Record<string, string> = {
+      confirmed: 'Confirmada',
+      pending: 'Pendiente',
+      active: 'Check-in',
+      cancelled: 'Cancelada',
+      finished: 'Finalizada'
+    };
+
+    return map[status?.toLowerCase() ?? ''] || status || 'Pendiente';
   }
 }

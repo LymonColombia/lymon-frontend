@@ -126,7 +126,14 @@
   }
 
   @media (max-width: 768px) {
-    .search-and-actions {
+.empty-state.error {
+  color: var(--color-error-text, #b91c1c);
+  background-color: var(--color-error-bg, #fef2f2);
+  border-radius: var(--radius-md, 0.5rem);
+  margin: 1rem;
+}
+
+.search-and-actions {
       width: 100%;
       flex-direction: column;
       align-items: stretch;

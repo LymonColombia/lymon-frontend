@@ -13,6 +13,7 @@ import {
   bootstrapInfoCircle
 } from '@ng-icons/bootstrap-icons';
 import { CreateTenantGuestUseCase } from '@/domain/use-cases/reservation/create-tenant-guest.use-case';
+import { CreateReservationUseCase } from '@/domain/use-cases/reservation/create-reservation.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenant-guests.use-case';
@@ -39,16 +40,19 @@ import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenan
 })
 export class CreateReservationWizardComponent implements OnInit {
   private readonly createTenantGuestUseCase = inject(CreateTenantGuestUseCase);
+  private readonly createReservationUseCase = inject(CreateReservationUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly getTenantGuestsUseCase = inject(GetTenantGuestsUseCase);
 
   currentStep = signal(1);
   closeWizard = output<void>();
+  reservationCreated = output<void>();
 
   guestIsRegistered = signal<boolean | null>(null);
 
   isSubmitting = signal(false);
+  isCreatingGuest = signal(false);
   errorMessage = signal<string | null>(null);
 
   guestForm = {
@@ -60,10 +64,11 @@ export class CreateReservationWizardComponent implements OnInit {
     guestId: '',
     propertyId: '',
     unitId: '',
-    guestCount: 1,
+    guestsCount: 1,
     checkIn: '',
     checkOut: '',
-    medium: 'MANUAL'
+    source: 'MANUAL',
+    notes: ''
   };
 
   properties = signal<{ id: string; name: string }[]>([]);
@@ -71,7 +76,6 @@ export class CreateReservationWizardComponent implements OnInit {
   guests = signal<{ id: string; name: string }[]>([]);
 
   ngOnInit(): void {
-    // Load properties
     this.getPropertiesUseCase.execute().subscribe({
       next: (props) => {
         this.properties.set(props.map(p => ({ id: p.id || '', name: p.name || 'Propiedad sin nombre' })));
@@ -79,7 +83,6 @@ export class CreateReservationWizardComponent implements OnInit {
       error: (err) => console.error('Error fetching properties', err)
     });
 
-    // Load tenant guests
     this.getTenantGuestsUseCase.execute().subscribe({
       next: (guestList) => {
         this.guests.set(guestList.map(g => ({
@@ -92,7 +95,6 @@ export class CreateReservationWizardComponent implements OnInit {
   }
 
   onPropertySelect(propertyId: string) {
-    // Reset unit selection
     this.reservationForm.unitId = '';
     this.units.set([]);
 
@@ -132,7 +134,7 @@ export class CreateReservationWizardComponent implements OnInit {
       return;
     }
 
-    this.isSubmitting.set(true);
+    this.isCreatingGuest.set(true);
     this.errorMessage.set(null);
 
     this.createTenantGuestUseCase.execute(this.guestForm).subscribe({
@@ -140,11 +142,11 @@ export class CreateReservationWizardComponent implements OnInit {
         this.guests.update(list => [...list, { id: res.guestId, name: res.fullName }]);
         this.reservationForm.guestId = res.guestId;
 
-        this.isSubmitting.set(false);
+        this.isCreatingGuest.set(false);
         this.nextStep();
       },
       error: (err) => {
-        this.isSubmitting.set(false);
+        this.isCreatingGuest.set(false);
         this.errorMessage.set('Error al registrar el huésped. Por favor intenta de nuevo.');
         console.error('Error creating guest:', err);
       }
@@ -156,7 +158,84 @@ export class CreateReservationWizardComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('Reservation created (simulated)', this.reservationForm);
-    this.onClose();
+    this.errorMessage.set(null);
+
+    const validationError = this.validateReservation();
+    if (validationError) {
+      this.errorMessage.set(validationError);
+      return;
+    }
+
+    this.isSubmitting.set(true);
+
+    this.createReservationUseCase.execute({
+      propertyId: this.reservationForm.propertyId,
+      unitId: this.reservationForm.unitId,
+      guestId: this.reservationForm.guestId,
+      checkIn: this.toISODate(this.reservationForm.checkIn),
+      checkOut: this.toISODate(this.reservationForm.checkOut),
+      guestsCount: Number(this.reservationForm.guestsCount),
+      source: this.reservationForm.source,
+      notes: this.reservationForm.notes || undefined
+    }).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.reservationCreated.emit();
+        this.onClose();
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(this.extractErrorMessage(err));
+        console.error('Error creating reservation:', err);
+      }
+    });
+  }
+
+  private validateReservation(): string | null {
+    const { guestId, propertyId, unitId, checkIn, checkOut, guestsCount } = this.reservationForm;
+
+    if (!guestId) return 'Debes seleccionar un huésped.';
+    if (!propertyId) return 'Debes seleccionar una propiedad.';
+    if (!unitId) return 'Debes seleccionar una unidad.';
+    if (!checkIn) return 'Debes seleccionar la fecha de entrada.';
+    if (!checkOut) return 'Debes seleccionar la fecha de salida.';
+
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+
+    if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+      return 'Las fechas seleccionadas no son válidas.';
+    }
+
+    if (checkOutDate <= checkInDate) {
+      return 'La fecha de salida debe ser posterior a la fecha de entrada.';
+    }
+
+    if (!guestsCount || guestsCount < 1) {
+      return 'La cantidad de huéspedes debe ser al menos 1.';
+    }
+
+    return null;
+  }
+
+  private extractErrorMessage(err: unknown): string {
+    if (typeof err === 'object' && err !== null) {
+      const error = err as { message?: string; error?: { message?: string }; msg?: string };
+      return error.message || error.error?.message || error.msg || 'Error al crear la reserva. Por favor intenta de nuevo.';
+    }
+
+    return 'Error al crear la reserva. Por favor intenta de nuevo.';
+  }
+
+  private toISODate(value: string | Date): string {
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value;
+    }
+
+    const date = typeof value === 'string' ? new Date(value) : value;
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

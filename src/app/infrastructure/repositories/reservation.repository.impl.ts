@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReservationRepository } from '@/domain/repositories/reservation.repository';
 import { Reservation } from '@/domain/entities/reservation.model';
+import { CreateReservationInput } from '@/domain/use-cases/reservation/create-reservation.use-case';
 import { environment } from '@env';
 
 @Injectable({
@@ -26,6 +27,63 @@ export class ReservationRepositoryImpl extends ReservationRepository {
     return this.http
       .get<unknown>(`${this.baseUrl}${this.endpoint}/${reservationId}`)
       .pipe(map((response) => this.toReservation(response)));
+  }
+
+  create(input: CreateReservationInput): Observable<Reservation> {
+    return this.http
+      .post<unknown>(`${this.baseUrl}${this.endpoint}`, input)
+      .pipe(map((response) => this.toCreatedReservation(response, input)));
+  }
+
+  private toCreatedReservation(response: unknown, input: CreateReservationInput): Reservation {
+    if (this.isReservation(response)) {
+      return response;
+    }
+
+    if (typeof response === 'object' && response !== null) {
+      const envelope = response as {
+        data?: unknown;
+        reservation?: unknown;
+        item?: unknown;
+        reservationId?: unknown;
+        message?: unknown;
+      };
+
+      if (this.isReservation(envelope.data)) {
+        return envelope.data;
+      }
+
+      if (this.isReservation(envelope.reservation)) {
+        return envelope.reservation;
+      }
+
+      if (this.isReservation(envelope.item)) {
+        return envelope.item;
+      }
+
+      if (typeof envelope.reservationId === 'string') {
+        return {
+          id: envelope.reservationId,
+          tenantId: '',
+          propertyId: input.propertyId,
+          unitId: input.unitId,
+          guestId: input.guestId,
+          checkIn: input.checkIn,
+          checkOut: input.checkOut,
+          nights: 0,
+          source: input.source,
+          status: 'pending',
+          guestsCount: input.guestsCount,
+          pricePerNight: 0,
+          totalPrice: 0,
+          notes: input.notes,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+    }
+
+    throw new Error('No se pudo normalizar la reservacion creada');
   }
 
   private toReservation(response: unknown): Reservation {
