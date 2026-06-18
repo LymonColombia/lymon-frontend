@@ -1,142 +1,156 @@
 @if (selectedItem(); as item) {
-  <section class="checkout-card" aria-label="Checkout panel">
+  <section class="checkout-card" aria-label="Detalle del artículo seleccionado">
+
 
     <div class="checkout-card-header">
-      <img [src]="item.image" [alt]="item.title" class="header-image" />
-      <div class="header-overlay"></div>
-      <div class="header-content">
-        <span class="unit-badge">
-          {{ item.type === 'experience' ? 'Experience' : 'Accommodation' }}
-        </span>
-        <h1 class="unit-name">{{ item.title }}</h1>
-      </div>
+      <h1 class="unit-name">
+        @if (isReservation(item)) {
+          {{ item.unitName ?? 'Habitación' }}
+        } @else {
+          {{ item.experienceName ?? 'Experiencia' }}
+        }
+      </h1>
+      <span class="unit-badge">
+        {{ isReservation(item) ? 'Alojamiento' : 'Experiencia' }}
+      </span>
     </div>
 
     <div class="checkout-card-body">
-      <section>
-
       <div class="summary-list">
-        <!-- Descripción -->
-        @if (item.description) {
-            <div class="summary-item">
-            <div class="summary-item-icon">
-              <ng-icon name="bootstrapCheckCircle" size="15px" aria-hidden="true" />
-            </div>
-            <div class="summary-item-content">
-              <span class="summary-item-label">Descripción</span>
-              <span class="summary-item-value">{{ item.description }}</span>
-            </div>
-          </div>
-         
-        }
 
-        <!-- Ubicación -->
-        @if (item.location) {
+        @if (isReservation(item)) {
+
           <div class="summary-item">
             <div class="summary-item-icon">
               <ng-icon name="bootstrapGeoAltFill" size="15px" aria-hidden="true" />
             </div>
             <div class="summary-item-content">
-              <span class="summary-item-label">Ubicación</span>
-              <span class="summary-item-value">{{ item.location }}</span>
+              <span class="summary-item-label">Propiedad</span>
+              <span class="summary-item-value">{{ item.propertyName ?? item.propertyId }}</span>
             </div>
           </div>
+
+          <div class="summary-item">
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapGeoAltFill" size="15px" aria-hidden="true" />
+            </div>
+            <div class="summary-item-content">
+              <span class="summary-item-label">Unidad</span>
+              <span class="summary-item-value">{{ item.unitName ?? item.unitId }}</span>
+            </div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapCalendar" size="15px" aria-hidden="true" />
+            </div>
+            <div class="summary-item-content">
+              <span class="summary-item-label">Entrada</span>
+              <span class="summary-item-value">{{ formatDate(item.checkIn) }}</span>
+            </div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapCalendarEvent" size="15px" aria-hidden="true" />
+            </div>
+            <div class="summary-item-content">
+              <span class="summary-item-label">Salida</span>
+              <span class="summary-item-value">{{ formatDate(item.checkOut) }}</span>
+            </div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapPeopleFill" size="15px" aria-hidden="true" />
+            </div>
+            <div class="summary-item-content">
+              <span class="summary-item-label">Huéspedes</span>
+              <span class="summary-item-value">{{ guestsLabel(item.guestsCount) }}</span>
+            </div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapBagCheck" size="15px" aria-hidden="true" />
+            </div>
+            <div class="summary-item-content">
+              <span class="summary-item-label">Precio por noche</span>
+              <span class="summary-item-value">{{ formatCurrency(item.pricePerNight) }}</span>
+            </div>
+          </div>
+
+          @if (item.notes) {
+            <div class="summary-item">
+              <div class="summary-item-icon">
+                <ng-icon name="bootstrapShieldLock" size="15px" aria-hidden="true" />
+              </div>
+              <div class="summary-item-content">
+                <span class="summary-item-label">Notas</span>
+                <span class="summary-item-value">{{ item.notes }}</span>
+              </div>
+            </div>
+          }
+
+        <!-- ── Experiencia ──────────────────────────────────────── -->
+        } @else {
+
+          <div class="summary-item">
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapCalendarEvent" size="15px" aria-hidden="true" />
+            </div>
+            <div class="summary-item-content">
+              <span class="summary-item-label">Fecha seleccionada</span>
+              <span class="summary-item-value">{{ formatDate(item.selectedDate) }}</span>
+            </div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapPeopleFill" size="15px" aria-hidden="true" />
+            </div>
+            <div class="summary-item-content">
+              <span class="summary-item-label">Participantes</span>
+              <span class="summary-item-value">{{ participantsLabel(item.quantity) }}</span>
+            </div>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapBagCheck" size="15px" aria-hidden="true" />
+            </div>
+            <div class="summary-item-content">
+              <span class="summary-item-label">Precio unitario</span>
+              <span class="summary-item-value">{{ formatCurrency(item.unitPriceCop ?? 0) }}</span>
+            </div>
+          </div>
+
         }
       </div>
 
-        <!-- Reservation summary (solo accommodation) -->
-        @if (item.type === 'accommodation') {
-          <h2 class="section-title">Reservation Summary</h2>
-          <div class="summary-list">
-
-            <div class="summary-item">
-              <div class="summary-item-icon">
-                <ng-icon name="bootstrapCalendar" size="15px" aria-hidden="true" />
-              </div>
-              <div class="summary-item-content">
-                <span class="summary-item-label">Check-in</span>
-                <span class="summary-item-value">{{ formatDate(item.dates?.start) }}</span>
-              </div>
-            </div>
-
-            <div class="summary-item">
-              <div class="summary-item-icon">
-                <ng-icon name="bootstrapCalendar" size="15px" aria-hidden="true" />
-              </div>
-              <div class="summary-item-content">
-                <span class="summary-item-label">Check-out</span>
-                <span class="summary-item-value">{{ formatDate(item.dates?.end) }}</span>
-              </div>
-            </div>
-
-            <div class="summary-item">
-              <div class="summary-item-icon">
-                <ng-icon name="bootstrapPeopleFill" size="15px" aria-hidden="true" />
-              </div>
-              <div class="summary-item-content">
-                <span class="summary-item-label">Huéspedes</span>
-                <span class="summary-item-value">
-                  {{ item.guests ?? 1 }} persona{{ (item.guests ?? 1) !== 1 ? 's' : '' }}
-                </span>
-              </div>
-            </div>
-
-          </div>
-        }
-
-        <!-- Item details -->
-        @if (item.type === 'experience') {
-          <h2 class="section-title">Experience Details</h2>
-          <div class="summary-list">
-
-            <div class="summary-item">
-              <div class="summary-item-icon">
-                <ng-icon name="bootstrapCalendarEvent" size="15px" aria-hidden="true" />
-              </div>
-              <div class="summary-item-content">
-                <span class="summary-item-label">Experience date</span>
-                <span class="summary-item-value">
-                  {{ formatDate(item.dates?.start) }}
-                  @if (item.dates?.end) {
-                    <span> → {{ formatDate(item.dates?.end) }}</span>
-                  }
-                </span>
-              </div>
-            </div>
-
-            <div class="summary-item">
-              <div class="summary-item-icon">
-                <ng-icon name="bootstrapPeopleFill" size="15px" aria-hidden="true" />
-              </div>
-              <div class="summary-item-content">
-                <span class="summary-item-label">Participants</span>
-                <span class="summary-item-value">{{ item.guests ?? 1 }}</span>
-              </div>
-            </div>
-
-          </div>
-        }
-
-        <!-- Precio -->
-        <div class="price-section">
-          <div class="price-row">
-            <span>
-              @if (item.type === 'accommodation') {
-                {{ formatCurrency(item.price) }} x {{ item.quantity }}
-              } @else {
-                {{ formatCurrency(item.price) }}
-              }
-            </span>
-            <span>{{ formatCurrency(item.price * item.quantity) }}</span>
-          </div>
-          <div class="price-total">
-            <span class="price-total-label">Item total</span>
-            <span class="price-total-value">{{ formatCurrency(item.price * item.quantity) }}</span>
-          </div>
-        </div>
-
-      </section>
+      <!-- Total -->
+      <div class="price-section">
+        <span class="price-total-label">Total</span>
+        <span class="price-total-value">{{ formatCurrency(item.totalPriceCop) }}</span>
+      </div>
     </div>
 
+  </section>
+
+} @else {
+  <section class="checkout-card" aria-label="Detalle del artículo seleccionado">
+    <div class="checkout-card-body">
+      <div class="summary-list">
+        <div class="summary-item">
+          <div class="summary-item-icon">
+            <ng-icon name="bootstrapBagCheck" size="15px" aria-hidden="true" />
+          </div>
+          <div class="summary-item-content">
+            <span class="summary-item-label">Selecciona un elemento</span>
+            <span class="summary-item-value">No hay información para mostrar</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 }

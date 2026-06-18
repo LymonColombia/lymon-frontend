@@ -1,48 +1,56 @@
 <div class="guest-cart-page">
   <nav class="cart-nav">
     <div class="cart-nav-inner">
-      <button class="nav-back-btn" type="button" aria-label="Go back to booking" (click)="goBack()">
+      <button class="nav-back-btn" type="button" aria-label="Volver a booking" (click)="goBack()">
         <ng-icon name="bootstrapChevronLeft" size="18px" aria-hidden="true"></ng-icon>
-        Back
+        Volver
       </button>
       <div class="nav-divider"></div>
       <span class="nav-title">
         <ng-icon name="bootstrapBag" size="14px" aria-hidden="true"></ng-icon>
-        Guest Cart
+        Carrito
       </span>
     </div>
   </nav>
 
   <main class="guest-cart-container">
-    @if (isEmpty()) {
+    @if (isLoading()) {
+      <section class="state-card">
+        <div class="state-spinner"></div>
+        <p class="state-title">Cargando carrito...</p>
+      </section>
+
+    } @else if (errorMessage()) {
+      <section class="state-card state-card--error">
+        <ng-icon name="bootstrapBag" size="28px" aria-hidden="true"></ng-icon>
+        <p class="state-title">No pudimos cargar tu carrito</p>
+        <p class="state-text">{{ errorMessage() }}</p>
+        <app-button variant="primary" size="medium" (clicked)="goToBooking()">Volver a booking</app-button>
+      </section>
+
+    } @else if (isEmpty()) {
       <section class="empty-card">
         <h1 class="empty-title">Tu carrito está vacío</h1>
-        <p class="empty-text">Elige una habitación o experiencia para continuar con la compra.</p>
+        <p class="empty-text">Agrega una habitación o una experiencia para continuar con tu compra.</p>
         <app-button variant="primary" size="medium" (clicked)="goToBooking()">Explorar alojamientos</app-button>
       </section>
+
     } @else {
       <section class="cart-grid">
         <app-order-summary
-          [cartItems]="cartItems()"
-          [selectedItemId]="selectedItemId()"
-          [totals]="totals()"
+          [cart]="cart()"
+          [selectedItemKey]="selectedItemKey()"
           (selectItem)="onSelectItem($event)"
-          (removeItem)="onRemoveItem($event)"
+          (proceedToCheckout)="goToCheckout()"
         ></app-order-summary>
 
         <app-checkout-panel
-          [selectedItem]="selectedItem()"
-          [cartItems]="cartItems()"
-          [isSubmitting]="isSubmitting()"
-          (quantityChange)="onQuantityChange($event)"
-          (removeItem)="onRemoveItem($event)"
+          [cart]="cart()"
+          [selectedItemKey]="selectedItemKey()"
+          [isSubmitting]="false"
         ></app-checkout-panel>
       </section>
     }
-
-    <app-guest-recommendation-experience
-      (addToCart)="onAddRecommendation($event)" 
-    ></app-guest-recommendation-experience>
   </main>
 
   <app-footer></app-footer>

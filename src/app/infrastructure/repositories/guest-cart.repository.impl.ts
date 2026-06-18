@@ -29,4 +29,11 @@ export class GuestCartRepositoryImpl implements GuestCartRepository {
   getCart(): Observable<Cart | null> {
     return this.http.get<Cart | null>(BASE_URL, { headers: this.authHeaders() });
   }
+
+  deleteExperienceItem(experienceId: string, selectedDate: string): Observable<Cart> {
+    return this.http.delete<Cart>(`${BASE_URL}/items/${experienceId}`, {
+      headers: this.authHeaders(),
+      params: { selectedDate },
+    });
+  }
 }

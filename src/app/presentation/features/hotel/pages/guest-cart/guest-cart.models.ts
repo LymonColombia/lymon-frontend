@@ -1,30 +1,48 @@
+import type {
+  Cart,
+  CartExperienceItem,
+  CartReservationDraftRequest,
+  CartReservationItem,
+} from '@/domain/entities/cart.model';
+
+export type {
+  Cart,
+  CartExperienceItem,
+  CartReservationDraftRequest,
+  CartReservationItem,
+};
+
 export interface CartItemDateRange {
   start: string;
   end?: string;
 }
 
-export interface CartItem {
-description: any;
-location: any;
-  id: string;
-  type: 'experience' | 'accommodation';
-  title: string;
-  price: number;
-  quantity: number;
-  dates?: CartItemDateRange;
-  guests?: number;
-  image: string;
+export type GuestCartEntryKind = 'reservation' | 'experience';
+
+export interface GuestCartDetail {
+  label: string;
+  value: string;
 }
 
-export interface CartTotals {
-  subtotal: number;
-  taxes: number;
-  total: number;
+export interface GuestCartSummaryItem {
+  id: string;
+  kind: GuestCartEntryKind;
+  title: string;
+  subtitle: string;
+  totalPriceCop: number;
+  quantityLabel: string;
+  details: GuestCartDetail[];
+  canRemove?: boolean;
+}
+
+export interface GuestCartTotals {
+  subtotalCop: number;
+  totalCop: number;
 }
 
 export interface RecommendationExperience {
-  location: any;
-  description: any;
+  location: string;
+  description: string;
   id: string;
   title: string;
   price: number;

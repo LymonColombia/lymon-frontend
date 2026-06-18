@@ -1,62 +1,107 @@
-<section class="summary-card" aria-label="Order summary">
+
+<section class="summary-card" aria-label="Resumen del carrito">
+
   <header class="summary-header">
     <div class="summary-header-icon">
       <ng-icon name="bootstrapBagCheck" size="16px" aria-hidden="true"></ng-icon>
     </div>
-    <h2 class="summary-title">Resumen de compra</h2>
+    <div class="summary-header-copy">
+      <h2 class="summary-title">Resumen de compra</h2>
+      <p class="summary-subtitle">Elementos en tu carrito: {{ totalItems() }}</p>
+    </div>
   </header>
 
+
   <div class="summary-items">
-    @for (item of cartItems(); track item.id) {
-      <article
-        class="summary-item"
-        [class.summary-item--active]="selectedItemId() === item.id"
-      >
-        <button
-          class="summary-item-select"
-          type="button"
-          [attr.aria-pressed]="selectedItemId() === item.id"
-          [attr.aria-label]="'Select ' + item.title"
-          (click)="onSelectItem(item.id)"
+    @if (cart(); as currentCart) {
+
+   
+      @if (currentCart.reservationItem; as reservationItem) {
+        <article
+          class="summary-item"
+          [class.summary-item--active]="isReservationSelected()"
         >
-          <img [src]="item.image" [alt]="item.title" class="summary-item-image" />
-
-          <div class="summary-item-main">
-            <span class="summary-item-title">{{ item.title }}</span>
-            <span class="summary-item-meta">
-              <ng-icon [name]="itemTypeIcon(item.type)" size="12px" aria-hidden="true"></ng-icon>
-              {{ typeLabel(item.type) }}
-            </span>
-          </div>
-        </button>
-
-        <div class="summary-item-side">
-          <span class="summary-item-price">{{ formatCurrency(item.price * item.quantity) }}</span>
+        
           <button
-            class="summary-item-remove"
+            class="summary-item-select"
             type="button"
-            (click)="onRemoveItem(item.id)"
+            [attr.aria-pressed]="isReservationSelected()"
+            aria-label="Seleccionar reserva"
+            (click)="onSelectReservation()"
           >
-          <ng-icon name="bootstrapTrash" size="13px"></ng-icon>
-
+            <div class="summary-item-icon">
+          
+            </div>
+            <div class="summary-item-main">
+              <span class="summary-item-title">{{ reservationTitle(reservationItem) }}</span>
+              <span class="summary-item-quantity">Alojamiento</span>
+              <span class="summary-item-detail">{{ reservationSubtitle(reservationItem) }}</span>
+            </div>
           </button>
-        </div>
-      </article>
+
+        
+          <div class="summary-item-side">
+
+              <p class="summary-item-price">{{ formatCurrency(reservationItem.totalPriceCop) }}</p>
+              <button
+                class="summary-item-action summary-item-action--remove"
+                type="button"
+                aria-label="Eliminar reserva del carrito"
+              >
+                <ng-icon name="bootstrapX" size="16px" aria-hidden="true"></ng-icon>
+              </button>
+            
+          </div>
+        </article>
+      }
+
+      
+      @for (
+        experienceItem of currentCart.experienceItems;
+        track experienceItem.experienceId;
+        let index = $index
+      ) {
+        <article
+          class="summary-item"
+          [class.summary-item--active]="isExperienceSelected(index)"
+        >
+          
+          <button
+            class="summary-item-select"
+            type="button"
+            [attr.aria-pressed]="isExperienceSelected(index)"
+            [attr.aria-label]="'Seleccionar experiencia ' + (index + 1)"
+            (click)="onSelectExperience(index)"
+          >
+            <div class="summary-item-icon" >
+            </div>
+            <div class="summary-item-main">
+              <span class="summary-item-title">{{ experienceTitle(experienceItem, index) }}</span>
+              <span class="summary-item-quantity">Experiencia</span>
+            </div>
+          </button>
+
+          
+          <div class="summary-item-side">
+              <p class="summary-item-price">{{ formatCurrency(experienceItem.totalPriceCop) }}</p>
+              <button
+                class="summary-item-action summary-item-action--remove"
+                type="button"
+                [attr.aria-label]="'Eliminar experiencia ' + (index + 1) + ' del carrito'"
+              >
+                <ng-icon name="bootstrapX" size="16px" aria-hidden="true"></ng-icon>
+              </button>
+          
+          </div>
+        </article>
+      }
     }
   </div>
 
   <div class="summary-totals">
-    <div class="total-row">
-      <span>Subtotal</span>
-      <span>{{ formatCurrency(totals().subtotal) }}</span>
-    </div>
-    <div class="total-row">
-      <span>Impuesto 19%</span>
-      <span>{{ formatCurrency(totals().taxes) }}</span>
-    </div>
     <div class="total-row total-row--final">
-      <span>Total</span>
-      <span>{{ formatCurrency(totals().total) }}</span>
+      <span>Total del carrito</span>
+      <span>{{ formatCurrency(cart()?.totalCop ?? 0) }}</span>
     </div>
     <app-button
       class="checkout-button"
@@ -65,4 +110,5 @@
       Proceder al pago
     </app-button>
   </div>
+
 </section>

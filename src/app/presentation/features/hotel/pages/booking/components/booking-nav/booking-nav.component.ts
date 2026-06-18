@@ -14,6 +14,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBoxArrowInRight,
   bootstrapBoxArrowRight,
+  bootstrapCart,
   bootstrapCalendar2Check,
   bootstrapChevronDown,
   bootstrapCompass,
@@ -29,6 +30,7 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button.
     provideIcons({
       bootstrapBoxArrowInRight,
       bootstrapBoxArrowRight,
+      bootstrapCart,
       bootstrapCalendar2Check,
       bootstrapChevronDown,
       bootstrapCompass,
