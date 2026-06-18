@@ -15,3 +15,15 @@ export interface CreateTenantGuestResponse {
   fullName: string;
   primaryEmail: string;
 }
+
+export interface TenantGuest {
+  id: string;
+  fullName?: string;
+  name?: string;
+  primaryEmail?: string;
+  email?: string;
+}
+
+export interface GetTenantGuestsResponse {
+  data: TenantGuest[];
+}

@@ -127,7 +127,7 @@
           <div class="form-group">
             <label for="propertySelect">Propiedad</label>
             <div class="select-wrapper">
-              <select id="propertySelect" [(ngModel)]="reservationForm.propertyId" name="propertyId">
+              <select id="propertySelect" [(ngModel)]="reservationForm.propertyId" name="propertyId" (ngModelChange)="onPropertySelect($event)">
                 <option value="" disabled selected>Selecciona propiedad...</option>
                 @for (prop of properties(); track prop.id) {
                 <option [value]="prop.id">{{ prop.name }}</option>
