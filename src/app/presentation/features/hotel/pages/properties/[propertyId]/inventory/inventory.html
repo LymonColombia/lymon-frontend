@@ -110,12 +110,13 @@
               <td>{{ getFormattedUnit(item.unit, item.quantity) }}</td>
               <td>
                 @if (item.provider === 'Proveedor no asignado') {
-                  <button type="button" class="category-pill category-pill--danger provider-assign-btn" 
+                  <button type="button" class="category-pill category-pill--danger provider-assign-btn"
                     (click)="openAssignSupplierModal(item)">
                     Sin proveedor
                   </button>
                 } @else {
-                  <button type="button" class="provider-link-btn" (click)="openAssignSupplierModal(item)">
+                  <button type="button" class="category-pill category-pill--success provider-assign-btn"
+                    (click)="openAssignSupplierModal(item)">
                     {{ item.provider }}
                   </button>
                 }
@@ -162,6 +163,10 @@
             <div class="provider-main">
               <h3 class="provider-name">{{ provider.name }}</h3>
               <p class="provider-rif">{{ provider.nit }}</p>
+              <p class="provider-items">
+                {{ getSupplierItemCount(provider.id) }}
+                {{ getSupplierItemCount(provider.id) === 1 ? 'insumo asociado' : 'insumos asociados' }}
+              </p>
             </div>
           </div>
 
@@ -363,7 +368,7 @@
       <li>
         <div>
           <p class="supply-name">{{ supply.name }}</p>
-          <p class="supply-meta">Categoria: {{ supply.categoryId }}</p>
+          <p class="supply-meta">Categoria: {{ supply.categoryName }}</p>
         </div>
         <span class="supply-qty">{{ supply.quantity }} {{ supply.unit }}</span>
       </li>

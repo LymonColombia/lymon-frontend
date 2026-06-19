@@ -16,6 +16,7 @@ export interface InventoryItemResponse {
   minStock: number;
   currentStock: number;
   lowStock: boolean;
+  supplierId: string | null;
   propertyId: string;
   createdAt: string;
   updatedAt: string;
