@@ -43,13 +43,6 @@
           <div class="summary-item-side">
 
               <p class="summary-item-price">{{ formatCurrency(reservationItem.totalPriceCop) }}</p>
-              <button
-                class="summary-item-action summary-item-action--remove"
-                type="button"
-                aria-label="Eliminar reserva del carrito"
-              >
-                <ng-icon name="bootstrapX" size="16px" aria-hidden="true"></ng-icon>
-              </button>
             
           </div>
         </article>
@@ -88,6 +81,7 @@
                 class="summary-item-action summary-item-action--remove"
                 type="button"
                 [attr.aria-label]="'Eliminar experiencia ' + (index + 1) + ' del carrito'"
+                (click)="onRemoveExperience(index)"
               >
                 <ng-icon name="bootstrapX" size="16px" aria-hidden="true"></ng-icon>
               </button>

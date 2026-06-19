@@ -41,6 +41,7 @@
           [cart]="cart()"
           [selectedItemKey]="selectedItemKey()"
           (selectItem)="onSelectItem($event)"
+          (removeExperience)="onRemoveExperience($event)"
           (proceedToCheckout)="goToCheckout()"
         ></app-order-summary>
 
@@ -52,6 +53,45 @@
       </section>
     }
   </main>
+  
+<app-modal
+  [open]="experienceToDelete() !== null"
+  title="Confirmar eliminación"
+  size="small"
+  [closeOnBackdrop]="!isDeletingExperience()"
+  [closeOnEscape]="!isDeletingExperience()"
+  (closed)="closeDeleteExperienceModal()"
+>
+  <div class="delete-experience-modal-body">
+    <p class="delete-experience-modal-title">
+      ¿Eliminar "{{ experienceToDelete()?.experienceName ?? 'esta experiencia' }}" del carrito?
+    </p>
+    @if (deleteExperienceErrorMessage()) {
+      <p class="delete-experience-modal-error">
+        {{ deleteExperienceErrorMessage() }}
+      </p>
+    }
+  </div>
+
+  <div modal-footer class="delete-experience-modal-footer">
+    <app-button
+      variant="secondary"
+      size="medium"
+      [disabled]="isDeletingExperience()"
+      (clicked)="closeDeleteExperienceModal()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      variant="danger"
+      size="medium"
+      [loading]="isDeletingExperience()"
+      (clicked)="confirmDeleteExperience()"
+    >
+      Eliminar
+    </app-button>
+  </div>
+</app-modal>
 
   <app-footer></app-footer>
 </div>

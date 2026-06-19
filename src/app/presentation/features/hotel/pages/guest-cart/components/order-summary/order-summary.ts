@@ -18,6 +18,7 @@ export class OrderSummaryComponent {
   readonly selectedItemKey = input<string | null>(null);
 
   readonly selectItem = output<string>();
+  readonly removeExperience = output<number>();
   readonly proceedToCheckout = output<void>();
 
   readonly reservationKey = computed(() => 'reservation');
@@ -28,6 +29,10 @@ export class OrderSummaryComponent {
 
   onSelectExperience(index: number): void {
     this.selectItem.emit(this.experienceKey(index));
+  }
+
+  onRemoveExperience(index: number): void {
+    this.removeExperience.emit(index);
   }
 
   onProceedToCheckout(): void {
