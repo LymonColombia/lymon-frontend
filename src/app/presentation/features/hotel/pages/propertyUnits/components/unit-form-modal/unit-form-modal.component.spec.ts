@@ -76,11 +76,11 @@ describe('UnitFormModalComponent', () => {
     expect(cancelledSpy).toHaveBeenCalled();
   });
 
-  it('should emit created on successful submit', async () => {
+  it('should emit saved on successful submit', async () => {
     mockCreateUnit.execute.mockReturnValue(of(undefined));
     const { component } = await setup();
     const createdSpy = vi.fn();
-    component.created.subscribe(createdSpy);
+    component.saved.subscribe(createdSpy);
     fillValidForm(component);
 
     component.onSubmit();

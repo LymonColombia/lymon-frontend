@@ -3,11 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
 import {
+  GetUnitRatingsParams,
   InviteStaffDto,
   PropertiesResponse,
   PublicUnitsParams,
   RolesResponse,
   StaffListResponse,
+  UnitRatingsResponse,
   UnitResponse,
   UnitsResponse,
 } from '@/domain/entities/staff.model';
@@ -82,5 +84,18 @@ export class StaffRepositoryImpl extends StaffRepository {
 
   deleteStaff(id: string): Observable<unknown> {
     return this.http.delete<unknown>(`${USER_BASE}/${id}`, { headers: this.authHeaders });
+  }
+
+  getUnitRatings(params: GetUnitRatingsParams): Observable<UnitRatingsResponse> {
+    const queryParams: Record<string, string> = {
+      page: String(params.page),
+      limit: String(params.limit),
+    };
+    if (params.sort !== undefined) queryParams['sort'] = params.sort;
+    if (params.filterRate !== undefined) queryParams['filterRate'] = String(params.filterRate);
+    return this.http.get<UnitRatingsResponse>(
+      `${environment.apiUrl}${environment.units.endpoint}/${params.unitId}/ratings`,
+      { params: queryParams },
+    );
   }
 }

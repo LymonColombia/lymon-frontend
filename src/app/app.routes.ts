@@ -37,10 +37,15 @@ import { guestGuard } from '@/infrastructure/guards/guest.guard';
 import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/guest-checkout/guest-checkout';
 import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/pages/guest-reservation-details/guest-reservation-details';
-import { InventoryComponent } from '@/presentation/features/hotel/pages/inventory/inventory';
-import { SessionsComponent } from '@/presentation/features/hotel/pages/sessions/sessions';
+import { InventoryComponent } from '@/presentation/features/hotel/pages/properties/[propertyId]/inventory/inventory';
+import { PaymentSuccessComponent } from '@/presentation/features/hotel/pages/payment-success/payment-success';
+import { PaymentFailureComponent } from '@/presentation/features/hotel/pages/payment-failure/payment-failure';
 import { ExperienceComponent } from './presentation/features/hotel/pages/experiences/experiences';
 import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
+import { TenantExperiencesPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experiences-page/tenant-experiences-page.component';
+import { TenantExperienceFormPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-form-page/tenant-experience-form-page.component';
+import { TenantExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-detail-page/tenant-experience-detail-page.component';
+
 import { StorageTestComponent } from '@/presentation/features/hotel/pages/storageTest/storageTest';
 import { TenantReservations } from '@/presentation/features/hotel/pages/tenant-reservations/tenant-reservations'; 
 export const routes: Routes = [
@@ -82,6 +87,9 @@ export const routes: Routes = [
     canActivate: [guestGuard],
   },
 
+  { path: 'guest/payment/success', component: PaymentSuccessComponent, canActivate: [guestGuard] },
+  { path: 'guest/payment/failure', component: PaymentFailureComponent, canActivate: [guestGuard] },
+
   { path: 'guest/checkin', component: CheckinComponent, canActivate: [guestGuard] },
 
   // Authenticated hotel shell
@@ -112,8 +120,11 @@ export const routes: Routes = [
       { path: 'crm/guests', component: GuestsCrmComponent },
       { path: 'crm/guests/:guestId', component: GuestProfileComponent },
       { path: 'staff-shift', component: StaffShiftComponent },
-      { path: 'inventory', component: InventoryComponent },
-      { path: 'sessions', component: SessionsComponent },
+      { path: 'storage-test', component: StorageTestComponent },
+      { path: 'tenant-experiences', component: TenantExperiencesPageComponent },
+      { path: 'tenant-experiences/new', component: TenantExperienceFormPageComponent },
+      { path: 'tenant-experiences/:id', component: TenantExperienceDetailPageComponent },
+      { path: 'tenant-experiences/:id/edit', component: TenantExperienceFormPageComponent },
       { path: 'storage-test', component: StorageTestComponent },
       { path: 'tenant-reservations', component: TenantReservations}
     ],

@@ -1,0 +1,102 @@
+.table-shell {
+  border-radius: var(--radius-xl);
+  border: var(--input-border-width) solid var(--color-border-light);
+  background: var(--color-bg-primary);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 960px;
+}
+
+th,
+td {
+  padding: var(--spacing-md);
+  text-align: left;
+  border-bottom: var(--input-border-width) solid var(--color-border-light);
+}
+
+th {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: var(--font-weight-semibold);
+}
+
+td {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.name-cell img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background: var(--color-bg-tertiary);
+}
+
+.name-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name-meta strong {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.name-meta span {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+.scope-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-gradient);
+  color: var(--color-bg-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.availability-cell {
+  min-width: 220px;
+}
+
+.row-actions {
+  display: inline-flex;
+  gap: var(--spacing-xs);
+}
+
+.row-actions button {
+  border: var(--input-border-width) solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+}
+
+.row-actions button.edit {
+  border-color: color-mix(in srgb, var(--color-primary-dark) 40%, transparent);
+  color: var(--color-primary-dark);
+}
+
