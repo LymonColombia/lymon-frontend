@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlusCircle, bootstrapX, bootstrapCheck, bootstrapPencil } from '@ng-icons/bootstrap-icons';
+import { forkJoin } from 'rxjs';
 import { HotelPageLayoutComponent } from '../../components/hotel-page-layout/hotel-page-layout';
 import { CreateReservationWizardComponent } from './components/create-reservation-wizard/create-reservation-wizard';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
@@ -11,6 +12,9 @@ import { CheckInReservationUseCase } from '@/domain/use-cases/reservation/check-
 import { CheckOutReservationUseCase } from '@/domain/use-cases/reservation/check-out-reservation.use-case';
 import { CancelReservationUseCase } from '@/domain/use-cases/reservation/cancel-reservation.use-case';
 import { UpdateReservationUseCase } from '@/domain/use-cases/reservation/update-reservation.use-case';
+import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
+import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenant-guests.use-case';
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 
 export interface ReservationViewModel {
@@ -52,6 +56,9 @@ export class TenantReservations implements OnInit {
   private readonly checkOutReservationUseCase = inject(CheckOutReservationUseCase);
   private readonly cancelReservationUseCase = inject(CancelReservationUseCase);
   private readonly updateReservationUseCase = inject(UpdateReservationUseCase);
+  private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
+  private readonly getUnitsUseCase = inject(GetUnitsUseCase);
+  private readonly getTenantGuestsUseCase = inject(GetTenantGuestsUseCase);
 
   reservations = signal<ReservationViewModel[]>([]);
 
@@ -59,6 +66,10 @@ export class TenantReservations implements OnInit {
   activeCheckins = signal(0);
   isLoading = signal(false);
   errorMessage = signal('');
+
+  propertiesMap = signal<Record<string, string>>({});
+  unitsMap = signal<Record<string, string>>({});
+  guestsMap = signal<Record<string, string>>({});
 
   selectedReservation = signal<ReservationViewModel | null>(null);
   isProcessingStatus = signal(false);
@@ -79,11 +90,66 @@ export class TenantReservations implements OnInit {
   };
 
   ngOnInit(): void {
-    this.loadReservations();
+    this.loadReferenceDataAndReservations();
+  }
+
+  loadReferenceDataAndReservations(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
+    forkJoin({
+      properties: this.getPropertiesUseCase.execute(),
+      guests: this.getTenantGuestsUseCase.execute()
+    }).subscribe({
+      next: ({ properties, guests }) => {
+        this.propertiesMap.set(
+          properties.reduce((acc, p) => {
+            acc[p.id] = p.name || 'Propiedad sin nombre';
+            return acc;
+          }, {} as Record<string, string>)
+        );
+
+        this.guestsMap.set(
+          guests.reduce((acc, g) => {
+            acc[g.id] = g.fullName || g.name || g.primaryEmail || g.email || 'Sin Nombre';
+            return acc;
+          }, {} as Record<string, string>)
+        );
+
+        const propertyIds = properties.map(p => p.id).filter(Boolean);
+        if (propertyIds.length === 0) {
+          this.unitsMap.set({});
+          this.loadReservations();
+          return;
+        }
+
+        forkJoin(propertyIds.map(id => this.getUnitsUseCase.execute(id))).subscribe({
+          next: (unitsPerProperty) => {
+            const allUnits = unitsPerProperty.flat();
+            this.unitsMap.set(
+              allUnits.reduce((acc, u) => {
+                acc[u.id] = u.name || 'Unidad sin nombre';
+                return acc;
+              }, {} as Record<string, string>)
+            );
+            this.loadReservations();
+          },
+          error: (err) => {
+            this.unitsMap.set({});
+            this.loadReservations();
+            console.error('Error fetching units', err);
+          }
+        });
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set('Error al cargar datos de referencia. Por favor intenta de nuevo.');
+        console.error('Error fetching reference data:', err);
+      }
+    });
   }
 
   loadReservations(): void {
-    this.isLoading.set(true);
     this.errorMessage.set('');
 
     this.getReservationsUseCase.execute().subscribe({
@@ -126,7 +192,7 @@ export class TenantReservations implements OnInit {
 
   onReservationCreated() {
     this.closeWizard();
-    this.loadReservations();
+    this.loadReferenceDataAndReservations();
   }
 
   confirmReservation() {
@@ -140,7 +206,7 @@ export class TenantReservations implements OnInit {
       next: () => {
         this.isProcessingStatus.set(false);
         this.closeDetails();
-        this.loadReservations();
+        this.loadReferenceDataAndReservations();
       },
       error: (err) => {
         this.isProcessingStatus.set(false);
@@ -161,7 +227,7 @@ export class TenantReservations implements OnInit {
       next: () => {
         this.isProcessingStatus.set(false);
         this.closeDetails();
-        this.loadReservations();
+        this.loadReferenceDataAndReservations();
       },
       error: (err) => {
         this.isProcessingStatus.set(false);
@@ -182,7 +248,7 @@ export class TenantReservations implements OnInit {
       next: () => {
         this.isProcessingStatus.set(false);
         this.closeDetails();
-        this.loadReservations();
+        this.loadReferenceDataAndReservations();
       },
       error: (err) => {
         this.isProcessingStatus.set(false);
@@ -214,7 +280,7 @@ export class TenantReservations implements OnInit {
         this.isCancelling.set(false);
         this.closeCancelConfirm();
         this.closeDetails();
-        this.loadReservations();
+        this.loadReferenceDataAndReservations();
       },
       error: (err) => {
         this.isCancelling.set(false);
@@ -265,7 +331,7 @@ export class TenantReservations implements OnInit {
         this.isUpdating.set(false);
         this.closeEditModal();
         this.closeDetails();
-        this.loadReservations();
+        this.loadReferenceDataAndReservations();
       },
       error: (err) => {
         this.isUpdating.set(false);
@@ -300,16 +366,19 @@ export class TenantReservations implements OnInit {
 
   private mapToViewModel(res: DomainReservation): ReservationViewModel {
     const statusLabel = this.toStatusLabel(res.status);
+    const guestName = this.guestsMap()[res.guestId] || res.guestName || res.guestId || 'Huésped desconocido';
+    const propertyName = this.propertiesMap()[res.propertyId] || res.propertyId || 'Propiedad desconocida';
+    const unitName = this.unitsMap()[res.unitId] || res.room || res.unitId || 'Unidad desconocida';
 
     return {
       id: res.id,
-      guestName: res.guestName || res.guestId || 'Huésped desconocido',
+      guestName,
       guestEmail: '',
       guestPhone: '',
-      propertyName: res.propertyId || 'Propiedad desconocida',
-      unitName: res.room || res.unitId || 'Unidad desconocida',
-      checkIn: res.checkIn,
-      checkOut: res.checkOut,
+      propertyName,
+      unitName,
+      checkIn: this.formatDate(res.checkIn),
+      checkOut: this.formatDate(res.checkOut),
       status: statusLabel,
       totalAmount: res.totalPrice ?? 0,
       createdAt: res.createdAt
@@ -331,13 +400,18 @@ export class TenantReservations implements OnInit {
     return map[normalized ?? ''] || status || 'Pendiente';
   }
 
-  private toDateInputValue(value: string): string {
+  private formatDate(value: string): string {
     if (!value) return '';
     const date = new Date(value);
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const day = String(date.getUTCDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  private toDateInputValue(value: string): string {
+    if (!value) return '';
+    return value;
   }
 
   private validateEditForm(): string | null {
