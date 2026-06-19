@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { CreateSupplierDto, SupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
+import { InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
 import { Supplier } from '@/domain/entities/supplier.model';
 import { environment } from '@env';
 
@@ -39,6 +40,12 @@ export class SupplierRepositoryImpl extends SupplierRepository {
     return this.http
       .get<SupplierDto>(`${BASE_URL}/${id}`)
       .pipe(map((dto) => this.mapDtoToSupplier(dto)));
+  }
+
+  getSupplierItems(id: string): Observable<InventoryItemResponse[]> {
+    return this.http
+      .get<{ data: InventoryItemResponse[] }>(`${BASE_URL}/${id}/items`)
+      .pipe(map((res) => res.data));
   }
 
   private mapDtoToSupplier(dto: SupplierDto): Supplier {

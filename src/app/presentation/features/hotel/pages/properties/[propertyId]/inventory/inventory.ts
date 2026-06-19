@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBoxSeam,
@@ -33,6 +35,7 @@ import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryD
 import { GetInventoryItemsUseCase } from '@/domain/use-cases/inventory/get-inventory-items.use-case';
 import { AssociateInventorySupplierUseCase } from '@/domain/use-cases/inventory/associate-inventory-supplier.use-case';
 import { DeleteInventoryItemUseCase } from '@/domain/use-cases/inventory/delete-inventory-item.use-case';
+import { GetSupplierItemsUseCase } from '@/domain/use-cases/supplier/get-supplier-items.use-case';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -44,6 +47,7 @@ interface SupplyRow {
   categoryName: string;
   quantity: number;
   unit: string;
+  supplierId: string | null;
   provider: string;
   minimumStock: number;
   lowStock: boolean;
@@ -102,6 +106,7 @@ export class InventoryComponent implements OnInit {
   private readonly getInventoryItemsUseCase = inject(GetInventoryItemsUseCase);
   private readonly associateInventorySupplierUseCase = inject(AssociateInventorySupplierUseCase);
   private readonly deleteInventoryItemUseCase = inject(DeleteInventoryItemUseCase);
+  private readonly getSupplierItemsUseCase = inject(GetSupplierItemsUseCase);
   private readonly route = inject(ActivatedRoute);
 
   readonly propertyId = signal<string | null>(null);
@@ -165,6 +170,8 @@ export class InventoryComponent implements OnInit {
   readonly providers = signal<ProviderRow[]>([]);
 
   readonly rawSupplies = signal<InventoryItemResponse[]>([]);
+  readonly supplierIdByItemId = signal<Map<string, string>>(new Map());
+  readonly supplierItemsBySupplierId = signal<Map<string, InventoryItemResponse[]>>(new Map());
   readonly mappedSupplies = computed(() => this.rawSupplies().map(item => this.mapToSupplyRow(item)));
 
   private readonly unitTranslations: Record<string, string> = {
@@ -311,7 +318,8 @@ export class InventoryComponent implements OnInit {
       return [];
     }
 
-    return this.mappedSupplies().filter((item) => item.provider === provider.name);
+    const items = this.supplierItemsBySupplierId().get(provider.id) ?? [];
+    return items.map((item) => this.mapToSupplyRow(item));
   });
 
   setActiveTab(tab: 'supplies' | 'providers'): void {
@@ -360,9 +368,8 @@ export class InventoryComponent implements OnInit {
 
   private mapToSupplyRow(item: InventoryItemResponse): SupplyRow {
     const category = this.categories().find(c => c.id === item.categoryId);
-    
-
-    const provider = this.providers().find(p => p.id === (item as any).supplierId);
+    const supplierId = this.supplierIdByItemId().get(item.id) ?? item.supplierId ?? null;
+    const provider = supplierId ? this.providers().find(p => p.id === supplierId) : null;
 
     return {
       id: item.id,
@@ -372,6 +379,7 @@ export class InventoryComponent implements OnInit {
       categoryName: category ? this.toSentenceCase(category.name) : 'General',
       quantity: item.currentStock,
       unit: item.unit,
+      supplierId,
       provider: provider ? provider.name : 'Proveedor no asignado',
       minimumStock: item.minStock,
       lowStock: item.lowStock
@@ -418,10 +426,42 @@ export class InventoryComponent implements OnInit {
     this.supplierRepository.getSuppliers().subscribe({
       next: (suppliers) => {
         this.providers.set(suppliers);
+        this.loadSupplierItems(suppliers);
       },
       error: (err) => {
         console.error('Error loading suppliers', err);
       }
+    });
+  }
+
+  private loadSupplierItems(suppliers: ProviderRow[]): void {
+    if (suppliers.length === 0) {
+      this.supplierIdByItemId.set(new Map());
+      this.supplierItemsBySupplierId.set(new Map());
+      return;
+    }
+
+    const requests = suppliers.map((supplier) =>
+      this.getSupplierItemsUseCase.execute(supplier.id).pipe(
+        map((items) => ({ supplierId: supplier.id, items })),
+        catchError((err) => {
+          console.error(`Error loading items for supplier ${supplier.id}`, err);
+          return of({ supplierId: supplier.id, items: [] as InventoryItemResponse[] });
+        })
+      )
+    );
+
+    forkJoin(requests).subscribe((results) => {
+      const itemToSupplier = new Map<string, string>();
+      const supplierToItems = new Map<string, InventoryItemResponse[]>();
+
+      results.forEach(({ supplierId, items }) => {
+        supplierToItems.set(supplierId, items);
+        items.forEach((item) => itemToSupplier.set(item.id, supplierId));
+      });
+
+      this.supplierIdByItemId.set(itemToSupplier);
+      this.supplierItemsBySupplierId.set(supplierToItems);
     });
   }
 
@@ -457,7 +497,7 @@ export class InventoryComponent implements OnInit {
   openAssignSupplierModal(item: SupplyRow): void {
     this.selectedItemForSupplier.set(item);
     this.supplierAssignmentForm.reset({
-      supplierId: ''
+      supplierId: item.supplierId
     });
     this.isAssignSupplierModalOpen.set(true);
   }
@@ -540,6 +580,7 @@ export class InventoryComponent implements OnInit {
         this.showNotification('¡Proveedor asignado con éxito!', 'success');
         this.closeAssignSupplierModal();
         this.loadSupplies(propertyId);
+        this.loadSupplierItems(this.providers());
       },
       error: (err) => {
         console.error('Error assigning supplier', err);
@@ -647,6 +688,7 @@ export class InventoryComponent implements OnInit {
         this.showNotification('¡Insumo eliminado con éxito!', 'success');
         this.closeDeleteSupplyModal();
         this.loadSupplies(propertyId);
+        this.loadSupplierItems(this.providers());
       },
       error: (err) => {
         console.error('Error deleting supply', err);
@@ -815,5 +857,9 @@ export class InventoryComponent implements OnInit {
 
   getCategoryClass(categoryName: string): string {
     return categoryName.toLowerCase().replace(/\s+/g, '-');
+  }
+
+  getSupplierItemCount(providerId: string): number {
+    return this.supplierItemsBySupplierId().get(providerId)?.length ?? 0;
   }
 }

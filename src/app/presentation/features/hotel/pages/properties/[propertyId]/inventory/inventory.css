@@ -110,6 +110,12 @@
   font-size: var(--font-size-sm);
 }
 
+.provider-items {
+  margin: 4px 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
 .provider-meta {
   list-style: none;
   margin: 0;
@@ -843,6 +849,12 @@
 
 .provider-link-btn:hover {
   color: var(--color-primary-dark);
+}
+
+.category-pill--success {
+  background-color: var(--color-success-light, #dcfce7);
+  color: var(--color-success, #16a34a);
+  border: 1px solid var(--color-success-border, #bbf7d0);
 }
 
 .assign-supplier-form {
