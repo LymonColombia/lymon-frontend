@@ -1602,3 +1602,217 @@
     gap: 2px;
   }
 }
+
+/* ---- Guest ratings section ---- */
+
+.ratings-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ratings-section-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  margin: 2px 0 0;
+}
+
+.ratings-average-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.ratings-average-value {
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-left: 4px;
+}
+
+.ratings-star--filled {
+  color: #f59e0b;
+}
+
+.ratings-star--empty {
+  color: var(--color-border-medium, #d1d5db);
+}
+
+.ratings-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.rating-row {
+  display: flex;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.rating-row--last {
+  border-bottom: none;
+}
+
+.rating-row-date {
+  width: 72px;
+  min-width: 72px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  padding-top: 2px;
+  text-transform: capitalize;
+}
+
+.rating-row-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rating-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rating-row-unit {
+  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.rating-row-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.rating-row-stars ng-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rating-row-message {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.ratings-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* ---- Metrics tab layout cards ---- */
+
+.metrics-card {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  margin-bottom: 0;
+}
+
+.metrics-card--full {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.metrics-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.metrics-card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.metrics-card-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* spending trend placeholder */
+
+.metrics-chart-placeholder {
+  height: 200px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.metrics-chart-placeholder-inner {
+  flex: 1;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 7%,
+    color-mix(in srgb, var(--color-border-light) 60%, transparent) 7%,
+    color-mix(in srgb, var(--color-border-light) 60%, transparent) 7.5%
+  );
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+/* booking source placeholder */
+
+.booking-origins-chart-wrapper {
+  position: relative;
+  height: 180px;
+}
+
+.booking-origins-footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--color-border-light);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.booking-origins-footer-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 768px) {
+  .metrics-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.monthly-spending-chart-wrapper {
+  position: relative;
+  height: 220px;
+}

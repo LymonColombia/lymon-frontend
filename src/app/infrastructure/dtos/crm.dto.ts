@@ -64,3 +64,36 @@ export interface CrmGuestEmailDto {
   sentById: string;
   createdAt: string;
 }
+
+export interface CrmGuestRatingDto {
+  id: string;
+  unitId: string;
+  unitName: string;
+  rate: number;
+  message: string;
+  createdAt: string;
+}
+
+export interface CrmGuestRatingsResponseDto {
+  items: CrmGuestRatingDto[];
+  averageRating: number;
+  pagination: PaginationDto;
+}
+
+export interface CrmGuestBookingOriginDto {
+  source: string;
+  count: number;
+  percentage: number;
+}
+
+export interface CrmGuestBookingOriginsResponseDto {
+  total: number;
+  sources: CrmGuestBookingOriginDto[];
+}
+
+export interface CrmGuestMonthlySpendDto {
+  year: number;
+  month: number;
+  label: string;
+  totalSpend: number;
+}

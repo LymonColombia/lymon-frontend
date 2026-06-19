@@ -2,21 +2,42 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
+  effect,
+  ElementRef,
   HostListener,
   inject,
   OnInit,
   signal,
+  viewChild,
 } from '@angular/core';
+import {
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  Filler,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  Tooltip,
+} from 'chart.js';
+
+Chart.register(BarController, CategoryScale, Filler, LinearScale, BarElement, LineController, LineElement, PointElement, Tooltip);
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   CrmGuest,
   CrmGuestBooking,
+  CrmGuestBookingOrigin,
   CrmGuestBookingSource,
   CrmGuestEmail,
   CrmGuestMessageTemplateId,
+  CrmGuestMonthlySpend,
   CrmGuestNote,
   CrmGuestNoteCategory,
+  CrmGuestRating,
   CreateCrmGuestNoteRequest,
   UpdateCrmGuestNoteRequest,
   SendCrmGuestMessageRequest,
@@ -31,6 +52,9 @@ import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-c
 import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
 import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
 import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
+import { GetCrmGuestRatingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-ratings.use-case';
+import { GetCrmGuestBookingOriginsUseCase } from '@/domain/use-cases/crm/get-crm-guest-booking-origins.use-case';
+import { GetCrmGuestMonthlySpendingUseCase } from '@/domain/use-cases/crm/get-crm-guest-monthly-spending.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
@@ -74,6 +98,8 @@ import {
   bootstrapSearch,
   bootstrapCheck,
   bootstrapGraphUp,
+  bootstrapStarFill,
+  bootstrapStar,
 } from '@ng-icons/bootstrap-icons';
 
 type PropertyLookupItem = Property & {
@@ -172,6 +198,8 @@ function isNoteCategory(value: SelectValue): value is CrmGuestNoteCategory {
       bootstrapSearch,
       bootstrapCheck,
       bootstrapGraphUp,
+      bootstrapStarFill,
+      bootstrapStar,
     }),
   ],
   templateUrl: './guestProfile.html',
@@ -192,6 +220,9 @@ export class GuestProfileComponent implements OnInit {
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly updateCrmGuestTagsUseCase = inject(UpdateCrmGuestTagsUseCase);
+  private readonly getCrmGuestRatingsUseCase = inject(GetCrmGuestRatingsUseCase);
+  private readonly getCrmGuestBookingOriginsUseCase = inject(GetCrmGuestBookingOriginsUseCase);
+  private readonly getCrmGuestMonthlySpendingUseCase = inject(GetCrmGuestMonthlySpendingUseCase);
 
   readonly activeTab = signal<GuestProfileTab>('resumen');
 
@@ -217,6 +248,34 @@ export class GuestProfileComponent implements OnInit {
   readonly isEmailsLoading = signal(false);
   readonly emailsErrorMessage = signal<string | null>(null);
   readonly isEmailsExpanded = signal(false);
+
+  readonly ratings = signal<CrmGuestRating[]>([]);
+  readonly ratingsAverageRating = signal<number | null>(null);
+  readonly ratingsPagination = signal<{ total: number; page: number; limit: number; totalPages: number } | null>(null);
+  readonly isRatingsLoading = signal(false);
+  readonly ratingsErrorMessage = signal<string | null>(null);
+  readonly isLoadingMoreRatings = signal(false);
+
+  readonly bookingOrigins = signal<CrmGuestBookingOrigin[]>([]);
+  readonly bookingOriginsTotal = signal<number>(0);
+  readonly isBookingOriginsLoading = signal(false);
+  readonly bookingOriginsErrorMessage = signal<string | null>(null);
+
+  private chart: Chart | null = null;
+  private bookingOriginsPercentages: number[] = [];
+  private readonly bookingOriginsCanvas = viewChild<ElementRef<HTMLCanvasElement>>('bookingOriginsCanvas');
+
+  readonly monthlySpending = signal<CrmGuestMonthlySpend[]>([]);
+  readonly isMonthlySpendingLoading = signal(false);
+  readonly monthlySpendingErrorMessage = signal<string | null>(null);
+
+  private monthlySpendingChart: Chart | null = null;
+  private readonly monthlySpendingCanvas = viewChild<ElementRef<HTMLCanvasElement>>('monthlySpendingCanvas');
+
+  readonly hasMoreRatings = computed(() => {
+    const p = this.ratingsPagination();
+    return p !== null && p.page < p.totalPages;
+  });
 
   readonly visibleEmails = computed(() =>
     this.isEmailsExpanded() ? this.emails() : this.emails().slice(0, EMAIL_HISTORY_LIMIT),
@@ -366,7 +425,7 @@ export class GuestProfileComponent implements OnInit {
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'CRM de Huéspedes', route: '/crm/guests' },
-    { label: this.guest()?.name ?? 'Perfil del huésped' },
+    { label: 'Detalle del huésped' },
   ]);
 
   readonly availableTags = AVAILABLE_TAGS;
@@ -416,6 +475,155 @@ export class GuestProfileComponent implements OnInit {
 
   onTagSearchChange(value: string): void {
     this.tagSearchQuery.set(value);
+  }
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+
+    effect(() => {
+      const canvas = this.bookingOriginsCanvas();
+      const origins = this.bookingOrigins();
+
+      if (!canvas || origins.length === 0) {
+        this.chart?.destroy();
+        this.chart = null;
+        return;
+      }
+
+      const labels = origins.map((o) => this.formatBookingSource(o.source));
+      const counts = origins.map((o) => o.count);
+      this.bookingOriginsPercentages = origins.map((o) => o.percentage);
+
+      if (this.chart) {
+        this.chart.data.labels = labels;
+        this.chart.data.datasets[0].data = counts;
+        this.chart.update();
+      } else {
+        this.chart = new Chart(canvas.nativeElement, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              {
+                data: counts,
+                backgroundColor: '#2ec094',
+                borderRadius: 99,
+                barThickness: 10,
+              },
+            ],
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ${ctx.parsed.x} · ${this.bookingOriginsPercentages[ctx.dataIndex]}%`,
+                },
+              },
+            },
+            scales: {
+              x: { display: false },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#084539', font: { size: 13 } },
+              },
+            },
+          },
+        });
+      }
+    });
+
+    effect(() => {
+      const canvas = this.monthlySpendingCanvas();
+      const spending = this.monthlySpending();
+
+      if (!canvas || spending.length === 0) {
+        this.monthlySpendingChart?.destroy();
+        this.monthlySpendingChart = null;
+        return;
+      }
+
+      const monthTranslations: Record<string, string> = {
+        Jan: 'Ene', Feb: 'Feb', Mar: 'Mar', Apr: 'Abr', May: 'May', Jun: 'Jun',
+        Jul: 'Jul', Aug: 'Ago', Sep: 'Sep', Oct: 'Oct', Nov: 'Nov', Dec: 'Dic',
+      };
+      const labels = spending.map((s) => {
+        const [abbr, year] = s.label.split(' ');
+        return `${monthTranslations[abbr] ?? abbr} ${year}`;
+      });
+      const values = spending.map((s) => s.totalSpend);
+
+      if (this.monthlySpendingChart) {
+        this.monthlySpendingChart.data.labels = labels;
+        this.monthlySpendingChart.data.datasets[0].data = values;
+        this.monthlySpendingChart.update();
+      } else {
+        this.monthlySpendingChart = new Chart(canvas.nativeElement, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Gasto',
+                data: values,
+                fill: true,
+                borderColor: '#2ec094',
+                backgroundColor: 'rgba(46, 192, 148, 0.12)',
+                pointBackgroundColor: '#2ec094',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                align: 'end',
+                labels: { color: '#084539', font: { size: 13 }, boxWidth: 12, boxHeight: 12 },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` Gasto: ${this.formatCurrency(Number(ctx.parsed.y))}`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#084539', font: { size: 12 } },
+                border: { display: false },
+              },
+              y: {
+                min: 0,
+                grid: { color: 'rgba(8, 69, 57, 0.06)' },
+                ticks: {
+                  precision: 0,
+                  color: '#084539',
+                  font: { size: 12 },
+                  callback: (value) => this.formatCurrency(Number(value)),
+                },
+                border: { display: false },
+              },
+            },
+          },
+        });
+      }
+    });
+
+    destroyRef.onDestroy(() => {
+      this.chart?.destroy();
+      this.monthlySpendingChart?.destroy();
+    });
   }
 
   ngOnInit(): void {
@@ -809,6 +1017,97 @@ export class GuestProfileComponent implements OnInit {
     this.isEmailsExpanded.update((v) => !v);
   }
 
+  loadRatings(guestId: string, page = 1): void {
+    if (page === 1) {
+      this.isRatingsLoading.set(true);
+      this.ratingsErrorMessage.set(null);
+    } else {
+      this.isLoadingMoreRatings.set(true);
+    }
+
+    this.getCrmGuestRatingsUseCase.execute(guestId, { page, limit: 20 }).subscribe({
+      next: (result) => {
+        if (page === 1) {
+          this.ratings.set(result.items);
+          this.isRatingsLoading.set(false);
+        } else {
+          this.ratings.update((current) => [...current, ...result.items]);
+          this.isLoadingMoreRatings.set(false);
+        }
+        this.ratingsAverageRating.set(result.averageRating);
+        this.ratingsPagination.set(result.pagination);
+      },
+      error: () => {
+        if (page === 1) {
+          this.isRatingsLoading.set(false);
+        } else {
+          this.isLoadingMoreRatings.set(false);
+        }
+        this.ratingsErrorMessage.set('No se pudieron cargar las reseñas. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  loadMoreRatings(): void {
+    const guestId = this.guest()?.id?.trim();
+    const pagination = this.ratingsPagination();
+    if (!guestId || !pagination) return;
+    this.loadRatings(guestId, pagination.page + 1);
+  }
+
+  loadBookingOrigins(guestId: string): void {
+    this.isBookingOriginsLoading.set(true);
+    this.bookingOriginsErrorMessage.set(null);
+
+    this.getCrmGuestBookingOriginsUseCase.execute(guestId).subscribe({
+      next: (result) => {
+        this.bookingOrigins.set(result.sources);
+        this.bookingOriginsTotal.set(result.total);
+        this.isBookingOriginsLoading.set(false);
+      },
+      error: () => {
+        this.isBookingOriginsLoading.set(false);
+        this.bookingOriginsErrorMessage.set('No se pudieron cargar los orígenes. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  private loadMonthlySpending(guestId: string): void {
+    this.isMonthlySpendingLoading.set(true);
+    this.monthlySpendingErrorMessage.set(null);
+
+    this.getCrmGuestMonthlySpendingUseCase.execute(guestId).subscribe({
+      next: (result) => {
+        this.monthlySpending.set(result);
+        this.isMonthlySpendingLoading.set(false);
+      },
+      error: () => {
+        this.isMonthlySpendingLoading.set(false);
+        this.monthlySpendingErrorMessage.set('No se pudo cargar la tendencia de gasto. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  formatBookingSource(source: CrmGuestBookingSource): string {
+    const labels: Record<CrmGuestBookingSource, string> = {
+      MANUAL: 'Manual',
+      DIRECT: 'Directo',
+      AIRBNB: 'Airbnb',
+      BOOKING: 'Booking',
+      VRBO: 'Vrbo',
+    };
+    return labels[source];
+  }
+
+  getStarsArray(rate: number): boolean[] {
+    return Array.from({ length: 5 }, (_, i) => i < Math.round(rate));
+  }
+
+  formatRatingDate(dateStr: string): string {
+    const d = new Date(dateStr);
+    return new Intl.DateTimeFormat('es-ES', { month: 'short', year: 'numeric' }).format(d).replace('.', '');
+  }
+
   getEmailStatusLabel(status: string): string {
     switch (status) {
       case 'sent':
@@ -842,6 +1141,9 @@ export class GuestProfileComponent implements OnInit {
         this.loadBookings(guestId);
         this.loadNotes(guestId);
         this.loadEmails(guestId);
+        this.loadRatings(guestId);
+        this.loadBookingOrigins(guestId);
+        this.loadMonthlySpending(guestId);
       },
       error: (error: HttpErrorResponse) => {
         this.isGuestLoading.set(false);
