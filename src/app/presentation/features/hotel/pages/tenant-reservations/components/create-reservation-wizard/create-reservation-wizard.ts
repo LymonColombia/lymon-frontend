@@ -203,7 +203,7 @@ export class CreateReservationWizardComponent implements OnInit {
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
 
-    if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+    if (Number.isNaN(checkInDate.getTime()) || Number.isNaN(checkOutDate.getTime())) {
       return 'Las fechas seleccionadas no son válidas.';
     }
 

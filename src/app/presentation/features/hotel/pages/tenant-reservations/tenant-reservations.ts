@@ -362,25 +362,25 @@ export class TenantReservations implements OnInit {
   }
 
   canConfirmReservation(status: string): boolean {
-    return status.toLowerCase().replace(/_/g, '-') === 'pendiente';
+    return status.toLowerCase().replaceAll('_', '-') === 'pendiente';
   }
 
   canCheckInReservation(status: string): boolean {
-    return status.toLowerCase().replace(/_/g, '-') === 'confirmada';
+    return status.toLowerCase().replaceAll('_', '-') === 'confirmada';
   }
 
   canCheckOutReservation(status: string): boolean {
-    const normalized = status.toLowerCase().replace(/_/g, '-');
+    const normalized = status.toLowerCase().replaceAll('_', '-');
     return normalized === 'check-in' || normalized === 'checked-in';
   }
 
   canCancelReservation(status: string): boolean {
-    const normalized = status.toLowerCase().replace(/_/g, '-');
+    const normalized = status.toLowerCase().replaceAll('_', '-');
     return normalized !== 'cancelada' && normalized !== 'cancelled' && normalized !== 'finalizada' && normalized !== 'finished' && normalized !== 'checked-out';
   }
 
   canEditReservation(status: string): boolean {
-    const normalized = status.toLowerCase().replace(/_/g, '-');
+    const normalized = status.toLowerCase().replaceAll('_', '-');
     return normalized !== 'cancelada' && normalized !== 'cancelled' && normalized !== 'finalizada' && normalized !== 'finished' && normalized !== 'checked-out';
   }
 
@@ -416,7 +416,7 @@ export class TenantReservations implements OnInit {
       finished: 'Finalizada'
     };
 
-    const normalized = status?.toLowerCase().replace(/_/g, '-');
+    const normalized = status?.toLowerCase().replaceAll('_', '-');
     return map[normalized ?? ''] || status || 'Pendiente';
   }
 
@@ -443,7 +443,7 @@ export class TenantReservations implements OnInit {
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
 
-    if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+    if (Number.isNaN(checkInDate.getTime()) || Number.isNaN(checkOutDate.getTime())) {
       return 'Las fechas seleccionadas no son válidas.';
     }
 
