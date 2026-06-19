@@ -8,6 +8,7 @@ import { BookingPaginationComponent } from './components/booking-pagination/book
 import { BookingHeroComponent, BookingSearchParams } from './components/booking-hero/booking-hero.component';
 import { BookingToolbarComponent, BookingSortOption } from './components/booking-toolbar/booking-toolbar.component';
 import { BookingEmptyStateComponent } from './components/booking-empty-state/booking-empty-state.component';
+import { BookingSkeletonCardComponent } from './components/booking-skeleton-card/booking-skeleton-card.component';
 import { GetPublicUnitsUseCase } from '@/domain/use-cases/property/get-public-units.use-case';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { Unit } from '@/domain/entities/staff.model';
@@ -25,6 +26,7 @@ const ITEMS_PER_PAGE = 6;
     BookingHeroComponent,
     BookingToolbarComponent,
     BookingEmptyStateComponent,
+    BookingSkeletonCardComponent,
   ],
   templateUrl: './booking.html',
   styleUrl: './booking.css',
@@ -36,6 +38,8 @@ export class BookingComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitsUseCase = inject(GetPublicUnitsUseCase);
   readonly guestTokenService = inject(GuestTokenService);
+
+  readonly skeletonItems = Array.from({ length: ITEMS_PER_PAGE }, (_, i) => i);
 
   readonly isRoomsLoading = signal(false);
   readonly currentPage = signal(1);
