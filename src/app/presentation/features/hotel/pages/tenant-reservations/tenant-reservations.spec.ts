@@ -17,7 +17,7 @@ describe('TenantReservations', () => {
         {
           provide: ReservationRepository,
           useValue: {
-            getReservations: () => of([]),
+            getReservations: () => of({ reservations: [], total: 0 }),
             getReservationById: () => of(),
             create: () => of(),
             update: () => of(),

@@ -1,7 +1,7 @@
 import { Observable, map } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ReservationRepository } from '@/domain/repositories/reservation.repository';
+import { ReservationRepository, PaginatedReservations } from '@/domain/repositories/reservation.repository';
 import { Reservation } from '@/domain/entities/reservation.model';
 import { CreateReservationInput } from '@/domain/use-cases/reservation/create-reservation.use-case';
 import { UpdateReservationInput } from '@/domain/use-cases/reservation/update-reservation.use-case';
@@ -18,10 +18,14 @@ export class ReservationRepositoryImpl extends ReservationRepository {
     super();
   }
 
-  getReservations(): Observable<Reservation[]> {
+  getReservations(params?: { page?: number; limit?: number }): Observable<PaginatedReservations> {
+    let httpParams = new HttpParams();
+    if (params?.page != null) httpParams = httpParams.set('page', String(params.page));
+    if (params?.limit != null) httpParams = httpParams.set('limit', String(params.limit));
+
     return this.http
-      .get<unknown>(`${this.baseUrl}${this.endpoint}`)
-      .pipe(map((response) => this.toReservations(response)));
+      .get<unknown>(`${this.baseUrl}${this.endpoint}`, { params: httpParams })
+      .pipe(map((response) => this.toPaginatedReservations(response)));
   }
 
   getReservationById(reservationId: string): Observable<Reservation> {
@@ -170,6 +174,46 @@ export class ReservationRepositoryImpl extends ReservationRepository {
     }
 
     return [];
+  }
+
+  private toPaginatedReservations(response: unknown): { reservations: Reservation[]; total: number } {
+    if (Array.isArray(response)) {
+      const reservations = response.filter((item): item is Reservation => this.isReservation(item));
+      return { reservations, total: reservations.length };
+    }
+
+    if (typeof response === 'object' && response !== null) {
+      const envelope = response as {
+        data?: unknown;
+        items?: unknown;
+        reservations?: unknown;
+        results?: unknown;
+        total?: unknown;
+        totalItems?: unknown;
+        pagination?: { total?: unknown };
+      };
+
+      const listCandidate = envelope.data ?? envelope.items ?? envelope.reservations ?? envelope.results;
+      let total = 0;
+
+      if (typeof envelope.total === 'number') {
+        total = envelope.total;
+      } else if (typeof envelope.totalItems === 'number') {
+        total = envelope.totalItems;
+      } else if (typeof envelope.pagination?.total === 'number') {
+        total = envelope.pagination.total;
+      }
+
+      if (Array.isArray(listCandidate)) {
+        const reservations = listCandidate.filter((item): item is Reservation => this.isReservation(item));
+        if (total === 0) {
+          total = reservations.length;
+        }
+        return { reservations, total };
+      }
+    }
+
+    return { reservations: [], total: 0 };
   }
 
   private isReservation(value: unknown): value is Reservation {

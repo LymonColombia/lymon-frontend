@@ -62,6 +62,9 @@ export class TenantReservations implements OnInit {
 
   reservations = signal<ReservationViewModel[]>([]);
 
+  readonly PAGE_SIZE = 10;
+  currentPage = signal(1);
+  totalPages = signal(1);
   totalReservations = signal(0);
   activeCheckins = signal(0);
   isLoading = signal(false);
@@ -152,11 +155,13 @@ export class TenantReservations implements OnInit {
   loadReservations(): void {
     this.errorMessage.set('');
 
-    this.getReservationsUseCase.execute().subscribe({
-      next: (data) => {
+    const page = this.currentPage();
+    this.getReservationsUseCase.execute({ page, limit: this.PAGE_SIZE }).subscribe({
+      next: ({ reservations: data, total }) => {
         const mapped = data.map((res) => this.mapToViewModel(res));
         this.reservations.set(mapped);
-        this.totalReservations.set(mapped.length);
+        this.totalReservations.set(total);
+        this.totalPages.set(Math.max(1, Math.ceil(total / this.PAGE_SIZE)));
         this.activeCheckins.set(mapped.filter(r => r.status.toLowerCase() === 'check-in').length);
         this.isLoading.set(false);
       },
@@ -166,6 +171,20 @@ export class TenantReservations implements OnInit {
         console.error('Error fetching reservations:', err);
       }
     });
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+      this.loadReservations();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+      this.loadReservations();
+    }
   }
 
   openDetails(reservation: ReservationViewModel) {
@@ -192,6 +211,7 @@ export class TenantReservations implements OnInit {
 
   onReservationCreated() {
     this.closeWizard();
+    this.currentPage.set(1);
     this.loadReferenceDataAndReservations();
   }
 

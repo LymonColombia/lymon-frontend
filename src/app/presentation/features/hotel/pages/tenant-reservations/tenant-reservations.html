@@ -109,6 +109,11 @@
             }
           </tbody>
         </table>
+        <div class="pagination-bar">
+          <button class="btn btn-ghost" (click)="prevPage()" [disabled]="currentPage() === 1 || isLoading()">Anterior</button>
+          <span class="page-indicator">Página {{ currentPage() }} de {{ totalPages() }}</span>
+          <button class="btn btn-ghost" (click)="nextPage()" [disabled]="currentPage() >= totalPages() || isLoading()">Siguiente</button>
+        </div>
       }
     </div>
   </section>
