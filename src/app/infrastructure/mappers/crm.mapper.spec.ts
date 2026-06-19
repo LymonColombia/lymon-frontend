@@ -1,5 +1,5 @@
 import { CrmMapper } from './crm.mapper';
-import { CrmGuestBookingOriginsResponseDto, CrmGuestRatingsResponseDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestBookingOriginsResponseDto, CrmGuestMonthlySpendDto, CrmGuestRatingsResponseDto } from '@/infrastructure/dtos/crm.dto';
 
 describe('CrmMapper.toGuestRatings', () => {
   const buildDto = (overrides?: Partial<CrmGuestRatingsResponseDto>): CrmGuestRatingsResponseDto => ({
@@ -135,5 +135,63 @@ describe('CrmMapper.toGuestBookingOrigins', () => {
     expect(result.sources[0].source).toBe('DIRECT');
     expect(result.sources[1].source).toBe('AIRBNB');
     expect(result.sources[2].source).toBe('BOOKING');
+  });
+});
+
+describe('CrmMapper.toGuestMonthlySpending', () => {
+  const buildDto = (overrides?: Partial<CrmGuestMonthlySpendDto>): CrmGuestMonthlySpendDto => ({
+    year: 2026,
+    month: 3,
+    label: 'Mar 2026',
+    totalSpend: 275000,
+    ...overrides,
+  });
+
+  it('mapea los cuatro campos del DTO al modelo de dominio', () => {
+    const result = CrmMapper.toGuestMonthlySpending([buildDto()]);
+
+    expect(result).toHaveLength(1);
+    const item = result[0];
+    expect(item.year).toBe(2026);
+    expect(item.month).toBe(3);
+    expect(item.label).toBe('Mar 2026');
+    expect(item.totalSpend).toBe(275000);
+  });
+
+  it('retorna array vacío cuando el input es []', () => {
+    const result = CrmMapper.toGuestMonthlySpending([]);
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('mapea múltiples items preservando el orden', () => {
+    const dtos: CrmGuestMonthlySpendDto[] = [
+      buildDto({ year: 2026, month: 1, label: 'Ene 2026', totalSpend: 100000 }),
+      buildDto({ year: 2026, month: 2, label: 'Feb 2026', totalSpend: 200000 }),
+      buildDto({ year: 2026, month: 3, label: 'Mar 2026', totalSpend: 300000 }),
+    ];
+
+    const result = CrmMapper.toGuestMonthlySpending(dtos);
+
+    expect(result).toHaveLength(3);
+    expect(result[0]).toEqual({ year: 2026, month: 1, label: 'Ene 2026', totalSpend: 100000 });
+    expect(result[1]).toEqual({ year: 2026, month: 2, label: 'Feb 2026', totalSpend: 200000 });
+    expect(result[2]).toEqual({ year: 2026, month: 3, label: 'Mar 2026', totalSpend: 300000 });
+  });
+
+  it('preserva totalSpend igual a 0 sin descartarlo', () => {
+    const result = CrmMapper.toGuestMonthlySpending([buildDto({ totalSpend: 0 })]);
+
+    expect(result[0].totalSpend).toBe(0);
+  });
+
+  it('preserva el número de mes en sus límites (1 y 12)', () => {
+    const january = buildDto({ month: 1, label: 'Ene 2026' });
+    const december = buildDto({ month: 12, label: 'Dic 2026' });
+
+    const result = CrmMapper.toGuestMonthlySpending([january, december]);
+
+    expect(result[0].month).toBe(1);
+    expect(result[1].month).toBe(12);
   });
 });

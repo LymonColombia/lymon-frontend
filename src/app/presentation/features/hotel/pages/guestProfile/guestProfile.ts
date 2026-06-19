@@ -11,9 +11,20 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { BarController, BarElement, CategoryScale, Chart, LinearScale, Tooltip } from 'chart.js';
+import {
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  Filler,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  Tooltip,
+} from 'chart.js';
 
-Chart.register(BarController, CategoryScale, LinearScale, BarElement, Tooltip);
+Chart.register(BarController, CategoryScale, Filler, LinearScale, BarElement, LineController, LineElement, PointElement, Tooltip);
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -23,6 +34,7 @@ import {
   CrmGuestBookingSource,
   CrmGuestEmail,
   CrmGuestMessageTemplateId,
+  CrmGuestMonthlySpend,
   CrmGuestNote,
   CrmGuestNoteCategory,
   CrmGuestRating,
@@ -42,6 +54,7 @@ import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-e
 import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
 import { GetCrmGuestRatingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-ratings.use-case';
 import { GetCrmGuestBookingOriginsUseCase } from '@/domain/use-cases/crm/get-crm-guest-booking-origins.use-case';
+import { GetCrmGuestMonthlySpendingUseCase } from '@/domain/use-cases/crm/get-crm-guest-monthly-spending.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
@@ -209,6 +222,7 @@ export class GuestProfileComponent implements OnInit {
   private readonly updateCrmGuestTagsUseCase = inject(UpdateCrmGuestTagsUseCase);
   private readonly getCrmGuestRatingsUseCase = inject(GetCrmGuestRatingsUseCase);
   private readonly getCrmGuestBookingOriginsUseCase = inject(GetCrmGuestBookingOriginsUseCase);
+  private readonly getCrmGuestMonthlySpendingUseCase = inject(GetCrmGuestMonthlySpendingUseCase);
 
   readonly activeTab = signal<GuestProfileTab>('resumen');
 
@@ -250,6 +264,13 @@ export class GuestProfileComponent implements OnInit {
   private chart: Chart | null = null;
   private bookingOriginsPercentages: number[] = [];
   private readonly bookingOriginsCanvas = viewChild<ElementRef<HTMLCanvasElement>>('bookingOriginsCanvas');
+
+  readonly monthlySpending = signal<CrmGuestMonthlySpend[]>([]);
+  readonly isMonthlySpendingLoading = signal(false);
+  readonly monthlySpendingErrorMessage = signal<string | null>(null);
+
+  private monthlySpendingChart: Chart | null = null;
+  private readonly monthlySpendingCanvas = viewChild<ElementRef<HTMLCanvasElement>>('monthlySpendingCanvas');
 
   readonly hasMoreRatings = computed(() => {
     const p = this.ratingsPagination();
@@ -515,8 +536,93 @@ export class GuestProfileComponent implements OnInit {
       }
     });
 
+    effect(() => {
+      const canvas = this.monthlySpendingCanvas();
+      const spending = this.monthlySpending();
+
+      if (!canvas || spending.length === 0) {
+        this.monthlySpendingChart?.destroy();
+        this.monthlySpendingChart = null;
+        return;
+      }
+
+      const monthTranslations: Record<string, string> = {
+        Jan: 'Ene', Feb: 'Feb', Mar: 'Mar', Apr: 'Abr', May: 'May', Jun: 'Jun',
+        Jul: 'Jul', Aug: 'Ago', Sep: 'Sep', Oct: 'Oct', Nov: 'Nov', Dec: 'Dic',
+      };
+      const labels = spending.map((s) => {
+        const [abbr, year] = s.label.split(' ');
+        return `${monthTranslations[abbr] ?? abbr} ${year}`;
+      });
+      const values = spending.map((s) => s.totalSpend);
+
+      if (this.monthlySpendingChart) {
+        this.monthlySpendingChart.data.labels = labels;
+        this.monthlySpendingChart.data.datasets[0].data = values;
+        this.monthlySpendingChart.update();
+      } else {
+        this.monthlySpendingChart = new Chart(canvas.nativeElement, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Gasto',
+                data: values,
+                fill: true,
+                borderColor: '#2ec094',
+                backgroundColor: 'rgba(46, 192, 148, 0.12)',
+                pointBackgroundColor: '#2ec094',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                align: 'end',
+                labels: { color: '#084539', font: { size: 13 }, boxWidth: 12, boxHeight: 12 },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` Gasto: ${this.formatCurrency(Number(ctx.parsed.y))}`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#084539', font: { size: 12 } },
+                border: { display: false },
+              },
+              y: {
+                min: 0,
+                grid: { color: 'rgba(8, 69, 57, 0.06)' },
+                ticks: {
+                  precision: 0,
+                  color: '#084539',
+                  font: { size: 12 },
+                  callback: (value) => this.formatCurrency(Number(value)),
+                },
+                border: { display: false },
+              },
+            },
+          },
+        });
+      }
+    });
+
     destroyRef.onDestroy(() => {
       this.chart?.destroy();
+      this.monthlySpendingChart?.destroy();
     });
   }
 
@@ -966,6 +1072,22 @@ export class GuestProfileComponent implements OnInit {
     });
   }
 
+  private loadMonthlySpending(guestId: string): void {
+    this.isMonthlySpendingLoading.set(true);
+    this.monthlySpendingErrorMessage.set(null);
+
+    this.getCrmGuestMonthlySpendingUseCase.execute(guestId).subscribe({
+      next: (result) => {
+        this.monthlySpending.set(result);
+        this.isMonthlySpendingLoading.set(false);
+      },
+      error: () => {
+        this.isMonthlySpendingLoading.set(false);
+        this.monthlySpendingErrorMessage.set('No se pudo cargar la tendencia de gasto. Inténtalo de nuevo.');
+      },
+    });
+  }
+
   formatBookingSource(source: CrmGuestBookingSource): string {
     const labels: Record<CrmGuestBookingSource, string> = {
       MANUAL: 'Manual',
@@ -1021,6 +1143,7 @@ export class GuestProfileComponent implements OnInit {
         this.loadEmails(guestId);
         this.loadRatings(guestId);
         this.loadBookingOrigins(guestId);
+        this.loadMonthlySpending(guestId);
       },
       error: (error: HttpErrorResponse) => {
         this.isGuestLoading.set(false);
