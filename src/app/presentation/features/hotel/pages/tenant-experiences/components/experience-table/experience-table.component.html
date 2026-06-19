@@ -34,9 +34,9 @@
           <td class="availability-cell">{{ getAvailabilitySummary(experience) }}</td>
           <td>
             <div class="row-actions">
-              <button type="button" (click)="onView(experience.id)">Detalle</button>
-              <button type="button" class="edit" (click)="onEdit(experience.id)">Editar</button>
-              <button type="button" class="delete" (click)="onDelete(experience.id)"><ng-icon name="bootstrapTrash" ></ng-icon></button>
+              <button type="button" (click)="onView(experience.id)"><ng-icon name="bootstrapEye"  /></button>
+              <button type="button"  (click)="onEdit(experience.id)"><ng-icon name="bootstrapPencilSquare" /></button>
+              <button type="button" (click)="onDelete(experience.id)"><ng-icon name="bootstrapTrash" /></button>
             </div>
           </td>
         </tr>

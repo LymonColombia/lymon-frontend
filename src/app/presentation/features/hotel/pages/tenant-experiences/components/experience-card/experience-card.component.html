@@ -37,13 +37,16 @@
     <p class="availability-summary">{{ availabilitySummary() }}</p>
 
     <div class="actions">
-      <app-button type="button" variant="outline" size="small" (clicked)="onView()">
+      <app-button type="button" variant="primary" size="small" (clicked)="onView()">
+        <ng-icon name="bootstrapEye" size="14px"></ng-icon>
         Ver detalle
       </app-button>
       <app-button type="button" variant="primary" size="small" (clicked)="onEdit()">
+        <ng-icon name="bootstrapPencilSquare" size="14px"></ng-icon>
         Editar
       </app-button>
-      <app-button type="button" variant="secondary" size="small" (clicked)="onDelete()">
+      <app-button type="button" variant="primary" size="small" (clicked)="onDelete()">
+        <ng-icon name="bootstrapTrash" size="14px"></ng-icon>
         Eliminar
       </app-button>
     </div>

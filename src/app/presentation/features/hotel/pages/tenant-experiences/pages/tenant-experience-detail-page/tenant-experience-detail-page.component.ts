@@ -1,31 +1,28 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapPencilSquare, bootstrapStars } from '@ng-icons/bootstrap-icons';
+import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStars } from '@ng-icons/bootstrap-icons';
 import { Experience } from '@/domain/entities/experience.model';
 import {
   HotelPageActionsDirective,
-  HotelPageLayoutComponent,
-  HotelPageMetaDirective,
+  HotelPageLayoutComponent
 } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { ExperienceAvailabilitySectionComponent } from '../../components/experience-availability-section/experience-availability-section.component';
-import { ExperienceLocationSectionComponent } from '../../components/experience-location-section/experience-location-section.component';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
-
+import { LocationMap } from "@/presentation/features/hotel/components/location-map/location-map";
+import {formatDayList, formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,} from '../../models/experience-form.model';
 @Component({
   selector: 'app-tenant-experience-detail-page',
   standalone: true,
   imports: [
     HotelPageLayoutComponent,
-    HotelPageMetaDirective,
     HotelPageActionsDirective,
     ButtonComponent,
-    ExperienceAvailabilitySectionComponent,
-    ExperienceLocationSectionComponent,
     NgIcon,
-  ],
-  providers: [provideIcons({ bootstrapStars, bootstrapPencilSquare })],
+    LocationMap
+],
+  providers: [provideIcons({ bootstrapStars, bootstrapPencilSquare , bootstrapCash,bootstrapClock,bootstrapPeopleFill,bootstrapCalendar3,bootstrapDashCircle,bootstrapBuilding,bootstrapGeoAlt,bootstrapFlag,bootstrapSignpost})],
   templateUrl: './tenant-experience-detail-page.component.html',
   styleUrl: './tenant-experience-detail-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +30,7 @@ import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-expe
 export class TenantExperienceDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly getExperienceByIdUseCase = inject(GetExperienceByIdUseCase);
 
   readonly isLoading = signal(true);
@@ -41,23 +39,19 @@ export class TenantExperienceDetailPageComponent {
 
   readonly scopeBadge = computed(() => {
     const item = this.experience();
-    return item ? this.getScopeBadgeLabel(item.scope) : '';
+    return item ? getScopeBadgeLabel(item.scope) : '';
   });
 
   readonly categoryLabel = computed(() => {
     const item = this.experience();
-    return item ? this.getCategoryLabel(item.category) : '';
+    return item ? getCategoryLabel(item.category) : '';
   });
 
   readonly priceLabel = computed(() => {
     const item = this.experience();
-    return item ? this.formatCurrencyCop(item.priceCop) : '';
+    return item ? formatCurrencyCop(item.priceCop) : '';
   });
 
-  readonly availabilityLabel = computed(() => {
-    const item = this.experience();
-    return item ? this.getAvailabilityLabel(item.availabilityType) : '';
-  });
 
   constructor() {
     this.loadExperience();
@@ -80,43 +74,37 @@ export class TenantExperienceDetailPageComponent {
       return;
     }
 
-    this.getExperienceByIdUseCase.execute(id).subscribe({
-      next: (experience) => {
-        console.log('Experience loaded:', experience);
-        this.experience.set(experience);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('No se pudo cargar la experiencia.');
-        this.isLoading.set(false);
-      },
-    })
+    this.getExperienceByIdUseCase.execute(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (experience) => {
+          this.experience.set(experience);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.errorMessage.set('No se pudo cargar la experiencia.');
+          this.isLoading.set(false);
+        },
+      });
   }
 
-  private formatCurrencyCop(priceCop: number): string {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0,
-    }).format(priceCop);
-  }
-
-  private getScopeBadgeLabel(scope: Experience['scope']): string {
-    return scope === 'PROPERTY' ? 'Propiedad' : 'Tenant';
-  }
-
-  private getCategoryLabel(category: string): string {
-    const normalized = category.toLowerCase();
-    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-  }
-
-  private getAvailabilityLabel(type: Experience['availabilityType']): string {
-    if (type === 'DATE_RANGE') {
-      return 'Rango de Fechas';
+  formatDateTime(value?: string): string {
+    if (!value) {
+      return 'Sin fecha';
     }
-    if (type === 'RECURRING') {
-      return 'Recurrencia';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
     }
-    return 'Una sola vez';
+
+    return new Intl.DateTimeFormat('es-CO', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(date);
+  }
+
+  dayLabel(day: number): string {
+    return formatDayList([day]);
   }
 }
