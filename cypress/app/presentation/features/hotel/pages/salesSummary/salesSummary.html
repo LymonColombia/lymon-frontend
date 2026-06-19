@@ -1,0 +1,178 @@
+<app-hotel-page-layout
+  title="Resumen de Ventas"
+  subtitle="Análisis financiero y facturas detalladas"
+  iconName="bootstrapCurrencyDollar"
+>
+    <div hotelPageActions class="sales-header-actions">
+        <app-button type="button" variant="secondary" class="btn-pdf">
+            <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
+            PDF
+        </app-button>
+        <app-button type="button" variant="secondary" class="btn-excel">
+            <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
+            Excel
+        </app-button>
+    </div>
+
+    <div class="sales-container">
+
+        <div class="filters-section">
+            <div class="filters-header">
+                <ng-icon name="bootstrapFilter" size="20px" class="filters-icon" aria-hidden="true"></ng-icon>
+                <h3 class="filters-title">Filtros</h3>
+            </div>
+            <div class="filters-content">
+                <div class="filter-group">
+                    <label>Fecha Inicio</label>
+                    <app-input type="date" [hasIcon]="true">
+                        <ng-icon icon name="bootstrapCalendar" size="18px" aria-hidden="true"></ng-icon>
+                    </app-input>
+                </div>
+                <div class="filter-group">
+                    <label>Fecha Fin</label>
+                    <app-input type="date" [hasIcon]="true">
+                        <ng-icon icon name="bootstrapCalendar" size="18px" aria-hidden="true"></ng-icon>
+                    </app-input>
+                </div>
+                <div class="filter-group search-group">
+                    <label>Buscar</label>
+                    <app-input type="text" placeholder="Huésped, factura, habitación..." [hasIcon]="true">
+                        <ng-icon icon name="bootstrapSearch" size="18px" aria-hidden="true"></ng-icon>
+                    </app-input>
+                </div>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            @for (metric of metrics; track metric.label) {
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-label">{{ metric.label }}</span>
+                        @if (metric.icon === 'trending-up') {
+                            <ng-icon class="metric-icon metric-icon-primary" name="bootstrapGraphUpArrow" size="20px" aria-hidden="true"></ng-icon>
+                        }
+                        @if (metric.icon === 'receipt') {
+                            <ng-icon class="metric-icon metric-icon-success" name="bootstrapReceipt" size="20px" aria-hidden="true"></ng-icon>
+                        }
+                        @if (metric.icon === 'dollar') {
+                            <ng-icon class="metric-icon metric-icon-success" name="bootstrapCurrencyDollar" size="20px" aria-hidden="true"></ng-icon>
+                        }
+                    </div>
+                    <div class="metric-value">{{ metric.value }}</div>
+                    <div class="metric-subtitle">{{ metric.subtitle }}</div>
+                </div>
+            }
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 class="chart-title">Ventas Semanales</h3>
+                <div class="bar-chart">
+                    @for (data of weeklyData; track data.day) {
+                        <div class="bar-column">
+                            <div class="bar-wrapper">
+                                <div class="bar" [style.height.%]="getBarHeight(data.value)"></div>
+                            </div>
+                            <span class="bar-label">{{ data.day }}</span>
+                        </div>
+                    }
+                </div>
+                <div class="chart-legend">
+                    <span class="legend-icon"></span>
+                    <span class="legend-label">Ventas ($)</span>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">Métodos de Pago</h3>
+                <div class="pie-chart-container">
+                    <svg class="pie-chart" viewBox="0 0 100 100">
+                        <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            fill="none"
+                            stroke="var(--color-primary-dark)"
+                            stroke-width="20"
+                            [attr.stroke-dasharray]="getPieChartDashArray(45)"
+                            transform="rotate(-90 50 50)"
+                        />
+                        <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            fill="none"
+                            stroke="var(--color-primary)"
+                            stroke-width="20"
+                            [attr.stroke-dasharray]="getPieChartDashArray(30)"
+                            [attr.stroke-dashoffset]="getPieChartOffset([45])"
+                            transform="rotate(-90 50 50)"
+                        />
+                        <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            fill="none"
+                            stroke="var(--color-primary-light)"
+                            stroke-width="20"
+                            [attr.stroke-dasharray]="getPieChartDashArray(25)"
+                            [attr.stroke-dashoffset]="getPieChartOffset([45, 30])"
+                            transform="rotate(-90 50 50)"
+                        />
+                    </svg>
+                    <div class="pie-chart-labels">
+                        @for (method of paymentMethods; track method.label) {
+                            <div class="pie-label" [style.color]="method.color">
+                                {{ method.label }} {{ method.percentage }}%
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <h3 class="table-title">Facturas Detalladas</h3>
+            <div class="table-wrapper">
+                <table class="invoices-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Habitación</th>
+                            <th>Huésped</th>
+                            <th>Noches</th>
+                            <th>Total</th>
+                            <th>Método</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (invoice of invoices; track invoice.id) {
+                            <tr>
+                                <td class="invoice-id">{{ invoice.id }}</td>
+                                <td>{{ invoice.date }}</td>
+                                <td>{{ invoice.room }}</td>
+                                <td class="guest-name">{{ invoice.guest }}</td>
+                                <td>{{ invoice.nights }}</td>
+                                <td class="invoice-total">{{ invoice.total }}</td>
+                                <td>{{ invoice.method }}</td>
+                                <td>
+                                    <span class="status-badge" [style.background-color]="invoice.statusColor">
+                                        {{ invoice.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <app-button type="button" variant="ghost" size="small" class="action-button">
+                                        <ng-icon name="bootstrapEye" size="20px" class="action-icon" aria-hidden="true"></ng-icon>
+                                    </app-button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</app-hotel-page-layout>

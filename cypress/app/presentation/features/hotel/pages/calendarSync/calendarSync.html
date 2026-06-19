@@ -1,0 +1,127 @@
+<app-hotel-page-layout
+  title="Integración de Calendarios"
+  subtitle="Conecta con Airbnb, Booking y más plataformas"
+  iconName="bootstrapCalendar"
+>
+    <div hotelPageActions class="calendar-header-actions">
+        <app-button class="btn-sync" type="button" variant="primary" (clicked)="syncAll()">
+            <ng-icon name="bootstrapArrowRepeat" size="20px" aria-hidden="true"></ng-icon>
+            Sincronizar
+        </app-button>
+    </div>
+
+    <div class="metrics-grid">
+        @for (metric of metrics; track metric.label) {
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">{{ metric.label }}</span>
+                    @if (metric.icon === 'link') {
+                        <ng-icon
+                            class="metric-icon"
+                            name="bootstrapLink45deg"
+                            size="20px"
+                            [style.color]="metric.color"
+                            aria-hidden="true"
+                        ></ng-icon>
+                    }
+                    @if (metric.icon === 'calendar') {
+                        <ng-icon
+                            class="metric-icon"
+                            name="bootstrapCalendar"
+                            size="20px"
+                            [style.color]="metric.color"
+                            aria-hidden="true"
+                        ></ng-icon>
+                    }
+                    @if (metric.icon === 'refresh') {
+                        <ng-icon
+                            class="metric-icon"
+                            name="bootstrapArrowRepeat"
+                            size="20px"
+                            [style.color]="metric.color"
+                            aria-hidden="true"
+                        ></ng-icon>
+                    }
+                </div>
+                <div class="metric-value">{{ metric.value }}</div>
+                <div class="metric-subtitle">{{ metric.subtitle }}</div>
+            </div>
+        }
+    </div>
+
+    <div class="info-banner">
+        <ng-icon
+            class="banner-icon"
+            name="bootstrapInfoCircle"
+            size="20px"
+            aria-hidden="true"
+        ></ng-icon>
+        <div class="banner-content">
+            <h3 class="banner-title">Prevención de Overbooking Activa</h3>
+            <p class="banner-text">
+                Las reservas se sincronizan automáticamente cada 5 minutos. Las habitaciones reservadas en una
+                plataforma se bloquean automáticamente en las demás.
+            </p>
+        </div>
+    </div>
+
+    <div class="platforms-section">
+        <div class="section-header">
+            <ng-icon
+                name="bootstrapLink45deg"
+                size="20px"
+                class="section-icon"
+                aria-hidden="true"
+            ></ng-icon>
+            <h3 class="section-title">Plataformas Disponibles</h3>
+        </div>
+
+        <div class="platforms-list">
+            @for (platform of platforms; track platform.name) {
+                <div class="platform-card">
+                    <div class="platform-info">
+                        <div class="platform-logo">
+                            <img [src]="platform.logo" [alt]="platform.name + ' Logo'" />
+                        </div>
+                        <div class="platform-details">
+                            <h4 class="platform-name">{{ platform.name }}</h4>
+                            @if (platform.connected) {
+                                <p class="platform-sync">Última sincronización: {{ platform.lastSync }}</p>
+                                <p class="platform-reservations">{{ platform.activeReservations }} reservas activas</p>
+                            }
+                            @if (!platform.connected) {
+                                <p class="platform-status-text">No conectado</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="platform-actions">
+                        @if (platform.connected) {
+                            <span class="status-badge connected">
+                                <ng-icon name="bootstrapCheck2" size="16px" aria-hidden="true"></ng-icon>
+                                Conectado
+                            </span>
+                            <app-button
+                                class="btn-disconnect"
+                                type="button"
+                                variant="outline"
+                                (clicked)="disconnectPlatform(platform.name)"
+                            >
+                                Desconectar
+                            </app-button>
+                        }
+                        @if (!platform.connected) {
+                            <app-button
+                                class="btn-connect"
+                                type="button"
+                                variant="primary"
+                                (clicked)="connectPlatform(platform.name)"
+                            >
+                                Conectar
+                            </app-button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</app-hotel-page-layout>

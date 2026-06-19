@@ -1,0 +1,120 @@
+:host {
+  display: block;
+}
+
+.recommendations-block {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.recommendations-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.recommendations-title {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.recommendations-subtitle {
+  margin: 0;
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.recommendations-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(220px, 1fr);
+  gap: var(--spacing-md);
+  overflow-x: auto;
+  padding-bottom: var(--spacing-xs);
+  scroll-snap-type: x proximity;
+}
+
+.recommendations-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.recommendations-carousel::-webkit-scrollbar-thumb {
+  background: var(--color-border-medium);
+  border-radius: var(--radius-full);
+}
+
+.recommendation-card {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg-secondary);
+  display: flex;
+  flex-direction: column;
+  min-height: 270px;
+  scroll-snap-align: start;
+}
+
+.recommendation-image {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.recommendation-body {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  height: 100%;
+}
+
+.recommendation-name {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+}
+
+.recommendation-meta {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-full);
+  padding: 3px var(--spacing-xs);
+}
+
+.recommendation-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+}
+
+.recommendation-price {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-dark);
+}

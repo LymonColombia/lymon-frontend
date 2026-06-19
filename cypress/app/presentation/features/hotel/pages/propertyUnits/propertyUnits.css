@@ -1,0 +1,181 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: var(--font-primary);
+  background: var(--color-bg-secondary);
+}
+
+.units-container {
+  flex: 1;
+}
+
+.property-type-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
+  border: var(--input-border-width) solid color-mix(in srgb, var(--color-primary-dark) 25%, transparent);
+  background: var(--color-primary-gradient);
+  color: var(--color-bg-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.35px;
+  box-shadow: var(--shadow-primary);
+}
+
+.units-count-row {
+  margin-bottom: var(--spacing-lg);
+}
+
+.units-count-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
+  border: var(--input-border-width) solid var(--color-border-light);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.alert {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.alert-error {
+  background: var(--color-danger-light);
+  border: var(--input-border-width) solid var(--color-error);
+  color: var(--color-danger);
+}
+
+.alert-success {
+  background: color-mix(in srgb, var(--color-primary) 14%, var(--color-bg-primary));
+  border: var(--input-border-width) solid var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-6xl);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-primary-dark);
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-6xl) var(--spacing-3xl);
+  text-align: center;
+}
+
+.empty-state-icon {
+  color: var(--color-text-tertiary);
+}
+
+.empty-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.empty-subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  max-width: 320px;
+}
+
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-xl);
+}
+
+@media (max-width: 1200px) {
+  .units-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.create-unit-card {
+  min-height: 240px;
+  border-radius: var(--radius-xl);
+  border: 2px dashed var(--color-primary-light);
+  background: var(--color-bg-primary);
+  color: var(--color-primary-dark);
+  padding: var(--spacing-2xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.create-unit-card:hover {
+  transform: translateY(calc(var(--spacing-xs) * -1));
+  border-color: var(--color-primary-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.create-unit-card:focus-visible {
+  outline: none;
+  box-shadow: var(--input-focus-ring);
+}
+
+.create-unit-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: var(--input-border-width) solid var(--color-primary-light);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-dark);
+}
+
+.create-unit-title {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.create-unit-subtitle {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+  .units-grid {
+    grid-template-columns: 1fr;
+  }
+}

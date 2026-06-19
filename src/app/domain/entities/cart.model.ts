@@ -25,6 +25,7 @@ export interface CartReservationItem {
   checkIn: string;
   checkOut: string;
   guestsCount: number;
+  notes?: string;
   pricePerNight: number;
   totalPriceCop: number;
   reservationId: string | null;
@@ -32,18 +33,22 @@ export interface CartReservationItem {
 
 export interface CartExperienceItem {
   experienceId: string;
-  name?: string;
+  experienceName?: string;
   quantity: number;
   selectedDate: string;
-  priceCop: number;
+  unitPriceCop?: number;
   totalPriceCop: number;
+  reservationId?: string | null;
 }
 
 export interface Cart {
+  cartId: string;
   status: 'OPEN' | 'PENDING_PAYMENT' | 'PAID' | 'EXPIRED';
   reservationItem: CartReservationItem | null;
   experienceItems: CartExperienceItem[];
   totalCop: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CartCheckoutResponse {

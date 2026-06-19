@@ -1,0 +1,55 @@
+@if (hasIcon()) {
+  <div class="select-icon">
+    <ng-content select="[icon]"></ng-content>
+  </div>
+}
+
+<button
+  #triggerElement
+  class="select-field select-trigger"
+  type="button"
+  [id]="id()"
+  [name]="name()"
+  [disabled]="disabled()"
+  [attr.aria-required]="required()"
+  [attr.aria-expanded]="isOpen()"
+  aria-haspopup="listbox"
+  [attr.aria-controls]="id() ? id() + '-listbox' : null"
+  [attr.aria-label]="triggerLabel()"
+  (click)="toggleDropdown()"
+  (keydown)="onTriggerKeydown($event)"
+  (focus)="onFocus()"
+  (blur)="onBlur($event)"
+>
+  <span class="select-trigger-label">{{ triggerLabel() }}</span>
+</button>
+
+@if (isDropdownVisible()) {
+  <ul
+    class="select-dropdown"
+    [class.select-dropdown-closing]="isClosing()"
+    role="listbox"
+    [id]="id() ? id() + '-listbox' : null"
+    [attr.aria-label]="name() || id() || 'Options'"
+  >
+    @for (option of options(); track option.value) {
+      <li
+        class="select-option"
+        role="option"
+        [class.select-option-selected]="value() === option.value"
+        [class.select-option-disabled]="option.disabled ?? false"
+        [attr.aria-selected]="value() === option.value"
+        [attr.aria-disabled]="option.disabled ?? false"
+        [attr.tabindex]="option.disabled ? -1 : 0"
+        (click)="selectOption(option)"
+        (keydown)="onOptionKeydown($event, option)"
+      >
+        {{ option.label }}
+      </li>
+    }
+  </ul>
+}
+
+<div class="select-arrow">
+  <ng-icon name="bootstrapChevronDown" size="12px" aria-hidden="true"></ng-icon>
+</div>

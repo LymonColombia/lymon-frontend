@@ -1,0 +1,49 @@
+:host {
+  display: block;
+}
+
+.info-section {
+  background: var(--color-bg-primary);
+  padding: var(--spacing-4xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.amenity-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.amenity-item ng-icon {
+  color: var(--color-primary);
+}
+
+.empty-message {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+  .amenities-grid {
+    grid-template-columns: 1fr;
+  }
+}
