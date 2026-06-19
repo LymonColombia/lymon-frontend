@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
@@ -50,6 +50,9 @@ export class BookingComponent implements OnInit {
 
   readonly rooms = signal<BookingRoomCard[]>([]);
 
+  private readonly resultsSection = viewChild<ElementRef<HTMLElement>>('resultsSection');
+  private readonly bookingNav = viewChild('bookingNav', { read: ElementRef });
+
   readonly displayedRooms = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const sort = this.sortBy();
@@ -75,7 +78,7 @@ export class BookingComponent implements OnInit {
     this.loadUnits(1);
   }
 
-  loadUnits(page: number): void {
+  loadUnits(page: number, scrollOnComplete = false): void {
     this.isRoomsLoading.set(true);
     this.getPublicUnitsUseCase
       .execute({
@@ -92,6 +95,7 @@ export class BookingComponent implements OnInit {
           this.currentPage.set(pagination.page);
           this.totalPages.set(pagination.totalPages);
           this.isRoomsLoading.set(false);
+          if (scrollOnComplete) this.scrollToResults();
         },
         error: () => {
           this.rooms.set([]);
@@ -109,7 +113,7 @@ export class BookingComponent implements OnInit {
   }
 
   onPageChange(page: number): void {
-    this.loadUnits(page);
+    this.loadUnits(page, true);
   }
 
   onSearchQueryChange(query: string): void {
@@ -152,6 +156,15 @@ export class BookingComponent implements OnInit {
 
   goToRoomDetails(unitId: string): void {
     this.router.navigate(['/room-details', unitId]);
+  }
+
+  private scrollToResults(): void {
+    const section = this.resultsSection()?.nativeElement;
+    const nav = this.bookingNav()?.nativeElement;
+    if (!section) return;
+    const navHeight = nav?.offsetHeight ?? 0;
+    const top = section.getBoundingClientRect().top + window.scrollY - navHeight;
+    window.scrollTo({ top, behavior: 'smooth' });
   }
 
   private syncQueryParams(): void {
