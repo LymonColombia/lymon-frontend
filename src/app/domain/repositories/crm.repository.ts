@@ -4,6 +4,8 @@ import {
   GetCrmGuestBookingsResponse,
   GetCrmGuestEmailsResponse,
   GetCrmGuestNotesResponse,
+  GetCrmGuestRatingsParams,
+  GetCrmGuestRatingsResponse,
   GetCrmGuestsParams,
   GetCrmGuestsResponse,
   SendCrmGuestMessageRequest,
@@ -22,4 +24,5 @@ export abstract class CrmRepository {
   abstract pinGuestNote(guestId: string, noteId: string): Observable<void>;
   abstract sendGuestMessage(guestId: string, data: SendCrmGuestMessageRequest): Observable<void>;
   abstract updateGuestTags(guestId: string, data: UpdateCrmGuestTagsRequest): Observable<void>;
+  abstract getGuestRatings(guestId: string, params?: GetCrmGuestRatingsParams): Observable<GetCrmGuestRatingsResponse>;
 }
