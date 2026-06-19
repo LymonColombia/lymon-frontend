@@ -1,0 +1,113 @@
+<app-hotel-page-layout
+  title="Editar Novedad"
+  subtitle="Modifica el título, descripción o archivos adjuntos."
+  iconName="bootstrapPencilSquare"
+  backLink="/incident-report/list"
+  backLabel="Volver al listado"
+>
+  <div class="form-container">
+
+    @if (notFound()) {
+      <div class="not-found-card">
+        <p class="not-found-text">No se encontró la novedad o accediste directamente a esta URL.</p>
+        <app-button variant="primary" size="medium" routerLink="/incident-report/list">
+          Volver al listado
+        </app-button>
+      </div>
+    } @else {
+
+      @if (errorMessage()) {
+        <div class="alert alert-error">{{ errorMessage() }}</div>
+      }
+
+      <div class="form-card">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <div class="form-group">
+            <label class="form-label" for="title">
+              Título <span class="required">*</span>
+            </label>
+            <input
+              class="form-input"
+              type="text"
+              id="title"
+              formControlName="title"
+              placeholder="Ej: Daño general, Ausencia de empleado..."
+              [class.form-input--error]="titleControl.invalid && titleControl.touched"
+            />
+            @if (titleControl.invalid && titleControl.touched) {
+              <span class="field-error">
+                @if (titleControl.hasError('required')) { El título es requerido. }
+                @else if (titleControl.hasError('minlength')) { Mínimo 5 caracteres. }
+              </span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="description">
+              Descripción <span class="required">*</span>
+            </label>
+            <textarea
+              class="form-input form-textarea"
+              id="description"
+              formControlName="description"
+              placeholder="Describe detalladamente la novedad..."
+              rows="5"
+              [class.form-input--error]="descriptionControl.invalid && descriptionControl.touched"
+            ></textarea>
+            @if (descriptionControl.invalid && descriptionControl.touched) {
+              <span class="field-error">
+                @if (descriptionControl.hasError('required')) { La descripción es requerida. }
+                @else if (descriptionControl.hasError('minlength')) { Mínimo 10 caracteres. }
+              </span>
+            }
+          </div>
+
+          <div class="form-group">
+            <div class="attachments-header">
+              <label class="form-label">Archivos adjuntos</label>
+              <app-button type="button" variant="secondary" size="small" (clicked)="addAttachmentUrl()">
+                <ng-icon name="bootstrapPlusLg" size="14px" aria-hidden="true"></ng-icon>
+                Agregar URL
+              </app-button>
+            </div>
+
+            @for (ctrl of attachmentUrlsArray.controls; track $index) {
+              <div class="url-row">
+                <input
+                  class="form-input"
+                  type="text"
+                  [formControl]="$any(ctrl)"
+                  placeholder="https://storage.ejemplo.com/foto.jpg"
+                  [class.form-input--error]="ctrl.invalid && ctrl.touched"
+                />
+                <button
+                  type="button"
+                  class="btn-remove"
+                  (click)="removeAttachmentUrl($index)"
+                  title="Eliminar"
+                >
+                  <ng-icon name="bootstrapXLg" size="14px" aria-hidden="true"></ng-icon>
+                </button>
+              </div>
+              @if (ctrl.invalid && ctrl.touched) {
+                <span class="field-error">Ingresa una URL válida (debe comenzar con http:// o https://).</span>
+              }
+            }
+          </div>
+
+          <div class="form-actions">
+            <app-button type="button" variant="secondary" routerLink="/incident-report/list">
+              Cancelar
+            </app-button>
+            <app-button type="submit" variant="primary" [loading]="isSubmitting()" [disabled]="isSubmitting()">
+              Guardar Cambios
+            </app-button>
+          </div>
+
+        </form>
+      </div>
+
+    }
+  </div>
+</app-hotel-page-layout>

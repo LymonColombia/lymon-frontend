@@ -1,0 +1,34 @@
+<section id="caracteristicas" class="lyhost-features">
+  <div class="container">
+    <div class="features-header">
+      <div class="section-chip">
+        <span>PLATAFORMA</span>
+      </div>
+      <h2>
+        Todo lo que necesitas,<br />
+        <span>nada que no necesites</span>
+      </h2>
+      <p>
+        Una plataforma diseñada para gestores que quieren control total y huéspedes que buscan la mejor experiencia.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      @for (feature of features; track feature.title; let i = $index) {
+        <article
+          class="feature-card"
+          [class.feature-card-hover]="hoveredIndex() === i"
+          (mouseenter)="setHoveredIndex(i)"
+          (mouseleave)="setHoveredIndex(null)"
+        >
+          <div class="feature-icon" [class.feature-icon-hover]="hoveredIndex() === i">
+            <ng-icon [name]="feature.icon" size="24" color="var(--color-primary)" />
+          </div>
+
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>

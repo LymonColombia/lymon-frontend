@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapGrid, bootstrapListUl, bootstrapPlus, bootstrapStars } from '@ng-icons/bootstrap-icons';
-import { Experience} from '@/domain/entities/experience.model';
+
 import {
   HotelPageActionsDirective,
   HotelPageLayoutComponent,
@@ -14,6 +14,7 @@ import { ExperienceCardComponent } from '../../components/experience-card/experi
 import { ExperienceTableComponent } from '../../components/experience-table/experience-table.component';
 import { GetExperiencesUseCase } from '@/domain/use-cases/experience/get-experiences.use-case';
 import { DeleteExperienceUseCase } from '@/domain/use-cases/experience/delete-experience.use-case';
+import { Experience } from '@/domain/entities/experience.model';
 
 type ExperienceViewMode = 'CARDS' | 'TABLE';
 

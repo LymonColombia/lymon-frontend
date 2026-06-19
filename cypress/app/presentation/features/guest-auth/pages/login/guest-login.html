@@ -1,0 +1,126 @@
+<div class="auth-container">
+  <div class="auth-background">
+    <div class="logo-background">LYMON</div>
+  </div>
+
+  <div class="auth-content">
+    <div class="auth-card">
+      <div class="logo-small">
+        <a routerLink="/lyhost"><img src="/images/LyHost.svg" alt="LyHost" width="140px" /></a>
+      </div>
+
+      <h1 class="auth-title">Bienvenido</h1>
+      <p class="auth-subtitle">Inicia sesión como huésped</p>
+
+      @if (sessionExpired()) {
+        <div class="warning-banner">Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</div>
+      }
+
+      @if (emailNotVerified()) {
+        <div class="warning-banner">
+          Tu correo aún no ha sido verificado. Algunas funciones pueden estar limitadas.
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <div class="error-banner">{{ errorMessage() }}</div>
+      }
+
+      <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">Correo Electrónico</label>
+          <div
+            class="input-wrapper"
+            [class.input-error]="emailControl.invalid && emailControl.touched"
+          >
+            <ng-icon
+              class="input-icon"
+              name="bootstrapEnvelope"
+              size="20px"
+              aria-hidden="true"
+            ></ng-icon>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="ejemplo@email.com"
+              autocomplete="email"
+            />
+          </div>
+          @if (emailControl.invalid && emailControl.touched) {
+            <span class="field-error">
+              @if (emailControl.hasError('required')) {
+                El correo es requerido.
+              } @else {
+                Ingresa un correo válido.
+              }
+            </span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div
+            class="input-wrapper"
+            [class.input-error]="passwordControl.invalid && passwordControl.touched"
+          >
+            <ng-icon class="input-icon" name="bootstrapLock" size="20px" aria-hidden="true"></ng-icon>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+          </div>
+          @if (passwordControl.invalid && passwordControl.touched) {
+            <span class="field-error">
+              @if (passwordControl.hasError('required')) {
+                La contraseña es requerida.
+              } @else {
+                Mínimo 8 caracteres.
+              }
+            </span>
+          }
+        </div>
+
+        <div class="form-options">
+          <a routerLink="/guest/forgot-password" class="forgot-password"
+            >¿Olvidaste tu contraseña?</a
+          >
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span>Cargando…</span>
+          } @else {
+            <span>Iniciar Sesión</span>
+            <ng-icon
+              name="bootstrapArrowRightCircleFill"
+              size="20px"
+              style="color: white"
+              aria-hidden="true"
+            ></ng-icon>
+          }
+        </button>
+
+        <p
+          style="
+            text-align: center;
+            margin-top: 16px;
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            color: #666;
+          "
+        >
+          ¿No tienes cuenta?
+          <a
+            routerLink="/guest/register"
+            style="color: #009a44; text-decoration: none; font-weight: 600"
+            >Regístrate</a
+          >
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

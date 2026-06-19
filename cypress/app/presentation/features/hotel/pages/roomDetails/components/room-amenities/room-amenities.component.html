@@ -1,0 +1,16 @@
+<div class="info-section">
+  <h2 class="section-title">Amenidades</h2>
+
+  @if (amenities().length > 0) {
+    <div class="amenities-grid">
+      @for (amenity of amenities(); track amenity) {
+        <div class="amenity-item">
+          <ng-icon [name]="getAmenityIcon(amenity)" size="20px" aria-hidden="true"></ng-icon>
+          <span>{{ amenity }}</span>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="empty-message">Esta habitación no tiene amenidades registradas.</p>
+  }
+</div>

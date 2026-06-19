@@ -1,5 +1,5 @@
 <app-hotel-page-layout title="Gestion de Inventario" subtitle="Administra insumos y proveedores del hotel"
-  iconName="bootstrapBoxSeam">
+  iconName="bootstrapBoxSeam" backLink="/properties" backLabel="Volver a propiedades">
 
   @if (notification()) {
   <div class="notification-toast" [class]="'notification-toast--' + notification()!.type">
@@ -61,7 +61,8 @@
               }
             </div>
           </div>
-          <button type="button" class="dropdown-backdrop" aria-label="Cerrar menú de categorías" (click)="toggleCategoriesDropdown()" (keydown.escape)="toggleCategoriesDropdown()"></button>
+          <button type="button" class="dropdown-backdrop" aria-label="Cerrar menú de categorías"
+            (click)="toggleCategoriesDropdown()" (keydown.escape)="toggleCategoriesDropdown()"></button>
           }
         </div>
         <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()">
@@ -110,14 +111,15 @@
               <td>{{ getFormattedUnit(item.unit, item.quantity) }}</td>
               <td>
                 @if (item.provider === 'Proveedor no asignado') {
-                  <button type="button" class="category-pill category-pill--danger provider-assign-btn" 
-                    (click)="openAssignSupplierModal(item)">
-                    Sin proveedor
-                  </button>
+                <button type="button" class="category-pill category-pill--danger provider-assign-btn"
+                  (click)="openAssignSupplierModal(item)">
+                  Sin proveedor
+                </button>
                 } @else {
-                  <button type="button" class="provider-link-btn" (click)="openAssignSupplierModal(item)">
-                    {{ item.provider }}
-                  </button>
+                <button type="button" class="category-pill category-pill--success provider-assign-btn"
+                  (click)="openAssignSupplierModal(item)">
+                  {{ item.provider }}
+                </button>
                 }
               </td>
               <td>{{ getFormattedUnit(item.unit, item.minimumStock) }}</td>
@@ -162,6 +164,10 @@
             <div class="provider-main">
               <h3 class="provider-name">{{ provider.name }}</h3>
               <p class="provider-rif">{{ provider.nit }}</p>
+              <p class="provider-items">
+                {{ getSupplierItemCount(provider.id) }}
+                {{ getSupplierItemCount(provider.id) === 1 ? 'insumo asociado' : 'insumos asociados' }}
+              </p>
             </div>
           </div>
 
@@ -199,7 +205,8 @@
         Página {{ currentPage() }} de {{ totalPages() }}
       </div>
       <div class="pagination-actions">
-        <app-button type="button" variant="outline" size="small" [disabled]="currentPage() === 1" (clicked)="prevPage()">
+        <app-button type="button" variant="outline" size="small" [disabled]="currentPage() === 1"
+          (clicked)="prevPage()">
           Anterior
         </app-button>
         <div class="pagination-pages">
@@ -219,13 +226,16 @@
   </section>
 </app-hotel-page-layout>
 
-<app-modal [open]="isAssignSupplierModalOpen()" title="Asignar Proveedor" size="small" (closed)="closeAssignSupplierModal()">
+<app-modal [open]="isAssignSupplierModalOpen()" title="Asignar Proveedor" size="small"
+  (closed)="closeAssignSupplierModal()">
   <form [formGroup]="supplierAssignmentForm" (ngSubmit)="assignSupplier()" class="supply-form assign-supplier-form">
     <div class="form-group mb-6">
-      <p class="mb-4 text-sm text-gray-500">Selecciona el proveedor para el item: <strong>{{ selectedItemForSupplier()?.name }}</strong></p>
+      <p class="mb-4 text-sm text-gray-500">Selecciona el proveedor para el item: <strong>{{
+          selectedItemForSupplier()?.name }}</strong></p>
       <label for="assign-supplier" class="mb-2 block font-medium">Seleccionar Proveedor *</label>
       <div class="select-wrapper">
-        <app-select id="assign-supplier" formControlName="supplierId" [options]="supplierSelectionOptions()"></app-select>
+        <app-select id="assign-supplier" formControlName="supplierId"
+          [options]="supplierSelectionOptions()"></app-select>
       </div>
     </div>
     <div class="modal-footer-custom">
@@ -320,7 +330,8 @@
 </app-modal>
 
 @if (selectedProvider()) {
-<button type="button" class="provider-drawer-backdrop" aria-label="Cerrar panel de detalles" (click)="closeProviderDetails()" (keydown.escape)="closeProviderDetails()"></button>
+<button type="button" class="provider-drawer-backdrop" aria-label="Cerrar panel de detalles"
+  (click)="closeProviderDetails()" (keydown.escape)="closeProviderDetails()"></button>
 
 <dialog class="provider-drawer" aria-modal="true" aria-label="Detalles del proveedor" open>
   <header class="drawer-header">
@@ -363,7 +374,7 @@
       <li>
         <div>
           <p class="supply-name">{{ supply.name }}</p>
-          <p class="supply-meta">Categoria: {{ supply.categoryId }}</p>
+          <p class="supply-meta">Categoria: {{ supply.categoryName }}</p>
         </div>
         <span class="supply-qty">{{ supply.quantity }} {{ supply.unit }}</span>
       </li>

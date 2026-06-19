@@ -1,0 +1,45 @@
+<div class="info-section">
+  <h2 class="section-title">Información General</h2>
+
+  <div class="quick-info-grid">
+    <div class="info-card">
+      <div class="info-icon">
+        <ng-icon name="bootstrapPeople" size="24px" aria-hidden="true"></ng-icon>
+      </div>
+      <div class="info-content">
+        <span class="info-label">Capacidad máxima</span>
+        <span class="info-value">{{ maxGuestsLabel() }}</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon">
+        <ng-icon name="bootstrapPeopleFill" size="24px" aria-hidden="true"></ng-icon>
+      </div>
+      <div class="info-content">
+        <span class="info-label">Huéspedes estándar</span>
+        <span class="info-value">{{ standardGuestsLabel() }}</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon">
+        <ng-icon name="bootstrapHouseDoor" size="24px" aria-hidden="true"></ng-icon>
+      </div>
+      <div class="info-content">
+        <span class="info-label">Camas</span>
+        <span class="info-value">{{ bedsLabel() }}</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon">
+        <ng-icon name="bootstrapDoorOpen" size="24px" aria-hidden="true"></ng-icon>
+      </div>
+      <div class="info-content">
+        <span class="info-label">Baños</span>
+        <span class="info-value">{{ bathroomsLabel() }}</span>
+      </div>
+    </div>
+  </div>
+</div>

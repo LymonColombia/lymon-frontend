@@ -1,0 +1,104 @@
+<app-hotel-page-layout
+  [title]="propertyName()"
+  subtitle="Gestiona las unidades de esta propiedad"
+  iconName="bootstrapHouseDoorFill"
+  [breadcrumbItems]="breadcrumbItems()"
+  backLink="/properties"
+  backLabel="Volver a Propiedades"
+>
+  @if (propertyType()) {
+    <span hotelPageMeta class="property-type-chip">{{ propertyType() }}</span>
+  }
+
+  <div class="units-container">
+    <div class="units-count-row">
+      <span class="units-count-chip">
+        @if (isLoading()) {
+          Cargando unidades...
+        } @else {
+          {{ units().length }} unidad{{ units().length !== 1 ? 'es' : '' }} registradas
+        }
+      </span>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    }
+    @if (successMessage()) {
+      <div class="alert alert-success">{{ successMessage() }}</div>
+    }
+
+    @if (showUnitModal()) {
+      <app-modal
+        [open]="true"
+        [title]="editingUnit() ? 'Editar Unidad' : 'Nueva Unidad'"
+        size="large"
+        (closed)="closeUnitModal()"
+      >
+        <app-unit-form-modal
+          [propertyId]="propertyId() ?? ''"
+          [unitToEdit]="editingUnit()"
+          (saved)="onUnitSaved()"
+          (cancelled)="closeUnitModal()"
+        />
+      </app-modal>
+    }
+
+    <app-modal
+      [open]="showDeleteConfirm()"
+      title="Eliminar Unidad"
+      size="small"
+      (closed)="cancelDelete()"
+    >
+      <p class="delete-confirm-message">
+        ¿Estás seguro de que quieres eliminar <strong>{{ unitToDelete()?.name }}</strong>? Esta acción no se puede deshacer.
+      </p>
+      <div modal-footer class="form-actions">
+        <app-button type="button" variant="secondary" (clicked)="cancelDelete()">Cancelar</app-button>
+        <app-button
+          type="button"
+          variant="danger"
+          [disabled]="isDeleting()"
+          [loading]="isDeleting()"
+          (clicked)="confirmDelete()"
+        >
+          Eliminar
+        </app-button>
+      </div>
+    </app-modal>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Cargando unidades...</p>
+      </div>
+    } @else if (units().length === 0) {
+      <div class="empty-state">
+        <ng-icon class="empty-state-icon" name="bootstrapHouseDoorFill" size="64px"></ng-icon>
+        <p class="empty-title">Sin unidades</p>
+        <p class="empty-subtitle">Esta propiedad aún no tiene unidades registradas.</p>
+        <app-button type="button" variant="primary" (clicked)="navigateToCreateUnit()">
+          Crear primera unidad
+        </app-button>
+      </div>
+    } @else {
+      <div class="units-grid">
+        @for (unit of units(); track unit.id) {
+          <app-unit-card
+            [unit]="unit"
+            (edit)="openEditUnit(unit)"
+            (deleteUnit)="openDeleteConfirm(unit)"
+          />
+        }
+
+        <button type="button" class="create-unit-card" (click)="navigateToCreateUnit()">
+          <span class="create-unit-icon" aria-hidden="true">
+            <ng-icon name="bootstrapPlus" size="20px"></ng-icon>
+          </span>
+          <span class="create-unit-title">Nueva Unidad</span>
+          <span class="create-unit-subtitle">Haz clic para agregar una unidad</span>
+        </button>
+      </div>
+    }
+  </div>
+</app-hotel-page-layout>
