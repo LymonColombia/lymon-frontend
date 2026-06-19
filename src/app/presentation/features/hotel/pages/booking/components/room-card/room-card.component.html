@@ -1,4 +1,12 @@
-<article class="room-card" [class.featured]="room().featured ?? false">
+<div
+  class="room-card"
+  [class.featured]="room().featured ?? false"
+  role="button"
+  tabindex="0"
+  (click)="onCardClick()"
+  (keydown.enter)="onCardClick()"
+  (keydown.space)="$event.preventDefault(); onCardClick()"
+  [attr.aria-label]="'Ver detalles de ' + room().title">
   <div class="room-image">
     <img
       class="room-image-photo"
@@ -15,7 +23,7 @@
       class="like-btn"
       type="button"
       [class.liked]="isLiked()"
-      (click)="onToggleLike()"
+      (click)="onToggleLike($event)"
       [attr.aria-label]="isLiked() ? 'Quitar de favoritos' : 'Agregar a favoritos'">
       @if (isLiked()) {
         <ng-icon name="bootstrapHeartFill" size="14px" aria-hidden="true"></ng-icon>
@@ -64,17 +72,16 @@
       }
     </div>
 
-    <div class="room-amenities">
-      @for (amenity of room().amenities.slice(0, 4); track amenity) {
-        <span class="amenity">{{ amenity }}</span>
-      }
-      @if (room().amenities.length > 4) {
-        <span class="amenity-more">+{{ room().amenities.length - 4 }}</span>
-      }
-    </div>
+    @if (room().amenities.length > 0) {
+      <div class="room-amenities-section">
+        <div class="room-amenities" #amenitiesContainer>
+          @for (amenity of room().amenities; track amenity) {
+            <span class="amenity">{{ amenity }}</span>
+          }
+          <span class="amenity-more" #moreEl></span>
+        </div>
+      </div>
+    }
 
-    <app-button type="button" variant="primary" size="medium" [fullWidth]="true" (clicked)="onViewDetails()">
-      Ver Detalles
-    </app-button>
   </div>
-</article>
+</div>
