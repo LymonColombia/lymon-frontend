@@ -38,11 +38,10 @@ import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/gues
 import { GuestCartPage } from '@/presentation/features/hotel/pages/guest-cart/guest-cart';
 import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/pages/guest-reservation-details/guest-reservation-details';
-import { InventoryComponent } from '@/presentation/features/hotel/pages/properties/[propertyId]/inventory/inventory';
+
 import { PaymentSuccessComponent } from '@/presentation/features/hotel/pages/payment-success/payment-success';
 import { PaymentFailureComponent } from '@/presentation/features/hotel/pages/payment-failure/payment-failure';
-import { ExperienceComponent } from './presentation/features/hotel/pages/experiences/experiences';
-import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
+
 import { TenantExperiencesPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experiences-page/tenant-experiences-page.component';
 import { TenantExperienceFormPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-form-page/tenant-experience-form-page.component';
 import { TenantExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-detail-page/tenant-experience-detail-page.component';
@@ -74,8 +73,6 @@ export const routes: Routes = [
 
   // Booking — public route (no auth required)
   { path: 'booking', component: BookingComponent },
-  { path: 'experiences', component: ExperienceComponent },
-  { path: 'experiences/:id', component: ExperienceDetailPageComponent },
 
   // Guest flow
   { path: 'guest/cart', component: GuestCartPage, canActivate: [guestGuard] },
