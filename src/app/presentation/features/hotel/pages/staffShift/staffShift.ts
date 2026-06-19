@@ -43,7 +43,7 @@ import {
   bootstrapEraser,
 } from '@ng-icons/bootstrap-icons';
 
-type PreviewTab = 'calendar' | 'fixed';
+type PreviewTab = 'calendar' | 'assignments';
 
 interface DayAssignment {
   employeeName: string;
@@ -730,8 +730,8 @@ export class StaffShiftComponent implements OnInit {
     this.activeTab.set('calendar');
   }
 
-  showFixedTab(): void {
-    this.activeTab.set('fixed');
+  showAssignmentsTab(): void {
+    this.activeTab.set('assignments');
   }
 
   onCalendarSearch(event: Event): void {

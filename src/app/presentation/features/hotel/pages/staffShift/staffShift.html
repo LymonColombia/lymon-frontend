@@ -117,17 +117,18 @@
     <div class="tabs-capsule">
       <button type="button" class="tab-btn" [class.tab-btn--active]="activeTab() === 'calendar'"
         (click)="showCalendarTab()">
-        <ng-icon name="bootstrapPersonCheck" size="16"></ng-icon>
-        Lista de Asignaciones
-      </button>
-      <button type="button" class="tab-btn" [class.tab-btn--active]="activeTab() === 'fixed'" (click)="showFixedTab()">
         <ng-icon name="bootstrapClockFill" size="16"></ng-icon>
         Calendario de Turnos
+      </button>
+      <button type="button" class="tab-btn" [class.tab-btn--active]="activeTab() === 'assignments'"
+        (click)="showAssignmentsTab()">
+        <ng-icon name="bootstrapPersonCheck" size="16"></ng-icon>
+        Lista de Asignaciones
       </button>
     </div>
   </section>
 
-  @if (activeTab() === 'calendar') {
+  @if (activeTab() === 'assignments') {
   <section class="section-block">
     <header class="section-header">
       <h2>Calendario de Asignaciones</h2>
