@@ -4,12 +4,24 @@ import {
   CrmGuestBookingSource,
   CrmGuestBookingStatus,
   CrmGuestEmail,
+  CrmGuestMonthlySpend,
   CrmGuestNote,
   CrmGuestNoteCategory,
   CrmGuestNoteStatus,
   CrmGuestStatus,
+  GetCrmGuestBookingOriginsResponse,
+  GetCrmGuestMonthlySpendingResponse,
+  GetCrmGuestRatingsResponse,
 } from '@/domain/entities/crm-guest.model';
-import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto } from '@/infrastructure/dtos/crm.dto';
+import {
+  CrmGuestBookingDto,
+  CrmGuestBookingOriginsResponseDto,
+  CrmGuestDto,
+  CrmGuestEmailDto,
+  CrmGuestMonthlySpendDto,
+  CrmGuestNoteDto,
+  CrmGuestRatingsResponseDto,
+} from '@/infrastructure/dtos/crm.dto';
 
 export class CrmMapper {
   static toGuests(dtos: CrmGuestDto[]): CrmGuest[] {
@@ -32,6 +44,41 @@ export class CrmMapper {
       sentById: dto.sentById,
       createdAt: dto.createdAt,
     }));
+  }
+
+  static toGuestBookingOrigins(dto: CrmGuestBookingOriginsResponseDto): GetCrmGuestBookingOriginsResponse['data'] {
+    return {
+      total: dto.total,
+      sources: dto.sources.map((s) => ({
+        source: CrmMapper.toBookingSource(s.source),
+        count: s.count,
+        percentage: s.percentage,
+      })),
+    };
+  }
+
+  static toGuestMonthlySpending(dtos: CrmGuestMonthlySpendDto[]): GetCrmGuestMonthlySpendingResponse['data'] {
+    return dtos.map((dto): CrmGuestMonthlySpend => ({
+      year: dto.year,
+      month: dto.month,
+      label: dto.label,
+      totalSpend: dto.totalSpend,
+    }));
+  }
+
+  static toGuestRatings(dto: CrmGuestRatingsResponseDto): GetCrmGuestRatingsResponse['data'] {
+    return {
+      items: dto.items.map((item) => ({
+        id: item.id,
+        unitId: item.unitId,
+        unitName: item.unitName,
+        rate: item.rate,
+        message: item.message,
+        createdAt: item.createdAt,
+      })),
+      averageRating: dto.averageRating,
+      pagination: dto.pagination,
+    };
   }
 
   private static toDomainGuest(dto: CrmGuestDto): CrmGuest {

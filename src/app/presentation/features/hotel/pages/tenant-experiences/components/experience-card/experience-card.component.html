@@ -1,0 +1,54 @@
+<article class="experience-card">
+  <img
+    class="experience-cover"
+    [src]="experience().coverImageUrl"
+    [alt]="'Portada de ' + experience().name"
+    loading="lazy"
+  />
+
+  <div class="experience-content">
+    <div class="card-top">
+      <span class="scope-badge">{{ scopeBadgeLabel() }}</span>
+      <span class="category-badge">{{ categoryLabel() }}</span>
+    </div>
+
+    <h3 class="experience-name">{{ experience().name }}</h3>
+     <p class="meta-line">
+        <ng-icon name="bootstrapGeoAltFill" size="14px"></ng-icon>
+        {{ experience().location.label }}
+      </p>
+
+    <div class="meta-grid">
+     
+      <p class="meta-line">
+        <ng-icon name="bootstrapTagFill" size="14px"></ng-icon>
+        {{ priceLabel() }}
+      </p>
+      <p class="meta-line">
+        <ng-icon name="bootstrapClockFill" size="14px"></ng-icon>
+        {{ experience().durationHours }} hora{{ experience().durationHours !== 1 ? 's' : '' }}
+      </p>
+      <p class="meta-line">
+        <ng-icon name="bootstrapPeopleFill" size="14px"></ng-icon>
+        Capacidad {{ experience().capacity }}
+      </p>
+    </div>
+
+    <p class="availability-summary">{{ availabilitySummary() }}</p>
+
+    <div class="actions">
+      <app-button type="button" variant="primary" size="small" (clicked)="onView()">
+        <ng-icon name="bootstrapEye" size="14px"></ng-icon>
+        Ver detalle
+      </app-button>
+      <app-button type="button" variant="primary" size="small" (clicked)="onEdit()">
+        <ng-icon name="bootstrapPencilSquare" size="14px"></ng-icon>
+        Editar
+      </app-button>
+      <app-button type="button" variant="primary" size="small" (clicked)="onDelete()">
+        <ng-icon name="bootstrapTrash" size="14px"></ng-icon>
+        Eliminar
+      </app-button>
+    </div>
+  </div>
+</article>

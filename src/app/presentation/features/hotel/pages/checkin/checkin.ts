@@ -250,7 +250,7 @@ export class CheckinComponent implements AfterViewInit {
     }
 
     return this.getReservationsUseCase.execute().pipe(
-      map((reservations) => this.selectFallbackReservation(reservations)),
+      map(({ reservations }) => this.selectFallbackReservation(reservations)),
       catchError(() => of(null)),
     );
   }

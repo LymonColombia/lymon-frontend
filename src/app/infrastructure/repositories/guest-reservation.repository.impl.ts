@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env';
 import { GuestReservationRepository } from '@/domain/repositories/guest-reservation.repository';
-import { GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
+import { CreateUnitRatingDto, GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 import { UnitCalendarDto } from '@/infrastructure/dtos/unit-calendar.dto';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
@@ -39,10 +39,23 @@ export class GuestReservationRepositoryImpl implements GuestReservationRepositor
       .pipe(map((res) => res.data));
   }
 
-  getAll(params: { page?: number; limit?: number }): Observable<GuestReservationsPage> {
+  createUnitRating(dto: CreateUnitRatingDto): Observable<unknown> {
+    return this.http.post<unknown>(
+      `${environment.apiUrl}/guest/unit-ratings`,
+      dto,
+      { headers: this.authHeaders() },
+    );
+  }
+
+  getAll(params: GetGuestReservationsParams): Observable<GuestReservationsPage> {
     let httpParams = new HttpParams();
     if (params.page != null) httpParams = httpParams.set('page', params.page);
     if (params.limit != null) httpParams = httpParams.set('limit', params.limit);
+    if (params.status) httpParams = httpParams.set('status', params.status);
+    if (params.sortBy) httpParams = httpParams.set('sortBy', params.sortBy);
+    if (params.sortOrder) httpParams = httpParams.set('sortOrder', params.sortOrder);
+    if (params.fromDate) httpParams = httpParams.set('fromDate', params.fromDate);
+    if (params.toDate) httpParams = httpParams.set('toDate', params.toDate);
 
     interface ApiResponse {
       items: GuestReservationResponse[];
@@ -63,7 +76,7 @@ export class GuestReservationRepositoryImpl implements GuestReservationRepositor
             page: response.page ?? params.page ?? 1,
             limit: response.limit ?? params.limit ?? 10,
             total: response.total ?? 0,
-            totalPages: response.total && response.limit ? Math.ceil(response.total / response.limit) : 1,
+            totalPages: response.limit > 0 ? Math.max(1, Math.ceil((response.total ?? 0) / response.limit)) : 1,
           },
         })),
       );

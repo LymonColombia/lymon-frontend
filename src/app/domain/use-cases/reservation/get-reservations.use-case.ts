@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Reservation } from '@/domain/entities/reservation.model';
+import type { PaginatedReservations } from '@/domain/repositories/reservation.repository';
 import { ReservationRepository } from '@/domain/repositories/reservation.repository';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { ReservationRepository } from '@/domain/repositories/reservation.reposit
 export class GetReservationsUseCase {
   private readonly reservationRepository = inject(ReservationRepository);
 
-  execute(): Observable<Reservation[]> {
-    return this.reservationRepository.getReservations();
+  execute(params?: { page?: number; limit?: number }): Observable<PaginatedReservations> {
+    return this.reservationRepository.getReservations(params);
   }
 }

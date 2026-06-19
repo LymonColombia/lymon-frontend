@@ -5,11 +5,12 @@ import {
   output,
   computed,
   signal,
-  effect,
+  SimpleChanges,
   forwardRef,
   ViewChild,
   ElementRef,
   inject,
+  OnChanges,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -43,7 +44,7 @@ export interface SelectOption {
     '(document:click)': 'onDocumentClick($event)',
   },
 })
-export class SelectComponent implements ControlValueAccessor {
+export class SelectComponent implements ControlValueAccessor,OnChanges {
   @ViewChild('triggerElement', { static: false }) triggerElement?: ElementRef<HTMLButtonElement>;
   private readonly hostElement = inject(ElementRef<HTMLElement>);
   private closeAnimationTimeoutId: number | null = null;
@@ -71,12 +72,12 @@ export class SelectComponent implements ControlValueAccessor {
   readonly isOpen = signal<boolean>(false);
   readonly isClosing = signal<boolean>(false);
 
-  constructor() {
-    effect(() => {
-      this.value.set(this.externalValue());
-    });
-  }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['externalValue']) {
+      this.value.set(changes['externalValue'].currentValue ?? null);
+    }
+  }
   // Computed host classes
   readonly hostClasses = computed(() => {
     const classes = ['select-wrapper'];

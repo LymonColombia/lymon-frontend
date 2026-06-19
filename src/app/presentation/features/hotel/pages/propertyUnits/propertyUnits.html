@@ -28,15 +28,44 @@
       <div class="alert alert-success">{{ successMessage() }}</div>
     }
 
-    @if (showCreateUnitModal()) {
-      <app-modal [open]="true" title="Nueva Unidad" size="large" (closed)="closeCreateUnitModal()">
+    @if (showUnitModal()) {
+      <app-modal
+        [open]="true"
+        [title]="editingUnit() ? 'Editar Unidad' : 'Nueva Unidad'"
+        size="large"
+        (closed)="closeUnitModal()"
+      >
         <app-unit-form-modal
           [propertyId]="propertyId() ?? ''"
-          (created)="onUnitCreated()"
-          (cancelled)="closeCreateUnitModal()"
+          [unitToEdit]="editingUnit()"
+          (saved)="onUnitSaved()"
+          (cancelled)="closeUnitModal()"
         />
       </app-modal>
     }
+
+    <app-modal
+      [open]="showDeleteConfirm()"
+      title="Eliminar Unidad"
+      size="small"
+      (closed)="cancelDelete()"
+    >
+      <p class="delete-confirm-message">
+        ¿Estás seguro de que quieres eliminar <strong>{{ unitToDelete()?.name }}</strong>? Esta acción no se puede deshacer.
+      </p>
+      <div modal-footer class="form-actions">
+        <app-button type="button" variant="secondary" (clicked)="cancelDelete()">Cancelar</app-button>
+        <app-button
+          type="button"
+          variant="danger"
+          [disabled]="isDeleting()"
+          [loading]="isDeleting()"
+          (clicked)="confirmDelete()"
+        >
+          Eliminar
+        </app-button>
+      </div>
+    </app-modal>
 
     @if (isLoading()) {
       <div class="loading-state">
@@ -55,7 +84,11 @@
     } @else {
       <div class="units-grid">
         @for (unit of units(); track unit.id) {
-          <app-unit-card [unit]="unit" />
+          <app-unit-card
+            [unit]="unit"
+            (edit)="openEditUnit(unit)"
+            (deleteUnit)="openDeleteConfirm(unit)"
+          />
         }
 
         <button type="button" class="create-unit-card" (click)="navigateToCreateUnit()">

@@ -1,0 +1,223 @@
+<div class="wizard-overlay-wrapper" (keydown.escape)="onClose()">
+  <button type="button" class="wizard-overlay-backdrop" (click)="onClose()" aria-label="Cerrar modal"></button>
+  <div class="wizard-container">
+    <header class="wizard-header">
+      <div class="header-title">
+        <ng-icon name="bootstrapCalendarPlus" class="title-icon"></ng-icon>
+        <div>
+          <h2>Nueva Reserva</h2>
+          <p>Completa los pasos para registrar una nueva estancia</p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="onClose()" aria-label="Cerrar">
+        <ng-icon name="bootstrapX"></ng-icon>
+      </button>
+    </header>
+
+    <nav class="step-indicator" aria-label="Progreso de la reserva">
+      <div class="step-item" [class.active]="currentStep() === 1" [class.completed]="currentStep() > 1">
+        <div class="step-icon">
+          @if (currentStep() > 1) {
+          <ng-icon name="bootstrapCheck"></ng-icon>
+          } @else {
+          1
+          }
+        </div>
+        <span>Verificación</span>
+      </div>
+
+      <div class="step-line" [class.completed]="currentStep() > 1"></div>
+
+      <div class="step-item" [class.active]="currentStep() === 2" [class.completed]="currentStep() > 2"
+        [class.disabled]="guestIsRegistered() === true">
+        <div class="step-icon">
+          @if (currentStep() > 2) {
+          <ng-icon name="bootstrapCheck"></ng-icon>
+          } @else {
+          2
+          }
+        </div>
+        <span>Registro</span>
+      </div>
+
+      <div class="step-line" [class.completed]="currentStep() > 2"></div>
+
+      <div class="step-item" [class.active]="currentStep() === 3">
+        <div class="step-icon">3</div>
+        <span>Reserva</span>
+      </div>
+    </nav>
+
+    <main class="wizard-content">
+      @if (currentStep() === 1) {
+      <section class="step-section animate-fade-in">
+        <div class="question-container">
+          <div class="info-icon-wrapper">
+            <ng-icon name="bootstrapPersonCheck" class="info-icon"></ng-icon>
+          </div>
+          <h3>¿El huésped ya está registrado?</h3>
+          <p>Si el huésped ya ha visitado nuestras propiedades anteriormente, sus datos ya estarán en el sistema.</p>
+
+          <div class="action-buttons">
+            <button class="btn btn-secondary" (click)="setGuestRegistered(false)">
+              <ng-icon name="bootstrapPersonPlus"></ng-icon>
+              No, registrar nuevo
+            </button>
+            <button class="btn btn-primary" (click)="setGuestRegistered(true)">
+              <ng-icon name="bootstrapCheck"></ng-icon>
+              Sí, ya está registrado
+            </button>
+          </div>
+        </div>
+      </section>
+      }
+
+      @if (currentStep() === 2) {
+      <section class="step-section animate-slide-in">
+        <header class="section-header">
+          <h3>Información del Huésped</h3>
+          <p>Registra los datos personales del nuevo cliente</p>
+        </header>
+
+        <form class="wizard-form grid-2-cols">
+          @if (errorMessage()) {
+          <div class="error-message">
+            <ng-icon name="bootstrapInfoCircle"></ng-icon>
+            {{ errorMessage() }}
+          </div>
+          }
+          <div class="form-group full-width">
+            <label for="fullName">Nombre Completo</label>
+            <input type="text" id="fullName" [(ngModel)]="guestForm.fullName" name="fullName" placeholder="Ej. Juan Pérez"
+              required>
+          </div>
+          <div class="form-group full-width">
+            <label for="primaryEmail">Correo Electrónico</label>
+            <input type="email" id="primaryEmail" [(ngModel)]="guestForm.primaryEmail" name="primaryEmail"
+              placeholder="juan.perez@example.com" required>
+          </div>
+        </form>
+      </section>
+      }
+
+      @if (currentStep() === 3) {
+      <section class="step-section animate-slide-in">
+        <header class="section-header">
+          <h3>Detalles de la Reserva</h3>
+          <p>Configura los parámetros de la estancia</p>
+        </header>
+
+        <form class="wizard-form grid-2-cols">
+          @if (errorMessage()) {
+          <div class="error-message">
+            <ng-icon name="bootstrapInfoCircle"></ng-icon>
+            {{ errorMessage() }}
+          </div>
+          }
+          <div class="form-group full-width">
+            <label for="guestSelect">Seleccionar Huésped</label>
+            <div class="select-wrapper">
+              <select id="guestSelect" [(ngModel)]="reservationForm.guestId" name="guestId"
+                [disabled]="guestIsRegistered() === false">
+                <option value="" disabled selected>Selecciona un huésped...</option>
+                @if (guestIsRegistered() === false) {
+                <option [value]="reservationForm.guestId" selected>{{ guestForm.fullName }} (Nuevo)</option>
+                }
+                @for (guest of guests(); track guest.id) {
+                <option [value]="guest.id">{{ guest.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="propertySelect">Propiedad</label>
+            <div class="select-wrapper">
+              <select id="propertySelect" [(ngModel)]="reservationForm.propertyId" name="propertyId" (ngModelChange)="onPropertySelect($event)">
+                <option value="" disabled selected>Selecciona propiedad...</option>
+                @for (prop of properties(); track prop.id) {
+                <option [value]="prop.id">{{ prop.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="unitSelect">Unidad</label>
+            <div class="select-wrapper">
+              <select id="unitSelect" [(ngModel)]="reservationForm.unitId" name="unitId">
+                <option value="" disabled selected>Selecciona unidad...</option>
+                @for (unit of units(); track unit.id) {
+                <option [value]="unit.id">{{ unit.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="guestsCount">Cantidad de Huéspedes</label>
+            <input type="number" id="guestsCount" [(ngModel)]="reservationForm.guestsCount" name="guestsCount" min="1"
+              max="20">
+          </div>
+
+          <div class="form-group">
+            <label for="source">Medio de Reserva</label>
+            <input type="text" id="source" [value]="reservationForm.source" readonly class="readonly-input">
+            <span class="input-hint"><ng-icon name="bootstrapInfoCircle"></ng-icon> Las reservas administrativas son
+              siempre manuales</span>
+          </div>
+
+          <div class="form-group">
+            <label for="checkIn">Fecha de Entrada</label>
+            <input type="date" id="checkIn" [(ngModel)]="reservationForm.checkIn" name="checkIn">
+          </div>
+
+          <div class="form-group">
+            <label for="checkOut">Fecha de Salida</label>
+            <input type="date" id="checkOut" [(ngModel)]="reservationForm.checkOut" name="checkOut">
+          </div>
+
+          <div class="form-group full-width">
+            <label for="notes">Notas</label>
+            <textarea id="notes" [(ngModel)]="reservationForm.notes" name="notes" rows="3"
+              placeholder="Notas adicionales sobre la reserva..."></textarea>
+          </div>
+        </form>
+      </section>
+      }
+    </main>
+
+    <footer class="wizard-footer">
+      <div class="footer-left">
+        @if (currentStep() > 1) {
+        <button class="btn btn-ghost" (click)="prevStep()">
+          <ng-icon name="bootstrapArrowLeft"></ng-icon>
+          Anterior
+        </button>
+        }
+      </div>
+      <div class="footer-right">
+        @if (currentStep() === 2) {
+        <button class="btn btn-primary" (click)="registerAndNext()" [disabled]="isCreatingGuest() || !guestForm.fullName || !guestForm.primaryEmail">
+          @if (isCreatingGuest()) {
+          Registrando...
+          } @else {
+          Siguiente
+          <ng-icon name="bootstrapArrowRight"></ng-icon>
+          }
+        </button>
+        }
+        @if (currentStep() === 3) {
+        <button class="btn btn-emerald" (click)="onSubmit()" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+          Creando...
+          } @else {
+          <ng-icon name="bootstrapCheck"></ng-icon>
+          Confirmar Reserva
+          }
+        </button>
+        }
+      </div>
+    </footer>
+  </div>
+</div>

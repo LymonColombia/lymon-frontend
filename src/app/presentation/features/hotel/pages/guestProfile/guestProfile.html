@@ -2,6 +2,8 @@
   [title]="guest()?.name ?? 'Perfil del huésped'"
   subtitle="Consulta y administra la información de este huésped"
   [breadcrumbItems]="breadcrumbItems()"
+  backLink="/crm/guests"
+  backLabel="Volver a la lista"
 >
   <div hotelPageIcon class="guest-initials-avatar">{{ guestInitials() }}</div>
 
@@ -399,10 +401,201 @@
       </div>
     </section>
 
+    <!-- Spending trend (full width) -->
+    <div class="metrics-card metrics-card--full">
+      <div class="metrics-card-header">
+        <div>
+          <h3 class="metrics-card-title">Tendencia de gasto</h3>
+          <p class="metrics-card-subtitle">Gasto mensual del huésped en sus reservas</p>
+        </div>
+      </div>
+      @if (isMonthlySpendingLoading()) {
+        <p class="page-feedback">Cargando tendencia de gasto...</p>
+      } @else if (monthlySpendingErrorMessage()) {
+        <p class="notes-feedback notes-feedback-error">{{ monthlySpendingErrorMessage() }}</p>
+      } @else if (monthlySpending().length === 0) {
+        <p class="notes-feedback">Sin datos de gasto disponibles.</p>
+      } @else {
+        <div class="monthly-spending-chart-wrapper">
+          <canvas #monthlySpendingCanvas></canvas>
+        </div>
+      }
+    </div>
+
+    <!-- Two-column row: booking source + ratings -->
+    <div class="metrics-row">
+
+      <!-- Left: booking source distribution -->
+      <div class="metrics-card">
+        <div class="metrics-card-header">
+          <div>
+            <h3 class="metrics-card-title">Origen de las reservas</h3>
+            <p class="metrics-card-subtitle">Distribución por canal</p>
+          </div>
+        </div>
+        @if (isBookingOriginsLoading()) {
+          <p class="page-feedback">Cargando orígenes...</p>
+        } @else if (bookingOriginsErrorMessage()) {
+          <p class="notes-feedback notes-feedback-error">{{ bookingOriginsErrorMessage() }}</p>
+        } @else if (bookingOrigins().length === 0) {
+          <p class="notes-feedback">Sin datos de origen disponibles.</p>
+        } @else {
+          <div class="booking-origins-chart-wrapper">
+            <canvas #bookingOriginsCanvas></canvas>
+          </div>
+          <div class="booking-origins-footer">
+            <span class="booking-origins-footer-label">Total reservas</span>
+            <span class="booking-origins-footer-value">{{ bookingOriginsTotal() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Right: guest ratings -->
+      <div class="metrics-card">
+        <div class="ratings-section-header">
+          <div>
+            <h3 class="metrics-card-title">Reseñas dadas</h3>
+            <p class="metrics-card-subtitle">Puntuaciones que este huésped ha publicado</p>
+          </div>
+          @if (ratingsAverageRating() !== null) {
+            <div class="ratings-average-badge">
+              @for (filled of getStarsArray(ratingsAverageRating()!); track $index) {
+                <ng-icon [name]="filled ? 'bootstrapStarFill' : 'bootstrapStar'" size="18px" [class.ratings-star--filled]="filled" [class.ratings-star--empty]="!filled"></ng-icon>
+              }
+              <span class="ratings-average-value">{{ ratingsAverageRating()!.toFixed(1) }}</span>
+            </div>
+          }
+        </div>
+
+        @if (isRatingsLoading()) {
+          <p class="page-feedback">Cargando reseñas...</p>
+        } @else if (ratingsErrorMessage()) {
+          <p class="notes-feedback notes-feedback-error">{{ ratingsErrorMessage() }}</p>
+        } @else if (ratings().length === 0) {
+          <p class="notes-feedback">Este huésped no ha publicado reseñas.</p>
+        } @else {
+          <div class="ratings-list">
+            @for (rating of ratings(); track rating.id; let last = $last) {
+              <div class="rating-row" [class.rating-row--last]="last">
+                <span class="rating-row-date">{{ formatRatingDate(rating.createdAt) }}</span>
+                <div class="rating-row-body">
+                  <div class="rating-row-top">
+                    <span class="rating-row-unit">{{ rating.unitName }}</span>
+                    <div class="rating-row-stars">
+                      @for (filled of getStarsArray(rating.rate); track $index) {
+                        <ng-icon [name]="filled ? 'bootstrapStarFill' : 'bootstrapStar'" size="14px" [class.ratings-star--filled]="filled" [class.ratings-star--empty]="!filled"></ng-icon>
+                      }
+                    </div>
+                  </div>
+                  @if (rating.message) {
+                    <p class="rating-row-message">{{ rating.message }}</p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (hasMoreRatings()) {
+            <div class="ratings-load-more">
+              <app-button variant="secondary" size="medium" [loading]="isLoadingMoreRatings()" (clicked)="loadMoreRatings()">
+                Ver más reseñas
+              </app-button>
+            </div>
+          }
+        }
+      </div>
+
+    </div>
+
     } <!-- /metricas tab -->
 
     <!-- Resumen tab -->
     @if (activeTab() === 'resumen') {
+
+    <!-- KPI strip -->
+    <div class="kpi-strip">
+      <div class="kpi-card">
+        <span class="kpi-card-label">Reservas totales</span>
+        <span class="kpi-card-value">{{ totalBookings() }}</span>
+        <span class="kpi-card-sub">estancias confirmadas</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card-label">Gasto total</span>
+        <span class="kpi-card-value">{{ formatCurrency(totalSpend()) }}</span>
+        <span class="kpi-card-sub">acumulado</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card-label">Última estancia</span>
+        @if (lastStayBooking(); as b) {
+          <span class="kpi-card-value">{{ formatDateLabel(b.checkOut) }}</span>
+          <span class="kpi-card-sub">{{ b.propertyName || 'Propiedad desconocida' }}</span>
+        } @else {
+          <span class="kpi-card-value">—</span>
+          <span class="kpi-card-sub">Sin estancias previas</span>
+        }
+      </div>
+      <div class="kpi-card kpi-card--accent">
+        <span class="kpi-card-label">Próxima reserva</span>
+        @if (nextBooking(); as b) {
+          <span class="kpi-card-value">{{ formatDateLabel(b.checkIn) }}</span>
+          <span class="kpi-card-sub">{{ b.propertyName || 'Propiedad desconocida' }} · {{ nightsBetween(b.checkIn, b.checkOut) }} noches</span>
+        } @else {
+          <span class="kpi-card-value">—</span>
+          <span class="kpi-card-sub">Sin próximas reservas</span>
+        }
+      </div>
+    </div>
+
+    <!-- Próxima reserva card -->
+    <section class="profile-section next-booking-card">
+      <div class="next-booking-header">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapCalendar3" size="18px"></ng-icon>
+          </span>
+          Próxima reserva
+        </h2>
+      </div>
+      @if (nextBooking(); as booking) {
+        <div class="next-booking-body">
+          <div class="next-booking-section">
+            <span class="next-booking-field-label">Propiedad</span>
+            <span class="next-booking-field-value">{{ booking.propertyName || 'Propiedad desconocida' }}</span>
+            @if (booking.unitName) {
+              <span class="next-booking-field-sub">{{ booking.unitName }}</span>
+            }
+          </div>
+          <div class="next-booking-right">
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Check-in</span>
+              <span class="next-booking-field-value">{{ formatDateLabel(booking.checkIn) }}</span>
+            </div>
+            <span class="next-booking-arrow" aria-hidden="true">→</span>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Check-out</span>
+              <span class="next-booking-field-value">{{ formatDateLabel(booking.checkOut) }}</span>
+            </div>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Duración</span>
+              <span class="next-booking-field-value">{{ nightsBetween(booking.checkIn, booking.checkOut) }} noches</span>
+            </div>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Estado</span>
+              <span
+                class="booking-status"
+                [class.booking-status-info]="getBookingStatusTone(booking.status) === 'info'"
+                [class.booking-status-success]="getBookingStatusTone(booking.status) === 'success'"
+                [class.booking-status-warning]="getBookingStatusTone(booking.status) === 'warning'"
+                [class.booking-status-danger]="getBookingStatusTone(booking.status) === 'danger'"
+              >{{ getBookingStatusLabel(booking.status) }}</span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <p class="next-booking-empty">El huésped no tiene próximas reservas.</p>
+      }
+    </section>
+
     <!-- Pinned notes (only when there are pinned notes) -->
     @if (pinnedNotes().length > 0) {
       <section class="profile-section">

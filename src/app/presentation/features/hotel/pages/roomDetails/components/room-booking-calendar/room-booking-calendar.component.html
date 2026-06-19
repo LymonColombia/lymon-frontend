@@ -23,10 +23,10 @@
         [class.other-month]="!day.isCurrentMonth"
         [class.is-today]="day.isToday"
         [class.is-past]="day.isPast"
+        [class.is-occupied]="day.isOccupied"
         [class.is-start]="day.isStart"
         [class.is-end]="day.isEnd"
         [class.in-range]="day.isInRange"
-        [class.is-occupied]="day.isOccupied"
         [disabled]="!day.isCurrentMonth || day.isPast || day.isOccupied"
         (click)="onDayClick(day)">
         {{ day.day }}

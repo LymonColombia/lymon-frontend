@@ -78,3 +78,5 @@ export interface CreateUnitDto {
     vrboId?: string;
   };
 }
+
+export type UpdateUnitDto = Omit<CreateUnitDto, 'propertyId'>;

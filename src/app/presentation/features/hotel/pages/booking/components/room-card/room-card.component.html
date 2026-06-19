@@ -38,15 +38,18 @@
           {{ room().location }}
         </span>
       }
-      @if (room().rating) {
-        <span class="room-rating">
-          <ng-icon name="bootstrapStarFill" size="12px" class="star-icon" aria-hidden="true"></ng-icon>
-          <span class="rating-value">{{ room().rating }}</span>
-          @if (room().reviews) {
-            <span class="rating-reviews">({{ room().reviews }})</span>
-          }
-        </span>
-      }
+      <div class="room-rating">
+        @if (room().rating) {
+          <div class="stars" aria-hidden="true">
+            @for (filled of getStars(); track $index) {
+              <ng-icon [name]="filled ? 'bootstrapStarFill' : 'bootstrapStar'" size="12px" class="star-icon" aria-hidden="true"></ng-icon>
+            }
+          </div>
+          <span class="rating-value">({{ room().rating }})</span>
+        } @else {
+          <span class="no-rating">Sin valoraciones</span>
+        }
+      </div>
     </div>
 
     <h3 class="room-title">{{ room().title }}</h3>

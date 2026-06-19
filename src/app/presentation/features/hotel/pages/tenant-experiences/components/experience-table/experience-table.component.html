@@ -1,0 +1,47 @@
+<div class="table-shell">
+  <table>
+    <thead>
+      <tr>
+        <th>Experiencia</th>
+        <th>Tipo</th>
+        <th>Categoria</th>
+        <th>Precio</th>
+        <th>Duracion</th>
+        <th>Capacidad</th>
+        <th>Disponibilidad</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (experience of experiences(); track experience.id) {
+        <tr>
+          <td>
+            <div class="name-cell">
+              <img [src]="experience.coverImageUrl" [alt]="'Portada de ' + experience.name" />
+              <div class="name-meta">
+                <strong>{{ experience.name }}</strong>
+                <span>{{ experience.location.label }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="scope-badge">{{ getScopeBadgeLabel(experience.scope) }}</span>
+          </td>
+          <td>{{ getCategoryLabel(experience.category) }}</td>
+          <td>{{ formatCurrencyCop(experience.priceCop) }}</td>
+          <td>{{ experience.durationHours }} h</td>
+          <td>{{ experience.capacity }}</td>
+          <td class="availability-cell">{{ getAvailabilitySummary(experience) }}</td>
+          <td>
+            <div class="row-actions">
+              <button type="button" (click)="onView(experience.id)"><ng-icon name="bootstrapEye"  /></button>
+              <button type="button"  (click)="onEdit(experience.id)"><ng-icon name="bootstrapPencilSquare" /></button>
+              <button type="button" (click)="onDelete(experience.id)"><ng-icon name="bootstrapTrash" /></button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
