@@ -1,0 +1,37 @@
+<section class="hero" aria-label="Seccion de experiencias">
+  <div class="hero-decorations" aria-hidden="true">
+    <div class="hero-decoration hero-decoration--top-right"></div>
+    <div class="hero-decoration hero-decoration--bottom-left"></div>
+  </div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Experiencias</p>
+    <h1 class="hero-title">
+      Vive momentos unicos<br />
+      <span class="hero-title-accent">explorando</span>
+    </h1>
+    <p class="hero-description">
+      Descubre actividades exclusivas, tours y experiencias unicas para complementar tu estancia.
+    </p>
+  </div>
+
+  <div class="search-bar">
+    <div class="filters-field">
+      <app-select
+        id="category"
+        name="category"
+        [hasIcon]="true"
+        [options]="categoryOptions"
+        [value]="categoryFilter()"
+        (valueChange)="onCategoryFilterChange($event)">
+        <ng-icon icon class="field-icon" name="bootstrapClipboard2Check" size="16px" aria-hidden="true"></ng-icon>
+      </app-select>
+      <label for="category" class="filters-field-label">Actividad</label>
+    </div>
+
+    <button class="btn-search" type="button" (click)="onSearch()">
+      <ng-icon name="bootstrapSearch" size="16px" aria-hidden="true"></ng-icon>
+      Buscar
+    </button>
+  </div>
+</section>
