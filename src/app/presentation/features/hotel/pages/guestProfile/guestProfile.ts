@@ -2,16 +2,24 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
+  effect,
+  ElementRef,
   HostListener,
   inject,
   OnInit,
   signal,
+  viewChild,
 } from '@angular/core';
+import { BarController, BarElement, CategoryScale, Chart, LinearScale, Tooltip } from 'chart.js';
+
+Chart.register(BarController, CategoryScale, LinearScale, BarElement, Tooltip);
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   CrmGuest,
   CrmGuestBooking,
+  CrmGuestBookingOrigin,
   CrmGuestBookingSource,
   CrmGuestEmail,
   CrmGuestMessageTemplateId,
@@ -33,6 +41,7 @@ import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-no
 import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
 import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
 import { GetCrmGuestRatingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-ratings.use-case';
+import { GetCrmGuestBookingOriginsUseCase } from '@/domain/use-cases/crm/get-crm-guest-booking-origins.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
@@ -199,6 +208,7 @@ export class GuestProfileComponent implements OnInit {
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly updateCrmGuestTagsUseCase = inject(UpdateCrmGuestTagsUseCase);
   private readonly getCrmGuestRatingsUseCase = inject(GetCrmGuestRatingsUseCase);
+  private readonly getCrmGuestBookingOriginsUseCase = inject(GetCrmGuestBookingOriginsUseCase);
 
   readonly activeTab = signal<GuestProfileTab>('resumen');
 
@@ -231,6 +241,15 @@ export class GuestProfileComponent implements OnInit {
   readonly isRatingsLoading = signal(false);
   readonly ratingsErrorMessage = signal<string | null>(null);
   readonly isLoadingMoreRatings = signal(false);
+
+  readonly bookingOrigins = signal<CrmGuestBookingOrigin[]>([]);
+  readonly bookingOriginsTotal = signal<number>(0);
+  readonly isBookingOriginsLoading = signal(false);
+  readonly bookingOriginsErrorMessage = signal<string | null>(null);
+
+  private chart: Chart | null = null;
+  private bookingOriginsPercentages: number[] = [];
+  private readonly bookingOriginsCanvas = viewChild<ElementRef<HTMLCanvasElement>>('bookingOriginsCanvas');
 
   readonly hasMoreRatings = computed(() => {
     const p = this.ratingsPagination();
@@ -435,6 +454,70 @@ export class GuestProfileComponent implements OnInit {
 
   onTagSearchChange(value: string): void {
     this.tagSearchQuery.set(value);
+  }
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+
+    effect(() => {
+      const canvas = this.bookingOriginsCanvas();
+      const origins = this.bookingOrigins();
+
+      if (!canvas || origins.length === 0) {
+        this.chart?.destroy();
+        this.chart = null;
+        return;
+      }
+
+      const labels = origins.map((o) => this.formatBookingSource(o.source));
+      const counts = origins.map((o) => o.count);
+      this.bookingOriginsPercentages = origins.map((o) => o.percentage);
+
+      if (this.chart) {
+        this.chart.data.labels = labels;
+        this.chart.data.datasets[0].data = counts;
+        this.chart.update();
+      } else {
+        this.chart = new Chart(canvas.nativeElement, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              {
+                data: counts,
+                backgroundColor: '#2ec094',
+                borderRadius: 99,
+                barThickness: 10,
+              },
+            ],
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ${ctx.parsed.x} · ${this.bookingOriginsPercentages[ctx.dataIndex]}%`,
+                },
+              },
+            },
+            scales: {
+              x: { display: false },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#084539', font: { size: 13 } },
+              },
+            },
+          },
+        });
+      }
+    });
+
+    destroyRef.onDestroy(() => {
+      this.chart?.destroy();
+    });
   }
 
   ngOnInit(): void {
@@ -866,6 +949,34 @@ export class GuestProfileComponent implements OnInit {
     this.loadRatings(guestId, pagination.page + 1);
   }
 
+  loadBookingOrigins(guestId: string): void {
+    this.isBookingOriginsLoading.set(true);
+    this.bookingOriginsErrorMessage.set(null);
+
+    this.getCrmGuestBookingOriginsUseCase.execute(guestId).subscribe({
+      next: (result) => {
+        this.bookingOrigins.set(result.sources);
+        this.bookingOriginsTotal.set(result.total);
+        this.isBookingOriginsLoading.set(false);
+      },
+      error: () => {
+        this.isBookingOriginsLoading.set(false);
+        this.bookingOriginsErrorMessage.set('No se pudieron cargar los orígenes. Inténtalo de nuevo.');
+      },
+    });
+  }
+
+  formatBookingSource(source: CrmGuestBookingSource): string {
+    const labels: Record<CrmGuestBookingSource, string> = {
+      MANUAL: 'Manual',
+      DIRECT: 'Directo',
+      AIRBNB: 'Airbnb',
+      BOOKING: 'Booking',
+      VRBO: 'Vrbo',
+    };
+    return labels[source];
+  }
+
   getStarsArray(rate: number): boolean[] {
     return Array.from({ length: 5 }, (_, i) => i < Math.round(rate));
   }
@@ -909,6 +1020,7 @@ export class GuestProfileComponent implements OnInit {
         this.loadNotes(guestId);
         this.loadEmails(guestId);
         this.loadRatings(guestId);
+        this.loadBookingOrigins(guestId);
       },
       error: (error: HttpErrorResponse) => {
         this.isGuestLoading.set(false);

@@ -129,3 +129,16 @@ export interface GetCrmGuestRatingsResponse {
     };
   };
 }
+
+export interface CrmGuestBookingOrigin {
+  source: CrmGuestBookingSource;
+  count: number;
+  percentage: number;
+}
+
+export interface GetCrmGuestBookingOriginsResponse {
+  data: {
+    total: number;
+    sources: CrmGuestBookingOrigin[];
+  };
+}

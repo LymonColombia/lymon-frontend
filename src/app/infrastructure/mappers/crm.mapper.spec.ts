@@ -1,5 +1,5 @@
 import { CrmMapper } from './crm.mapper';
-import { CrmGuestRatingsResponseDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestBookingOriginsResponseDto, CrmGuestRatingsResponseDto } from '@/infrastructure/dtos/crm.dto';
 
 describe('CrmMapper.toGuestRatings', () => {
   const buildDto = (overrides?: Partial<CrmGuestRatingsResponseDto>): CrmGuestRatingsResponseDto => ({
@@ -71,5 +71,69 @@ describe('CrmMapper.toGuestRatings', () => {
     expect(result.pagination.total).toBe(50);
     expect(result.pagination.page).toBe(2);
     expect(result.pagination.totalPages).toBe(3);
+  });
+});
+
+describe('CrmMapper.toGuestBookingOrigins', () => {
+  const buildDto = (overrides?: Partial<CrmGuestBookingOriginsResponseDto>): CrmGuestBookingOriginsResponseDto => ({
+    total: 5,
+    sources: [
+      { source: 'DIRECT', count: 3, percentage: 60 },
+      { source: 'AIRBNB', count: 2, percentage: 40 },
+    ],
+    ...overrides,
+  });
+
+  it('mapea el campo total correctamente', () => {
+    const result = CrmMapper.toGuestBookingOrigins(buildDto({ total: 10 }));
+
+    expect(result.total).toBe(10);
+  });
+
+  it('mapea count y percentage de cada origen', () => {
+    const result = CrmMapper.toGuestBookingOrigins(buildDto());
+
+    expect(result.sources[0].count).toBe(3);
+    expect(result.sources[0].percentage).toBe(60);
+    expect(result.sources[1].count).toBe(2);
+    expect(result.sources[1].percentage).toBe(40);
+  });
+
+  it.each([
+    ['DIRECT', 'DIRECT'],
+    ['AIRBNB', 'AIRBNB'],
+    ['BOOKING', 'BOOKING'],
+    ['VRBO', 'VRBO'],
+    ['MANUAL', 'MANUAL'],
+    ['EXPEDIA', 'MANUAL'],
+  ])('normaliza source "%s" a "%s"', (raw, expected) => {
+    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: raw, count: 1, percentage: 100 }] }));
+
+    expect(result.sources[0].source).toBe(expected);
+  });
+
+  it('retorna total 0 y sources vacío cuando sources es []', () => {
+    const result = CrmMapper.toGuestBookingOrigins(buildDto({ total: 0, sources: [] }));
+
+    expect(result.total).toBe(0);
+    expect(result.sources).toHaveLength(0);
+  });
+
+  it('mapea múltiples orígenes preservando el orden', () => {
+    const dto = buildDto({
+      total: 10,
+      sources: [
+        { source: 'DIRECT', count: 5, percentage: 50 },
+        { source: 'AIRBNB', count: 3, percentage: 30 },
+        { source: 'BOOKING', count: 2, percentage: 20 },
+      ],
+    });
+
+    const result = CrmMapper.toGuestBookingOrigins(dto);
+
+    expect(result.sources).toHaveLength(3);
+    expect(result.sources[0].source).toBe('DIRECT');
+    expect(result.sources[1].source).toBe('AIRBNB');
+    expect(result.sources[2].source).toBe('BOOKING');
   });
 });

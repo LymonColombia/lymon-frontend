@@ -417,7 +417,7 @@
     <!-- Two-column row: booking source + ratings -->
     <div class="metrics-row">
 
-      <!-- Left: booking source placeholder -->
+      <!-- Left: booking source distribution -->
       <div class="metrics-card">
         <div class="metrics-card-header">
           <div>
@@ -425,28 +425,21 @@
             <p class="metrics-card-subtitle">Distribución por canal</p>
           </div>
         </div>
-        <div class="metrics-source-placeholder" aria-hidden="true">
-          <div class="metrics-source-bar-row">
-            <span class="metrics-source-bar-label">—</span>
-            <div class="metrics-source-bar-track"><div class="metrics-source-bar-fill" style="width: 43%"></div></div>
-            <span class="metrics-source-bar-pct">—</span>
+        @if (isBookingOriginsLoading()) {
+          <p class="page-feedback">Cargando orígenes...</p>
+        } @else if (bookingOriginsErrorMessage()) {
+          <p class="notes-feedback notes-feedback-error">{{ bookingOriginsErrorMessage() }}</p>
+        } @else if (bookingOrigins().length === 0) {
+          <p class="notes-feedback">Sin datos de origen disponibles.</p>
+        } @else {
+          <div class="booking-origins-chart-wrapper">
+            <canvas #bookingOriginsCanvas></canvas>
           </div>
-          <div class="metrics-source-bar-row">
-            <span class="metrics-source-bar-label">—</span>
-            <div class="metrics-source-bar-track"><div class="metrics-source-bar-fill" style="width: 29%"></div></div>
-            <span class="metrics-source-bar-pct">—</span>
+          <div class="booking-origins-footer">
+            <span class="booking-origins-footer-label">Total reservas</span>
+            <span class="booking-origins-footer-value">{{ bookingOriginsTotal() }}</span>
           </div>
-          <div class="metrics-source-bar-row">
-            <span class="metrics-source-bar-label">—</span>
-            <div class="metrics-source-bar-track"><div class="metrics-source-bar-fill" style="width: 14%"></div></div>
-            <span class="metrics-source-bar-pct">—</span>
-          </div>
-          <div class="metrics-source-bar-row">
-            <span class="metrics-source-bar-label">—</span>
-            <div class="metrics-source-bar-track"><div class="metrics-source-bar-fill" style="width: 14%"></div></div>
-            <span class="metrics-source-bar-pct">—</span>
-          </div>
-        </div>
+        }
       </div>
 
       <!-- Right: guest ratings -->

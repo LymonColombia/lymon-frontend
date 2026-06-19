@@ -1786,45 +1786,24 @@
 
 /* booking source placeholder */
 
-.metrics-source-placeholder {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.booking-origins-chart-wrapper {
+  position: relative;
+  height: 180px;
 }
 
-.metrics-source-bar-row {
+.booking-origins-footer {
   display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.metrics-source-bar-label {
-  width: 80px;
+  justify-content: space-between;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--color-border-light);
   font-size: 13px;
-  color: var(--color-border-medium, #d1d5db);
-  flex-shrink: 0;
+  color: var(--color-text-secondary);
 }
 
-.metrics-source-bar-track {
-  flex: 1;
-  height: 8px;
-  background: var(--color-bg-secondary);
-  border-radius: 99px;
-  overflow: hidden;
-}
-
-.metrics-source-bar-fill {
-  height: 100%;
-  background: var(--color-border-light);
-  border-radius: 99px;
-}
-
-.metrics-source-bar-pct {
-  width: 36px;
-  font-size: 12px;
-  color: var(--color-border-medium, #d1d5db);
-  text-align: right;
-  flex-shrink: 0;
+.booking-origins-footer-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 @media (max-width: 768px) {
