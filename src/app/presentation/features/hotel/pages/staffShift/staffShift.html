@@ -351,7 +351,7 @@
 
             <div class="gantt-day-shifts">
               @for (segment of getShiftsForDay(day.iso); track segment.shift.id + segment.gridColumn) {
-              <button type="button" class="gantt-bar" [class]="getShiftColorClass(segment.shift.id)"
+              <button type="button" class="gantt-bar" [class]="getShiftColorClass(segment.shift)"
                 [style.grid-column]="segment.gridColumn"
                 title="{{ segment.shift.name }} ({{ segment.shift.propertyName }}) - {{ segment.shift.timeRange }}"
                 (click)="openShiftDetail(segment.shift)">
@@ -908,7 +908,7 @@
                 <div class="gantt-day-shifts">
                   @for (segment of getOverviewAssignmentsForDay(day.iso); track segment.id + segment.gridColumn) {
                   <div class="gantt-bar gantt-bar--overview gantt-bar--readonly"
-                    [class]="getShiftColorClass(segment.shiftName)" [style.grid-column]="segment.gridColumn"
+                    [class]="getShiftColorClass(segment)" [style.grid-column]="segment.gridColumn"
                     title="{{ segment.shiftName }} - {{ segment.employeeName }}">
                     <div class="gantt-bar-info">
                       <span class="gantt-bar-label">{{ segment.employeeName }}</span>

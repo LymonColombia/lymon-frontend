@@ -51,6 +51,7 @@ interface DayAssignment {
   propertyName: string;
   shiftName: string;
   shiftTime: string;
+  colorIndex?: number;
 }
 
 interface AssignmentDay {
@@ -69,6 +70,7 @@ interface FixedShiftCard {
   propertyId?: string;
   notes?: string;
   staffMemberIds?: string[];
+  colorIndex?: number;
 }
 
 interface ShiftOption {
@@ -251,7 +253,8 @@ export class StaffShiftComponent implements OnInit {
                 employeeInitials: this.buildEmployeeInitials(member.fullName || member.name || member.email),
                 propertyName: shift.propertyName || 'N/A',
                 shiftName: shift.name,
-                shiftTime: shift.timeRange
+                shiftTime: shift.timeRange,
+                colorIndex: shift.colorIndex
               });
             }
           });
@@ -583,12 +586,27 @@ export class StaffShiftComponent implements OnInit {
     return Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
   });
 
-  getShiftColorClass(shiftIdOrName: string | number): string {
+  getShiftColorClass(shift: FixedShiftCard | { colorIndex?: number; shiftName?: string; shiftId?: string }): string {
     const colors = ['gantt-bar--1', 'gantt-bar--2', 'gantt-bar--3', 'gantt-bar--4', 'gantt-bar--5'];
-    const idHash = typeof shiftIdOrName === 'string'
-      ? Array.from(shiftIdOrName).reduce((acc, char) => acc + (char.codePointAt(0) || 0), 0)
-      : shiftIdOrName;
-    return colors[idHash % colors.length];
+    if (shift.colorIndex !== undefined) {
+      return colors[shift.colorIndex % colors.length];
+    }
+    if ('shiftId' in shift && typeof shift.shiftId === 'string') {
+      const hash = Array.from(shift.shiftId).reduce((acc: number, char: string) => acc + (char.codePointAt(0) || 0), 0);
+      return colors[hash % colors.length];
+    }
+    if ('shiftName' in shift && typeof shift.shiftName === 'string') {
+      const hash = Array.from(shift.shiftName).reduce((acc: number, char: string) => acc + (char.codePointAt(0) || 0), 0);
+      return colors[hash % colors.length];
+    }
+    if ('id' in shift) {
+      const id = shift.id;
+      const hash = typeof id === 'string'
+        ? Array.from(id).reduce((acc: number, char: string) => acc + (char.codePointAt(0) || 0), 0)
+        : id;
+      return colors[(hash || 0) % colors.length];
+    }
+    return colors[0];
   }
 
   readonly ganttDaysOverview = computed(() => {
@@ -632,7 +650,7 @@ export class StaffShiftComponent implements OnInit {
   }
 
   getOverviewAssignmentsForDay(dateIso: string) {
-    const segments: { id: string; employeeName: string; shiftName: string; timeRange: string; gridColumn: string, shiftId: string }[] = [];
+    const segments: { id: string; employeeName: string; shiftName: string; timeRange: string; gridColumn: string, shiftId: string, colorIndex?: number }[] = [];
     const dayData = this.assignmentDays().find(d => d.dateIso === dateIso);
 
     if (!dayData) return segments;
@@ -655,7 +673,8 @@ export class StaffShiftComponent implements OnInit {
         shiftName: assignment.shiftName,
         timeRange: assignment.shiftTime,
         gridColumn: gridCol,
-        shiftId: assignment.shiftName
+        shiftId: assignment.shiftName,
+        colorIndex: assignment.colorIndex
       });
     });
 
@@ -707,6 +726,9 @@ export class StaffShiftComponent implements OnInit {
         const mappedShifts: FixedShiftCard[] = shifts.map((s: any) => {
           const id = s.id || s._id || s.shiftId || '';
           const propertyId = s.propertyId || s.property_id || '';
+          const colorIndex = typeof id === 'string'
+            ? Array.from(id).reduce((acc, char) => acc + (char.codePointAt(0) || 0), 0) % 5
+            : Math.floor(Math.random() * 5);
 
           return {
             id,
@@ -717,7 +739,8 @@ export class StaffShiftComponent implements OnInit {
             propertyName: this.properties().find(p => p.id === propertyId)?.name ?? 'N/A',
             propertyId: propertyId,
             notes: s.notes,
-            staffMemberIds: s.staffMemberIds || []
+            staffMemberIds: s.staffMemberIds || [],
+            colorIndex
           };
         });
         this.fixedShifts.set(mappedShifts.filter(s => s.id));
