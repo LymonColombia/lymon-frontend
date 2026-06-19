@@ -1,5 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlusCircle, bootstrapX, bootstrapCheck, bootstrapPencil } from '@ng-icons/bootstrap-icons';
 import { HotelPageLayoutComponent } from '../../components/hotel-page-layout/hotel-page-layout';
@@ -8,6 +9,8 @@ import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reser
 import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
 import { CheckInReservationUseCase } from '@/domain/use-cases/reservation/check-in-reservation.use-case';
 import { CheckOutReservationUseCase } from '@/domain/use-cases/reservation/check-out-reservation.use-case';
+import { CancelReservationUseCase } from '@/domain/use-cases/reservation/cancel-reservation.use-case';
+import { UpdateReservationUseCase } from '@/domain/use-cases/reservation/update-reservation.use-case';
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 
 export interface ReservationViewModel {
@@ -27,7 +30,7 @@ export interface ReservationViewModel {
 @Component({
   selector: 'app-tenant-reservations',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent],
   templateUrl: './tenant-reservations.html',
   styleUrls: ['./tenant-reservations.css'],
   viewProviders: [
@@ -47,6 +50,8 @@ export class TenantReservations implements OnInit {
   private readonly confirmReservationUseCase = inject(ConfirmReservationUseCase);
   private readonly checkInReservationUseCase = inject(CheckInReservationUseCase);
   private readonly checkOutReservationUseCase = inject(CheckOutReservationUseCase);
+  private readonly cancelReservationUseCase = inject(CancelReservationUseCase);
+  private readonly updateReservationUseCase = inject(UpdateReservationUseCase);
 
   reservations = signal<ReservationViewModel[]>([]);
 
@@ -59,6 +64,19 @@ export class TenantReservations implements OnInit {
   isProcessingStatus = signal(false);
   statusActionError = signal<string | null>(null);
   showWizard = signal(false);
+
+  showCancelConfirm = signal(false);
+  isCancelling = signal(false);
+  cancelError = signal<string | null>(null);
+
+  showEditModal = signal(false);
+  isUpdating = signal(false);
+  updateError = signal<string | null>(null);
+  editForm = {
+    checkIn: '',
+    checkOut: '',
+    notes: ''
+  };
 
   ngOnInit(): void {
     this.loadReservations();
@@ -174,6 +192,89 @@ export class TenantReservations implements OnInit {
     });
   }
 
+  openCancelConfirm() {
+    this.cancelError.set(null);
+    this.showCancelConfirm.set(true);
+  }
+
+  closeCancelConfirm() {
+    this.showCancelConfirm.set(false);
+    this.cancelError.set(null);
+  }
+
+  cancelReservation() {
+    const reservation = this.selectedReservation();
+    if (!reservation || this.isCancelling()) return;
+
+    this.isCancelling.set(true);
+    this.cancelError.set(null);
+
+    this.cancelReservationUseCase.execute(reservation.id).subscribe({
+      next: () => {
+        this.isCancelling.set(false);
+        this.closeCancelConfirm();
+        this.closeDetails();
+        this.loadReservations();
+      },
+      error: (err) => {
+        this.isCancelling.set(false);
+        this.cancelError.set(this.extractErrorMessage(err, 'cancelar'));
+        console.error('Error cancelling reservation:', err);
+      }
+    });
+  }
+
+  openEditModal() {
+    const reservation = this.selectedReservation();
+    if (!reservation) return;
+
+    this.editForm = {
+      checkIn: this.toDateInputValue(reservation.checkIn),
+      checkOut: this.toDateInputValue(reservation.checkOut),
+      notes: ''
+    };
+    this.updateError.set(null);
+    this.showEditModal.set(true);
+  }
+
+  closeEditModal() {
+    this.showEditModal.set(false);
+    this.updateError.set(null);
+  }
+
+  updateReservation() {
+    const reservation = this.selectedReservation();
+    if (!reservation || this.isUpdating()) return;
+
+    this.updateError.set(null);
+
+    const validationError = this.validateEditForm();
+    if (validationError) {
+      this.updateError.set(validationError);
+      return;
+    }
+
+    this.isUpdating.set(true);
+
+    this.updateReservationUseCase.execute(reservation.id, {
+      checkIn: this.editForm.checkIn,
+      checkOut: this.editForm.checkOut,
+      notes: this.editForm.notes || undefined
+    }).subscribe({
+      next: () => {
+        this.isUpdating.set(false);
+        this.closeEditModal();
+        this.closeDetails();
+        this.loadReservations();
+      },
+      error: (err) => {
+        this.isUpdating.set(false);
+        this.updateError.set(this.extractErrorMessage(err, 'actualizar'));
+        console.error('Error updating reservation:', err);
+      }
+    });
+  }
+
   canConfirmReservation(status: string): boolean {
     return status.toLowerCase().replace(/_/g, '-') === 'pendiente';
   }
@@ -185,6 +286,16 @@ export class TenantReservations implements OnInit {
   canCheckOutReservation(status: string): boolean {
     const normalized = status.toLowerCase().replace(/_/g, '-');
     return normalized === 'check-in' || normalized === 'checked-in';
+  }
+
+  canCancelReservation(status: string): boolean {
+    const normalized = status.toLowerCase().replace(/_/g, '-');
+    return normalized !== 'cancelada' && normalized !== 'cancelled' && normalized !== 'finalizada' && normalized !== 'finished' && normalized !== 'checked-out';
+  }
+
+  canEditReservation(status: string): boolean {
+    const normalized = status.toLowerCase().replace(/_/g, '-');
+    return normalized !== 'cancelada' && normalized !== 'cancelled' && normalized !== 'finalizada' && normalized !== 'finished' && normalized !== 'checked-out';
   }
 
   private mapToViewModel(res: DomainReservation): ReservationViewModel {
@@ -218,6 +329,35 @@ export class TenantReservations implements OnInit {
 
     const normalized = status?.toLowerCase().replace(/_/g, '-');
     return map[normalized ?? ''] || status || 'Pendiente';
+  }
+
+  private toDateInputValue(value: string): string {
+    if (!value) return '';
+    const date = new Date(value);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private validateEditForm(): string | null {
+    const { checkIn, checkOut } = this.editForm;
+
+    if (!checkIn) return 'Debes seleccionar la fecha de entrada.';
+    if (!checkOut) return 'Debes seleccionar la fecha de salida.';
+
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+
+    if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+      return 'Las fechas seleccionadas no son válidas.';
+    }
+
+    if (checkOutDate <= checkInDate) {
+      return 'La fecha de salida debe ser posterior a la fecha de entrada.';
+    }
+
+    return null;
   }
 
   private extractErrorMessage(err: unknown, action: string): string {

@@ -206,13 +206,102 @@
                            @if (canCheckOutReservation(res.status)) {
                            <button class="btn btn-purple" (click)="checkOutReservation()" [disabled]="isProcessingStatus()">Check-out</button>
                            }
-                           <button class="btn btn-amber" [disabled]="isProcessingStatus()"><ng-icon name="bootstrapPencil"></ng-icon> Editar</button>
-                           <button class="btn btn-danger" [disabled]="isProcessingStatus()">Cancelar Reserva</button>
+                            @if (canEditReservation(res.status)) {
+                            <button class="btn btn-amber" (click)="openEditModal()" [disabled]="isProcessingStatus()"><ng-icon name="bootstrapPencil"></ng-icon> Editar</button>
+                            }
+                            @if (canCancelReservation(res.status)) {
+                            <button class="btn btn-danger" (click)="openCancelConfirm()" [disabled]="isProcessingStatus()">Cancelar Reserva</button>
+                            }
                        </div>
                    </div>
               </div>
           </div>
       </div>
+  }
+
+  @if (showCancelConfirm()) {
+    <div class="modal-overlay-wrapper" (keydown.escape)="closeCancelConfirm()">
+      <button type="button" class="modal-overlay-backdrop" (click)="closeCancelConfirm()" aria-label="Cerrar confirmación"></button>
+      <div class="modal-container confirm-modal">
+        <header class="modal-header">
+          <div class="modal-title-group">
+            <ng-icon name="bootstrapX" class="modal-icon text-danger"></ng-icon>
+            <h2 class="modal-title">Confirmar Cancelación</h2>
+          </div>
+          <button type="button" class="icon-btn" (click)="closeCancelConfirm()" aria-label="Cerrar modal">
+            <ng-icon name="bootstrapX"></ng-icon>
+          </button>
+        </header>
+        <div class="modal-content-scroll">
+          <p class="confirm-message">¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer.</p>
+          @if (cancelError()) {
+          <div class="confirm-error">
+            <ng-icon name="bootstrapInfoCircle"></ng-icon>
+            {{ cancelError() }}
+          </div>
+          }
+          <div class="modal-actions-bar">
+            <button class="btn btn-ghost" (click)="closeCancelConfirm()" [disabled]="isCancelling()">Volver</button>
+            <button class="btn btn-danger" (click)="cancelReservation()" [disabled]="isCancelling()">
+              @if (isCancelling()) {
+              Cancelando...
+              } @else {
+              Sí, Cancelar Reserva
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showEditModal()) {
+    <div class="modal-overlay-wrapper" (keydown.escape)="closeEditModal()">
+      <button type="button" class="modal-overlay-backdrop" (click)="closeEditModal()" aria-label="Cerrar edición"></button>
+      <div class="modal-container">
+        <header class="modal-header">
+          <div class="modal-title-group">
+            <ng-icon name="bootstrapPencil" class="modal-icon"></ng-icon>
+            <h2 class="modal-title">Editar Reserva</h2>
+          </div>
+          <button type="button" class="icon-btn" (click)="closeEditModal()" aria-label="Cerrar modal">
+            <ng-icon name="bootstrapX"></ng-icon>
+          </button>
+        </header>
+        <div class="modal-content-scroll">
+          <form class="wizard-form grid-2-cols">
+            @if (updateError()) {
+            <div class="error-message">
+              <ng-icon name="bootstrapInfoCircle"></ng-icon>
+              {{ updateError() }}
+            </div>
+            }
+            <div class="form-group">
+              <label for="editCheckIn">Fecha de Entrada</label>
+              <input type="date" id="editCheckIn" [(ngModel)]="editForm.checkIn" name="editCheckIn">
+            </div>
+            <div class="form-group">
+              <label for="editCheckOut">Fecha de Salida</label>
+              <input type="date" id="editCheckOut" [(ngModel)]="editForm.checkOut" name="editCheckOut">
+            </div>
+            <div class="form-group full-width">
+              <label for="editNotes">Notas</label>
+              <textarea id="editNotes" [(ngModel)]="editForm.notes" name="editNotes" rows="3" placeholder="Notas adicionales..."></textarea>
+            </div>
+          </form>
+          <div class="modal-actions-bar">
+            <button class="btn btn-ghost" (click)="closeEditModal()" [disabled]="isUpdating()">Cancelar</button>
+            <button class="btn btn-emerald" (click)="updateReservation()" [disabled]="isUpdating()">
+              @if (isUpdating()) {
+              Guardando...
+              } @else {
+              Guardar Cambios
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   }
 
   @if (showWizard()) {

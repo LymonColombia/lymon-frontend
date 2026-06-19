@@ -44,4 +44,7 @@ export const environment = {
   guests: {
     endpoint: '/guests',
   },
+  guestReservations: {
+    endpoint: '/guest-reservations',
+  }
 };

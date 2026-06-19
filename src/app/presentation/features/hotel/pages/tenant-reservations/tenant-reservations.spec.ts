@@ -18,9 +18,11 @@ describe('TenantReservations', () => {
             getReservations: () => of([]),
             getReservationById: () => of(),
             create: () => of(),
+            update: () => of(),
             confirm: () => of(undefined),
             checkIn: () => of(undefined),
-            checkOut: () => of(undefined)
+            checkOut: () => of(undefined),
+            cancel: () => of(undefined)
           }
         }
       ]

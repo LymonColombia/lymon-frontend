@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { ReservationRepository } from '@/domain/repositories/reservation.repository';
 import { Reservation } from '@/domain/entities/reservation.model';
 import { CreateReservationInput } from '@/domain/use-cases/reservation/create-reservation.use-case';
+import { UpdateReservationInput } from '@/domain/use-cases/reservation/update-reservation.use-case';
 import { environment } from '@env';
 
 @Injectable({
@@ -35,6 +36,12 @@ export class ReservationRepositoryImpl extends ReservationRepository {
       .pipe(map((response) => this.toCreatedReservation(response, input)));
   }
 
+  update(reservationId: string, input: UpdateReservationInput): Observable<Reservation> {
+    return this.http
+      .patch<unknown>(`${this.baseUrl}${this.endpoint}/${reservationId}`, input)
+      .pipe(map((response) => this.toUpdatedReservation(response, reservationId, input)));
+  }
+
   confirm(reservationId: string): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}${this.endpoint}/${reservationId}/confirm`, {});
   }
@@ -45,6 +52,10 @@ export class ReservationRepositoryImpl extends ReservationRepository {
 
   checkOut(reservationId: string): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}${this.endpoint}/${reservationId}/check-out`, {});
+  }
+
+  cancel(reservationId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}${this.endpoint}/${reservationId}/cancel`, {});
   }
 
   private toCreatedReservation(response: unknown, input: CreateReservationInput): Reservation {
@@ -74,28 +85,45 @@ export class ReservationRepositoryImpl extends ReservationRepository {
       }
 
       if (typeof envelope.reservationId === 'string') {
-        return {
-          id: envelope.reservationId,
-          tenantId: '',
-          propertyId: input.propertyId,
-          unitId: input.unitId,
-          guestId: input.guestId,
-          checkIn: input.checkIn,
-          checkOut: input.checkOut,
-          nights: 0,
-          source: input.source,
-          status: 'pending',
-          guestsCount: input.guestsCount,
-          pricePerNight: 0,
-          totalPrice: 0,
-          notes: input.notes,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
+        return this.buildReservationFromInput(envelope.reservationId, input);
       }
     }
 
-    throw new Error('No se pudo normalizar la reservacion creada');
+    return this.buildReservationFromInput('', input);
+  }
+
+  private toUpdatedReservation(response: unknown, reservationId: string, input: UpdateReservationInput): Reservation {
+    if (this.isReservation(response)) {
+      return response;
+    }
+
+    if (typeof response === 'object' && response !== null) {
+      const envelope = response as {
+        data?: unknown;
+        reservation?: unknown;
+        item?: unknown;
+        reservationId?: unknown;
+        message?: unknown;
+      };
+
+      if (this.isReservation(envelope.data)) {
+        return envelope.data;
+      }
+
+      if (this.isReservation(envelope.reservation)) {
+        return envelope.reservation;
+      }
+
+      if (this.isReservation(envelope.item)) {
+        return envelope.item;
+      }
+
+      if (typeof envelope.reservationId === 'string') {
+        return this.buildReservationFromUpdate(envelope.reservationId, input);
+      }
+    }
+
+    return this.buildReservationFromUpdate(reservationId, input);
   }
 
   private toReservation(response: unknown): Reservation {
@@ -151,5 +179,47 @@ export class ReservationRepositoryImpl extends ReservationRepository {
 
     const candidate = value as Partial<Reservation>;
     return typeof candidate.id === 'string' && typeof candidate.guestId === 'string';
+  }
+
+  private buildReservationFromInput(id: string, input: CreateReservationInput): Reservation {
+    return {
+      id,
+      tenantId: '',
+      propertyId: input.propertyId,
+      unitId: input.unitId,
+      guestId: input.guestId,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
+      nights: 0,
+      source: input.source,
+      status: 'pending',
+      guestsCount: input.guestsCount,
+      pricePerNight: 0,
+      totalPrice: 0,
+      notes: input.notes,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  private buildReservationFromUpdate(id: string, input: UpdateReservationInput): Reservation {
+    return {
+      id,
+      tenantId: '',
+      propertyId: '',
+      unitId: '',
+      guestId: '',
+      checkIn: input.checkIn ?? '',
+      checkOut: input.checkOut ?? '',
+      nights: 0,
+      source: '',
+      status: 'pending',
+      guestsCount: 0,
+      pricePerNight: 0,
+      totalPrice: 0,
+      notes: input.notes,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
   }
 }
