@@ -37,12 +37,8 @@ import { InventoryRepository } from '@/domain/repositories/inventory.repository'
 import { InventoryRepositoryImpl } from '@/infrastructure/repositories/inventory.repository.impl';
 import { StorageRepository } from '@/domain/repositories/storage.repository';
 import { StorageRepositoryImpl } from '@/infrastructure/repositories/storage.repository.impl';
-import { GuestExperienceRepository } from '@/domain/repositories/guest-experience.repository';
-import { GuestExperienceRepositoryImpl } from '@/infrastructure/repositories/guest-experience.repository.impl';
-import { PaymentRepository } from '@/domain/repositories/payment.repository';
-import { PaymentRepositoryImpl } from '@/infrastructure/repositories/payment.repository.impl';
-import { GuestCartRepository } from '@/domain/repositories/guest-cart.repository';
-import { GuestCartRepositoryImpl } from '@/infrastructure/repositories/guest-cart.repository.impl';
+import { TenantGuestRepository } from '@/domain/repositories/tenant-guest.repository';
+import { TenantGuestRepositoryImpl } from '@/infrastructure/repositories/tenant-guest.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -67,10 +63,6 @@ export const appConfig: ApplicationConfig = {
     { provide: ShiftRepository, useClass: ShiftRepositoryImpl },
     { provide: InventoryRepository, useClass: InventoryRepositoryImpl },
     { provide: StorageRepository, useClass: StorageRepositoryImpl },
-    { provide: GuestExperienceRepository, useClass: GuestExperienceRepositoryImpl },
-    { provide: ExperienceRepository, useClass: ExperienceRepositoryImpl },
-    { provide: ImageStorageRepository, useClass: ImageStorageRepositoryImpl },
-    { provide: PaymentRepository, useClass: PaymentRepositoryImpl },
-    { provide: GuestCartRepository, useClass: GuestCartRepositoryImpl },
+    { provide: TenantGuestRepository, useClass: TenantGuestRepositoryImpl },
   ],
 };

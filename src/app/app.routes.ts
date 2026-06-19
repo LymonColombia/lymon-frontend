@@ -47,7 +47,7 @@ import { TenantExperienceFormPageComponent } from '@/presentation/features/hotel
 import { TenantExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-detail-page/tenant-experience-detail-page.component';
 
 import { StorageTestComponent } from '@/presentation/features/hotel/pages/storageTest/storageTest';
-
+import { TenantReservations } from '@/presentation/features/hotel/pages/tenant-reservations/tenant-reservations'; 
 export const routes: Routes = [
   { path: '', redirectTo: '/lyhost', pathMatch: 'full' },
   { path: 'lyhost', component: LyhostPageComponent },
@@ -126,6 +126,7 @@ export const routes: Routes = [
       { path: 'tenant-experiences/:id', component: TenantExperienceDetailPageComponent },
       { path: 'tenant-experiences/:id/edit', component: TenantExperienceFormPageComponent },
       { path: 'storage-test', component: StorageTestComponent },
+      { path: 'tenant-reservations', component: TenantReservations}
     ],
   },
 

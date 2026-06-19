@@ -29,7 +29,8 @@ import {
   bootstrapStar,
   bootstrapThreeDotsVertical,
   bootstrapArchive,
-  bootstrapClockHistory
+  bootstrapClockHistory,
+  bootstrapCalendar2Check
 } from '@ng-icons/bootstrap-icons';
 
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
@@ -68,7 +69,8 @@ interface MenuItem {
       bootstrapStar,
       bootstrapThreeDotsVertical,
       bootstrapArchive,
-      bootstrapClockHistory
+      bootstrapClockHistory,
+      bootstrapCalendar2Check
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -113,6 +115,8 @@ export class SidebarComponent implements OnInit {
 
   readonly menuItems: MenuItem[] = [
     { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
+    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/tenant-reservations'},
+    { icon: 'bootstrapArchive', label: 'Inventario', route: '/inventory' },
     { icon: 'bootstrapHouseDoor', label: 'Propiedades y Unidades', route: '/properties' },
     { icon: 'bootstrapStar', label: 'Experiencias', route: '/tenant-experiences' },
     { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/register-employee' },
@@ -124,6 +128,7 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/audit-log' },
     { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/crm/guests' },
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
+
   ];
 
   toggleExpanded(): void {

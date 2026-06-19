@@ -48,4 +48,10 @@ export const environment = {
   guestExperiences: {
     endpoint: '/guest/experiences',
   },
+  guests: {
+    endpoint: '/guests',
+  },
+  guestReservations: {
+    endpoint: '/guest-reservations',
+  }
 };
