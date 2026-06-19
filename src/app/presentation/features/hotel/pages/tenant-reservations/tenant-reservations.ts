@@ -106,17 +106,17 @@ export class TenantReservations implements OnInit {
     }).subscribe({
       next: ({ properties, guests }) => {
         this.propertiesMap.set(
-          properties.reduce((acc, p) => {
+          properties.reduce<Record<string, string>>((acc, p) => {
             acc[p.id] = p.name || 'Propiedad sin nombre';
             return acc;
-          }, {} as Record<string, string>)
+          }, {})
         );
 
         this.guestsMap.set(
-          guests.reduce((acc, g) => {
+          guests.reduce<Record<string, string>>((acc, g) => {
             acc[g.id] = g.fullName || g.name || g.primaryEmail || g.email || 'Sin Nombre';
             return acc;
-          }, {} as Record<string, string>)
+          }, {})
         );
 
         const propertyIds = properties.map(p => p.id).filter(Boolean);
@@ -130,10 +130,10 @@ export class TenantReservations implements OnInit {
           next: (unitsPerProperty) => {
             const allUnits = unitsPerProperty.flat();
             this.unitsMap.set(
-              allUnits.reduce((acc, u) => {
+              allUnits.reduce<Record<string, string>>((acc, u) => {
                 acc[u.id] = u.name || 'Unidad sin nombre';
                 return acc;
-              }, {} as Record<string, string>)
+              }, {})
             );
             this.loadReservations();
           },
