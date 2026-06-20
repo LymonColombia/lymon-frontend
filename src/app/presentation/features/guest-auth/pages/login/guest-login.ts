@@ -10,13 +10,14 @@ import {
   bootstrapEye,
   bootstrapEyeSlash,
   bootstrapLock,
+  bootstrapPerson,
 } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-guest-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, RouterLink, NgIcon],
-  providers: [provideIcons({ bootstrapEnvelope, bootstrapEye, bootstrapEyeSlash, bootstrapLock, bootstrapArrowRightCircleFill })],
+  providers: [provideIcons({ bootstrapEnvelope, bootstrapEye, bootstrapEyeSlash, bootstrapLock, bootstrapArrowRightCircleFill, bootstrapPerson })],
   templateUrl: './guest-login.html',
   styleUrls: ['../../../auth/auth-form.css'],
 })

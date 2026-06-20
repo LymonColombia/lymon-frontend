@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRightCircleFill,
+  bootstrapBuilding,
   bootstrapEnvelope,
   bootstrapEye,
   bootstrapEyeSlash,
@@ -25,6 +26,7 @@ import {
       bootstrapLock,
       bootstrapQuestionCircleFill,
       bootstrapArrowRightCircleFill,
+      bootstrapBuilding,
     }),
   ],
   templateUrl: './login.html',
