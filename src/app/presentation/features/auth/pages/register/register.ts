@@ -11,6 +11,7 @@ import { RegisterUseCase } from '@/domain/use-cases/auth/register.use-case';
 import { PlanType } from '@/domain/entities/auth.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapEnvelope,
@@ -31,7 +32,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   selector: 'app-register',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent],
   providers: [
     provideIcons({
       bootstrapArrowRightCircleFill,
@@ -55,6 +56,7 @@ export class RegisterComponent {
   readonly errorMessage = signal<string | null>(null);
   readonly showPassword = signal(false);
   readonly showConfirmPassword = signal(false);
+  readonly isTermsOpen = signal(false);
 
   readonly planOptions: { label: string; value: PlanType }[] = [
     { label: 'Plan Básico (Trial)', value: 'TRIAL' },
@@ -131,5 +133,13 @@ export class RegisterComponent {
 
   toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword.update((v) => !v);
+  }
+
+  openTermsModal(): void {
+    this.isTermsOpen.set(true);
+  }
+
+  closeTermsModal(): void {
+    this.isTermsOpen.set(false);
   }
 }

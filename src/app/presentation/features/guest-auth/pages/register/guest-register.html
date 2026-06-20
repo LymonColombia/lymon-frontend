@@ -44,7 +44,7 @@
 
         <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
           <div class="form-group">
-            <label for="fullName">Nombre Completo <span style="color: #e53e3e">*</span></label>
+            <label for="fullName">Nombre Completo <span style="color: var(--color-error)">*</span></label>
             <div
               class="input-wrapper"
               [class.input-error]="fullNameControl.invalid && fullNameControl.touched"
@@ -77,7 +77,7 @@
           </div>
 
           <div class="form-group">
-            <label for="email">Correo Electrónico <span style="color: #e53e3e">*</span></label>
+            <label for="email">Correo Electrónico <span style="color: var(--color-error)">*</span></label>
             <div
               class="input-wrapper"
               [class.input-error]="emailControl.invalid && emailControl.touched"
@@ -108,7 +108,7 @@
           </div>
 
           <div class="form-group">
-            <label for="password">Contraseña <span style="color: #e53e3e">*</span></label>
+            <label for="password">Contraseña <span style="color: var(--color-error)">*</span></label>
             <div
               class="input-wrapper"
               [class.input-error]="passwordControl.invalid && passwordControl.touched"
@@ -168,6 +168,19 @@
             </div>
           </div>
 
+          <div class="form-options">
+            <label class="checkbox-container">
+              <input type="checkbox" id="terms" formControlName="terms" />
+              <span class="checkbox-label">
+                Acepto los
+                <button type="button" class="terms-link" (click)="openTermsModal()">términos y condiciones</button>
+              </span>
+            </label>
+            @if (termsControl.invalid && termsControl.touched) {
+              <span class="field-error">Debes aceptar los términos.</span>
+            }
+          </div>
+
           <button type="submit" class="btn-primary" [disabled]="isLoading()">
             @if (isLoading()) {
               <span>Creando cuenta…</span>
@@ -186,19 +199,52 @@
             style="
               text-align: center;
               margin-top: 16px;
-              font-family: 'Syne', sans-serif;
+              font-family: var(--font-primary);
               font-size: 14px;
-              color: #666;
+              color: var(--color-text-secondary);
             "
           >
             ¿Ya tienes cuenta?
             <a
               routerLink="/guest/login"
-              style="color: #009a44; text-decoration: none; font-weight: 600"
+              style="color: var(--color-primary-dark); text-decoration: none; font-weight: 600"
               >Inicia Sesión</a
             >
           </p>
         </form>
+
+        <app-modal
+          [open]="isTermsOpen()"
+          title="Términos y Condiciones"
+          size="medium"
+          (closed)="closeTermsModal()"
+        >
+          <div class="terms-content">
+            <p>Estos términos regulan la relación entre el alojamiento (en adelante, "El Hotel") y el cliente que realiza la reserva (en adelante, "El Huésped").</p>
+
+            <h3>1. Proceso de Reserva y Pago</h3>
+            <p><strong>Confirmación:</strong> Una reserva se considera garantizada únicamente cuando El Huésped recibe la confirmación por correo electrónico y se procesa el pago correspondiente (o el depósito requerido).</p>
+            <p><strong>Tarifas e Impuestos:</strong> Los precios mostrados incluyen los impuestos aplicables, a menos que se especifique lo contrario (como tasas turísticas locales que se pagan en el establecimiento).</p>
+
+            <h3>2. Políticas de Cancelación y Reembolso</h3>
+            <p><strong>Cancelación Gratuita:</strong> Se permitirá la cancelación sin penalización hasta 48 horas antes de la fecha de entrada (check-in), salvo en tarifas etiquetadas como "No Reembolsables".</p>
+            <p><strong>No Presentarse (No-Show):</strong> Si El Huésped no se presenta en la fecha indicada sin notificación previa, El Hotel se reserva el derecho de cobrar el 100% de la primera noche o de la estancia completa, según la tarifa seleccionada.</p>
+
+            <h3>3. Normas de Convivencia y Uso de las Instalaciones</h3>
+            <p><strong>Horarios:</strong> El horario estándar de check-in es a partir de las 15:00 horas y el check-out debe realizarse antes de las 11:00 horas. El incumplimiento del check-out puede generar cargos adicionales.</p>
+            <p><strong>Comportamiento:</strong> No se permiten ruidos molestos ni fiestas en las habitaciones. El Hotel se reserva el derecho de rescindir el contrato de hospedaje de forma inmediata si El Huésped muestra una conducta inapropiada o ilegal.</p>
+            <p><strong>Ocupación:</strong> No se permite el ingreso de más personas de las declaradas en la reserva sin autorización previa y pago del suplemento correspondiente.</p>
+
+            <h3>4. Responsabilidad por Daños y Pérdidas</h3>
+            <p><strong>Fianza/Depósito:</strong> El Hotel se reserva el derecho de solicitar una tarjeta de crédito o depósito en efectivo a la llegada como garantía.</p>
+            <p><strong>Daños:</strong> El Huésped será financieramente responsable por cualquier daño causado a la propiedad, mobiliario o equipamiento del hotel durante su estancia.</p>
+            <p><strong>Objetos personales:</strong> El Hotel no se hace responsable de la pérdida de dinero, joyas u objetos de valor que no hayan sido depositados en la caja fuerte de la habitación o en la recepción.</p>
+          </div>
+
+          <div modal-footer style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="modal-btn-primary" (click)="closeTermsModal()">Aceptar</button>
+          </div>
+        </app-modal>
       </div>
     }
   </div>
