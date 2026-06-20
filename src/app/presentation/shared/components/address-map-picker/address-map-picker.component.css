@@ -69,10 +69,19 @@
   overflow-y: auto;
 }
 
+.suggestions-list li {
+  list-style: none;
+}
+
 .suggestion-item {
+  width: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
+  font-family: inherit;
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
+  text-align: left;
+  background: none;
+  border: none;
   cursor: pointer;
   transition: background var(--transition-fast);
 }

@@ -1,8 +1,10 @@
 <div class="address-picker">
   <div class="address-input-wrapper">
     <input
+      id="address-input"
       type="text"
       class="address-input"
+      aria-label="Dirección"
       [value]="addressText()"
       (input)="onAddressInput($event)"
       (focus)="onInputFocus()"
@@ -27,14 +29,15 @@
   @if (suggestions().length > 0) {
     <ul class="suggestions-list">
       @for (suggestion of suggestions(); track $index) {
-        <li
-          class="suggestion-item"
-          role="button"
-          tabindex="0"
-          (mousedown)="selectSuggestion(suggestion)"
-          (keydown.enter)="selectSuggestion(suggestion)"
-        >
-          {{ suggestion.label }}
+        <li>
+          <button
+            type="button"
+            class="suggestion-item"
+            (mousedown)="selectSuggestion(suggestion)"
+            (keydown.enter)="selectSuggestion(suggestion)"
+          >
+            {{ suggestion.label }}
+          </button>
         </li>
       }
     </ul>

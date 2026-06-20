@@ -309,7 +309,7 @@ export class PropertiesComponent implements OnInit {
 
 function addressLocationValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
-  if (value && value.lat != null && value.lng != null) {
+  if (value?.lat != null && value?.lng != null) {
     return null;
   }
   return { locationRequired: true };

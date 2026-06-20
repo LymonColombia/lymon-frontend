@@ -42,7 +42,7 @@
   <div class="section-separator">Dirección</div>
 
   <div class="form-group">
-    <label>Dirección <span class="required">*</span></label>
+    <label for="address-input">Dirección <span class="required">*</span></label>
     <app-address-map-picker
       formControlName="addressLocation"
       (geocodeResult)="onGeocodeResult($event)"
@@ -126,8 +126,8 @@
       }
     </div>
     <div class="form-group">
-      <label>Política de Cancelación</label>
-      <span class="static-policy">Estándar</span>
+      <label for="cancellationPolicy">Política de Cancelación</label>
+      <input id="cancellationPolicy" type="text" value="Estándar" readonly class="static-policy" />
     </div>
   </div>
 
