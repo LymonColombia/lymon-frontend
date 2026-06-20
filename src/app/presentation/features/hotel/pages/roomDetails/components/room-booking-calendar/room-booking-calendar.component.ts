@@ -18,6 +18,9 @@ interface CalendarDay {
   isStart: boolean;
   isEnd: boolean;
   isInRange: boolean;
+  isInHoverRange: boolean;
+  isHoverEnd: boolean;
+  isHoverInvalid: boolean;
 }
 
 const MONTH_NAMES = [
@@ -26,6 +29,10 @@ const MONTH_NAMES = [
 ];
 
 const WEEKDAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+const DECEMBER_MONTH_INDEX = 11;
+const DAYS_IN_WEEK = 7;
+const ISO_DATE_PREFIX_LENGTH = 10;
 
 @Component({
   selector: 'room-booking-calendar',
@@ -49,6 +56,7 @@ export class RoomBookingCalendarComponent {
   private readonly viewMonth = signal(this.today.getMonth());
   private readonly startDate = signal<Date | null>(null);
   private readonly endDate = signal<Date | null>(null);
+  private readonly hoverDate = signal<string | null>(null);
 
   readonly monthLabel = computed(() => `${MONTH_NAMES[this.viewMonth()]} ${this.viewYear()}`);
 
@@ -61,6 +69,7 @@ export class RoomBookingCalendarComponent {
     const month = this.viewMonth();
     const startStr = this.startDate() ? this.toDateStr(this.startDate()!) : null;
     const endStr = this.endDate() ? this.toDateStr(this.endDate()!) : null;
+    const hoverStr = this.hoverDate();
     const occupied = this.occupiedRanges();
 
     const firstDay = new Date(year, month, 1);
@@ -69,19 +78,19 @@ export class RoomBookingCalendarComponent {
 
     // Leading days from previous month
     for (let i = firstDay.getDay(); i > 0; i--) {
-      days.push(this.makeDay(new Date(year, month, 1 - i), false, startStr, endStr, occupied));
+      days.push(this.makeDay(new Date(year, month, 1 - i), false, startStr, endStr, hoverStr, occupied));
     }
 
     // Current month
     for (let d = 1; d <= lastDay.getDate(); d++) {
-      days.push(this.makeDay(new Date(year, month, d), true, startStr, endStr, occupied));
+      days.push(this.makeDay(new Date(year, month, d), true, startStr, endStr, hoverStr, occupied));
     }
 
     // Trailing days to fill last row
-    const trailing = 7 - (days.length % 7);
-    if (trailing < 7) {
+    const trailing = DAYS_IN_WEEK - (days.length % DAYS_IN_WEEK);
+    if (trailing < DAYS_IN_WEEK) {
       for (let d = 1; d <= trailing; d++) {
-        days.push(this.makeDay(new Date(year, month + 1, d), false, startStr, endStr, occupied));
+        days.push(this.makeDay(new Date(year, month + 1, d), false, startStr, endStr, hoverStr, occupied));
       }
     }
 
@@ -90,7 +99,7 @@ export class RoomBookingCalendarComponent {
 
   prevMonth(): void {
     if (this.viewMonth() === 0) {
-      this.viewMonth.set(11);
+      this.viewMonth.set(DECEMBER_MONTH_INDEX);
       this.viewYear.update((y) => y - 1);
     } else {
       this.viewMonth.update((m) => m - 1);
@@ -98,12 +107,21 @@ export class RoomBookingCalendarComponent {
   }
 
   nextMonth(): void {
-    if (this.viewMonth() === 11) {
+    if (this.viewMonth() === DECEMBER_MONTH_INDEX) {
       this.viewMonth.set(0);
       this.viewYear.update((y) => y + 1);
     } else {
       this.viewMonth.update((m) => m + 1);
     }
+  }
+
+  onDayMouseEnter(day: CalendarDay): void {
+    if (!day.isCurrentMonth || day.isPast || day.isOccupied) return;
+    this.hoverDate.set(this.toDateStr(day.date));
+  }
+
+  onCalDaysMouseLeave(): void {
+    this.hoverDate.set(null);
   }
 
   onDayClick(day: CalendarDay): void {
@@ -114,12 +132,12 @@ export class RoomBookingCalendarComponent {
     const end = this.endDate();
     const startStr = start ? this.toDateStr(start) : null;
 
-    if (!start || (start && end)) {
+    if (!start || !!end) {
       this.startDate.set(day.date);
       this.endDate.set(null);
       this.emit(clickedStr, null);
     } else if (clickedStr > startStr!) {
-      if (this.hasOccupiedInRange(startStr!, clickedStr)) {
+      if (this.hasOccupiedInRange(startStr!, clickedStr, this.occupiedRanges())) {
         this.startDate.set(day.date);
         this.endDate.set(null);
         this.emit(clickedStr, null);
@@ -142,14 +160,24 @@ export class RoomBookingCalendarComponent {
     isCurrentMonth: boolean,
     startStr: string | null,
     endStr: string | null,
+    hoverStr: string | null,
     occupiedRanges: OccupiedDateRange[],
   ): CalendarDay {
     const dateStr = this.toDateStr(date);
     const isOccupied = isCurrentMonth && occupiedRanges.some((r) => {
-      const checkIn = r.checkIn.slice(0, 10);
-      const checkOut = r.checkOut.slice(0, 10);
+      const checkIn = r.checkIn.slice(0, ISO_DATE_PREFIX_LENGTH);
+      const checkOut = r.checkOut.slice(0, ISO_DATE_PREFIX_LENGTH);
       return dateStr >= checkIn && dateStr < checkOut;
     });
+
+    const isSelectingEnd = !!startStr && !endStr;
+    const hoverAfterStart = isSelectingEnd && !!hoverStr && hoverStr > startStr;
+    const hoverRangeInvalid = hoverAfterStart && this.hasOccupiedInRange(startStr, hoverStr!, occupiedRanges);
+
+    const isHoverEnd = hoverAfterStart && dateStr === hoverStr;
+    const isInHoverRange = hoverAfterStart && !hoverRangeInvalid && !!hoverStr && dateStr > startStr && dateStr < hoverStr;
+    const isHoverInvalid = isHoverEnd && hoverRangeInvalid;
+
     return {
       date,
       day: date.getDate(),
@@ -160,13 +188,16 @@ export class RoomBookingCalendarComponent {
       isStart: dateStr === startStr,
       isEnd: dateStr === endStr,
       isInRange: !!(startStr && endStr && dateStr > startStr && dateStr < endStr),
+      isInHoverRange,
+      isHoverEnd,
+      isHoverInvalid,
     };
   }
 
-  private hasOccupiedInRange(from: string, to: string): boolean {
-    return this.occupiedRanges().some((r) => {
-      const checkIn = r.checkIn.slice(0, 10);
-      const checkOut = r.checkOut.slice(0, 10);
+  private hasOccupiedInRange(from: string, to: string, ranges: OccupiedDateRange[]): boolean {
+    return ranges.some((r) => {
+      const checkIn = r.checkIn.slice(0, ISO_DATE_PREFIX_LENGTH);
+      const checkOut = r.checkOut.slice(0, ISO_DATE_PREFIX_LENGTH);
       return checkIn < to && checkOut > from;
     });
   }

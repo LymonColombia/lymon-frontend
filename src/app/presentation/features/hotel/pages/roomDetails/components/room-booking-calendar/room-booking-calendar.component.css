@@ -86,9 +86,27 @@
   min-width: 0;
 }
 
-.cal-day:hover:not(:disabled):not(.is-start):not(.is-end) {
+.cal-day:hover:not(:disabled):not(.is-start):not(.is-end):not(.is-hover-end) {
   background: var(--color-bg-secondary);
   color: var(--color-primary);
+}
+
+.cal-day.is-in-hover-range {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border-radius: 0;
+}
+
+.cal-day.is-hover-end:not(.is-hover-invalid) {
+  background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  color: var(--color-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.cal-day.is-hover-end.is-hover-invalid {
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  color: var(--color-error);
+  border-radius: var(--radius-sm);
 }
 
 .cal-day.other-month {
