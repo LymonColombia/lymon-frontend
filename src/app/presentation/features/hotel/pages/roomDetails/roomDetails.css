@@ -249,3 +249,15 @@
     }
 }
 
+.replace-modal-text {
+    margin: 0;
+    color: var(--color-text-secondary);
+}
+
+.replace-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
