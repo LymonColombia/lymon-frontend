@@ -48,7 +48,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
             <h1 class="result-title">Pago {{ status() }}</h1>
             <p class="result-subtitle">El pago no pudo completarse. Puedes intentar de nuevo desde el carrito.</p>
             <div class="result-actions">
-              <app-button variant="primary" size="medium" (clicked)="goToCheckout()">
+              <app-button variant="primary" size="medium" (clicked)="goToCart()">
                 Ir al Carrito
               </app-button>
             </div>
@@ -126,7 +126,7 @@ export class PaymentSuccessComponent implements OnInit {
     this.router.navigate(['/booking']);
   }
 
-  goToCheckout(): void {
-    this.router.navigate(['/guest/checkout']);
+  goToCart(): void {
+    this.router.navigate(['/guest/cart']);
   }
 }

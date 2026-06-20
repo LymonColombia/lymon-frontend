@@ -34,7 +34,6 @@ import { adminGuard } from '@/infrastructure/guards/admin.guard';
 import { adminPublicGuard } from '@/infrastructure/guards/admin-public.guard';
 import { guestPublicGuard } from '@/infrastructure/guards/guest-public.guard';
 import { guestGuard } from '@/infrastructure/guards/guest.guard';
-import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/guest-checkout/guest-checkout';
 import { GuestCartPage } from '@/presentation/features/hotel/pages/guest-cart/guest-cart';
 import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/pages/guest-reservation-details/guest-reservation-details';
@@ -82,8 +81,6 @@ export const routes: Routes = [
 
   // Guest flow
   { path: 'guest/cart', component: GuestCartPage, canActivate: [guestGuard] },
-
-  { path: 'guest/checkout', component: GuestCheckoutComponent, canActivate: [guestGuard] },
 
   { path: 'guest/reservations', component: GuestReservationsComponent, canActivate: [guestGuard] },
 

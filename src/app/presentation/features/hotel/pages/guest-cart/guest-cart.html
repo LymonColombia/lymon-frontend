@@ -35,21 +35,70 @@
         <app-button variant="primary" size="medium" (clicked)="goToBooking()">Explorar alojamientos</app-button>
       </section>
 
+    } @else if (isPaymentSuccess()) {
+      <section class="success-card">
+        <div class="success-icon-wrap">
+          <ng-icon name="bootstrapCheckCircleFill" size="48px" aria-hidden="true"></ng-icon>
+        </div>
+        <h1 class="success-title">¡Reserva creada!</h1>
+        <p class="success-subtitle">
+          Tu reserva en <strong>{{ displayCart()?.reservationItem?.unitName ?? 'la habitación' }}</strong> ha sido creada exitosamente.
+        </p>
+        <div class="success-summary">
+          @if (displayCart()?.reservationItem; as item) {
+            <div class="success-row">
+              <ng-icon name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+              <span>{{ formatDate(item.checkIn) }} → {{ formatDate(item.checkOut) }}</span>
+            </div>
+            <div class="success-row">
+              <ng-icon name="bootstrapPeopleFill" size="14px" aria-hidden="true"></ng-icon>
+              <span>{{ item.guestsCount }} huésped{{ item.guestsCount !== 1 ? 'es' : '' }}</span>
+            </div>
+          }
+        </div>
+        <div class="success-actions">
+          <app-button variant="primary" size="medium" (clicked)="goToReservations()">
+            Ver Mis Reservas
+          </app-button>
+          <app-button variant="secondary" size="medium" (clicked)="goToBooking()">
+            Ver Más Habitaciones
+          </app-button>
+        </div>
+      </section>
+
     } @else {
       <section class="cart-grid">
         <app-order-summary
-          [cart]="cart()"
+          [cart]="displayCart()"
           [selectedItemKey]="selectedItemKey()"
           (selectItem)="onSelectItem($event)"
           (removeExperience)="onRemoveExperience($event)"
-          (proceedToCheckout)="goToCheckout()"
+          (proceedToCheckout)="scrollToPayment()"
         ></app-order-summary>
 
         <app-checkout-panel
-          [cart]="cart()"
+          [cart]="displayCart()"
           [selectedItemKey]="selectedItemKey()"
           [isSubmitting]="false"
         ></app-checkout-panel>
+
+        @if (displayCart()?.reservationItem; as reservationItem) {
+          <div class="recommendations-slot">
+            <app-guest-recommendation-experience
+              [propertyId]="reservationItem.propertyId"
+              [addedExperienceIds]="addedExperienceIds()"
+              (added)="loadCart()"
+            ></app-guest-recommendation-experience>
+          </div>
+        }
+
+        <div id="payment-panel-section" class="payment-panel-slot">
+          <app-payment-panel
+            [cart]="cart()"
+            (paymentSucceeded)="onPaymentSucceeded()"
+            (cartRefreshNeeded)="loadCart()"
+          ></app-payment-panel>
+        </div>
       </section>
     }
   </main>
