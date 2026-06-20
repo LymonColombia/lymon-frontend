@@ -142,13 +142,6 @@
   background: var(--color-bg-primary);
 }
 
-.summary-item-detail {
-  font-family: var(--font-secondary);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  line-height: var(--line-height-tight);
-}
-
 .summary-item-quantity {
   display: inline-flex;
   width: fit-content;
@@ -232,6 +225,13 @@
 
 .checkout-button {
   margin-top: var(--spacing-lg);
+}
+
+.reservation-helper-note {
+  margin: 0;
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
 }
 
 

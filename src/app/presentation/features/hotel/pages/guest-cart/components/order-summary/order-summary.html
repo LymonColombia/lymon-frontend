@@ -35,7 +35,6 @@
             <div class="summary-item-main">
               <span class="summary-item-title">{{ reservationTitle(reservationItem) }}</span>
               <span class="summary-item-quantity">Alojamiento</span>
-              <span class="summary-item-detail">{{ reservationSubtitle(reservationItem) }}</span>
             </div>
           </button>
 
@@ -43,9 +42,10 @@
           <div class="summary-item-side">
 
               <p class="summary-item-price">{{ formatCurrency(reservationItem.totalPriceCop) }}</p>
-            
+
           </div>
         </article>
+        <p class="reservation-helper-note">Solo puedes tener una reserva de alojamiento a la vez en tu carrito.</p>
       }
 
       
@@ -100,6 +100,7 @@
     <app-button
       class="checkout-button"
       size="large"
+      (clicked)="onProceedToCheckout()"
     >
       Proceder al pago
     </app-button>
