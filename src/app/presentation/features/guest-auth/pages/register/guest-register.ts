@@ -12,6 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
+import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle.component';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapPerson,
@@ -27,7 +28,14 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 @Component({
   selector: 'app-guest-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent, PasswordInputComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    NgIcon,
+    ModalComponent,
+    PasswordInputComponent,
+    AuthTypeToggleComponent,
+  ],
   providers: [
     provideIcons({
       bootstrapArrowRightCircleFill,

@@ -9,10 +9,7 @@
         <a routerLink="/lyhost"><img src="/images/LyHost.svg" alt="LyHost" width="140px" /></a>
       </div>
 
-      <div class="account-type-badge">
-        <ng-icon name="bootstrapBuilding" size="14px" aria-hidden="true"></ng-icon>
-        Administrador de hotel
-      </div>
+      <app-auth-type-toggle activeType="tenant" mode="login"></app-auth-type-toggle>
 
       <h1 class="auth-title">Bienvenido</h1>
       <p class="auth-subtitle">Inicia sesión en tu cuenta</p>
@@ -104,13 +101,15 @@
           style="
             text-align: center;
             margin-top: 16px;
-            font-family: 'Syne', sans-serif;
+            font-family: var(--font-primary);
             font-size: 14px;
-            color: #666;
+            color: var(--color-text-secondary);
           "
         >
           ¿No tienes cuenta?
-          <a routerLink="/register" style="color: #009a44; text-decoration: none; font-weight: 600"
+          <a
+            routerLink="/register"
+            style="color: var(--color-primary-dark); text-decoration: none; font-weight: 600"
             >Regístrate</a
           >
         </p>
