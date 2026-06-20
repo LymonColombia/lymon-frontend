@@ -4,6 +4,13 @@ const GUEST_ACCESS_TOKEN_KEY = 'lymon_guest_access_token';
 const GUEST_REFRESH_TOKEN_KEY = 'lymon_guest_refresh_token';
 const GUEST_EMAIL_VERIFIED_KEY = 'lymon_guest_email_verified';
 
+interface GuestTokenPayload {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class GuestTokenService {
   private readonly _isAuthenticated = signal(this.hasStoredToken());
@@ -38,11 +45,30 @@ export class GuestTokenService {
   }
 
   getGuestEmail(): string | null {
+    const payload = this.decodeTokenPayload();
+    return typeof payload?.email === 'string' ? payload.email : null;
+  }
+
+  getGuestProfile(): {
+    email: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    fullName: string | null;
+  } {
+    const payload = this.decodeTokenPayload();
+    return {
+      email: typeof payload?.email === 'string' ? payload.email : null,
+      firstName: typeof payload?.firstName === 'string' ? payload.firstName : null,
+      lastName: typeof payload?.lastName === 'string' ? payload.lastName : null,
+      fullName: typeof payload?.fullName === 'string' ? payload.fullName : null,
+    };
+  }
+
+  private decodeTokenPayload(): GuestTokenPayload | null {
     const token = this.getAccessToken();
     if (!token) return null;
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])) as { email?: string };
-      return payload.email ?? null;
+      return JSON.parse(atob(token.split('.')[1])) as GuestTokenPayload;
     } catch {
       return null;
     }

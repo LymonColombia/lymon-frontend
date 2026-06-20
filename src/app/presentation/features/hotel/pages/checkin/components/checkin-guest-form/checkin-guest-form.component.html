@@ -1,0 +1,36 @@
+<div class="guest-card">
+  <header class="guest-card-head">
+    <h3>Huésped {{ guestIndex() + 1 }}</h3>
+    @if (isPrimaryGuest()) {
+      <span class="guest-badge">Tú</span>
+    }
+  </header>
+
+  <div class="form-grid" [formGroup]="guestForm()">
+    <label class="field">
+      <span>Nombre(s)</span>
+      <app-input type="text" formControlName="firstName" placeholder="Ingresa tu nombre" [hasIcon]="true">
+        <ng-icon icon name="bootstrapPerson" size="16px" aria-hidden="true" />
+      </app-input>
+    </label>
+
+    <label class="field">
+      <span>Apellido(s)</span>
+      <app-input type="text" formControlName="lastName" placeholder="Ingresa tus apellidos" />
+    </label>
+
+    <label class="field">
+      <span>Correo</span>
+      <app-input type="email" formControlName="email" placeholder="correo@ejemplo.com" [hasIcon]="true">
+        <ng-icon icon name="bootstrapEnvelope" size="16px" aria-hidden="true" />
+      </app-input>
+    </label>
+
+    <label class="field">
+      <span>Teléfono</span>
+      <app-input type="tel" formControlName="phone" placeholder="+57 300 000 0000" [hasIcon]="true">
+        <ng-icon icon name="bootstrapTelephone" size="16px" aria-hidden="true" />
+      </app-input>
+    </label>
+  </div>
+</div>
