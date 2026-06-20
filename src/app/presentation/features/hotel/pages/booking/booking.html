@@ -37,10 +37,13 @@
           </booking-room-card>
         }
       </div>
+    }
 
+    @if (totalPages() > 1) {
       <booking-pagination
         [currentPage]="currentPage()"
         [totalPages]="totalPages()"
+        [disabled]="isRoomsLoading()"
         (pageChange)="onPageChange($event)">
       </booking-pagination>
     }

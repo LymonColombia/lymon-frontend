@@ -11,6 +11,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 export class BookingPaginationComponent {
   readonly currentPage = input.required<number>();
   readonly totalPages = input.required<number>();
+  readonly disabled = input(false);
   readonly pageChange = output<number>();
 
   readonly visiblePages = computed(() => {
@@ -39,18 +40,21 @@ export class BookingPaginationComponent {
   });
 
   goToPage(page: number | '...'): void {
+    if (this.disabled()) return;
     if (page === '...') return;
     if (page === this.currentPage()) return;
     this.pageChange.emit(page);
   }
 
   prevPage(): void {
+    if (this.disabled()) return;
     if (this.currentPage() > 1) {
       this.pageChange.emit(this.currentPage() - 1);
     }
   }
 
   nextPage(): void {
+    if (this.disabled()) return;
     if (this.currentPage() < this.totalPages()) {
       this.pageChange.emit(this.currentPage() + 1);
     }
