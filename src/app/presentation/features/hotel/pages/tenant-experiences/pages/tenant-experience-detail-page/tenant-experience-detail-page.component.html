@@ -107,11 +107,11 @@
             }
           } @else if (item.recurrence) {
             <div class="recurrence">
-              <div class="recurrence-days">
-                @for (day of item.recurrence.daysOfWeek; track day) {
-                  <span class="day-chip">{{ dayLabel(day) }}</span>
-                }
-              </div>
+                <div class="recurrence-days">
+                  @for (day of item.recurrence.daysOfWeek; track day) {
+                  <span class="chip chip--primary">{{ dayLabel(day) }}</span>
+                  }
+                </div>
               <div class="recurrence-times">
                 <div class="recurrence-time-item">
                   <span class="field-label">Hora inicio</span>
@@ -140,9 +140,9 @@
             <div class="field-row">
               <span class="field-label">Unidades</span>
               @if (item.units?.length) {
-                <div class="unit-chips">
+                <div class="chips-row">
                   @for (unit of item.units; track unit.id) {
-                    <span class="channel-chip">{{ unit.name }}</span>
+                    <span class="chip chip--success">{{ unit.name }}</span>
                   }
                 </div>
               } @else {
@@ -155,12 +155,12 @@
 
           <div class="field-row">
             <span class="field-label">Canales de venta</span>
-            <div class="channel-chips">
+            <div class="chips-row">
               @if (item.allowStandalonePurchase) {
-                <span class="channel-chip">Venta directa</span>
+                <span class="chip chip--success">Venta directa</span>
               }
               @if (item.allowReservationPurchase) {
-                <span class="channel-chip">Con reserva</span>
+                <span class="chip chip--success">Con reserva</span>
               }
             </div>
           </div>
