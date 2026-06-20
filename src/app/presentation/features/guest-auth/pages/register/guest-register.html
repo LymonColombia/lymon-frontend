@@ -165,6 +165,27 @@
             }
           </div>
 
+          <div class="form-group">
+            <label for="confirmPassword">Confirmar Contraseña <span style="color: var(--color-error)">*</span></label>
+            <div
+              class="input-wrapper"
+              [class.input-error]="
+                (confirmPasswordControl.invalid && confirmPasswordControl.touched) ||
+                (form.hasError('passwordsMismatch') && confirmPasswordControl.touched)
+              "
+            >
+              <app-password-input
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              ></app-password-input>
+            </div>
+            @if (form.hasError('passwordsMismatch') && confirmPasswordControl.touched) {
+              <span class="field-error">Las contraseñas no coinciden.</span>
+            }
+          </div>
+
           <div class="form-options">
             <label class="checkbox-container">
               <input type="checkbox" id="terms" formControlName="terms" />

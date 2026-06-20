@@ -1,5 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  ReactiveFormsModule,
+  NonNullableFormBuilder,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { GuestRegisterUseCase } from '@/domain/use-cases/guest/guest-register.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -11,6 +17,12 @@ import {
   bootstrapPerson,
   bootstrapEnvelope,
 } from '@ng-icons/bootstrap-icons';
+
+function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const password = control.get('password')?.value;
+  const confirmPassword = control.get('confirmPassword')?.value;
+  return password === confirmPassword ? null : { passwordsMismatch: true };
+}
 
 @Component({
   selector: 'app-guest-register',
@@ -35,13 +47,17 @@ export class GuestRegisterComponent {
   readonly registeredEmail = signal<string | null>(null);
   readonly isTermsOpen = signal(false);
 
-  readonly form = this.fb.group({
-    firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-    lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
-    terms: [false, Validators.requiredTrue],
-  });
+  readonly form = this.fb.group(
+    {
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required],
+      terms: [false, Validators.requiredTrue],
+    },
+    { validators: passwordsMatchValidator },
+  );
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -93,6 +109,9 @@ export class GuestRegisterComponent {
   }
   get passwordControl() {
     return this.form.controls.password;
+  }
+  get confirmPasswordControl() {
+    return this.form.controls.confirmPassword;
   }
   get termsControl() {
     return this.form.controls.terms;
