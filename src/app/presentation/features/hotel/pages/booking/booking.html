@@ -1,4 +1,5 @@
 <booking-nav
+  #bookingNav
   [isAuthenticated]="guestTokenService.isAuthenticated()"
   [guestEmail]="guestEmail"
   (loginClicked)="onGuestLogin()"
@@ -8,7 +9,7 @@
 
 <booking-hero (search)="onHeroSearch($event)"></booking-hero>
 
-<section class="results-section">
+<section class="results-section" #resultsSection>
   <div class="results-container">
     <booking-toolbar
       [resultsCount]="displayedRooms().length"
@@ -18,7 +19,11 @@
     </booking-toolbar>
 
     @if (isRoomsLoading()) {
-      <div class="rooms-loading">Cargando habitaciones...</div>
+      <div class="rooms-grid">
+        @for (item of skeletonItems; track $index) {
+          <booking-skeleton-card></booking-skeleton-card>
+        }
+      </div>
     } @else if (displayedRooms().length === 0) {
       <booking-empty-state></booking-empty-state>
     } @else {

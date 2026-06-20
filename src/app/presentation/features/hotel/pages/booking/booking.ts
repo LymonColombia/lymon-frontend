@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
@@ -8,6 +8,7 @@ import { BookingPaginationComponent } from './components/booking-pagination/book
 import { BookingHeroComponent, BookingSearchParams } from './components/booking-hero/booking-hero.component';
 import { BookingToolbarComponent, BookingSortOption } from './components/booking-toolbar/booking-toolbar.component';
 import { BookingEmptyStateComponent } from './components/booking-empty-state/booking-empty-state.component';
+import { BookingSkeletonCardComponent } from './components/booking-skeleton-card/booking-skeleton-card.component';
 import { GetPublicUnitsUseCase } from '@/domain/use-cases/property/get-public-units.use-case';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { Unit } from '@/domain/entities/staff.model';
@@ -25,6 +26,7 @@ const ITEMS_PER_PAGE = 6;
     BookingHeroComponent,
     BookingToolbarComponent,
     BookingEmptyStateComponent,
+    BookingSkeletonCardComponent,
   ],
   templateUrl: './booking.html',
   styleUrl: './booking.css',
@@ -36,6 +38,8 @@ export class BookingComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitsUseCase = inject(GetPublicUnitsUseCase);
   readonly guestTokenService = inject(GuestTokenService);
+
+  readonly skeletonItems = Array.from({ length: ITEMS_PER_PAGE }, (_, i) => i);
 
   readonly isRoomsLoading = signal(false);
   readonly currentPage = signal(1);
@@ -49,6 +53,9 @@ export class BookingComponent implements OnInit {
   readonly likedRoomIds = signal(new Set<string>());
 
   readonly rooms = signal<BookingRoomCard[]>([]);
+
+  private readonly resultsSection = viewChild<ElementRef<HTMLElement>>('resultsSection');
+  private readonly bookingNav = viewChild('bookingNav', { read: ElementRef });
 
   readonly displayedRooms = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -75,7 +82,7 @@ export class BookingComponent implements OnInit {
     this.loadUnits(1);
   }
 
-  loadUnits(page: number): void {
+  loadUnits(page: number, scrollOnComplete = false): void {
     this.isRoomsLoading.set(true);
     this.getPublicUnitsUseCase
       .execute({
@@ -92,6 +99,7 @@ export class BookingComponent implements OnInit {
           this.currentPage.set(pagination.page);
           this.totalPages.set(pagination.totalPages);
           this.isRoomsLoading.set(false);
+          if (scrollOnComplete) this.scrollToResults();
         },
         error: () => {
           this.rooms.set([]);
@@ -109,7 +117,7 @@ export class BookingComponent implements OnInit {
   }
 
   onPageChange(page: number): void {
-    this.loadUnits(page);
+    this.loadUnits(page, true);
   }
 
   onSearchQueryChange(query: string): void {
@@ -152,6 +160,15 @@ export class BookingComponent implements OnInit {
 
   goToRoomDetails(unitId: string): void {
     this.router.navigate(['/room-details', unitId]);
+  }
+
+  private scrollToResults(): void {
+    const section = this.resultsSection()?.nativeElement;
+    const nav = this.bookingNav()?.nativeElement;
+    if (!section) return;
+    const navHeight = nav?.offsetHeight ?? 0;
+    const top = section.getBoundingClientRect().top + window.scrollY - navHeight;
+    window.scrollTo({ top, behavior: 'smooth' });
   }
 
   private syncQueryParams(): void {

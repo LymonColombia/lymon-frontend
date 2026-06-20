@@ -1,13 +1,27 @@
 :host {
   display: block;
+  height: 100%;
 }
 
 .room-card {
+  position: relative;
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-xl);
   overflow: hidden;
   transition: transform var(--transition-base), box-shadow var(--transition-base);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-card-btn {
+  position: absolute;
+  inset: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
 }
 
 .room-card:hover {
@@ -87,6 +101,7 @@
   position: absolute;
   top: var(--spacing-md);
   right: var(--spacing-md);
+  z-index: 2;
   width: 32px;
   height: 32px;
   display: flex;
@@ -139,6 +154,9 @@
 
 .room-content {
   padding: var(--spacing-lg);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .room-meta {
@@ -204,9 +222,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-lg);
+  margin-top: auto;
   margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--color-border-light);
 }
 
 .feature {
@@ -222,11 +239,16 @@
   color: var(--color-primary-dark);
 }
 
+.room-amenities-section {
+  border-top: 1px solid var(--color-border-light);
+  padding-top: var(--spacing-md);
+}
+
 .room-amenities {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-lg);
+  overflow: hidden;
 }
 
 .amenity {
@@ -236,12 +258,14 @@
   font-family: var(--font-secondary);
   font-size: var(--font-size-xs);
   border-radius: var(--radius-sm);
+  white-space: nowrap;
 }
 
 .amenity-more {
+  display: none;
+  align-items: center;
+  white-space: nowrap;
   font-family: var(--font-secondary);
   font-size: var(--font-size-xs);
   color: var(--color-text-tertiary);
-  display: flex;
-  align-items: center;
 }
