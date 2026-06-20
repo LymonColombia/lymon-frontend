@@ -1,0 +1,119 @@
+.address-picker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.address-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.address-input {
+  width: 100%;
+  padding: var(--input-padding);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  border: var(--input-border-width) solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  outline: none;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.address-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--input-focus-ring);
+}
+
+.search-spinner {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border-light);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+
+.field-error {
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+}
+
+.suggestions-list {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  left: 0;
+  right: 0;
+  z-index: var(--z-dropdown);
+  list-style: none;
+  margin: 0;
+  padding: var(--spacing-xs) 0;
+  background: var(--color-bg-primary);
+  border: var(--input-border-width) solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.suggestion-item:hover,
+.suggestion-item:focus {
+  background: var(--color-bg-tertiary);
+  outline: none;
+}
+
+.map-container {
+  height: 300px;
+  width: 100%;
+  margin-top: var(--spacing-sm);
+  border: var(--input-border-width) solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.custom-marker .marker-pin {
+  width: 28px;
+  height: 36px;
+  background: var(--color-primary);
+  border: 2px solid var(--color-bg-primary);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: var(--shadow-sm);
+}
+
+.custom-marker .marker-pin::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-full);
+  top: 8px;
+  left: 8px;
+}
+
+::ng-deep .leaflet-control-attribution {
+  font-size: 10px;
+}
