@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { BookingNavComponent } from '../booking/components/booking-nav/booking-nav.component';
 import { BookingPaginationComponent } from '../booking/components/booking-pagination/booking-pagination.component';
+import { BookingSkeletonCardComponent } from '../booking/components/booking-skeleton-card/booking-skeleton-card.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { GetGuestExperiencesUseCase } from '@/domain/use-cases/experience/get-guest-experiences.use-case';
@@ -30,6 +31,7 @@ const ITEMS_PER_PAGE = 8;
     FooterComponent,
     BookingNavComponent,
     BookingPaginationComponent,
+    BookingSkeletonCardComponent,
   ],
   templateUrl: './experiences.html',
   styleUrl: './experiences.css',
@@ -45,6 +47,7 @@ export class ExperienceComponent {
   readonly isExperienceLoading = signal(false);
   readonly currentPage = signal(1);
   readonly totalPages = signal(1);
+  readonly skeletonItems = Array.from({ length: ITEMS_PER_PAGE }, (_, i) => i);
   readonly searchQuery = signal('');
   readonly sortBy = signal<ExperienceSortOption>(undefined);
   readonly sortByPrice = computed<'asc' | 'desc' | undefined>(() => {
@@ -140,10 +143,10 @@ export class ExperienceComponent {
   }
 
   onPageChange(page: number): void {
-    this.loadExperiences(page);
+    this.loadExperiences(page, true);
   }
 
-  private loadExperiences(page: number): void {
+  private loadExperiences(page: number, scrollOnComplete = false): void {
     this.experiencesLoadSubscription?.unsubscribe();
     this.isExperienceLoading.set(true);
 

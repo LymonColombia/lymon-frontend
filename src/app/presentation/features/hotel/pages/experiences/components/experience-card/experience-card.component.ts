@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
 import {
@@ -17,7 +16,7 @@ import {
 @Component({
   selector: 'experience-card',
   standalone: true,
-  imports: [ButtonComponent, NgIcon],
+  imports: [NgIcon],
   templateUrl: './experience-card.component.html',
   styleUrl: './experience-card.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,12 +62,13 @@ export class ExperienceCardComponent {
   readonly hostCertified = computed(() => this.experience().scope === 'PROPERTY');
   readonly categoryLabel = computed(() => this.getCategoryLabel(this.experience().category));
 
-  onViewDetails(): void {
-    this.viewDetails.emit(this.experience().id);
+  onToggleLike(event: Event): void {
+    event.stopPropagation();
+    this.toggleLike.emit(this.experience().id);
   }
 
-  onToggleLike(): void {
-    this.toggleLike.emit(this.experience().id);
+  onCardClick(): void {
+    this.viewDetails.emit(this.experience().id);
   }
 
   truncateText(text: string | null | undefined, maxChars: number): string {

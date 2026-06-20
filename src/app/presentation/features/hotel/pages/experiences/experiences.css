@@ -48,6 +48,10 @@
   gap: var(--spacing-2xl);
 }
 
+.experiences-grid--loading {
+  min-height: 350px;
+}
+
 app-footer {
   display: block;
   margin-top: var(--spacing-4xl);

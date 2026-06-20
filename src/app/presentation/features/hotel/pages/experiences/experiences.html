@@ -11,7 +11,7 @@
   (filtersApply)="onHeroFiltersApply($event)">
 </experience-hero>
 
-<section class="experiences-section" aria-label="Experiencias">
+<section class="experiences-section" #resultsSection aria-label="Experiencias">
   <div class="experiences-container">
     <experience-toolbar
       [resultsCount]="filteredExperiences().length"
@@ -23,7 +23,11 @@
        </experience-toolbar>
 
     @if (isExperienceLoading()) {
-      <div class="loading">Cargando experiencias...</div>
+      <div class="experiences-grid experiences-grid--loading">
+        @for (item of skeletonItems; track $index) {
+          <booking-skeleton-card></booking-skeleton-card>
+        }
+      </div>
     } @else if (filteredExperiences().length === 0) {
       <experience-empty-state
         title="No encontramos experiencias"

@@ -1,10 +1,8 @@
-:host {
-  display: block;
-}
 
 /* Card base */
 .experience-card {
-  height: 400px;
+  position: relative;
+  height: 350px;
   display: flex;
   flex-direction: column;
   background: var(--color-bg-primary);
@@ -14,9 +12,24 @@
   transition: transform var(--transition-base), box-shadow var(--transition-base);
 }
 
+.experience-card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
 .experience-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.experience-card-overlay:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
 .experience-card.featured {
@@ -61,6 +74,7 @@
   position: absolute;
   top: var(--spacing-md);
   right: var(--spacing-md);
+  z-index: 2;
   width: 32px;
   height: 32px;
   display: flex;
