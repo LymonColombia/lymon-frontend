@@ -9,7 +9,21 @@ import {
 } from '@angular/core';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { Property } from '@/domain/entities/staff.model';
+import { PropertyType } from '@/domain/entities/property.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+
+const PROPERTY_CARD_LABELS: Record<PropertyType, string> = {
+  HOTEL: 'Hotel',
+  CASA: 'Casa',
+  APARTAMENTO: 'Apartamento',
+  VILLA: 'Villa',
+  HOSTAL: 'Hostal',
+  GLAMPING: 'Glamping',
+  RURAL: 'Rural',
+  CASA_DE_CAMPO: 'Casa de campo',
+  FINCA: 'Finca',
+  APARTAHOTEL: 'Apartahoteles',
+};
 import {
   bootstrapBuildingFill,
   bootstrapBuildingsFill,
@@ -78,24 +92,25 @@ export class PropertyCardComponent {
       return '';
     }
 
-    const normalizedType = rawType.toLowerCase();
-    return normalizedType.charAt(0).toUpperCase() + normalizedType.slice(1);
+    return PROPERTY_CARD_LABELS[rawType as PropertyType] ?? rawType;
   });
 
   readonly propertyTypeIcon = computed<PropertyIconName>(() => {
     switch (this.property().propertyType) {
       case 'HOTEL':
         return 'bootstrapBuildingsFill';
-      case 'CASA':
-        return 'bootstrapHouseFill';
       case 'APARTAMENTO':
+      case 'HOSTAL':
+      case 'APARTAHOTEL':
         return 'bootstrapBuildingFill';
       case 'VILLA':
         return 'bootstrapHouseDoorFill';
-      case 'HOSTAL':
-        return 'bootstrapBuildingFill';
       case 'GLAMPING':
+      case 'RURAL':
+      case 'CASA_DE_CAMPO':
+      case 'FINCA':
         return 'bootstrapTreeFill';
+      case 'CASA':
       default:
         return 'bootstrapHouseFill';
     }
