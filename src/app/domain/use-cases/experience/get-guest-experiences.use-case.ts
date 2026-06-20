@@ -7,13 +7,14 @@ import { GuestExperiencePage } from '@/domain/entities/guest-experience.model';
 export class GetGuestExperiencesUseCase {
   private readonly repository = inject(GuestExperienceRepository);
 
-  execute(params: { tenantId?:string; category?: string; propertyId?: string;  page?: number; limit?: number }): Observable<GuestExperiencePage> {
+  execute(params: {tenantId?: string;category?: string; propertyId?: string; sortByPrice?: 'asc' | 'desc'; page?: number; limit?: number}): Observable<GuestExperiencePage> {
     return this.repository.getExperiences({
       tenantId: params.tenantId,
       category: params.category,
       propertyId: params.propertyId,
+      sortByPrice: params.sortByPrice,
       page: params.page ?? 1,
-      limit: params.limit ?? 10,
+      limit: params.limit ?? 8,
     });
   }
 }
