@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { GuestRegisterUseCase } from '@/domain/use-cases/guest/guest-register.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -27,7 +27,7 @@ import {
   styleUrls: ['../../../auth/auth-form.css'],
 })
 export class GuestRegisterComponent {
-  private readonly fb = inject(FormBuilder);
+  private readonly fb = inject(NonNullableFormBuilder);
   private readonly registerUseCase = inject(GuestRegisterUseCase);
 
   readonly isLoading = signal(false);
@@ -36,11 +36,10 @@ export class GuestRegisterComponent {
   readonly isTermsOpen = signal(false);
 
   readonly form = this.fb.group({
-    fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+    firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+    lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
-    firstName: ['', [Validators.maxLength(50)]],
-    lastName: ['', [Validators.maxLength(50)]],
     terms: [false, Validators.requiredTrue],
   });
 
@@ -53,15 +52,15 @@ export class GuestRegisterComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const { fullName, email, password, firstName, lastName } = this.form.getRawValue();
+    const { firstName, lastName, email, password } = this.form.getRawValue();
 
     this.registerUseCase
       .execute({
-        fullName: fullName!,
-        email: email!,
-        password: password!,
-        firstName: firstName || undefined,
-        lastName: lastName || undefined,
+        fullName: `${firstName} ${lastName}`,
+        email,
+        password,
+        firstName,
+        lastName,
       })
       .subscribe({
         next: (res) => {
@@ -83,8 +82,11 @@ export class GuestRegisterComponent {
       });
   }
 
-  get fullNameControl() {
-    return this.form.controls.fullName;
+  get firstNameControl() {
+    return this.form.controls.firstName;
+  }
+  get lastNameControl() {
+    return this.form.controls.lastName;
   }
   get emailControl() {
     return this.form.controls.email;
