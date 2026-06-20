@@ -187,9 +187,14 @@ body {
    ======================================== */
 
 /* ng-icons clamps overflow:hidden on its host by default, which clips
-   icons whose SVG paths render at the edges of the viewBox */
+   icons whose SVG paths render at the edges of the viewBox. The host also
+   defaults to inline display, which leaves the inner svg vertically
+   misaligned inside flex/grid wrappers that try to center it. */
 ng-icon {
   overflow: visible !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* ========================================

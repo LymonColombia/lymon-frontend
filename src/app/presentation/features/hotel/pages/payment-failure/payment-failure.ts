@@ -1,11 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapXCircle, bootstrapArrowRepeat } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { Cart } from '@/domain/entities/cart.model';
-import { GetCartUseCase } from '@/domain/use-cases/cart/get-cart.use-case';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-payment-failure',
@@ -25,7 +22,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
             Tu carrito sigue disponible para que intentes de nuevo o modifiques tus fechas.
           </p>
           <div class="result-actions">
-            <app-button variant="primary" size="medium" (clicked)="goToCheckout()">
+            <app-button variant="primary" size="medium" (clicked)="goToCart()">
               <ng-icon name="bootstrapArrowRepeat" size="18px" aria-hidden="true"></ng-icon>
               Intentar de Nuevo
             </app-button>
@@ -52,8 +49,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class PaymentFailureComponent {
   private readonly router = inject(Router);
 
-  goToCheckout(): void {
-    this.router.navigate(['/guest/checkout']);
+  goToCart(): void {
+    this.router.navigate(['/guest/cart']);
   }
 
   goToBooking(): void {

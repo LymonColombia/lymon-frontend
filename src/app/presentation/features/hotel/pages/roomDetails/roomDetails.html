@@ -80,7 +80,7 @@
                 [disabled]="!canReserve() || savingDraft()"
                 (click)="onReserveNow(selectedUnit)"
               >
-                {{ savingDraft() ? 'Guardando...' : 'Reservar Ahora' }}
+                {{ savingDraft() ? 'Guardando...' : 'Añadir al carrito' }}
               </button>
             </div>
           </div>
@@ -107,5 +107,39 @@
     </div>
   }
 </div>
+
+<app-modal
+  [open]="replaceConfirmation() !== null"
+  title="¿Reemplazar tu reserva actual?"
+  size="small"
+  [closeOnBackdrop]="!savingDraft()"
+  [closeOnEscape]="!savingDraft()"
+  (closed)="cancelReplaceReservation()"
+>
+  @if (replaceConfirmation(); as pending) {
+    <p class="replace-modal-text">
+      Ya tienes una reserva de <strong>{{ pending.existing.unitName ?? pending.existing.unitId }}</strong> en tu carrito.
+      Si continúas, será reemplazada por <strong>{{ pending.unit.name }}</strong>.
+    </p>
+  }
+  <div modal-footer class="replace-modal-footer">
+    <app-button
+      variant="secondary"
+      size="medium"
+      [disabled]="savingDraft()"
+      (clicked)="cancelReplaceReservation()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      variant="primary"
+      size="medium"
+      [loading]="savingDraft()"
+      (clicked)="confirmReplaceReservation()"
+    >
+      Reemplazar
+    </app-button>
+  </div>
+</app-modal>
 
 <app-footer></app-footer>

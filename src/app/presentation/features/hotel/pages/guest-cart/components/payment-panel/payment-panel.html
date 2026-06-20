@@ -1,0 +1,84 @@
+<section class="payment-panel" aria-label="Pago de la reserva">
+  @if (pollingStatus() === 'POLLING') {
+    <div class="polling-overlay">
+      <div class="polling-content">
+        <div class="spinner"></div>
+        <h2 class="polling-title">Procesando pago</h2>
+        <p class="polling-subtitle">Estamos verificando tu transacción con Wompi. Por favor no cierres esta ventana.</p>
+        @if (paymentStatus()) {
+          <span class="status-badge" [class]="paymentStatus()?.toLowerCase()">
+            {{ paymentStatus() }}
+          </span>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="notes-section">
+    <label class="notes-label" for="payment-notes">
+      Notas adicionales
+      <span class="optional">(opcional)</span>
+    </label>
+    <textarea
+      id="payment-notes"
+      class="notes-input"
+      rows="3"
+      placeholder="Peticiones especiales, hora de llegada aproximada..."
+      [value]="notes()"
+      (input)="onNotesChange($any($event.target).value)">
+    </textarea>
+  </div>
+
+  @if (errorMessage() && pollingStatus() !== 'POLLING') {
+    <div class="error-banner">
+      <ng-icon name="bootstrapExclamationTriangle" size="15px" aria-hidden="true"></ng-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <div class="actions">
+    <app-button
+      variant="primary"
+      size="large"
+      [fullWidth]="true"
+      [loading]="isProcessingPayment() || pollingStatus() === 'POLLING'"
+      [disabled]="pollingStatus() === 'POLLING' || !cart()?.reservationItem"
+      (clicked)="confirmPayment()">
+      @if (pollingStatus() === 'POLLING') {
+        Procesando...
+      } @else {
+        <ng-icon name="bootstrapCheckCircle" size="20px" aria-hidden="true"></ng-icon>
+        Pagar y Reservar
+      }
+    </app-button>
+
+    <div class="payment-note">
+      <ng-icon name="bootstrapShield" size="13px" aria-hidden="true"></ng-icon>
+      <span>Pago seguro procesado por Wompi</span>
+    </div>
+  </div>
+</section>
+
+<app-modal
+  [open]="showExperienceReminder()"
+  title="¿Olvidaste algo?"
+  size="small"
+  (closed)="dismissExperienceReminder()">
+  <div class="experience-reminder-body">
+    <div class="experience-reminder-icon">
+      <ng-icon name="bootstrapStars" size="22px" aria-hidden="true"></ng-icon>
+    </div>
+    <p class="experience-reminder-text">
+      Tenemos experiencias disponibles para complementar tu estadía y aún no agregaste ninguna a tu carrito.
+      ¿Quieres revisarlas antes de pagar?
+    </p>
+  </div>
+  <div modal-footer class="experience-reminder-footer">
+    <app-button variant="secondary" size="medium" (clicked)="continueWithoutExperiences()">
+      Continuar sin experiencias
+    </app-button>
+    <app-button variant="primary" size="medium" (clicked)="viewSuggestedExperiences()">
+      Ver experiencias
+    </app-button>
+  </div>
+</app-modal>

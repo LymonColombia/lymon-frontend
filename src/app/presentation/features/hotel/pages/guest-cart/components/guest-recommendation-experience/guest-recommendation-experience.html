@@ -1,13 +1,134 @@
-<section class="recommendations-block" aria-label="Recommended experiences">
+<section class="recommendations-block" aria-label="Experiencias sugeridas">
   <div class="recommendations-head">
-    <h2 class="recommendations-title">Recommended Experiences</h2>
-    <p class="recommendations-subtitle">Añade experiencias a tu viaje</p>
+    <h2 class="recommendations-title">Complementa tu estadía</h2>
+    <p class="recommendations-subtitle">Experiencias disponibles para tu propiedad</p>
   </div>
 
-   <app-breadcrumb
-    [items]="[
-      { label: 'Ver más' }
-    ]"
-  ></app-breadcrumb>
+  @if (experiencesLoading() && experiences().length === 0) {
+    <p class="experiences-loading-text">Cargando experiencias...</p>
+  } @else if (!experiencesLoading() && experiences().length === 0) {
+    <div class="experiences-empty">
+      <ng-icon name="bootstrapStars" size="28px" aria-hidden="true"></ng-icon>
+      <p class="experiences-empty-text">No hay experiencias disponibles para esta propiedad</p>
+    </div>
+  } @else {
+    <div class="experiences-list">
+      @for (exp of experiences().slice(0, 3); track exp.id) {
+        <app-experience-compact-card
+          [experience]="exp"
+          [isAdded]="isExperienceAdded(exp.id)"
+          (cardClicked)="selectExperience(exp)">
+        </app-experience-compact-card>
+      }
+    </div>
+  }
+
+  @if (experiences().length > 0) {
+    <app-button variant="secondary" size="medium" [fullWidth]="true" (clicked)="openExplorer()">
+      Explorar más experiencias
+    </app-button>
+  }
 </section>
 
+<!-- Modal de selección de fecha/participantes -->
+<app-modal
+  [open]="selectedExperience() !== null"
+  [title]="selectedExperience()?.name ?? ''"
+  size="medium"
+  [closeOnBackdrop]="!isAdding()"
+  [closeOnEscape]="!isAdding()"
+  (closed)="closeDetail()">
+  @if (selectedExperience(); as exp) {
+    <img [src]="exp.coverImageUrl" [alt]="exp.name" class="exp-modal-image" />
+    <div class="exp-modal-body">
+      <span class="exp-modal-category">{{ formatCategory(exp.category) }}</span>
+      <p class="exp-modal-description">{{ exp.description }}</p>
+      <div class="exp-modal-meta">
+        <div class="exp-modal-meta-item">
+          <ng-icon name="bootstrapClock" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ exp.durationHours }} hora{{ exp.durationHours !== 1 ? 's' : '' }}</span>
+        </div>
+        <div class="exp-modal-meta-item">
+          <ng-icon name="bootstrapGeoAlt" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ exp.location.label }}</span>
+        </div>
+      </div>
+
+      <div class="exp-modal-field">
+        <label class="exp-modal-field-label" for="recommendation-date-select">Fecha disponible</label>
+        <app-select
+          id="recommendation-date-select"
+          [options]="availableDateOptions()"
+          [value]="selectedDate()"
+          [hasIcon]="true"
+          size="small"
+          (valueChange)="onDateChange($event)">
+          <ng-icon icon name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
+        </app-select>
+      </div>
+
+      <div class="exp-modal-field">
+        <label class="exp-modal-field-label" for="recommendation-guest-select">Participantes</label>
+        <app-select
+          id="recommendation-guest-select"
+          [options]="guestOptions()"
+          [value]="guestsCount()"
+          [hasIcon]="true"
+          size="small"
+          (valueChange)="onGuestChange($event)">
+          <ng-icon icon name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
+        </app-select>
+      </div>
+
+      @if (addError()) {
+        <p class="exp-modal-error">{{ addError() }}</p>
+      }
+
+      <div class="exp-modal-price-row">
+        <span class="exp-modal-price">{{ totalPriceLabel() }}</span>
+        <span class="exp-modal-price-label">precio total</span>
+      </div>
+      <p class="exp-modal-removal-note">
+        <ng-icon name="bootstrapInfoCircle" size="13px" aria-hidden="true"></ng-icon>
+        Puedes quitar esta experiencia desde tu carrito antes de pagar
+      </p>
+    </div>
+  }
+  @if (selectedExperience(); as exp) {
+    <div modal-footer>
+      <app-button
+        variant="primary"
+        size="medium"
+        [loading]="isAdding()"
+        [disabled]="!availableDateOptions().length"
+        (clicked)="confirmAdd()">
+        <ng-icon name="bootstrapPlusCircle" size="16px" aria-hidden="true"></ng-icon>
+        Añadir al carrito
+      </app-button>
+    </div>
+  }
+</app-modal>
+
+<!-- Modal explorador -->
+<app-modal
+  [open]="showExplorerModal()"
+  title="Explorar experiencias"
+  size="large"
+  (closed)="closeExplorer()">
+  <div class="explorer-grid">
+    @for (exp of experiences(); track exp.id) {
+      <app-experience-compact-card
+        [experience]="exp"
+        [isAdded]="isExperienceAdded(exp.id)"
+        (cardClicked)="selectExperience(exp)">
+      </app-experience-compact-card>
+    }
+  </div>
+  @if (hasMoreExperiences()) {
+    <div class="explorer-load-more">
+      <app-button variant="secondary" size="medium" [loading]="experiencesLoading()" (clicked)="loadMoreExperiences()">
+        Cargar más experiencias
+      </app-button>
+    </div>
+  }
+</app-modal>

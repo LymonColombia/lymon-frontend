@@ -13,10 +13,14 @@ import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators
 import { of } from 'rxjs';
 import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';
 import { GetUnitCalendarUseCase } from '@/domain/use-cases/reservation/get-unit-calendar.use-case';
+import { GetCartUseCase } from '@/domain/use-cases/cart/get-cart.use-case';
 import { Unit } from '@/domain/entities/staff.model';
 import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
+import { CartReservationItem } from '@/domain/entities/cart.model';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
 import { RoomHeroComponent } from './components/room-hero/room-hero.component';
 import { RoomGeneralInfoComponent } from './components/room-general-info/room-general-info.component';
@@ -39,9 +43,11 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   selector: 'app-room-details',
   standalone: true,
   imports: [
+    ButtonComponent,
     SelectComponent,
     RoomDetailsNavComponent,
     FooterComponent,
+    ModalComponent,
     BreadcrumbComponent,
     RoomHeroComponent,
     RoomGeneralInfoComponent,
@@ -68,6 +74,7 @@ export class RoomDetailsComponent implements OnInit {
   private readonly getPublicUnitUseCase = inject(GetPublicUnitUseCase);
   private readonly saveReservationDraftUseCase = inject(SaveReservationDraftUseCase);
   private readonly getUnitCalendarUseCase = inject(GetUnitCalendarUseCase);
+  private readonly getCartUseCase = inject(GetCartUseCase);
   readonly guestTokenService = inject(GuestTokenService);
 
   readonly isLoading = signal(true);
@@ -75,6 +82,7 @@ export class RoomDetailsComponent implements OnInit {
   readonly unit = signal<Unit | null>(null);
   readonly occupiedRanges = signal<OccupiedDateRange[]>([]);
   readonly savingDraft = signal(false);
+  readonly replaceConfirmation = signal<{ unit: Unit; existing: CartReservationItem } | null>(null);
 
   // Booking card signals
   readonly checkIn = signal<string | null>(null);
@@ -171,6 +179,33 @@ export class RoomDetailsComponent implements OnInit {
       return;
     }
 
+    this.errorMessage.set(null);
+
+    this.getCartUseCase.execute().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (cart) => {
+        const existing = cart?.reservationItem;
+        if (existing && existing.unitId !== unit.id) {
+          this.replaceConfirmation.set({ unit, existing });
+          return;
+        }
+        this.saveDraft(unit);
+      },
+      error: () => this.saveDraft(unit),
+    });
+  }
+
+  confirmReplaceReservation(): void {
+    const pending = this.replaceConfirmation();
+    if (!pending) return;
+    this.replaceConfirmation.set(null);
+    this.saveDraft(pending.unit);
+  }
+
+  cancelReplaceReservation(): void {
+    this.replaceConfirmation.set(null);
+  }
+
+  private saveDraft(unit: Unit): void {
     this.savingDraft.set(true);
     this.errorMessage.set(null);
 
@@ -185,7 +220,7 @@ export class RoomDetailsComponent implements OnInit {
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.savingDraft.set(false);
-        this.router.navigate(['/guest/checkout']);
+        this.router.navigate(['/guest/cart']);
       },
       error: (err: { error?: { message?: string } }) => {
         this.savingDraft.set(false);
