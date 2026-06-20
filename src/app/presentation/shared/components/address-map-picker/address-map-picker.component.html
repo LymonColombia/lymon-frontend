@@ -1,0 +1,47 @@
+<div class="address-picker">
+  <div class="address-input-wrapper">
+    <input
+      id="address-input"
+      type="text"
+      class="address-input"
+      aria-label="Dirección"
+      [value]="addressText()"
+      (input)="onAddressInput($event)"
+      (focus)="onInputFocus()"
+      (blur)="onInputBlur()"
+      placeholder="Calle 123 #45-67"
+      autocomplete="off"
+    />
+    @if (isSearching()) {
+      <span class="search-spinner" aria-hidden="true"></span>
+    }
+  </div>
+
+  @if (error()) {
+    <span class="field-error">{{ error() }}</span>
+  }
+  @if (hasNoResults() && addressText().length > 0) {
+    <span class="field-error">
+      Ubicación no encontrada por dirección. Hacé click en el mapa para marcarla manualmente.
+    </span>
+  }
+
+  @if (suggestions().length > 0) {
+    <ul class="suggestions-list">
+      @for (suggestion of suggestions(); track $index) {
+        <li>
+          <button
+            type="button"
+            class="suggestion-item"
+            (mousedown)="selectSuggestion(suggestion)"
+            (keydown.enter)="selectSuggestion(suggestion)"
+          >
+            {{ suggestion.label }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <div #mapContainer class="map-container"></div>
+</div>

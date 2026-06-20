@@ -73,8 +73,8 @@ describe('GuestRegisterComponent — US-021', () => {
       expect(component.isLoading()).toBe(false);
     });
 
-    it('fullName con menos de 2 caracteres hace el formulario inválido', () => {
-      component.form.patchValue({ ...VALID_FORM, fullName: 'A' });
+    it('firstName con menos de 2 caracteres hace el formulario inválido', () => {
+      component.form.patchValue({ ...VALID_FORM, firstName: 'A' });
 
       expect(component.form.invalid).toBe(true);
     });

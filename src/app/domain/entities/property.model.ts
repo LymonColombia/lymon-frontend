@@ -1,4 +1,14 @@
-export type PropertyType = 'HOTEL' | 'CASA' | 'APARTAMENTO' | 'VILLA' | 'HOSTAL' | 'GLAMPING';
+export type PropertyType =
+  | 'HOTEL'
+  | 'CASA'
+  | 'APARTAMENTO'
+  | 'VILLA'
+  | 'HOSTAL'
+  | 'GLAMPING'
+  | 'RURAL'
+  | 'CASA_DE_CAMPO'
+  | 'FINCA'
+  | 'APARTAHOTEL';
 
 export type CancellationPolicy = 'FLEXIBLE' | 'STANDARD' | 'STRICT';
 

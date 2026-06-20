@@ -19,7 +19,7 @@
         id="checkin"
         name="checkin"
         [hasIcon]="true"
-        (valueChange)="onStartDateChange($event)">
+        [formControl]="checkInControl">
         <ng-icon icon class="field-icon" name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
       </app-input>
       <label for="checkin" class="search-label">Fecha de Entrada</label>
@@ -31,7 +31,7 @@
         id="checkout"
         name="checkout"
         [hasIcon]="true"
-        (valueChange)="onEndDateChange($event)">
+        [formControl]="checkOutControl">
         <ng-icon icon class="field-icon" name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
       </app-input>
       <label for="checkout" class="search-label">Fecha de Salida</label>

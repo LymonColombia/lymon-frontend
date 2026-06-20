@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, input, output, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapPeopleFill, bootstrapSearch } from '@ng-icons/bootstrap-icons';
@@ -15,28 +16,30 @@ const MAX_GUESTS = 10;
 @Component({
   selector: 'booking-hero',
   standalone: true,
-  imports: [InputComponent, NgIcon],
+  imports: [InputComponent, ReactiveFormsModule, NgIcon],
   providers: [provideIcons({ bootstrapCalendar, bootstrapPeopleFill, bootstrapSearch })],
   templateUrl: './booking-hero.component.html',
   styleUrl: './booking-hero.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BookingHeroComponent {
+export class BookingHeroComponent implements OnInit {
+  readonly initialStartDate = input<string | undefined>(undefined);
+  readonly initialEndDate = input<string | undefined>(undefined);
+  readonly initialMinGuests = input<number | undefined>(undefined);
+
   readonly search = output<BookingSearchParams>();
 
-  readonly startDate = signal<string | undefined>(undefined);
-  readonly endDate = signal<string | undefined>(undefined);
+  readonly checkInControl = new FormControl<string | null>(null);
+  readonly checkOutControl = new FormControl<string | null>(null);
   readonly minGuests = signal<number>(MIN_GUESTS);
 
   readonly MIN_GUESTS = MIN_GUESTS;
   readonly MAX_GUESTS = MAX_GUESTS;
 
-  onStartDateChange(value: string | number | null): void {
-    this.startDate.set(typeof value === 'string' ? value : undefined);
-  }
-
-  onEndDateChange(value: string | number | null): void {
-    this.endDate.set(typeof value === 'string' ? value : undefined);
+  ngOnInit(): void {
+    this.checkInControl.setValue(this.initialStartDate() ?? null);
+    this.checkOutControl.setValue(this.initialEndDate() ?? null);
+    this.minGuests.set(this.initialMinGuests() ?? MIN_GUESTS);
   }
 
   incrementGuests(): void {
@@ -53,8 +56,8 @@ export class BookingHeroComponent {
 
   onSearch(): void {
     this.search.emit({
-      startDate: this.startDate(),
-      endDate: this.endDate(),
+      startDate: this.checkInControl.value ?? undefined,
+      endDate: this.checkOutControl.value ?? undefined,
       minGuests: this.minGuests(),
     });
   }

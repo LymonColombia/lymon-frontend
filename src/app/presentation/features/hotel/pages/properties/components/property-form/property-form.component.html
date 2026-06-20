@@ -42,14 +42,13 @@
   <div class="section-separator">Dirección</div>
 
   <div class="form-group">
-    <label>Dirección <span class="required">*</span></label>
-    <app-input
-      type="text"
-      formControlName="address"
-      placeholder="Calle 123 #45-67"
+    <label for="address-input">Dirección <span class="required">*</span></label>
+    <app-address-map-picker
+      formControlName="addressLocation"
+      (geocodeResult)="onGeocodeResult($event)"
     />
-    @if (form().controls['address'].invalid && form().controls['address'].touched) {
-      <span class="field-error">Campo requerido</span>
+    @if (form().controls['addressLocation'].invalid && form().controls['addressLocation'].touched) {
+      <span class="field-error">Seleccioná una ubicación en el mapa</span>
     }
   </div>
 
@@ -103,31 +102,6 @@
     </div>
   </div>
 
-  <div class="form-row">
-    <div class="form-group">
-      <label>Latitud <span class="required">*</span></label>
-      <app-input
-        type="number"
-        formControlName="lat"
-        placeholder="4.7110"
-      />
-      @if (form().controls['lat'].invalid && form().controls['lat'].touched) {
-        <span class="field-error">Valor entre -90 y 90</span>
-      }
-    </div>
-    <div class="form-group">
-      <label>Longitud <span class="required">*</span></label>
-      <app-input
-        type="number"
-        formControlName="lng"
-        placeholder="-74.0721"
-      />
-      @if (form().controls['lng'].invalid && form().controls['lng'].touched) {
-        <span class="field-error">Valor entre -180 y 180</span>
-      }
-    </div>
-  </div>
-
   <div class="section-separator">Políticas y Contacto</div>
 
   <div class="form-row">
@@ -152,8 +126,8 @@
       }
     </div>
     <div class="form-group">
-      <label>Política de Cancelación <span class="required">*</span></label>
-      <app-select [options]="cancellationPolicyOptions()" formControlName="cancellationPolicy" />
+      <label for="cancellationPolicy">Política de Cancelación</label>
+      <input id="cancellationPolicy" type="text" value="Estándar" readonly class="static-policy" />
     </div>
   </div>
 

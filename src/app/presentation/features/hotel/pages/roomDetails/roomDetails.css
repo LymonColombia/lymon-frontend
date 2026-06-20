@@ -6,19 +6,6 @@
     min-height: 100vh;
 }
 
-.header-search-form {
-    display: flex;
-    gap: var(--spacing-md);
-    align-items: center;
-    flex: 1;
-    max-width: 700px;
-}
-
-.header-search-form app-input,
-.header-search-form app-select {
-    flex: 1;
-}
-
 .room-details-container {
     max-width: var(--max-width-2xl);
     margin: 0 auto;
@@ -220,10 +207,6 @@
         position: static;
         height: auto;
     }
-
-    .header-search-form {
-        max-width: 500px;
-    }
 }
 
 @media (max-width: 900px) {
@@ -235,13 +218,6 @@
 @media (max-width: 768px) {
     .room-details-container {
         padding: var(--spacing-xl);
-    }
-
-    .header-search-form {
-        width: 100%;
-        max-width: 100%;
-        flex-direction: column;
-        gap: var(--spacing-sm);
     }
 
     .booking-card {

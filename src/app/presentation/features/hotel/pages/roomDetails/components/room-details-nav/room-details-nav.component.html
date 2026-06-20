@@ -1,0 +1,130 @@
+<nav class="room-details-nav">
+  <div class="nav-inner">
+
+    <div class="brand-group">
+      <a routerLink="/booking" class="brand-link">
+        <img
+          ngSrc="images/LyHost.svg"
+          width="180"
+          height="42"
+          priority
+          alt="LyHost"
+          class="brand-logo"
+        />
+      </a>
+    </div>
+
+    <div class="nav-center">
+      <div class="mini-search-field">
+        <app-input
+          type="date"
+          id="navCheckIn"
+          name="navCheckIn"
+          size="small"
+          [hasIcon]="true"
+          (valueChange)="onCheckInChange($event)"
+        >
+          <ng-icon icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+        </app-input>
+      </div>
+
+      <div class="mini-search-field">
+        <app-input
+          type="date"
+          id="navCheckOut"
+          name="navCheckOut"
+          size="small"
+          [hasIcon]="true"
+          (valueChange)="onCheckOutChange($event)"
+        >
+          <ng-icon icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+        </app-input>
+      </div>
+
+      <div class="mini-guest-stepper">
+        <button
+          type="button"
+          class="stepper-btn"
+          (click)="decrementGuests()"
+          [disabled]="guests() <= MIN_GUESTS"
+          aria-label="Reducir huéspedes"
+        >
+          −
+        </button>
+        <span class="stepper-value">
+          <ng-icon name="bootstrapPeopleFill" size="13px" aria-hidden="true" />
+          <span class="stepper-count">{{ guests() }}</span>
+        </span>
+        <button
+          type="button"
+          class="stepper-btn"
+          (click)="incrementGuests()"
+          [disabled]="guests() >= MAX_GUESTS"
+          aria-label="Aumentar huéspedes"
+        >
+          +
+        </button>
+      </div>
+
+      <button class="mini-search-btn" type="button" (click)="onSearch()" aria-label="Buscar">
+        <ng-icon name="bootstrapSearch" size="14px" aria-hidden="true" />
+      </button>
+    </div>
+
+    <div class="nav-actions">
+      @if (isAuthenticated()) {
+        <div class="nav-profile-wrapper">
+          <div
+            class="nav-profile"
+            [class.nav-profile--open]="isDropdownOpen()"
+            (click)="toggleDropdown()"
+          >
+            <div class="profile-avatar" aria-hidden="true">{{ initials() }}</div>
+            <div class="profile-info">
+              <span class="profile-name">{{ profileLabel() }}</span>
+              @if (guestEmail()) {
+                <span class="profile-email">{{ guestEmail() }}</span>
+              }
+            </div>
+            <ng-icon
+              name="bootstrapChevronDown"
+              size="13px"
+              class="profile-chevron"
+              [class.profile-chevron--open]="isDropdownOpen()"
+              aria-hidden="true"
+            />
+          </div>
+
+          @if (isDropdownOpen()) {
+            <div class="profile-dropdown" role="menu" aria-label="Profile actions">
+              <button class="profile-dropdown-option" type="button" role="menuitem" (click)="onMyReservations()">
+                <ng-icon name="bootstrapCalendar2Check" size="15px" aria-hidden="true" />
+                Mis reservas
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="profile-dropdown-option profile-dropdown-option--danger" type="button" role="menuitem" (click)="onLogout()">
+                <ng-icon name="bootstrapBoxArrowRight" size="15px" aria-hidden="true" />
+                Cerrar sesión
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <app-button variant="primary" size="medium" (clicked)="loginClicked.emit()">
+          <ng-icon name="bootstrapBoxArrowInRight" size="18px" aria-hidden="true" />
+          Iniciar sesión
+        </app-button>
+      }
+
+      <a
+        class="cart-action"
+        routerLink="/guest/cart"
+        aria-label="Ir al carrito"
+        title="Ir al carrito"
+      >
+        <ng-icon name="bootstrapCart" size="18px" aria-hidden="true" />
+      </a>
+    </div>
+
+  </div>
+</nav>

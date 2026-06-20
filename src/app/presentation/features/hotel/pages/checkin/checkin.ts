@@ -1,30 +1,31 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
-  ViewChild,
   computed,
   inject,
   signal,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { GuestNavComponent } from '@/presentation/features/hotel/components/guest-nav/guest-nav';
+import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { CheckinGuestFormComponent } from './components/checkin-guest-form/checkin-guest-form.component';
+import { CheckinSummaryComponent } from './components/checkin-summary/checkin-summary.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { Reservation } from '@/domain/entities/reservation.model';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
 import { GetReservationByIdUseCase } from '@/domain/use-cases/reservation/get-reservation-by-id.use-case';
 import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/reservation/get-guest-reservation-by-id.use-case';
+import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
+import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import {
-  bootstrapEnvelope,
-  bootstrapTelephone,
-  bootstrapPerson,
   bootstrapCardText,
   bootstrapShieldCheck,
-  bootstrapPen,
 } from '@ng-icons/bootstrap-icons';
 import {
   catchError,
@@ -36,16 +37,42 @@ import {
   tap,
 } from 'rxjs';
 
+interface GuestFormValue {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+
+const GUEST_ROUTE_PREFIX = '/guest/';
+const ACTIVE_RESERVATION_STATUSES: ReadonlyArray<Reservation['status']> = ['active', 'confirmed', 'pending'];
+const RESERVATION_STATUSES: ReadonlyArray<Reservation['status']> = [
+  'active',
+  'pending',
+  'finished',
+  'confirmed',
+  'cancelled',
+];
+
+function isReservationStatus(value: string): value is Reservation['status'] {
+  return (RESERVATION_STATUSES as readonly string[]).includes(value);
+}
+
 @Component({
-  imports: [HotelPageLayoutComponent, NgIcon],
+  imports: [
+    ReactiveFormsModule,
+    GuestNavComponent,
+    InputComponent,
+    SelectComponent,
+    ButtonComponent,
+    CheckinGuestFormComponent,
+    CheckinSummaryComponent,
+    NgIcon,
+  ],
   providers: [
     provideIcons({
-      bootstrapEnvelope,
-      bootstrapTelephone,
-      bootstrapPerson,
       bootstrapCardText,
       bootstrapShieldCheck,
-      bootstrapPen,
     }),
   ],
   selector: 'app-checkin',
@@ -54,26 +81,18 @@ import {
   styleUrls: ['./checkin.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CheckinComponent implements AfterViewInit {
+export class CheckinComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly fb = inject(FormBuilder);
   private readonly getReservationsUseCase = inject(GetReservationsUseCase);
   private readonly getReservationByIdUseCase = inject(GetReservationByIdUseCase);
   private readonly getGuestReservationByIdUseCase = inject(GetGuestReservationByIdUseCase);
+  private readonly confirmReservationUseCase = inject(ConfirmReservationUseCase);
+  private readonly guestTokenService = inject(GuestTokenService);
 
-  @ViewChild('signatureCanvas')
-  private readonly signatureCanvas?: ElementRef<HTMLCanvasElement>;
-
-  private signatureContext: CanvasRenderingContext2D | null = null;
-  private isDrawing = false;
-
-  readonly steps = [
-    'Informacion personal',
-    'Datos legales',
-    'Contacto de emergencia',
-    'Firma y confirmacion',
-  ] as const;
+  readonly steps = ['Información de huéspedes', 'Datos legales', 'Confirmación'] as const;
 
   readonly currentStep = signal(1);
   readonly totalSteps = this.steps.length;
@@ -102,7 +121,29 @@ export class CheckinComponent implements AfterViewInit {
     };
   });
 
-  readonly selectedIdentityFileName = signal('Ningun archivo seleccionado');
+  readonly isConfirming = signal(false);
+  readonly confirmError = signal<string | null>(null);
+
+  readonly guestEmail = this.guestTokenService.getGuestEmail() ?? '';
+
+  readonly idTypeOptions: SelectOption[] = [
+    { value: 'INE_IFE', label: 'INE / IFE' },
+    { value: 'PASSPORT', label: 'Pasaporte' },
+    { value: 'LICENSE', label: 'Licencia' },
+  ];
+
+  readonly checkinForm = this.fb.group({
+    guests: this.fb.array<FormGroup>([]),
+    identification: this.fb.group({
+      idType: [''],
+      idNumber: [''],
+    }),
+    acceptedTerms: [false, Validators.requiredTrue],
+  });
+
+  get guests(): FormArray<FormGroup> {
+    return this.checkinForm.controls.guests;
+  }
 
   constructor() {
     this.loadSummaryData();
@@ -110,100 +151,49 @@ export class CheckinComponent implements AfterViewInit {
 
   goToPreviousStep(): void {
     this.currentStep.update((step) => Math.max(1, step - 1));
-    this.trySetupSignatureCanvas();
   }
 
   goToNextStep(): void {
     this.currentStep.update((step) => Math.min(this.totalSteps, step + 1));
-    this.trySetupSignatureCanvas();
   }
 
   submitCheckin(): void {
-    console.info('Check-in listo para enviar.');
+    if (!this.checkinForm.controls.acceptedTerms.value) {
+      this.checkinForm.markAllAsTouched();
+      return;
+    }
+
+    const reservationId = this.selectedReservation()?.id;
+    if (!reservationId) {
+      this.confirmError.set('No se encontró la reservación a confirmar.');
+      return;
+    }
+
+    this.isConfirming.set(true);
+    this.confirmError.set(null);
+
+    this.confirmReservationUseCase
+      .execute(reservationId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isConfirming.set(false);
+          void this.router.navigate(['/guest/reservations']);
+        },
+        error: () => {
+          this.isConfirming.set(false);
+          this.confirmError.set('No se pudo confirmar la reservación. Intenta de nuevo.');
+        },
+      });
   }
 
-  ngAfterViewInit(): void {
-    this.setupSignatureCanvas();
+  onLogout(): void {
+    this.guestTokenService.clear();
+    void this.router.navigate(['/guest/login']);
   }
 
-  onIdentityFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.item(0);
-
-    this.selectedIdentityFileName.set(file?.name ?? 'Ningun archivo seleccionado');
-  }
-
-  startDrawing(event: PointerEvent): void {
-    if (!this.signatureContext) return;
-
-    const point = this.getCanvasPoint(event);
-    this.isDrawing = true;
-
-    this.signatureContext.beginPath();
-    this.signatureContext.moveTo(point.x, point.y);
-    (event.target as Element).setPointerCapture?.(event.pointerId);
-  }
-
-  draw(event: PointerEvent): void {
-    if (!this.signatureContext || !this.isDrawing) return;
-
-    const point = this.getCanvasPoint(event);
-    this.signatureContext.lineTo(point.x, point.y);
-    this.signatureContext.stroke();
-  }
-
-  stopDrawing(): void {
-    if (!this.signatureContext) return;
-
-    this.signatureContext.closePath();
-    this.isDrawing = false;
-  }
-
-  clearSignature(): void {
-    const canvas = this.signatureCanvas?.nativeElement;
-    if (!canvas || !this.signatureContext) return;
-
-    this.signatureContext.clearRect(0, 0, canvas.width, canvas.height);
-  }
-
-  private setupSignatureCanvas(): void {
-    const canvas = this.signatureCanvas?.nativeElement;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const dpr = globalThis.devicePixelRatio || 1;
-
-    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.scale(dpr, dpr);
-    ctx.lineWidth = 2.2;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#214a2d';
-    this.signatureContext = ctx;
-  }
-
-  private trySetupSignatureCanvas(): void {
-    if (this.currentStep() !== 4) return;
-
-    requestAnimationFrame(() => {
-      this.setupSignatureCanvas();
-    });
-  }
-
-  private getCanvasPoint(event: PointerEvent): { x: number; y: number } {
-    const canvas = this.signatureCanvas?.nativeElement;
-    if (!canvas) return { x: 0, y: 0 };
-
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    };
+  goExplore(): void {
+    void this.router.navigate(['/booking']);
   }
 
   private loadSummaryData(): void {
@@ -220,6 +210,7 @@ export class CheckinComponent implements AfterViewInit {
       .subscribe((reservation) => {
         this.selectedReservation.set(reservation);
         this.isLoadingSummary.set(false);
+        this.syncGuestForms(reservation);
 
         if (!reservation) {
           this.summaryError.set('No se encontro una reservacion para mostrar.');
@@ -227,9 +218,37 @@ export class CheckinComponent implements AfterViewInit {
       });
   }
 
+  private syncGuestForms(reservation: Reservation | null): void {
+    const guestsCount = Math.max(1, reservation?.guestsCount ?? 1);
+    const tokenProfile = this.guestTokenService.getGuestProfile();
+
+    this.guests.clear();
+    this.guests.push(
+      this.buildGuestGroup({
+        firstName: tokenProfile.firstName ?? '',
+        lastName: tokenProfile.lastName ?? '',
+        email: tokenProfile.email ?? '',
+        phone: '',
+      }),
+    );
+
+    for (let i = 1; i < guestsCount; i++) {
+      this.guests.push(this.buildGuestGroup());
+    }
+  }
+
+  private buildGuestGroup(prefill?: Partial<GuestFormValue>): FormGroup {
+    return this.fb.group({
+      firstName: [prefill?.firstName ?? ''],
+      lastName: [prefill?.lastName ?? ''],
+      email: [prefill?.email ?? '', Validators.email],
+      phone: [prefill?.phone ?? ''],
+    });
+  }
+
   private fetchReservation(reservationId: string | null): Observable<Reservation | null> {
     if (reservationId?.trim()) {
-      const isGuestRoute = this.router.url.startsWith('/guest/');
+      const isGuestRoute = this.router.url.startsWith(GUEST_ROUTE_PREFIX);
 
       if (isGuestRoute) {
         return this.getGuestReservationByIdUseCase.execute(reservationId).pipe(
@@ -267,7 +286,7 @@ export class CheckinComponent implements AfterViewInit {
       pricePerNight: r.priceBreakdown?.pricePerNight ?? 0,
       totalPrice: r.priceBreakdown?.totalPrice ?? 0,
       notes: r.notes ?? undefined,
-      status: r.status as Reservation['status'],
+      status: isReservationStatus(r.status) ? r.status : 'pending',
       tenantId: '',
       propertyId: r.propertyId ?? '',
       guestId: '',
@@ -283,7 +302,7 @@ export class CheckinComponent implements AfterViewInit {
     }
 
     const activeReservation = reservations.find((reservation) =>
-      ['active', 'confirmed', 'pending'].includes(reservation.status),
+      ACTIVE_RESERVATION_STATUSES.includes(reservation.status),
     );
 
     return activeReservation ?? reservations[0];

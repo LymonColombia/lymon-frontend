@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -21,6 +21,19 @@ import { Property } from '@/domain/entities/staff.model';
 import { CancellationPolicy, PropertyDetail, PropertyType, UpdatePropertyDto } from '@/domain/entities/property.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
+
+const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
+  HOTEL: 'Hotel',
+  CASA: 'Casa',
+  APARTAMENTO: 'Apartamento',
+  VILLA: 'Villa',
+  HOSTAL: 'Hostal',
+  GLAMPING: 'Glamping',
+  RURAL: 'Rural',
+  CASA_DE_CAMPO: 'Casa de campo',
+  FINCA: 'Finca',
+  APARTAHOTEL: 'Apartahoteles',
+};
 
 @Component({
   selector: 'app-properties',
@@ -63,32 +76,39 @@ export class PropertiesComponent implements OnInit {
   readonly properties = signal<Property[]>([]);
 
   private static readonly DEFAULT_PROPERTY_TYPE: PropertyType = 'HOTEL';
-  private static readonly DEFAULT_CANCELLATION_POLICY: CancellationPolicy = 'FLEXIBLE';
+  private static readonly DEFAULT_CANCELLATION_POLICY: CancellationPolicy = 'STANDARD';
   private static readonly PROPERTY_UNITS_ROUTE = '/property-units';
   private static readonly PROPERTY_INVENTORY_ROUTE = '/properties';
 
-  readonly PROPERTY_TYPES: PropertyType[] = ['HOTEL', 'CASA', 'APARTAMENTO', 'VILLA', 'HOSTAL', 'GLAMPING'];
-  readonly CANCELLATION_POLICIES: CancellationPolicy[] = ['FLEXIBLE', 'STANDARD', 'STRICT'];
+  readonly PROPERTY_TYPES: PropertyType[] = [
+    'HOTEL',
+    'CASA',
+    'APARTAMENTO',
+    'VILLA',
+    'HOSTAL',
+    'GLAMPING',
+    'RURAL',
+    'CASA_DE_CAMPO',
+    'FINCA',
+    'APARTAHOTEL',
+  ];
   readonly propertyTypeOptions: SelectOption[] = this.PROPERTY_TYPES.map((type) => ({
     value: type,
-    label: type,
-  }));
-  readonly cancellationPolicyOptions: SelectOption[] = this.CANCELLATION_POLICIES.map((policy) => ({
-    value: policy,
-    label: policy,
+    label: PROPERTY_TYPE_LABELS[type],
   }));
 
   readonly form = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
     propertyType: [PropertiesComponent.DEFAULT_PROPERTY_TYPE, Validators.required],
-    address: ['', Validators.required],
+    addressLocation: [
+      { address: '', lat: null, lng: null } as { address: string; lat: number | null; lng: number | null },
+      addressLocationValidator,
+    ],
     city: ['', Validators.required],
     state: ['', Validators.required],
     country: ['', Validators.required],
     zipCode: ['', Validators.required],
-    lat: [null as number | null, [Validators.required, Validators.min(-90), Validators.max(90)]],
-    lng: [null as number | null, [Validators.required, Validators.min(-180), Validators.max(180)]],
     checkInTime: ['', Validators.required],
     checkOutTime: ['', Validators.required],
     cancellationPolicy: [PropertiesComponent.DEFAULT_CANCELLATION_POLICY, Validators.required],
@@ -150,13 +170,15 @@ export class PropertiesComponent implements OnInit {
             name: detail.name,
             description: detail.description,
             propertyType: detail.propertyType,
-            address: detail.address,
+            addressLocation: {
+              address: detail.address,
+              lat: detail.location?.lat ?? null,
+              lng: detail.location?.lng ?? null,
+            } as { address: string; lat: number | null; lng: number | null },
             city: detail.city,
             state: detail.state,
             country: detail.country,
             zipCode: detail.zipCode,
-            lat: detail.location?.lat ?? null,
-            lng: detail.location?.lng ?? null,
             checkInTime: detail.checkInTime,
             checkOutTime: detail.checkOutTime,
             cancellationPolicy: detail.cancellationPolicy,
@@ -257,16 +279,17 @@ export class PropertiesComponent implements OnInit {
 
   private buildPropertyDto(): UpdatePropertyDto {
     const raw = this.form.getRawValue();
+    const addressLocation = raw.addressLocation as unknown as { address: string; lat: number; lng: number };
     return {
       name: raw.name!,
       description: raw.description!,
       propertyType: raw.propertyType!,
-      address: raw.address!,
+      address: addressLocation.address,
       city: raw.city!,
       state: raw.state!,
       country: raw.country!,
       zipCode: raw.zipCode!,
-      location: { lat: raw.lat!, lng: raw.lng! },
+      location: { lat: addressLocation.lat, lng: addressLocation.lng },
       checkInTime: raw.checkInTime!,
       checkOutTime: raw.checkOutTime!,
       cancellationPolicy: raw.cancellationPolicy!,
@@ -277,8 +300,17 @@ export class PropertiesComponent implements OnInit {
 
   private resetFormDefaults(): void {
     this.form.reset({
+      addressLocation: { address: '', lat: null, lng: null },
       propertyType: PropertiesComponent.DEFAULT_PROPERTY_TYPE,
       cancellationPolicy: PropertiesComponent.DEFAULT_CANCELLATION_POLICY,
     });
   }
+}
+
+function addressLocationValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  if (value?.lat != null && value?.lng != null) {
+    return null;
+  }
+  return { locationRequired: true };
 }

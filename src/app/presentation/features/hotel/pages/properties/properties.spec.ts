@@ -26,13 +26,11 @@ const VALID_FORM_VALUES: {
   name: string;
   description: string;
   propertyType: PropertyType;
-  address: string;
+  addressLocation: { address: string; lat: number; lng: number };
   city: string;
   state: string;
   country: string;
   zipCode: string;
-  lat: number;
-  lng: number;
   checkInTime: string;
   checkOutTime: string;
   cancellationPolicy: CancellationPolicy;
@@ -42,16 +40,14 @@ const VALID_FORM_VALUES: {
   name: 'Hotel Test',
   description: 'Descripción del hotel',
   propertyType: 'HOTEL',
-  address: 'Av. Principal 123',
+  addressLocation: { address: 'Av. Principal 123', lat: -12.046374, lng: -77.042793 },
   city: 'Lima',
   state: 'Lima',
   country: 'Perú',
   zipCode: '15001',
-  lat: -12.046374,
-  lng: -77.042793,
   checkInTime: '14:00',
   checkOutTime: '12:00',
-  cancellationPolicy: 'FLEXIBLE',
+  cancellationPolicy: 'STANDARD',
   hostPhone: '+51999888777',
   hostEmail: 'host@hotel.com',
 };

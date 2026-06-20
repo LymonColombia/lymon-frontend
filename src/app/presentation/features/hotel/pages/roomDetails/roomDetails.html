@@ -1,51 +1,11 @@
-<app-header (logoClicked)="router.navigateByUrl('/lyhost')">
-    <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="header-search-form">
-        <app-input
-            type="date"
-            formControlName="checkIn"
-            id="checkIn"
-            name="checkIn"
-            placeholder="Entrada"
-            size="medium"
-            [hasIcon]="true"
-        >
-            <ng-icon icon name="bootstrapCalendar" size="18px" aria-hidden="true"></ng-icon>
-        </app-input>
-
-        <app-input
-            type="date"
-            formControlName="checkOut"
-            id="checkOut"
-            name="checkOut"
-            placeholder="Salida"
-            size="medium"
-            [hasIcon]="true"
-        >
-            <ng-icon icon name="bootstrapCalendar" size="18px" aria-hidden="true"></ng-icon>
-        </app-input>
-
-        <app-select
-            formControlName="guests"
-            id="guests"
-            name="guests"
-            [options]="headerGuestOptions"
-            size="medium"
-            [hasIcon]="true"
-        >
-            <ng-icon icon name="bootstrapPeopleFill" size="18px" aria-hidden="true"></ng-icon>
-        </app-select>
-
-        <app-button type="submit" variant="primary" size="medium">
-            <ng-icon name="bootstrapSearch" size="18px" aria-hidden="true"></ng-icon>
-            Buscar
-        </app-button>
-    </form>
-
-    <app-button actions type="button" variant="secondary" size="medium" (clicked)="onGoBack()">
-        <ng-icon name="bootstrapChevronLeft" size="18px" aria-hidden="true"></ng-icon>
-        Volver
-    </app-button>
-</app-header>
+<room-details-nav
+    [isAuthenticated]="guestTokenService.isAuthenticated()"
+    [guestEmail]="guestEmail"
+    (search)="onNavSearch($event)"
+    (loginClicked)="onGuestLogin()"
+    (logoutClicked)="onGuestLogout()"
+    (myReservationsClicked)="onMyReservations()">
+</room-details-nav>
 
 <div class="room-details-container">
   <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>

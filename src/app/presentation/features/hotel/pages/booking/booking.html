@@ -7,7 +7,12 @@
   (myReservationsClicked)="onMyReservations()">
 </booking-nav>
 
-<booking-hero (search)="onHeroSearch($event)"></booking-hero>
+<booking-hero
+  [initialStartDate]="startDate()"
+  [initialEndDate]="endDate()"
+  [initialMinGuests]="minGuests()"
+  (search)="onHeroSearch($event)">
+</booking-hero>
 
 <section class="results-section" #resultsSection>
   <div class="results-container">

@@ -8,8 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';
@@ -18,10 +17,7 @@ import { GetCartUseCase } from '@/domain/use-cases/cart/get-cart.use-case';
 import { Unit } from '@/domain/entities/staff.model';
 import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 import { CartReservationItem } from '@/domain/entities/cart.model';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
-import { HeaderComponent } from '@/presentation/shared/components/header/header.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
@@ -31,14 +27,11 @@ import { RoomAmenitiesComponent } from './components/room-amenities/room-ameniti
 import { RoomPoliciesComponent } from './components/room-policies/room-policies.component';
 import { RoomBookingCalendarComponent, BookingDateRange } from './components/room-booking-calendar/room-booking-calendar.component';
 import { RoomRatingsComponent } from './components/room-ratings/room-ratings.component';
+import { RoomDetailsNavComponent, RoomDetailsSearchParams } from './components/room-details-nav/room-details-nav.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapCalendar,
-  bootstrapChevronLeft,
-  bootstrapChevronRight,
   bootstrapInfoCircle,
   bootstrapPeopleFill,
-  bootstrapSearch,
 } from '@ng-icons/bootstrap-icons';
 // Known arch violation: direct infra import for auth check — pending GetGuestSessionUseCase
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
@@ -49,12 +42,8 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   selector: 'app-room-details',
   standalone: true,
   imports: [
-    ReactiveFormsModule,
-    RouterModule,
-    ButtonComponent,
-    InputComponent,
     SelectComponent,
-    HeaderComponent,
+    RoomDetailsNavComponent,
     FooterComponent,
     ModalComponent,
     BreadcrumbComponent,
@@ -68,12 +57,8 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   ],
   providers: [
     provideIcons({
-      bootstrapCalendar,
-      bootstrapChevronLeft,
-      bootstrapChevronRight,
       bootstrapInfoCircle,
       bootstrapPeopleFill,
-      bootstrapSearch,
     }),
   ],
   templateUrl: './roomDetails.html',
@@ -81,7 +66,6 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomDetailsComponent implements OnInit {
-  private readonly fb = inject(FormBuilder);
   readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -89,14 +73,7 @@ export class RoomDetailsComponent implements OnInit {
   private readonly saveReservationDraftUseCase = inject(SaveReservationDraftUseCase);
   private readonly getUnitCalendarUseCase = inject(GetUnitCalendarUseCase);
   private readonly getCartUseCase = inject(GetCartUseCase);
-  private readonly guestTokenService = inject(GuestTokenService);
-
-  // Header search form (navigates back to booking list)
-  readonly searchForm: FormGroup = this.fb.group({
-    checkIn: [''],
-    checkOut: [''],
-    guests: [2],
-  });
+  readonly guestTokenService = inject(GuestTokenService);
 
   readonly isLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
@@ -138,12 +115,7 @@ export class RoomDetailsComponent implements OnInit {
     { label: this.unit()?.name ?? 'Detalle de Habitación' },
   ]);
 
-  readonly headerGuestOptions: SelectOption[] = [
-    { value: 1, label: '1 Huésped' },
-    { value: 2, label: '2 Huéspedes' },
-    { value: 3, label: '3 Huéspedes' },
-    { value: 4, label: '4 Huéspedes' },
-  ];
+  readonly guestEmail = this.guestTokenService.getGuestEmail();
 
   ngOnInit(): void {
     this.route.paramMap
@@ -255,16 +227,23 @@ export class RoomDetailsComponent implements OnInit {
     });
   }
 
-  onSearch(): void {
-    const v = this.searchForm.value;
+  onNavSearch(params: RoomDetailsSearchParams): void {
     this.router.navigate(['/booking'], {
-      queryParams: { checkIn: v.checkIn, checkOut: v.checkOut, guests: v.guests },
+      queryParams: { startDate: params.checkIn, endDate: params.checkOut, minGuests: params.guests },
     });
   }
 
-  protected readonly formatPrice = formatPrice;
-
-  onGoBack(): void {
-    this.router.navigate(['/booking']);
+  onGuestLogin(): void {
+    this.router.navigate(['/guest/login']);
   }
+
+  onMyReservations(): void {
+    this.router.navigate(['/guest/reservations']);
+  }
+
+  onGuestLogout(): void {
+    this.guestTokenService.clear();
+  }
+
+  protected readonly formatPrice = formatPrice;
 }
