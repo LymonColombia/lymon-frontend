@@ -1,15 +1,24 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, ParamMap, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { CheckinComponent } from './checkin';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
 import { GetReservationByIdUseCase } from '@/domain/use-cases/reservation/get-reservation-by-id.use-case';
+import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/reservation/get-guest-reservation-by-id.use-case';
+import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
+import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { Reservation } from '@/domain/entities/reservation.model';
 
 const mockGetReservationsUseCase = { execute: vi.fn() };
 const mockGetReservationByIdUseCase = { execute: vi.fn() };
+const mockGetGuestReservationByIdUseCase = { execute: vi.fn() };
+const mockConfirmReservationUseCase = { execute: vi.fn() };
+const mockGuestTokenService = {
+  getGuestEmail: vi.fn(),
+  getGuestProfile: vi.fn(),
+  clear: vi.fn(),
+};
 
 const BASE_RESERVATION: Reservation = {
   id: 'res-1',
@@ -37,25 +46,36 @@ function resetRouteParams(params: Record<string, string> = {}, query: Record<str
   queryParamMap$.next(convertToParamMap(query));
 }
 
+function paginated(reservations: Reservation[]): { reservations: Reservation[]; total: number } {
+  return { reservations, total: reservations.length };
+}
+
+function commonProviders() {
+  return [
+    provideRouter([]),
+    { provide: GetReservationsUseCase, useValue: mockGetReservationsUseCase },
+    { provide: GetReservationByIdUseCase, useValue: mockGetReservationByIdUseCase },
+    { provide: GetGuestReservationByIdUseCase, useValue: mockGetGuestReservationByIdUseCase },
+    { provide: ConfirmReservationUseCase, useValue: mockConfirmReservationUseCase },
+    { provide: GuestTokenService, useValue: mockGuestTokenService },
+    {
+      provide: ActivatedRoute,
+      useValue: {
+        paramMap: paramMap$.asObservable(),
+        queryParamMap: queryParamMap$.asObservable(),
+        snapshot: {
+          paramMap: convertToParamMap({}),
+          queryParamMap: convertToParamMap({}),
+        },
+      },
+    },
+  ];
+}
+
 async function setup() {
   const testingModule = TestBed.configureTestingModule({
     imports: [CheckinComponent],
-    providers: [
-      { provide: GetReservationsUseCase, useValue: mockGetReservationsUseCase },
-      { provide: GetReservationByIdUseCase, useValue: mockGetReservationByIdUseCase },
-      {
-        provide: ActivatedRoute,
-        useValue: {
-          paramMap: paramMap$.asObservable(),
-          queryParamMap: queryParamMap$.asObservable(),
-          snapshot: {
-            paramMap: convertToParamMap({}),
-            queryParamMap: convertToParamMap({}),
-          },
-        },
-      },
-    ],
-    schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
+    providers: commonProviders(),
   });
 
   testingModule.overrideComponent(CheckinComponent, {
@@ -83,46 +103,24 @@ async function setup() {
 
   const fixture = TestBed.createComponent(CheckinComponent);
   const component = fixture.componentInstance;
+  const router = TestBed.inject(Router);
   fixture.detectChanges();
 
-  return { fixture, component };
+  return { fixture, component, router };
 }
 
 async function setupWithFullTemplate() {
-  const testingModule = TestBed.configureTestingModule({
+  await TestBed.configureTestingModule({
     imports: [CheckinComponent],
-    providers: [
-      { provide: GetReservationsUseCase, useValue: mockGetReservationsUseCase },
-      { provide: GetReservationByIdUseCase, useValue: mockGetReservationByIdUseCase },
-      {
-        provide: ActivatedRoute,
-        useValue: {
-          paramMap: paramMap$.asObservable(),
-          queryParamMap: queryParamMap$.asObservable(),
-          snapshot: {
-            paramMap: convertToParamMap({}),
-            queryParamMap: convertToParamMap({}),
-          },
-        },
-      },
-    ],
-    schemas: [NO_ERRORS_SCHEMA],
-  });
-
-  testingModule.overrideComponent(CheckinComponent, {
-    set: {
-      imports: [CommonModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    },
-  });
-
-  await testingModule.compileComponents();
+    providers: commonProviders(),
+  }).compileComponents();
 
   const fixture = TestBed.createComponent(CheckinComponent);
   const component = fixture.componentInstance;
+  const router = TestBed.inject(Router);
   fixture.detectChanges();
 
-  return { fixture, component };
+  return { fixture, component, router };
 }
 
 describe('CheckinComponent', () => {
@@ -132,8 +130,17 @@ describe('CheckinComponent', () => {
     paramMap$ = new BehaviorSubject<ParamMap>(convertToParamMap({}));
     queryParamMap$ = new BehaviorSubject<ParamMap>(convertToParamMap({}));
 
-    mockGetReservationsUseCase.execute.mockReturnValue(of([BASE_RESERVATION]));
+    mockGetReservationsUseCase.execute.mockReturnValue(of(paginated([BASE_RESERVATION])));
     mockGetReservationByIdUseCase.execute.mockReturnValue(of(BASE_RESERVATION));
+    mockGetGuestReservationByIdUseCase.execute.mockReturnValue(of(undefined));
+    mockConfirmReservationUseCase.execute.mockReturnValue(of(undefined));
+    mockGuestTokenService.getGuestEmail.mockReturnValue('guest@test.com');
+    mockGuestTokenService.getGuestProfile.mockReturnValue({
+      email: 'guest@test.com',
+      firstName: 'Ana',
+      lastName: null,
+      fullName: null,
+    });
   });
 
   it('crea el componente', async () => {
@@ -173,7 +180,7 @@ describe('CheckinComponent', () => {
       guestName: 'Huesped Real',
     };
 
-    mockGetReservationsUseCase.execute.mockReturnValue(of([finishedReservation, activeReservation]));
+    mockGetReservationsUseCase.execute.mockReturnValue(of(paginated([finishedReservation, activeReservation])));
 
     const { component } = await setup();
 
@@ -196,33 +203,17 @@ describe('CheckinComponent', () => {
   });
 
   it('mantiene loading en true mientras la lista de reservaciones no emite', async () => {
-    const pendingReservations$ = new Subject<Reservation[]>();
+    const pendingReservations$ = new Subject<{ reservations: Reservation[]; total: number }>();
     mockGetReservationsUseCase.execute.mockReturnValue(pendingReservations$.asObservable());
 
     const { component } = await setup();
     expect(component.isLoadingSummary()).toBe(true);
 
-    pendingReservations$.next([BASE_RESERVATION]);
+    pendingReservations$.next(paginated([BASE_RESERVATION]));
     pendingReservations$.complete();
 
     expect(component.isLoadingSummary()).toBe(false);
     expect(component.selectedReservation()?.id).toBe('res-1');
-  });
-
-  it('actualiza el nombre del archivo de identidad seleccionado', async () => {
-    const { component } = await setup();
-
-    const input = document.createElement('input');
-    const file = new File(['dummy'], 'documento-identidad.png', { type: 'image/png' });
-    Object.defineProperty(input, 'files', {
-      value: {
-        item: (index: number) => (index === 0 ? file : null),
-      },
-    });
-
-    component.onIdentityFileSelected({ target: input } as unknown as Event);
-
-    expect(component.selectedIdentityFileName()).toBe('documento-identidad.png');
   });
 
   it('respeta limites al navegar pasos', async () => {
@@ -236,14 +227,14 @@ describe('CheckinComponent', () => {
     component.goToNextStep();
     component.goToNextStep();
 
-    expect(component.currentStep()).toBe(4);
+    expect(component.currentStep()).toBe(3);
     expect(component.isLastStep()).toBe(true);
     expect(component.progressPercent()).toBe(100);
   });
 
   it('renderiza resumen en la vista con datos de la reservacion', async () => {
     mockGetReservationsUseCase.execute.mockReturnValue(
-      of([{ ...BASE_RESERVATION, guestName: 'Ana Perez', room: 'Suite 201', totalPrice: 2400 }]),
+      of(paginated([{ ...BASE_RESERVATION, guestName: 'Ana Perez', room: 'Suite 201', totalPrice: 2400 }])),
     );
 
     const { fixture } = await setup();
@@ -258,6 +249,62 @@ describe('CheckinComponent', () => {
     expect(summaryText).toContain('Suite 201');
     expect(summaryText).toContain('Total:');
   });
+
+  it('arma el formulario de huespedes segun guestsCount de la reservacion', async () => {
+    mockGetReservationsUseCase.execute.mockReturnValue(of(paginated([{ ...BASE_RESERVATION, guestsCount: 3 }])));
+
+    const { component } = await setup();
+
+    expect(component.guests.length).toBe(3);
+  });
+
+  it('precarga el primer huesped con el perfil del token de guest', async () => {
+    const { component } = await setup();
+
+    expect(component.guests.at(0).value.email).toBe('guest@test.com');
+    expect(component.guests.at(0).value.firstName).toBe('Ana');
+  });
+
+  it('no precarga a los huespedes adicionales, son solo visuales', async () => {
+    mockGetReservationsUseCase.execute.mockReturnValue(of(paginated([{ ...BASE_RESERVATION, guestsCount: 2 }])));
+
+    const { component } = await setup();
+
+    expect(component.guests.at(1).value.email).toBe('');
+    expect(component.guests.at(1).value.firstName).toBe('');
+  });
+
+  it('submitCheckin no confirma si no se aceptan los terminos', async () => {
+    const { component } = await setup();
+
+    component.submitCheckin();
+
+    expect(mockConfirmReservationUseCase.execute).not.toHaveBeenCalled();
+  });
+
+  it('submitCheckin confirma la reservacion y navega al exito', async () => {
+    const { component, router } = await setup();
+    const navigateSpy = vi.spyOn(router, 'navigate');
+
+    component.checkinForm.controls.acceptedTerms.setValue(true);
+    component.submitCheckin();
+
+    expect(mockConfirmReservationUseCase.execute).toHaveBeenCalledWith('res-1');
+    expect(navigateSpy).toHaveBeenCalledWith(['/guest/reservations']);
+    expect(component.isConfirming()).toBe(false);
+  });
+
+  it('submitCheckin maneja el error de confirmacion', async () => {
+    mockConfirmReservationUseCase.execute.mockReturnValue(throwError(() => new Error('failed')));
+
+    const { component } = await setup();
+
+    component.checkinForm.controls.acceptedTerms.setValue(true);
+    component.submitCheckin();
+
+    expect(component.isConfirming()).toBe(false);
+    expect(component.confirmError()).toBe('No se pudo confirmar la reservación. Intenta de nuevo.');
+  });
 });
 
 describe('CheckinComponent - integracion visual (template real)', () => {
@@ -267,22 +314,33 @@ describe('CheckinComponent - integracion visual (template real)', () => {
     paramMap$ = new BehaviorSubject<ParamMap>(convertToParamMap({}));
     queryParamMap$ = new BehaviorSubject<ParamMap>(convertToParamMap({}));
 
-    mockGetReservationsUseCase.execute.mockReturnValue(of([BASE_RESERVATION]));
+    mockGetReservationsUseCase.execute.mockReturnValue(of(paginated([BASE_RESERVATION])));
     mockGetReservationByIdUseCase.execute.mockReturnValue(of(BASE_RESERVATION));
+    mockGetGuestReservationByIdUseCase.execute.mockReturnValue(of(undefined));
+    mockConfirmReservationUseCase.execute.mockReturnValue(of(undefined));
+    mockGuestTokenService.getGuestEmail.mockReturnValue('guest@test.com');
+    mockGuestTokenService.getGuestProfile.mockReturnValue({
+      email: 'guest@test.com',
+      firstName: 'Ana',
+      lastName: null,
+      fullName: null,
+    });
   });
 
   it('renderiza los datos reales de resumen en la plantilla', async () => {
     mockGetReservationsUseCase.execute.mockReturnValue(
-      of([
-        {
-          ...BASE_RESERVATION,
-          guestName: 'Juliana Franco',
-          room: 'Suite 302',
-          nights: 5,
-          guestsCount: 3,
-          totalPrice: 5400,
-        },
-      ]),
+      of(
+        paginated([
+          {
+            ...BASE_RESERVATION,
+            guestName: 'Juliana Franco',
+            room: 'Suite 302',
+            nights: 5,
+            guestsCount: 3,
+            totalPrice: 5400,
+          },
+        ]),
+      ),
     );
 
     const { fixture } = await setupWithFullTemplate();
@@ -331,6 +389,6 @@ describe('CheckinComponent - integracion visual (template real)', () => {
     fixture.detectChanges();
 
     const heading = fixture.nativeElement.querySelector('.panel-head h2')?.textContent?.trim();
-    expect(heading).toContain('Seccion 2');
+    expect(heading).toContain('Sección 2');
   });
 });
