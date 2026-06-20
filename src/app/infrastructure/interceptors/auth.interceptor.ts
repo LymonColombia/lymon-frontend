@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { HttpClient, HttpInterceptorFn } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, catchError, finalize, map, shareReplay, switchMap, throwError } from 'rxjs';
 import { environment } from '@env';
@@ -30,12 +30,34 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
    }
 
-  if (!accessToken || isRefreshRequest(req.url) || req.headers.has('Authorization')) {
+  if (!accessToken || isRefreshRequest(req.url)) {
     return next(req);
   }
 
   if (!isTokenExpiringSoon(accessToken, REFRESH_THRESHOLD_SECONDS)) {
-    return next(addAuthorizationHeader(req, accessToken));
+    return next(addAuthorizationHeader(req, accessToken)).pipe(
+      catchError((error: unknown) => {
+        if (!(error instanceof HttpErrorResponse) || error.status !== 401) {
+          return throwError(() => error);
+        }
+
+        const currentRefreshToken = tokenService.getRefreshToken();
+        if (!currentRefreshToken || isTokenExpired(currentRefreshToken)) {
+          tokenService.clear();
+          router.navigate(['/login'], { queryParams: { sessionExpired: true } });
+          return throwError(() => error);
+        }
+
+        return refreshAccessToken(http, tokenService).pipe(
+          switchMap((newToken) => next(addAuthorizationHeader(req, newToken))),
+          catchError(() => {
+            tokenService.clear();
+            router.navigate(['/login'], { queryParams: { sessionExpired: true } });
+            return throwError(() => error);
+          }),
+        );
+      }),
+    );
   }
 
   const refreshToken = tokenService.getRefreshToken();
@@ -61,7 +83,7 @@ function addAuthorizationHeader(req: Parameters<HttpInterceptorFn>[0], accessTok
   });
 }
 
-function refreshAccessToken(http: HttpClient, tokenService: TokenService): Observable<string> {
+export function refreshAccessToken(http: HttpClient, tokenService: TokenService): Observable<string> {
   if (refreshInFlight$) {
     return refreshInFlight$;
   }
@@ -120,7 +142,7 @@ function isTokenExpiringSoon(token: string, thresholdSeconds: number): boolean {
   return payload.exp - nowInSeconds <= thresholdSeconds;
 }
 
-function getJwtPayload(token: string): { exp?: number } | null {
+export function getJwtPayload(token: string): { exp?: number } | null {
   const parts = token.split('.');
   if (parts.length < 2) {
     return null;

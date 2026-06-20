@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { TokenRefreshSchedulerService } from '@/infrastructure/services/token-refresh-scheduler.service';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +9,7 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('lymon-frontend');
+  constructor() {
+    inject(TokenRefreshSchedulerService);
+  }
 }
