@@ -349,6 +349,12 @@
   gap: var(--spacing-sm);
 }
 
+.unit-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
 
 .location-layout {
   display: grid;

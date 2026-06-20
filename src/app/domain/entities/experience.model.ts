@@ -52,6 +52,13 @@ export interface BlackoutRange {
   endAt: string;
 }
 
+export interface ExperienceUnitSummary {
+  id: string;
+  name: string;
+  maxGuests?: number;
+  pricePerNight?: number;
+}
+
 export interface BaseExperience {
   id?: string;
   scope: ExperienceScope;
@@ -69,8 +76,10 @@ export interface BaseExperience {
 }
 
 export interface Experience extends BaseExperience {
+  propertyName?: string;
   propertyId?: string;
   unitIds?: string[];
+  units?: ExperienceUnitSummary[];
   startAt?: string;
   endAt?: string;
   blackoutRanges?: BlackoutRange[];
@@ -80,12 +89,15 @@ export interface Experience extends BaseExperience {
 export type PropertyExperience = Experience & { scope: 'PROPERTY' };
 export type TenantExperience = Experience & { scope: 'TENANT' };
 
-export type CreateExperienceDto = Omit<Experience, 'id'>;
+export type CreateExperienceDto = Omit<Experience, 'id' | 'propertyName' | 'units'>;
 export type UpdateExperienceDto = Partial<
   Pick<
     Experience,
+   //| 'scope'
     | 'name'
     | 'description'
+    //| 'propertyId'
+    //| 'unitIds'
     | 'priceCop'
     | 'durationHours'
     | 'capacity'

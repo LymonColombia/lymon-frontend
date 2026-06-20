@@ -245,8 +245,11 @@ export class TenantExperienceFormPageComponent implements OnInit {
 
   private toUpdateExperienceDto(dto: CreateExperienceDto): UpdateExperienceDto {
     return {
+      //scope: dto.scope,
       name: dto.name,
       description: dto.description,
+      //propertyId: dto.scope === 'PROPERTY' ? dto.propertyId : undefined,
+      //unitIds: dto.scope === 'PROPERTY' ? dto.unitIds : undefined,
       priceCop: dto.priceCop,
       durationHours: dto.durationHours,
       capacity: dto.capacity,

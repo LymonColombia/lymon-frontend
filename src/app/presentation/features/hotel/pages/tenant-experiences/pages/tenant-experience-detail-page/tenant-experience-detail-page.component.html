@@ -135,14 +135,16 @@
           @if (item.scope === 'PROPERTY') {
             <div class="field-row">
               <span class="field-label">Propiedad</span>
-              <span class="field-value field-value-mono">{{ item.propertyId }}</span>
+              <span class="field-value">{{ item.propertyName ?? item.propertyId ?? 'No especificada' }}</span>
             </div>
             <div class="field-row">
               <span class="field-label">Unidades</span>
-              @if (item.unitIds?.length) {
-                <span class="field-value field-value-mono">
-                  {{ item.unitIds!.join(', ') }}
-                </span>
+              @if (item.units?.length) {
+                <div class="unit-chips">
+                  @for (unit of item.units; track unit.id) {
+                    <span class="channel-chip">{{ unit.name }}</span>
+                  }
+                </div>
               } @else {
                 <span class="field-value field-value-empty">No especificadas</span>
               }
