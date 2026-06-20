@@ -40,6 +40,7 @@ import {
 // Known arch violation: direct infra import for auth check — pending GetGuestSessionUseCase
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { SaveReservationDraftUseCase } from '@/domain/use-cases/cart/save-reservation-draft.use-case';
+import { formatPrice } from '@/presentation/shared/utils/price-formatter';
 
 @Component({
   selector: 'app-room-details',
@@ -227,6 +228,8 @@ export class RoomDetailsComponent implements OnInit {
       queryParams: { checkIn: v.checkIn, checkOut: v.checkOut, guests: v.guests },
     });
   }
+
+  protected readonly formatPrice = formatPrice;
 
   onGoBack(): void {
     this.router.navigate(['/booking']);
