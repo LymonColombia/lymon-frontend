@@ -9,6 +9,11 @@
         <a routerLink="/lyhost"><img src="/images/LyHost.svg" alt="LyHost" width="140px" /></a>
       </div>
 
+      <div class="account-type-badge">
+        <ng-icon name="bootstrapPerson" size="14px" aria-hidden="true"></ng-icon>
+        Persona natural
+      </div>
+
       <h1 class="auth-title">Bienvenido</h1>
       <p class="auth-subtitle">Inicia sesión como huésped</p>
 
@@ -64,14 +69,12 @@
             class="input-wrapper"
             [class.input-error]="passwordControl.invalid && passwordControl.touched"
           >
-            <ng-icon class="input-icon" name="bootstrapLock" size="20px" aria-hidden="true"></ng-icon>
-            <input
-              type="password"
+            <app-password-input
               id="password"
               formControlName="password"
               placeholder="••••••••"
               autocomplete="current-password"
-            />
+            ></app-password-input>
           </div>
           @if (passwordControl.invalid && passwordControl.touched) {
             <span class="field-error">
