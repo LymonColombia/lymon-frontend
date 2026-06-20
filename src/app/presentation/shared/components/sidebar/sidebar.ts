@@ -84,6 +84,8 @@ interface MenuItem {
 export class SidebarComponent implements OnInit {
   @ViewChild('profileMenuContainer', { read: ElementRef })
   private readonly profileMenuContainer?: ElementRef<HTMLElement>;
+  @ViewChild('profileContainer', { read: ElementRef })
+  private readonly profileContainer?: ElementRef<HTMLElement>;
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly getTenantProfileUseCase = inject(GetTenantProfileUseCase);
@@ -194,13 +196,14 @@ export class SidebarComponent implements OnInit {
     if (!this.isProfileMenuOpen()) return;
 
     const container = this.profileMenuContainer?.nativeElement;
-    if (!container) {
+    const profileContainer = this.profileContainer?.nativeElement;
+    if (!container || !profileContainer) {
       this.closeProfileMenu();
       return;
     }
 
     const target = event.target as Node | null;
-    if (target && container.contains(target)) return;
+    if (target && (container.contains(target) || profileContainer.contains(target))) return;
 
     this.closeProfileMenu();
   }
