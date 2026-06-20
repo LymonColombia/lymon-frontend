@@ -38,6 +38,7 @@ import { GuestCheckoutComponent } from '@/presentation/features/hotel/pages/gues
 import { GuestCartPage } from '@/presentation/features/hotel/pages/guest-cart/guest-cart';
 import { GuestReservationsComponent } from '@/presentation/features/hotel/pages/guest-reservations/guest-reservations';
 import { GuestReservationDetailsComponent } from '@/presentation/features/hotel/pages/guest-reservation-details/guest-reservation-details';
+import { InventoryComponent } from '@/presentation/features/hotel/pages/properties/[propertyId]/inventory/inventory';
 
 import { PaymentSuccessComponent } from '@/presentation/features/hotel/pages/payment-success/payment-success';
 import { PaymentFailureComponent } from '@/presentation/features/hotel/pages/payment-failure/payment-failure';
@@ -101,6 +102,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'checkin', component: CheckinComponent },
       { path: 'properties', component: PropertiesComponent },
+      { path: 'properties/:propertyId/inventory', component: InventoryComponent },
       { path: 'register-employee', component: RegisterEmployeeComponent },
       { path: 'employee-management', component: StaffManagementComponent },
       { path: 'room-details/:unitId', component: RoomDetailsComponent },
