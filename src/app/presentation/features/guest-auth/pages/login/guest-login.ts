@@ -7,15 +7,15 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapEnvelope,
-  bootstrapPerson,
 } from '@ng-icons/bootstrap-icons';
 import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
+import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle.component';
 
 @Component({
   selector: 'app-guest-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon, PasswordInputComponent],
-  providers: [provideIcons({ bootstrapEnvelope, bootstrapArrowRightCircleFill, bootstrapPerson })],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, PasswordInputComponent, AuthTypeToggleComponent],
+  providers: [provideIcons({ bootstrapEnvelope, bootstrapArrowRightCircleFill })],
   templateUrl: './guest-login.html',
   styleUrls: ['../../../auth/auth-form.css'],
 })

@@ -1,0 +1,20 @@
+<div class="auth-type-toggle" role="tablist" aria-label="Tipo de cuenta">
+  <a
+    class="auth-type-option"
+    [class.auth-type-option--active]="activeType() === 'tenant'"
+    [routerLink]="tenantLink()"
+    role="tab"
+    [attr.aria-selected]="activeType() === 'tenant'"
+  >
+    Administrador
+  </a>
+  <a
+    class="auth-type-option"
+    [class.auth-type-option--active]="activeType() === 'guest'"
+    [routerLink]="guestLink()"
+    role="tab"
+    [attr.aria-selected]="activeType() === 'guest'"
+  >
+    Huésped
+  </a>
+</div>

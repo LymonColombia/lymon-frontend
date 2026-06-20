@@ -1,21 +1,41 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  ReactiveFormsModule,
+  NonNullableFormBuilder,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { GuestRegisterUseCase } from '@/domain/use-cases/guest/guest-register.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
+import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle.component';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapPerson,
   bootstrapEnvelope,
 } from '@ng-icons/bootstrap-icons';
 
+function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const password = control.get('password')?.value;
+  const confirmPassword = control.get('confirmPassword')?.value;
+  return password === confirmPassword ? null : { passwordsMismatch: true };
+}
+
 @Component({
   selector: 'app-guest-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent, PasswordInputComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    NgIcon,
+    ModalComponent,
+    PasswordInputComponent,
+    AuthTypeToggleComponent,
+  ],
   providers: [
     provideIcons({
       bootstrapArrowRightCircleFill,
@@ -27,7 +47,7 @@ import {
   styleUrls: ['../../../auth/auth-form.css'],
 })
 export class GuestRegisterComponent {
-  private readonly fb = inject(FormBuilder);
+  private readonly fb = inject(NonNullableFormBuilder);
   private readonly registerUseCase = inject(GuestRegisterUseCase);
 
   readonly isLoading = signal(false);
@@ -35,14 +55,17 @@ export class GuestRegisterComponent {
   readonly registeredEmail = signal<string | null>(null);
   readonly isTermsOpen = signal(false);
 
-  readonly form = this.fb.group({
-    fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
-    firstName: ['', [Validators.maxLength(50)]],
-    lastName: ['', [Validators.maxLength(50)]],
-    terms: [false, Validators.requiredTrue],
-  });
+  readonly form = this.fb.group(
+    {
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required],
+      terms: [false, Validators.requiredTrue],
+    },
+    { validators: passwordsMatchValidator },
+  );
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -53,15 +76,15 @@ export class GuestRegisterComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const { fullName, email, password, firstName, lastName } = this.form.getRawValue();
+    const { firstName, lastName, email, password } = this.form.getRawValue();
 
     this.registerUseCase
       .execute({
-        fullName: fullName!,
-        email: email!,
-        password: password!,
-        firstName: firstName || undefined,
-        lastName: lastName || undefined,
+        fullName: `${firstName} ${lastName}`,
+        email,
+        password,
+        firstName,
+        lastName,
       })
       .subscribe({
         next: (res) => {
@@ -83,14 +106,20 @@ export class GuestRegisterComponent {
       });
   }
 
-  get fullNameControl() {
-    return this.form.controls.fullName;
+  get firstNameControl() {
+    return this.form.controls.firstName;
+  }
+  get lastNameControl() {
+    return this.form.controls.lastName;
   }
   get emailControl() {
     return this.form.controls.email;
   }
   get passwordControl() {
     return this.form.controls.password;
+  }
+  get confirmPasswordControl() {
+    return this.form.controls.confirmPassword;
   }
   get termsControl() {
     return this.form.controls.terms;

@@ -35,14 +35,14 @@
 }
 
 .logo-background {
-    font-family: var(--font-primary);
-    font-size: clamp(100px, 15vw, 200px);
-    font-weight: 800;
-    color: var(--color-primary);
-    opacity: 0.05;
-    letter-spacing: 0.1em;
+    opacity: 0.08;
     user-select: none;
     position: relative;
+}
+
+.logo-background img {
+    width: clamp(560px, 80vw, 1040px);
+    display: block;
 }
 
 .back-button {
@@ -125,6 +125,12 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+}
+
+.name-fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
 }
 
 .form-group {
@@ -321,8 +327,8 @@
         font-size: 14px;
     }
 
-    .logo-background {
-        font-size: 120px;
+    .logo-background img {
+        width: 400px;
     }
 
     .form-options {
@@ -510,19 +516,4 @@
 
 .terms-content::-webkit-scrollbar-thumb:hover {
     background: var(--color-border-medium);
-}
-
-.account-type-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-primary));
-    border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
-    border-radius: var(--radius-full);
-    font-family: var(--font-primary);
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--color-primary-dark);
-    margin-bottom: 16px;
 }

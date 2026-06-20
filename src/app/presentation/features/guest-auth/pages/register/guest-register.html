@@ -1,6 +1,6 @@
 <div class="auth-container">
   <div class="auth-background">
-    <div class="logo-background">LYMON</div>
+    <div class="logo-background"><img src="/images/LyHost.svg" alt="" aria-hidden="true" /></div>
   </div>
 
   <div class="auth-content">
@@ -30,10 +30,7 @@
           <a routerLink="/lyhost"><img src="/images/LyHost.svg" alt="LyHost" width="140px" /></a>
         </div>
 
-        <div class="account-type-badge">
-          <ng-icon name="bootstrapPerson" size="14px" aria-hidden="true"></ng-icon>
-          Persona natural
-        </div>
+        <app-auth-type-toggle activeType="guest" mode="register"></app-auth-type-toggle>
 
         <h1 class="auth-title">Crear cuenta</h1>
         <p class="auth-subtitle">Regístrate como huésped</p>
@@ -43,37 +40,71 @@
         }
 
         <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="fullName">Nombre Completo <span style="color: var(--color-error)">*</span></label>
-            <div
-              class="input-wrapper"
-              [class.input-error]="fullNameControl.invalid && fullNameControl.touched"
-            >
-              <ng-icon
-                class="input-icon"
-                name="bootstrapPerson"
-                size="20px"
-                aria-hidden="true"
-              ></ng-icon>
-              <input
-                type="text"
-                id="fullName"
-                formControlName="fullName"
-                placeholder="Juan Pérez"
-                autocomplete="name"
-              />
+          <div class="name-fields-row">
+            <div class="form-group">
+              <label for="firstName">Nombre <span style="color: var(--color-error)">*</span></label>
+              <div
+                class="input-wrapper"
+                [class.input-error]="firstNameControl.invalid && firstNameControl.touched"
+              >
+                <ng-icon
+                  class="input-icon"
+                  name="bootstrapPerson"
+                  size="20px"
+                  aria-hidden="true"
+                ></ng-icon>
+                <input
+                  type="text"
+                  id="firstName"
+                  formControlName="firstName"
+                  placeholder="Juan"
+                  autocomplete="given-name"
+                />
+              </div>
+              @if (firstNameControl.invalid && firstNameControl.touched) {
+                <span class="field-error">
+                  @if (firstNameControl.hasError('required')) {
+                    El nombre es requerido.
+                  } @else if (firstNameControl.hasError('minlength')) {
+                    Mínimo 2 caracteres.
+                  } @else {
+                    Máximo 50 caracteres.
+                  }
+                </span>
+              }
             </div>
-            @if (fullNameControl.invalid && fullNameControl.touched) {
-              <span class="field-error">
-                @if (fullNameControl.hasError('required')) {
-                  El nombre completo es requerido.
-                } @else if (fullNameControl.hasError('minlength')) {
-                  Mínimo 2 caracteres.
-                } @else {
-                  Máximo 100 caracteres.
-                }
-              </span>
-            }
+            <div class="form-group">
+              <label for="lastName">Apellido <span style="color: var(--color-error)">*</span></label>
+              <div
+                class="input-wrapper"
+                [class.input-error]="lastNameControl.invalid && lastNameControl.touched"
+              >
+                <ng-icon
+                  class="input-icon"
+                  name="bootstrapPerson"
+                  size="20px"
+                  aria-hidden="true"
+                ></ng-icon>
+                <input
+                  type="text"
+                  id="lastName"
+                  formControlName="lastName"
+                  placeholder="Pérez"
+                  autocomplete="family-name"
+                />
+              </div>
+              @if (lastNameControl.invalid && lastNameControl.touched) {
+                <span class="field-error">
+                  @if (lastNameControl.hasError('required')) {
+                    El apellido es requerido.
+                  } @else if (lastNameControl.hasError('minlength')) {
+                    Mínimo 2 caracteres.
+                  } @else {
+                    Máximo 50 caracteres.
+                  }
+                </span>
+              }
+            </div>
           </div>
 
           <div class="form-group">
@@ -131,31 +162,25 @@
             }
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
-            <div class="form-group">
-              <label for="firstName">Nombre</label>
-              <div class="input-wrapper">
-                <input
-                  type="text"
-                  id="firstName"
-                  formControlName="firstName"
-                  placeholder="Juan"
-                  autocomplete="given-name"
-                />
-              </div>
+          <div class="form-group">
+            <label for="confirmPassword">Confirmar Contraseña <span style="color: var(--color-error)">*</span></label>
+            <div
+              class="input-wrapper"
+              [class.input-error]="
+                (confirmPasswordControl.invalid && confirmPasswordControl.touched) ||
+                (form.hasError('passwordsMismatch') && confirmPasswordControl.touched)
+              "
+            >
+              <app-password-input
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              ></app-password-input>
             </div>
-            <div class="form-group">
-              <label for="lastName">Apellido</label>
-              <div class="input-wrapper">
-                <input
-                  type="text"
-                  id="lastName"
-                  formControlName="lastName"
-                  placeholder="Pérez"
-                  autocomplete="family-name"
-                />
-              </div>
-            </div>
+            @if (form.hasError('passwordsMismatch') && confirmPasswordControl.touched) {
+              <span class="field-error">Las contraseñas no coinciden.</span>
+            }
           </div>
 
           <div class="form-options">

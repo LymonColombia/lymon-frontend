@@ -3,7 +3,7 @@
     <button
       class="pagination-btn"
       type="button"
-      [disabled]="currentPage() === 1"
+      [disabled]="disabled() || currentPage() === 1"
       (click)="prevPage()"
       aria-label="Página anterior">
       &lsaquo;
@@ -16,6 +16,7 @@
         <button
           class="pagination-btn"
           type="button"
+          [disabled]="disabled()"
           [class.active]="page === currentPage()"
           (click)="goToPage(page)"
           [attr.aria-current]="page === currentPage() ? 'page' : null"
@@ -28,7 +29,7 @@
     <button
       class="pagination-btn"
       type="button"
-      [disabled]="currentPage() === totalPages()"
+      [disabled]="disabled() || currentPage() === totalPages()"
       (click)="nextPage()"
       aria-label="Página siguiente">
       &rsaquo;

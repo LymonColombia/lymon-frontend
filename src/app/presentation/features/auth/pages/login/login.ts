@@ -6,22 +6,21 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRightCircleFill,
-  bootstrapBuilding,
   bootstrapEnvelope,
   bootstrapQuestionCircleFill,
 } from '@ng-icons/bootstrap-icons';
 import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
+import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle.component';
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon, PasswordInputComponent],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, PasswordInputComponent, AuthTypeToggleComponent],
   providers: [
     provideIcons({
       bootstrapEnvelope,
       bootstrapQuestionCircleFill,
       bootstrapArrowRightCircleFill,
-      bootstrapBuilding,
     }),
   ],
   templateUrl: './login.html',
