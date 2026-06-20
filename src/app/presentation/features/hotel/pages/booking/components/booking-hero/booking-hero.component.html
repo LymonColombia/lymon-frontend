@@ -37,8 +37,9 @@
       <label for="checkout" class="search-label">Fecha de Salida</label>
     </div>
 
-    <div class="search-field">
-      <div class="guest-stepper" role="group" aria-labelledby="guests-label">
+    <fieldset class="search-field">
+      <legend class="search-label">Huéspedes</legend>
+      <div class="guest-stepper">
         <button
           type="button"
           class="stepper-btn"
@@ -60,8 +61,7 @@
           +
         </button>
       </div>
-      <span id="guests-label" class="search-label">Huéspedes</span>
-    </div>
+    </fieldset>
 
     <button class="btn-search" type="button" (click)="onSearch()">
       <ng-icon name="bootstrapSearch" size="16px" aria-hidden="true"></ng-icon>

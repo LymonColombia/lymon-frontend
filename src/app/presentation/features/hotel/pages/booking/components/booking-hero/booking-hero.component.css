@@ -89,6 +89,14 @@
   gap: var(--spacing-xs);
 }
 
+fieldset.search-field {
+  flex-direction: column;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
 .search-label {
   font-family: var(--font-secondary);
   font-size: var(--font-size-xs);
