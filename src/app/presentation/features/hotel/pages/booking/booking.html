@@ -12,7 +12,7 @@
 <section class="results-section" #resultsSection>
   <div class="results-container">
     <booking-toolbar
-      [resultsCount]="displayedRooms().length"
+      [resultsCount]="totalCount()"
       [sortBy]="sortBy()"
       (searchQueryChange)="onSearchQueryChange($event)"
       (sortChange)="onSortChange($event)">

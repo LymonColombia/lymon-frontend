@@ -12,7 +12,7 @@ export class GuestExperienceRepositoryImpl extends GuestExperienceRepository {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}${environment.guestExperiences.endpoint}`;
 
-  getExperiences(params: { tenantId?: string; propertyId?: string; category?: string; page: number; limit: number }): Observable<GuestExperiencePage> {
+  getExperiences(params: {tenantId?: string;propertyId?: string;category?: string; sortByPrice?: 'asc' | 'desc'; page: number; limit: number}): Observable<GuestExperiencePage> {
     let queryParams = new HttpParams()
       .set('page', params.page.toString())
       .set('limit', params.limit.toString());
@@ -27,6 +27,9 @@ export class GuestExperienceRepositoryImpl extends GuestExperienceRepository {
 
     if (params.propertyId) {
       queryParams = queryParams.set('propertyId', params.propertyId);
+    }
+    if (params.sortByPrice) {
+      queryParams = queryParams.set('sortByPrice', params.sortByPrice);
     }
 
     return this.http

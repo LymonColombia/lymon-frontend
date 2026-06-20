@@ -5,6 +5,7 @@ export class GuestExperienceMapper {
   static toDomain(dto: GuestExperienceDto): GuestExperience {
     return {
       id: dto.id,
+      tenantId: dto.tenantId,
       scope: dto.scope as ExperienceScope,
       propertyId: dto.propertyId ?? null,
       name: dto.name,

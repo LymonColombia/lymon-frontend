@@ -7,6 +7,7 @@ export interface GuestExperienceLocationDto {
 
 export interface GuestExperienceDto {
   id: string;
+  tenantId?: string;
   scope: string;
   propertyId: string | null;
   name: string;

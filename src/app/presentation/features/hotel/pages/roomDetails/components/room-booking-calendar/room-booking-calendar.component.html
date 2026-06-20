@@ -15,7 +15,7 @@
     }
   </div>
 
-  <div class="cal-days">
+  <div class="cal-days" (mouseleave)="onCalDaysMouseLeave()">
     @for (day of calendarDays(); track day.date.getTime()) {
       <button
         type="button"
@@ -27,7 +27,11 @@
         [class.is-start]="day.isStart"
         [class.is-end]="day.isEnd"
         [class.in-range]="day.isInRange"
+        [class.is-in-hover-range]="day.isInHoverRange"
+        [class.is-hover-end]="day.isHoverEnd"
+        [class.is-hover-invalid]="day.isHoverInvalid"
         [disabled]="!day.isCurrentMonth || day.isPast || day.isOccupied"
+        (mouseenter)="onDayMouseEnter(day)"
         (click)="onDayClick(day)">
         {{ day.day }}
       </button>

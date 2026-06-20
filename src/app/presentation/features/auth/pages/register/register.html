@@ -9,6 +9,11 @@
         <a routerLink="/lyhost"><img src="/images/LyHost.svg" alt="LyHost" width="140px" /></a>
       </div>
 
+      <div class="account-type-badge">
+        <ng-icon name="bootstrapBuilding" size="14px" aria-hidden="true"></ng-icon>
+        Administrador de hotel
+      </div>
+
       <h1 class="auth-title">Crear Cuenta</h1>
       <p class="auth-subtitle">Regístrate para comenzar</p>
 
@@ -90,19 +95,12 @@
             class="input-wrapper"
             [class.input-error]="passwordControl.invalid && passwordControl.touched"
           >
-            <ng-icon
-              class="input-icon"
-              name="bootstrapLock"
-              size="20px"
-              aria-hidden="true"
-            ></ng-icon>
-            <input
-              type="password"
+            <app-password-input
               id="password"
               formControlName="password"
               placeholder="••••••••"
               autocomplete="new-password"
-            />
+            ></app-password-input>
           </div>
           @if (passwordControl.invalid && passwordControl.touched) {
             <span class="field-error">
@@ -125,19 +123,12 @@
               (form.hasError('passwordsMismatch') && confirmPasswordControl.touched)
             "
           >
-            <ng-icon
-              class="input-icon"
-              name="bootstrapLock"
-              size="20px"
-              aria-hidden="true"
-            ></ng-icon>
-            <input
-              type="password"
+            <app-password-input
               id="confirmPassword"
               formControlName="confirmPassword"
               placeholder="••••••••"
               autocomplete="new-password"
-            />
+            ></app-password-input>
           </div>
           @if (form.hasError('passwordsMismatch') && confirmPasswordControl.touched) {
             <span class="field-error">Las contraseñas no coinciden.</span>
@@ -162,7 +153,7 @@
             <input type="checkbox" id="terms" formControlName="terms" />
             <span class="checkbox-label">
               Acepto los
-              <span style="color: #009a44; text-decoration: underline">términos y condiciones</span>
+              <button type="button" class="terms-link" (click)="openTermsModal()">términos y condiciones</button>
             </span>
           </label>
           @if (termsControl.invalid && termsControl.touched) {
@@ -183,17 +174,52 @@
           style="
             text-align: center;
             margin-top: 16px;
-            font-family: 'Syne', sans-serif;
+            font-family: var(--font-primary);
             font-size: 14px;
-            color: #666;
+            color: var(--color-text-secondary);
           "
         >
           ¿Ya tienes cuenta?
-          <a routerLink="/login" style="color: #009a44; text-decoration: none; font-weight: 600"
+          <a routerLink="/login" style="color: var(--color-primary-dark); text-decoration: none; font-weight: 600"
             >Inicia Sesión</a
           >
         </p>
       </form>
+
+      <app-modal
+        [open]="isTermsOpen()"
+        title="Términos y Condiciones"
+        size="medium"
+        (closed)="closeTermsModal()"
+      >
+        <div class="terms-content">
+          <p>Estos términos regulan la relación entre la plataforma de gestión hotelera (en adelante, "La Plataforma") y el propietario, gerente o administrador del alojamiento (en adelante, "El Administrador").</p>
+
+          <h3>1. Objeto del Servicio</h3>
+          <p>La Plataforma otorga al Administrador una licencia de uso no exclusiva, revocable y no transferible para utilizar el software de gestión hotelera, el cual incluye herramientas de reserva, control de inventario, facturación y gestión de huéspedes.</p>
+
+          <h3>2. Registro y Seguridad de la Cuenta</h3>
+          <p><strong>Veracidad de datos:</strong> El Administrador se compromete a proporcionar información real, precisa y actualizada sobre el alojamiento.</p>
+          <p><strong>Seguridad:</strong> El Administrador es el único responsable de mantener la confidencialidad de sus credenciales de acceso. Cualquier actividad realizada bajo su cuenta se considerará de su exclusiva responsabilidad.</p>
+
+          <h3>3. Tarifas, Facturación y Pagos</h3>
+          <p><strong>Suscripción:</strong> El Administrador se compromete a pagar la tarifa correspondiente al plan seleccionado (mensual/anual) en las fechas acordadas.</p>
+          <p><strong>Modificaciones:</strong> La Plataforma se reserva el derecho de modificar las tarifas del servicio, notificando al Administrador con al menos 30 días de anticipación.</p>
+          <p><strong>Impagos:</strong> El retraso en el pago de la suscripción podrá resultar en la suspensión temporal o definitiva del acceso a La Plataforma.</p>
+
+          <h3>4. Tratamiento de Datos y Privacidad (RGPD / Leyes locales)</h3>
+          <p><strong>Rol de las partes:</strong> El Administrador actúa como Responsable del Tratamiento de los datos de sus huéspedes, y La Plataforma actúa como Encargado del Tratamiento.</p>
+          <p><strong>Seguridad de los datos:</strong> La Plataforma se compromete a implementar medidas de seguridad técnicas para proteger la información de los huéspedes, pero el Administrador es responsable de no usar dicha información para fines no autorizados por el usuario final.</p>
+
+          <h3>5. Limitación de Responsabilidad</h3>
+          <p><strong>Disponibilidad:</strong> La Plataforma busca garantizar un uptime elevado (por ejemplo, del 99.9%), pero no se hace responsable de interrupciones del servicio debidas a causas de fuerza mayor, fallos en proveedores de internet o mantenimiento programado.</p>
+          <p><strong>Pérdidas comerciales:</strong> La Plataforma no será responsable de pérdidas de ingresos, reservas duplicadas (overbooking) o errores humanos cometidos por el personal del hotel al usar el sistema.</p>
+        </div>
+
+        <div modal-footer style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="modal-btn-primary" (click)="closeTermsModal()">Aceptar</button>
+        </div>
+      </app-modal>
     </div>
   </div>
 

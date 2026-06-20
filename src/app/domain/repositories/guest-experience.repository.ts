@@ -6,6 +6,7 @@ export abstract class GuestExperienceRepository {
     tenantId?: string;
     propertyId?: string;
     category?: string;
+    sortByPrice?: 'asc' | 'desc';
     page: number;
     limit: number;
   }): Observable<GuestExperiencePage>;

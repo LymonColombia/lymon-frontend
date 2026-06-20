@@ -17,7 +17,7 @@
 
 .rooms-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-2xl);
 }
 
@@ -32,6 +32,12 @@
 app-footer {
   display: block;
   margin-top: var(--spacing-5xl);
+}
+
+@media (max-width: 1280px) {
+  .rooms-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 1024px) {
