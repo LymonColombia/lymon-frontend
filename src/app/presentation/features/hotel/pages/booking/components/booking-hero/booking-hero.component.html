@@ -38,15 +38,29 @@
     </div>
 
     <div class="search-field">
-      <app-select
-        id="guests"
-        name="guests"
-        [hasIcon]="true"
-        [options]="guestOptions"
-        (valueChange)="onMinGuestsChange($event)">
-        <ng-icon icon class="field-icon" name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
-      </app-select>
-      <label for="guests" class="search-label">Huéspedes</label>
+      <div class="guest-stepper" role="group" aria-labelledby="guests-label">
+        <button
+          type="button"
+          class="stepper-btn"
+          (click)="decrementGuests()"
+          [disabled]="minGuests() <= MIN_GUESTS"
+          aria-label="Reducir huéspedes">
+          −
+        </button>
+        <span class="stepper-value">
+          <ng-icon name="bootstrapPeopleFill" size="14px" aria-hidden="true"></ng-icon>
+          <span class="stepper-count">{{ minGuests() }}</span>
+        </span>
+        <button
+          type="button"
+          class="stepper-btn"
+          (click)="incrementGuests()"
+          [disabled]="minGuests() >= MAX_GUESTS"
+          aria-label="Aumentar huéspedes">
+          +
+        </button>
+      </div>
+      <span id="guests-label" class="search-label">Huéspedes</span>
     </div>
 
     <button class="btn-search" type="button" (click)="onSearch()">
