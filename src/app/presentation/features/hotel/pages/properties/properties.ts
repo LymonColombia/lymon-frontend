@@ -22,6 +22,19 @@ import { CancellationPolicy, PropertyDetail, PropertyType, UpdatePropertyDto } f
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
 
+const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
+  HOTEL: 'Hotel',
+  CASA: 'Casa',
+  APARTAMENTO: 'Apartamento',
+  VILLA: 'Villa',
+  HOSTAL: 'Hostal',
+  GLAMPING: 'Glamping',
+  RURAL: 'Rural',
+  CASA_DE_CAMPO: 'Casa de campo',
+  FINCA: 'Finca',
+  APARTAHOTEL: 'Apartahoteles',
+};
+
 @Component({
   selector: 'app-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,19 +76,25 @@ export class PropertiesComponent implements OnInit {
   readonly properties = signal<Property[]>([]);
 
   private static readonly DEFAULT_PROPERTY_TYPE: PropertyType = 'HOTEL';
-  private static readonly DEFAULT_CANCELLATION_POLICY: CancellationPolicy = 'FLEXIBLE';
+  private static readonly DEFAULT_CANCELLATION_POLICY: CancellationPolicy = 'STANDARD';
   private static readonly PROPERTY_UNITS_ROUTE = '/property-units';
   private static readonly PROPERTY_INVENTORY_ROUTE = '/properties';
 
-  readonly PROPERTY_TYPES: PropertyType[] = ['HOTEL', 'CASA', 'APARTAMENTO', 'VILLA', 'HOSTAL', 'GLAMPING'];
-  readonly CANCELLATION_POLICIES: CancellationPolicy[] = ['FLEXIBLE', 'STANDARD', 'STRICT'];
+  readonly PROPERTY_TYPES: PropertyType[] = [
+    'HOTEL',
+    'CASA',
+    'APARTAMENTO',
+    'VILLA',
+    'HOSTAL',
+    'GLAMPING',
+    'RURAL',
+    'CASA_DE_CAMPO',
+    'FINCA',
+    'APARTAHOTEL',
+  ];
   readonly propertyTypeOptions: SelectOption[] = this.PROPERTY_TYPES.map((type) => ({
     value: type,
-    label: type,
-  }));
-  readonly cancellationPolicyOptions: SelectOption[] = this.CANCELLATION_POLICIES.map((policy) => ({
-    value: policy,
-    label: policy,
+    label: PROPERTY_TYPE_LABELS[type],
   }));
 
   readonly form = this.fb.group({

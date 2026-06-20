@@ -27,7 +27,6 @@ import { bootstrapHouseFill } from '@ng-icons/bootstrap-icons';
 export class PropertyFormComponent {
   readonly form = input.required<FormGroup>();
   readonly propertyTypeOptions = input.required<SelectOption[]>();
-  readonly cancellationPolicyOptions = input.required<SelectOption[]>();
 
   onGeocodeResult(result: NominatimResult): void {
     const address = result.address;
