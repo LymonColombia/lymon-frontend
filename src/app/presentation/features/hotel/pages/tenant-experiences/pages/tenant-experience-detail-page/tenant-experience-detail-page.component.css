@@ -321,8 +321,7 @@
   gap: var(--spacing-xs);
 }
 
-.day-chip,
-.channel-chip {
+.chip {
   display: inline-flex;
   align-items: center;
   padding: var(--spacing-xs) var(--spacing-md);
@@ -331,19 +330,18 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.day-chip {
+.chip--primary {
   background: var(--color-primary);
   color: white;
 }
 
-
-.channel-chip {
+.chip--success {
   background: rgba(46, 192, 148, 0.08);
   color: var(--color-primary-dark);
   border: 1px solid rgba(46, 192, 148, 0.2);
 }
 
-.channel-chips {
+.chips-row {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
