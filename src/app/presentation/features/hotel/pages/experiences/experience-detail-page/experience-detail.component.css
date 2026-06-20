@@ -273,6 +273,12 @@
   box-shadow: none;
 }
 
+.reservation-message {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
 
 .location-card {
   display: grid;

@@ -46,7 +46,15 @@ export class ExperienceComponent {
   readonly currentPage = signal(1);
   readonly totalPages = signal(1);
   readonly searchQuery = signal('');
-  readonly sortBy = signal<ExperienceSortOption>('rating');
+  readonly sortBy = signal<ExperienceSortOption>(undefined);
+  readonly sortByPrice = computed<'asc' | 'desc' | undefined>(() => {
+    const sort = this.sortBy();
+    if (sort === 'asc' || sort === 'desc') {
+      return sort;
+    }
+    return undefined;
+  });
+
   readonly selectedCategory = signal<ExperienceCategoryFilter>(null);
   readonly tenantId = signal('');
   readonly propertyId = signal('');
@@ -60,12 +68,12 @@ export class ExperienceComponent {
     category: this.selectedCategory(),
     tenantId: this.tenantId().trim(),
     propertyId: this.propertyId().trim(),
+    sortByPrice: this.sortByPrice(),
   }));
 
   readonly filteredExperiences = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const category = this.selectedCategory();
-    const sort = this.sortBy();
 
     let result = this.experiences();
 
@@ -82,15 +90,6 @@ export class ExperienceComponent {
     if (category !== null) {
       result = result.filter((experience) => experience.category === category);
     }
-
-    if (sort === 'price-asc') {
-      return [...result].sort((a, b) => a.priceCop - b.priceCop);
-    }
-
-    if (sort === 'price-desc') {
-      return [...result].sort((a, b) => b.priceCop - a.priceCop);
-    }
-
     return [...result];
   });
 
@@ -104,6 +103,7 @@ export class ExperienceComponent {
 
   onSortChange(sort: ExperienceSortOption): void {
     this.sortBy.set(sort);
+    this.loadExperiences(1);
   }
 
   onCategoryChange(category: ExperienceCategoryFilter): void {
@@ -153,6 +153,7 @@ export class ExperienceComponent {
         category: filters.category ?? undefined,
         tenantId: filters.tenantId || undefined,
         propertyId: filters.propertyId || undefined,
+        sortByPrice: filters.sortByPrice,
         page,
         limit: ITEMS_PER_PAGE,
       })

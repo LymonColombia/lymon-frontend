@@ -24,7 +24,7 @@
 
     <app-select
       [options]="sortOptions"
-      [value]="sortBy()"
+      [value]="sortBy() ?? null"
       placeholder="Ordenar por"
       (valueChange)="onSortChange($event)"
     ></app-select>

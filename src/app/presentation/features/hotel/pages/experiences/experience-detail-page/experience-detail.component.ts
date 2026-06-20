@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapGeoAlt, bootstrapGeoAltFill, bootstrapPeopleFill, bootstrapSignpostSplit, bootstrapStar } from '@ng-icons/bootstrap-icons';
 import { LocationMap } from '@/presentation/features/hotel/components/location-map/location-map';
+import { Cart } from '@/domain/entities/cart.model';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
 import { AddCartExperienceItemUseCase } from '@/domain/use-cases/cart/add-cart-experience-item.use-case';
 
@@ -42,14 +45,17 @@ const EMPTY_END_TIME='00:00'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExperienceDetailComponent {
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly experience = input.required<GuestExperience>();
 
-  readonly addExperienceItemToCart= inject(AddCartExperienceItemUseCase )
+  readonly addExperienceItemToCart = inject(AddCartExperienceItemUseCase);
 
   readonly selectedDate = signal<string | null>(null);
   readonly guestsCount = signal(1);
   readonly reservationMessage = signal<string | null>(null);
+  readonly isReserving = signal(false);
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'Experiencias', route: '/experiences' },
@@ -144,13 +150,40 @@ export class ExperienceDetailComponent {
   }
 
   onReserveNow(): void {
-    if (!this.selectedDate()) {
+    const selectedDate = this.selectedDate();
+    if (!selectedDate) {
       this.reservationMessage.set('Selecciona una fecha disponible para continuar.');
       return;
     }
-    this.reservationMessage.set(
-      `Reserva lista para ${this.guestsCount()} participante(s) el ${this.selectedDateLabel()}.`,
-    );
+
+    const tenantId = this.experience().tenantId;
+    if (!tenantId) {
+      this.reservationMessage.set('Intentalo de nuevo mas tarde');
+      return;
+    }
+
+    this.isReserving.set(true);
+    this.reservationMessage.set(null);
+
+    this.addExperienceItemToCart
+      .execute({
+        tenantId,
+        experienceId: this.experience().id,
+        quantity: this.guestsCount(),
+        selectedDate,
+        reservationId: null,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (_cart: Cart) => {
+          this.isReserving.set(false);
+          void this.router.navigate(['/guest/cart']);
+        },
+        error: () => {
+          this.isReserving.set(false);
+          this.reservationMessage.set('No se pudo agregar la experiencia al carrito.');
+        },
+      });
   }
 
   private buildAvailableSlots(experience: GuestExperience): AvailabilitySlot[] {

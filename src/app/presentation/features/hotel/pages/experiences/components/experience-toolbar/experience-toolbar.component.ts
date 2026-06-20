@@ -3,7 +3,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch, bootstrapX } from '@ng-icons/bootstrap-icons';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 
-export type ExperienceSortOption = 'price-asc' | 'price-desc' | 'rating';
+export type ExperienceSortOption = 'asc' | 'desc' | undefined;
 export type ExperienceCategoryFilter = null | 'TRANSPORTATION' ;
 
 @Component({
@@ -27,9 +27,9 @@ export class ExperienceToolbarComponent {
   readonly internalQuery = signal('');
 
   readonly sortOptions: SelectOption[] = [
-    { value: 'rating', label: 'Mejor valorados' },
-    { value: 'price-asc', label: 'Precio: menor a mayor' },
-    { value: 'price-desc', label: 'Precio: mayor a menor' },
+    { value: '', label: 'Mejor valorados' },
+    { value: 'asc', label: 'Precio: menor a mayor' },
+    { value: 'desc', label: 'Precio: mayor a menor' },
   ];
 
 
@@ -45,7 +45,7 @@ export class ExperienceToolbarComponent {
   }
 
   onSortChange(value: string | number): void {
-    this.sortChange.emit(value as ExperienceSortOption);
+    this.sortChange.emit((value === '' ? undefined : value) as ExperienceSortOption);
   }
 
   onCategoryChange(value: string | number): void {

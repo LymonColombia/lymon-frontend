@@ -98,11 +98,15 @@
         <button
           type="button"
           class="btn-reserve-now"
-          [disabled]="!selectedDate()"
+          [disabled]="!selectedDate() || isReserving()"
           (click)="onReserveNow()"
         >
-          Reservar ahora
+          {{ isReserving() ? 'Reservando...' : 'Reservar ahora' }}
         </button>
+
+        @if (reservationMessage()) {
+          <p class="reservation-message">{{ reservationMessage() }}</p>
+        }
         
       </aside>
     </div>
