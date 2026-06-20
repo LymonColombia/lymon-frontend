@@ -14,6 +14,8 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapEnvelope,
+  bootstrapEye,
+  bootstrapEyeSlash,
   bootstrapLock,
   bootstrapQuestionCircleFill,
   bootstrapBuilding,
@@ -34,6 +36,8 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
     provideIcons({
       bootstrapArrowRightCircleFill,
       bootstrapEnvelope,
+      bootstrapEye,
+      bootstrapEyeSlash,
       bootstrapLock,
       bootstrapQuestionCircleFill,
       bootstrapBuilding,
@@ -49,6 +53,8 @@ export class RegisterComponent {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly showPassword = signal(false);
+  readonly showConfirmPassword = signal(false);
 
   readonly planOptions: { label: string; value: PlanType }[] = [
     { label: 'Plan Básico (Trial)', value: 'TRIAL' },
@@ -117,5 +123,13 @@ export class RegisterComponent {
   }
   get termsControl() {
     return this.form.controls.terms;
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((v) => !v);
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword.update((v) => !v);
   }
 }

@@ -97,12 +97,20 @@
               aria-hidden="true"
             ></ng-icon>
             <input
-              type="password"
+              [type]="showPassword() ? 'text' : 'password'"
               id="password"
               formControlName="password"
               placeholder="••••••••"
               autocomplete="new-password"
             />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              <ng-icon [name]="showPassword() ? 'bootstrapEyeSlash' : 'bootstrapEye'" size="18px" aria-hidden="true"></ng-icon>
+            </button>
           </div>
           @if (passwordControl.invalid && passwordControl.touched) {
             <span class="field-error">
@@ -132,12 +140,20 @@
               aria-hidden="true"
             ></ng-icon>
             <input
-              type="password"
+              [type]="showConfirmPassword() ? 'text' : 'password'"
               id="confirmPassword"
               formControlName="confirmPassword"
               placeholder="••••••••"
               autocomplete="new-password"
             />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="toggleConfirmPasswordVisibility()"
+              [attr.aria-label]="showConfirmPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              <ng-icon [name]="showConfirmPassword() ? 'bootstrapEyeSlash' : 'bootstrapEye'" size="18px" aria-hidden="true"></ng-icon>
+            </button>
           </div>
           @if (form.hasError('passwordsMismatch') && confirmPasswordControl.touched) {
             <span class="field-error">Las contraseñas no coinciden.</span>

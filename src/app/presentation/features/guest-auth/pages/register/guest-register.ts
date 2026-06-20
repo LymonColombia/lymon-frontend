@@ -6,6 +6,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRightCircleFill,
+  bootstrapEye,
+  bootstrapEyeSlash,
   bootstrapPerson,
   bootstrapEnvelope,
   bootstrapLock,
@@ -18,6 +20,8 @@ import {
   providers: [
     provideIcons({
       bootstrapArrowRightCircleFill,
+      bootstrapEye,
+      bootstrapEyeSlash,
       bootstrapPerson,
       bootstrapEnvelope,
       bootstrapLock,
@@ -33,6 +37,7 @@ export class GuestRegisterComponent {
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly registeredEmail = signal<string | null>(null);
+  readonly showPassword = signal(false);
 
   readonly form = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -89,5 +94,9 @@ export class GuestRegisterComponent {
   }
   get passwordControl() {
     return this.form.controls.password;
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((v) => !v);
   }
 }

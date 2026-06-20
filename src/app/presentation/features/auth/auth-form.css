@@ -152,11 +152,11 @@
     left: 16px;
     pointer-events: none;
     color: #666;
-}
+  }
 
-.input-wrapper input {
+  .input-wrapper input {
     width: 100%;
-    padding: 16px 16px 16px 48px;
+    padding: 16px 48px 16px 48px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 16px;
     border: 1px solid #e0e0e0;
@@ -164,7 +164,25 @@
     outline: none;
     transition: all 0.3s ease;
     background: white;
-}
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+  }
+
+  .password-toggle:hover {
+    color: #009A44;
+  }
 
 .input-wrapper input::placeholder {
     color: #999;

@@ -7,6 +7,8 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapEnvelope,
+  bootstrapEye,
+  bootstrapEyeSlash,
   bootstrapLock,
   bootstrapQuestionCircleFill,
 } from '@ng-icons/bootstrap-icons';
@@ -18,6 +20,8 @@ import {
   providers: [
     provideIcons({
       bootstrapEnvelope,
+      bootstrapEye,
+      bootstrapEyeSlash,
       bootstrapLock,
       bootstrapQuestionCircleFill,
       bootstrapArrowRightCircleFill,
@@ -33,6 +37,7 @@ export class LoginComponent {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly showPassword = signal(false);
   readonly sessionExpired = signal(
     inject(ActivatedRoute).snapshot.queryParamMap.get('sessionExpired') === 'true',
   );
@@ -77,5 +82,9 @@ export class LoginComponent {
 
   get passwordControl() {
     return this.form.controls.password;
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((v) => !v);
   }
 }

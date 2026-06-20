@@ -9,6 +9,8 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GuestConfirmRecoverPasswordUseCase } from '@/domain/use-cases/guest/guest-confirm-recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapEye, bootstrapEyeSlash } from '@ng-icons/bootstrap-icons';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('newPassword')?.value;
@@ -19,7 +21,13 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 @Component({
   selector: 'app-guest-reset-password',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapEye,
+      bootstrapEyeSlash,
+    }),
+  ],
   templateUrl: './reset-password.html',
   styleUrls: ['../../../auth/auth-form.css'],
 })
@@ -33,6 +41,8 @@ export class GuestResetPasswordComponent implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
   readonly tokenMissing = signal(false);
+  readonly showNewPassword = signal(false);
+  readonly showNewPasswordConfirmation = signal(false);
 
   private token = '';
 
@@ -102,5 +112,13 @@ export class GuestResetPasswordComponent implements OnInit {
 
   get passwordsMismatch(): boolean {
     return this.form.hasError('passwordsMismatch') && this.form.touched;
+  }
+
+  toggleNewPasswordVisibility(): void {
+    this.showNewPassword.update((v) => !v);
+  }
+
+  toggleNewPasswordConfirmationVisibility(): void {
+    this.showNewPasswordConfirmation.update((v) => !v);
   }
 }

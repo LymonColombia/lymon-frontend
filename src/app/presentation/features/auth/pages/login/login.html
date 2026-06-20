@@ -65,12 +65,20 @@
               aria-hidden="true"
             ></ng-icon>
             <input
-              type="password"
+              [type]="showPassword() ? 'text' : 'password'"
               id="password"
               formControlName="password"
               placeholder="••••••••"
               autocomplete="current-password"
             />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              <ng-icon [name]="showPassword() ? 'bootstrapEyeSlash' : 'bootstrapEye'" size="18px" aria-hidden="true"></ng-icon>
+            </button>
           </div>
           @if (passwordControl.invalid && passwordControl.touched) {
             <span class="field-error">
