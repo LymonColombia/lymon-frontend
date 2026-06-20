@@ -274,6 +274,12 @@
   flex: 1;
   min-width: 0;
   cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  font-family: inherit;
 }
 
 .sidebar--collapsed .profile {
