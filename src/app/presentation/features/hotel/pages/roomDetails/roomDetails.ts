@@ -17,6 +17,7 @@ import { GetCartUseCase } from '@/domain/use-cases/cart/get-cart.use-case';
 import { Unit } from '@/domain/entities/staff.model';
 import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 import { CartReservationItem } from '@/domain/entities/cart.model';
+import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
@@ -42,6 +43,7 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   selector: 'app-room-details',
   standalone: true,
   imports: [
+    ButtonComponent,
     SelectComponent,
     RoomDetailsNavComponent,
     FooterComponent,
