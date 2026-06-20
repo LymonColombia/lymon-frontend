@@ -95,27 +95,12 @@
             class="input-wrapper"
             [class.input-error]="passwordControl.invalid && passwordControl.touched"
           >
-            <ng-icon
-              class="input-icon"
-              name="bootstrapLock"
-              size="20px"
-              aria-hidden="true"
-            ></ng-icon>
-            <input
-              [type]="showPassword() ? 'text' : 'password'"
+            <app-password-input
               id="password"
               formControlName="password"
               placeholder="••••••••"
               autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="password-toggle"
-              (click)="togglePasswordVisibility()"
-              [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-            >
-              <ng-icon [name]="showPassword() ? 'bootstrapEyeSlash' : 'bootstrapEye'" size="18px" aria-hidden="true"></ng-icon>
-            </button>
+            ></app-password-input>
           </div>
           @if (passwordControl.invalid && passwordControl.touched) {
             <span class="field-error">
@@ -138,27 +123,12 @@
               (form.hasError('passwordsMismatch') && confirmPasswordControl.touched)
             "
           >
-            <ng-icon
-              class="input-icon"
-              name="bootstrapLock"
-              size="20px"
-              aria-hidden="true"
-            ></ng-icon>
-            <input
-              [type]="showConfirmPassword() ? 'text' : 'password'"
+            <app-password-input
               id="confirmPassword"
               formControlName="confirmPassword"
               placeholder="••••••••"
               autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="password-toggle"
-              (click)="toggleConfirmPasswordVisibility()"
-              [attr.aria-label]="showConfirmPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-            >
-              <ng-icon [name]="showConfirmPassword() ? 'bootstrapEyeSlash' : 'bootstrapEye'" size="18px" aria-hidden="true"></ng-icon>
-            </button>
+            ></app-password-input>
           </div>
           @if (form.hasError('passwordsMismatch') && confirmPasswordControl.touched) {
             <span class="field-error">Las contraseñas no coinciden.</span>

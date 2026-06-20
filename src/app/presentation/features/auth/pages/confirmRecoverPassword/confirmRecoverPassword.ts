@@ -3,8 +3,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, Validati
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmRecoverPasswordUseCase } from '@/domain/use-cases/auth/confirm-recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapEye, bootstrapEyeSlash } from '@ng-icons/bootstrap-icons';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const newPassword = control.get('newPassword')?.value;
@@ -15,13 +14,8 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 @Component({
   selector: 'app-confirm-recover-password',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, NgIcon],
-  providers: [
-    provideIcons({
-      bootstrapEye,
-      bootstrapEyeSlash,
-    }),
-  ],
+  imports: [ReactiveFormsModule, PasswordInputComponent],
+  providers: [],
   templateUrl: './confirmRecoverPassword.html',
   styleUrls: ['../../auth-form.css'],
 })
@@ -34,8 +28,6 @@ export class ConfirmRecoverPasswordComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly token = signal<string | null>(null);
-  readonly showNewPassword = signal(false);
-  readonly showNewPasswordConfirmation = signal(false);
 
   readonly form = this.fb.group(
     {
@@ -97,13 +89,5 @@ export class ConfirmRecoverPasswordComponent implements OnInit {
 
   get passwordsMismatch(): boolean {
     return this.form.hasError('passwordsMismatch') && this.form.touched;
-  }
-
-  toggleNewPasswordVisibility(): void {
-    this.showNewPassword.update((v) => !v);
-  }
-
-  toggleNewPasswordConfirmationVisibility(): void {
-    this.showNewPasswordConfirmation.update((v) => !v);
   }
 }

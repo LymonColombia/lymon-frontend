@@ -69,22 +69,12 @@
             class="input-wrapper"
             [class.input-error]="passwordControl.invalid && passwordControl.touched"
           >
-            <ng-icon class="input-icon" name="bootstrapLock" size="20px" aria-hidden="true"></ng-icon>
-            <input
-              [type]="showPassword() ? 'text' : 'password'"
+            <app-password-input
               id="password"
               formControlName="password"
               placeholder="••••••••"
               autocomplete="current-password"
-            />
-            <button
-              type="button"
-              class="password-toggle"
-              (click)="togglePasswordVisibility()"
-              [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-            >
-              <ng-icon [name]="showPassword() ? 'bootstrapEyeSlash' : 'bootstrapEye'" size="18px" aria-hidden="true"></ng-icon>
-            </button>
+            ></app-password-input>
           </div>
           @if (passwordControl.invalid && passwordControl.touched) {
             <span class="field-error">

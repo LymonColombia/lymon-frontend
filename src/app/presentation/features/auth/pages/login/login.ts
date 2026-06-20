@@ -8,22 +8,17 @@ import {
   bootstrapArrowRightCircleFill,
   bootstrapBuilding,
   bootstrapEnvelope,
-  bootstrapEye,
-  bootstrapEyeSlash,
-  bootstrapLock,
   bootstrapQuestionCircleFill,
 } from '@ng-icons/bootstrap-icons';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, PasswordInputComponent],
   providers: [
     provideIcons({
       bootstrapEnvelope,
-      bootstrapEye,
-      bootstrapEyeSlash,
-      bootstrapLock,
       bootstrapQuestionCircleFill,
       bootstrapArrowRightCircleFill,
       bootstrapBuilding,
@@ -39,7 +34,6 @@ export class LoginComponent {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly showPassword = signal(false);
   readonly sessionExpired = signal(
     inject(ActivatedRoute).snapshot.queryParamMap.get('sessionExpired') === 'true',
   );
@@ -84,9 +78,5 @@ export class LoginComponent {
 
   get passwordControl() {
     return this.form.controls.password;
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword.update((v) => !v);
   }
 }

@@ -12,12 +12,10 @@ import { PlanType } from '@/domain/entities/auth.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapEnvelope,
-  bootstrapEye,
-  bootstrapEyeSlash,
-  bootstrapLock,
   bootstrapQuestionCircleFill,
   bootstrapBuilding,
 } from '@ng-icons/bootstrap-icons';
@@ -32,14 +30,11 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   selector: 'app-register',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent, PasswordInputComponent],
   providers: [
     provideIcons({
       bootstrapArrowRightCircleFill,
       bootstrapEnvelope,
-      bootstrapEye,
-      bootstrapEyeSlash,
-      bootstrapLock,
       bootstrapQuestionCircleFill,
       bootstrapBuilding,
     }),
@@ -54,8 +49,6 @@ export class RegisterComponent {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly showPassword = signal(false);
-  readonly showConfirmPassword = signal(false);
   readonly isTermsOpen = signal(false);
 
   readonly planOptions: { label: string; value: PlanType }[] = [
@@ -125,14 +118,6 @@ export class RegisterComponent {
   }
   get termsControl() {
     return this.form.controls.terms;
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword.update((v) => !v);
-  }
-
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword.update((v) => !v);
   }
 
   openTermsModal(): void {

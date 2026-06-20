@@ -7,17 +7,15 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapEnvelope,
-  bootstrapEye,
-  bootstrapEyeSlash,
-  bootstrapLock,
   bootstrapPerson,
 } from '@ng-icons/bootstrap-icons';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
 
 @Component({
   selector: 'app-guest-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon],
-  providers: [provideIcons({ bootstrapEnvelope, bootstrapEye, bootstrapEyeSlash, bootstrapLock, bootstrapArrowRightCircleFill, bootstrapPerson })],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, PasswordInputComponent],
+  providers: [provideIcons({ bootstrapEnvelope, bootstrapArrowRightCircleFill, bootstrapPerson })],
   templateUrl: './guest-login.html',
   styleUrls: ['../../../auth/auth-form.css'],
 })
@@ -29,7 +27,6 @@ export class GuestLoginComponent {
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly emailNotVerified = signal(false);
-  readonly showPassword = signal(false);
   readonly sessionExpired = signal(
     inject(ActivatedRoute).snapshot.queryParamMap.get('sessionExpired') === 'true',
   );
@@ -78,9 +75,5 @@ export class GuestLoginComponent {
 
   get passwordControl() {
     return this.form.controls.password;
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword.update((v) => !v);
   }
 }

@@ -5,27 +5,22 @@ import { GuestRegisterUseCase } from '@/domain/use-cases/guest/guest-register.us
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
 import {
   bootstrapArrowRightCircleFill,
-  bootstrapEye,
-  bootstrapEyeSlash,
   bootstrapPerson,
   bootstrapEnvelope,
-  bootstrapLock,
 } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-guest-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent, PasswordInputComponent],
   providers: [
     provideIcons({
       bootstrapArrowRightCircleFill,
-      bootstrapEye,
-      bootstrapEyeSlash,
       bootstrapPerson,
       bootstrapEnvelope,
-      bootstrapLock,
     }),
   ],
   templateUrl: './guest-register.html',
@@ -38,7 +33,6 @@ export class GuestRegisterComponent {
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly registeredEmail = signal<string | null>(null);
-  readonly showPassword = signal(false);
   readonly isTermsOpen = signal(false);
 
   readonly form = this.fb.group({
@@ -100,10 +94,6 @@ export class GuestRegisterComponent {
   }
   get termsControl() {
     return this.form.controls.terms;
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword.update((v) => !v);
   }
 
   openTermsModal(): void {
