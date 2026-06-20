@@ -129,29 +129,25 @@ export class RoomBookingCalendarComponent {
 
     const clickedStr = this.toDateStr(day.date);
     const start = this.startDate();
-    const end = this.endDate();
     const startStr = start ? this.toDateStr(start) : null;
+    const end = this.endDate();
 
-    if (!start || !!end) {
+    if (!startStr || !!end || clickedStr < startStr) {
       this.startDate.set(day.date);
       this.endDate.set(null);
       this.emit(clickedStr, null);
-    } else if (clickedStr > startStr!) {
-      if (this.hasOccupiedInRange(startStr!, clickedStr, this.occupiedRanges())) {
+    } else if (clickedStr > startStr) {
+      if (this.hasOccupiedInRange(startStr, clickedStr, this.occupiedRanges())) {
         this.startDate.set(day.date);
         this.endDate.set(null);
         this.emit(clickedStr, null);
       } else {
         this.endDate.set(day.date);
-        this.emit(startStr!, clickedStr);
+        this.emit(startStr, clickedStr);
       }
-    } else if (clickedStr === startStr) {
+    } else {
       this.startDate.set(null);
       this.emit(null, null);
-    } else {
-      this.startDate.set(day.date);
-      this.endDate.set(null);
-      this.emit(clickedStr, null);
     }
   }
 
@@ -172,7 +168,7 @@ export class RoomBookingCalendarComponent {
 
     const isSelectingEnd = !!startStr && !endStr;
     const hoverAfterStart = isSelectingEnd && !!hoverStr && hoverStr > startStr;
-    const hoverRangeInvalid = hoverAfterStart && this.hasOccupiedInRange(startStr, hoverStr!, occupiedRanges);
+    const hoverRangeInvalid = hoverAfterStart && !!hoverStr && this.hasOccupiedInRange(startStr, hoverStr, occupiedRanges);
 
     const isHoverEnd = hoverAfterStart && dateStr === hoverStr;
     const isInHoverRange = hoverAfterStart && !hoverRangeInvalid && !!hoverStr && dateStr > startStr && dateStr < hoverStr;
