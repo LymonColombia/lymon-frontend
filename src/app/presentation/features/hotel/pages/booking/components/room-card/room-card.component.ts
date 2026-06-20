@@ -9,6 +9,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { formatPrice } from '@/presentation/shared/utils/price-formatter';
 import {
   bootstrapDoorOpenFill,
   bootstrapGeoAlt,
@@ -151,6 +152,8 @@ export class RoomCardComponent implements OnDestroy {
   protected onCardClick(): void {
     this.viewDetails.emit(this.room().id);
   }
+
+  protected readonly formatPrice = formatPrice;
 
   protected onToggleLike(event: Event): void {
     event.stopPropagation();

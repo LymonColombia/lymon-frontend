@@ -4,23 +4,23 @@ import { RouterLink } from '@angular/router';
 import { GuestRegisterUseCase } from '@/domain/use-cases/guest/guest-register.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapPerson,
   bootstrapEnvelope,
-  bootstrapLock,
 } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-guest-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent, PasswordInputComponent],
   providers: [
     provideIcons({
       bootstrapArrowRightCircleFill,
       bootstrapPerson,
       bootstrapEnvelope,
-      bootstrapLock,
     }),
   ],
   templateUrl: './guest-register.html',
@@ -33,6 +33,7 @@ export class GuestRegisterComponent {
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly registeredEmail = signal<string | null>(null);
+  readonly isTermsOpen = signal(false);
 
   readonly form = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -40,6 +41,7 @@ export class GuestRegisterComponent {
     password: ['', [Validators.required, Validators.minLength(8)]],
     firstName: ['', [Validators.maxLength(50)]],
     lastName: ['', [Validators.maxLength(50)]],
+    terms: [false, Validators.requiredTrue],
   });
 
   onSubmit(): void {
@@ -89,5 +91,16 @@ export class GuestRegisterComponent {
   }
   get passwordControl() {
     return this.form.controls.password;
+  }
+  get termsControl() {
+    return this.form.controls.terms;
+  }
+
+  openTermsModal(): void {
+    this.isTermsOpen.set(true);
+  }
+
+  closeTermsModal(): void {
+    this.isTermsOpen.set(false);
   }
 }

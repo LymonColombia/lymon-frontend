@@ -77,6 +77,7 @@ export interface BaseExperience {
 
 export interface Experience extends BaseExperience {
   propertyName?: string;
+  tenantId?: string;
   propertyId?: string;
   unitIds?: string[];
   units?: ExperienceUnitSummary[];
@@ -89,7 +90,7 @@ export interface Experience extends BaseExperience {
 export type PropertyExperience = Experience & { scope: 'PROPERTY' };
 export type TenantExperience = Experience & { scope: 'TENANT' };
 
-export type CreateExperienceDto = Omit<Experience, 'id' | 'propertyName' | 'units'>;
+export type CreateExperienceDto = Omit<Experience, 'id' | 'propertyName' | 'units'| 'tenantId'>;
 export type UpdateExperienceDto = Partial<
   Pick<
     Experience,

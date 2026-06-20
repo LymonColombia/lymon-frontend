@@ -11,10 +11,11 @@ import { RegisterUseCase } from '@/domain/use-cases/auth/register.use-case';
 import { PlanType } from '@/domain/entities/auth.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapEnvelope,
-  bootstrapLock,
   bootstrapQuestionCircleFill,
   bootstrapBuilding,
 } from '@ng-icons/bootstrap-icons';
@@ -29,12 +30,11 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   selector: 'app-register',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon],
+  imports: [ReactiveFormsModule, RouterLink, NgIcon, ModalComponent, PasswordInputComponent],
   providers: [
     provideIcons({
       bootstrapArrowRightCircleFill,
       bootstrapEnvelope,
-      bootstrapLock,
       bootstrapQuestionCircleFill,
       bootstrapBuilding,
     }),
@@ -49,6 +49,7 @@ export class RegisterComponent {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly isTermsOpen = signal(false);
 
   readonly planOptions: { label: string; value: PlanType }[] = [
     { label: 'Plan Básico (Trial)', value: 'TRIAL' },
@@ -117,5 +118,13 @@ export class RegisterComponent {
   }
   get termsControl() {
     return this.form.controls.terms;
+  }
+
+  openTermsModal(): void {
+    this.isTermsOpen.set(true);
+  }
+
+  closeTermsModal(): void {
+    this.isTermsOpen.set(false);
   }
 }

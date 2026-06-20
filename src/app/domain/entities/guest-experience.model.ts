@@ -32,6 +32,7 @@ export type ExperienceScope = "PROPERTY" | "TENANT";
 
 export interface GuestExperience {
   id: string;
+  tenantId?: string;
   scope: ExperienceScope;
   propertyId: string | null;        
   name: string;

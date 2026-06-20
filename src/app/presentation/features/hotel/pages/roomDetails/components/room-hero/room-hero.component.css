@@ -70,6 +70,7 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-primary);
   font-weight: var(--font-weight-semibold);
+  line-height: 1;
 }
 
 .rating-text--muted {
@@ -89,6 +90,7 @@
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: opacity var(--transition-fast);
+  line-height: 1;
 }
 
 .btn-view-ratings:hover {
@@ -101,7 +103,7 @@
 
 .price {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--spacing-xs);
 }
 
