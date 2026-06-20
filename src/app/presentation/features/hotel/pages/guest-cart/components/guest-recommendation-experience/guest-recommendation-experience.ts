@@ -50,6 +50,7 @@ export class GuestRecommendationExperienceComponent {
   readonly propertyId = input<string | null>(null);
   readonly addedExperienceIds = input<string[]>([]);
   readonly added = output<void>();
+  readonly experiencesAvailable = output<boolean>();
 
   readonly experiences = signal<GuestExperience[]>([]);
   readonly experiencesLoading = signal(false);
@@ -94,6 +95,7 @@ export class GuestRecommendationExperienceComponent {
       } else {
         this.requestedPropertyId = null;
         this.experiences.set([]);
+        this.experiencesAvailable.emit(false);
       }
     });
   }
@@ -226,6 +228,7 @@ export class GuestRecommendationExperienceComponent {
           this.experiencesCurrentPage.set(result.page);
           this.experiencesTotalPages.set(result.totalPages);
           this.experiencesLoading.set(false);
+          this.experiencesAvailable.emit(this.experiences().length > 0);
         },
         error: () => {
           if (propertyId !== this.requestedPropertyId) return;

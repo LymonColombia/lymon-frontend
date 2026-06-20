@@ -64,8 +64,8 @@ export class GuestCartPage implements OnInit {
   readonly experienceToDeleteIndex = signal<number | null>(null);
   readonly deleteExperienceErrorMessage = signal<string | null>(null);
   readonly isDeletingExperience = signal(false);
+  readonly hasSuggestedExperiences = signal(false);
 
- 
   readonly isEmpty = computed(() => {
     const cart = this.cart();
     if (!cart) return false;
@@ -73,10 +73,10 @@ export class GuestCartPage implements OnInit {
   });
 
   readonly experienceToDelete = computed(() => {
-  const index = this.experienceToDeleteIndex();
-  if (index === null) return null;
-  return this.cart()?.experienceItems[index] ?? null;
-});
+    const index = this.experienceToDeleteIndex();
+    if (index === null) return null;
+    return this.cart()?.experienceItems[index] ?? null;
+  });
 
   readonly addedExperienceIds = computed(() => this.cart()?.experienceItems.map((item) => item.experienceId) ?? []);
 
@@ -90,7 +90,6 @@ export class GuestCartPage implements OnInit {
     };
   });
 
-  
   ngOnInit(): void {
     this.loadCart();
   }
@@ -111,6 +110,10 @@ export class GuestCartPage implements OnInit {
     document.getElementById('payment-panel-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  scrollToRecommendations(): void {
+    document.getElementById('recommendations-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   onPaymentSucceeded(): void {
     this.isPaymentSuccess.set(true);
   }
@@ -119,7 +122,6 @@ export class GuestCartPage implements OnInit {
     this.selectedItemKey.set(itemKey);
   }
 
-  
   onRemoveExperience(index: number): void {
     const cart = this.cart();
     const experience = cart?.experienceItems[index];
@@ -168,7 +170,6 @@ export class GuestCartPage implements OnInit {
         },
       });
   }
-
 
   loadCart(): void {
     this.isLoading.set(true);

@@ -7,7 +7,7 @@
       </button>
       <div class="nav-divider"></div>
       <span class="nav-title">
-        <ng-icon name="bootstrapBag" size="14px" aria-hidden="true"></ng-icon>
+        <ng-icon name="bootstrapBag" size="16px" aria-hidden="true"></ng-icon>
         Carrito
       </span>
     </div>
@@ -83,11 +83,12 @@
         ></app-checkout-panel>
 
         @if (displayCart()?.reservationItem; as reservationItem) {
-          <div class="recommendations-slot">
+          <div id="recommendations-section" class="recommendations-slot">
             <app-guest-recommendation-experience
               [propertyId]="reservationItem.propertyId"
               [addedExperienceIds]="addedExperienceIds()"
               (added)="loadCart()"
+              (experiencesAvailable)="hasSuggestedExperiences.set($event)"
             ></app-guest-recommendation-experience>
           </div>
         }
@@ -95,8 +96,10 @@
         <div id="payment-panel-section" class="payment-panel-slot">
           <app-payment-panel
             [cart]="cart()"
+            [hasSuggestedExperiences]="hasSuggestedExperiences()"
             (paymentSucceeded)="onPaymentSucceeded()"
             (cartRefreshNeeded)="loadCart()"
+            (viewExperiencesRequested)="scrollToRecommendations()"
           ></app-payment-panel>
         </div>
       </section>

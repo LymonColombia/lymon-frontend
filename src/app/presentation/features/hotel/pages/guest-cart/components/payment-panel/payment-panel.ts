@@ -2,18 +2,38 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, output, 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom, timer } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapCheckCircle, bootstrapExclamationTriangle, bootstrapShield } from '@ng-icons/bootstrap-icons';
+import { bootstrapCheckCircle, bootstrapExclamationTriangle, bootstrapShield, bootstrapStars } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { GetCheckoutPayloadUseCase } from '@/domain/use-cases/payment/get-checkout-payload.use-case';
 import { GetPaymentStatusUseCase } from '@/domain/use-cases/payment/get-payment-status.use-case';
 import { GetPaymentSessionStatusResult, PaymentCheckoutResponse, PaymentStatus } from '@/domain/entities/payment.model';
 import { Cart } from '@/domain/entities/cart.model';
 
-declare var WidgetCheckout: any;
-
 interface WompiWidgetResult {
   transaction?: { id: string; status?: string };
 }
+
+interface WompiWidgetConfig {
+  publicKey: string;
+  currency: string;
+  amountInCents: number;
+  reference: string;
+  signature: { integrity: string };
+  redirectUrl?: string;
+  customerData: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+interface WompiWidgetCheckout {
+  open(callback: (result: WompiWidgetResult) => void): void;
+}
+
+interface WompiWidgetConstructor {
+  new (config: WompiWidgetConfig): WompiWidgetCheckout;
+}
+
+declare const WidgetCheckout: WompiWidgetConstructor;
 
 const MAX_POLLING_ATTEMPTS = 15;
 const INITIAL_POLLING_DELAY_MS = 1000;
@@ -25,8 +45,8 @@ type PollingStatus = 'IDLE' | 'POLLING' | 'FINISHED' | 'TIMEOUT';
 @Component({
   selector: 'app-payment-panel',
   standalone: true,
-  imports: [ButtonComponent, NgIcon],
-  providers: [provideIcons({ bootstrapCheckCircle, bootstrapExclamationTriangle, bootstrapShield })],
+  imports: [ButtonComponent, ModalComponent, NgIcon],
+  providers: [provideIcons({ bootstrapCheckCircle, bootstrapExclamationTriangle, bootstrapShield, bootstrapStars })],
   templateUrl: './payment-panel.html',
   styleUrl: './payment-panel.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,15 +58,18 @@ export class PaymentPanelComponent {
   private isDestroyed = false;
 
   readonly cart = input<Cart | null>(null);
+  readonly hasSuggestedExperiences = input<boolean>(false);
 
   readonly paymentSucceeded = output<void>();
   readonly cartRefreshNeeded = output<void>();
+  readonly viewExperiencesRequested = output<void>();
 
   readonly isProcessingPayment = signal(false);
   readonly paymentStatus = signal<PaymentStatus | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly notes = signal('');
   readonly pollingStatus = signal<PollingStatus>('IDLE');
+  readonly showExperienceReminder = signal(false);
 
   constructor() {
     this.destroyRef.onDestroy(() => {
@@ -59,6 +82,32 @@ export class PaymentPanelComponent {
   }
 
   confirmPayment(): void {
+    const cart = this.cart();
+    if (!cart?.reservationItem) return;
+
+    if (this.hasSuggestedExperiences() && cart.experienceItems.length === 0) {
+      this.showExperienceReminder.set(true);
+      return;
+    }
+
+    this.proceedWithPayment();
+  }
+
+  continueWithoutExperiences(): void {
+    this.showExperienceReminder.set(false);
+    this.proceedWithPayment();
+  }
+
+  dismissExperienceReminder(): void {
+    this.showExperienceReminder.set(false);
+  }
+
+  viewSuggestedExperiences(): void {
+    this.showExperienceReminder.set(false);
+    this.viewExperiencesRequested.emit();
+  }
+
+  private proceedWithPayment(): void {
     const cart = this.cart();
     if (!cart?.reservationItem) return;
 

@@ -58,3 +58,27 @@
     </div>
   </div>
 </section>
+
+<app-modal
+  [open]="showExperienceReminder()"
+  title="¿Olvidaste algo?"
+  size="small"
+  (closed)="dismissExperienceReminder()">
+  <div class="experience-reminder-body">
+    <div class="experience-reminder-icon">
+      <ng-icon name="bootstrapStars" size="22px" aria-hidden="true"></ng-icon>
+    </div>
+    <p class="experience-reminder-text">
+      Tenemos experiencias disponibles para complementar tu estadía y aún no agregaste ninguna a tu carrito.
+      ¿Quieres revisarlas antes de pagar?
+    </p>
+  </div>
+  <div modal-footer class="experience-reminder-footer">
+    <app-button variant="secondary" size="medium" (clicked)="continueWithoutExperiences()">
+      Continuar sin experiencias
+    </app-button>
+    <app-button variant="primary" size="medium" (clicked)="viewSuggestedExperiences()">
+      Ver experiencias
+    </app-button>
+  </div>
+</app-modal>
