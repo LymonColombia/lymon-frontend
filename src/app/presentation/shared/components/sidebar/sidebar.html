@@ -36,7 +36,7 @@
   </ul>
 
   <div class="sidebar-footer" aria-label="Perfil">
-    <div class="profile" [class.profile--collapsed]="!isExpanded()" (click)="toggleProfileMenu()" (keydown.enter)="toggleProfileMenu()" tabindex="0" #profileContainer>
+    <div class="profile" role="button" [class.profile--collapsed]="!isExpanded()" (click)="toggleProfileMenu()" (keydown.enter)="toggleProfileMenu()" tabindex="0" #profileContainer>
       <div class="profile-avatar" aria-hidden="true" [title]="!isExpanded() ? tenantNameDisplay() : null">{{ tenantInitials() }}</div>
       <div class="profile-text" [class.profile-text--hidden]="!isExpanded()">
         <div class="profile-name" [title]="tenantNameDisplay()">{{ tenantNameDisplay() }}</div>
