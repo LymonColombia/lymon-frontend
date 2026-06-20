@@ -90,7 +90,7 @@ export class ExperienceComponent {
       );
     }
 
-    if (category !== null) {
+    if (category) {
       result = result.filter((experience) => experience.category === category);
     }
     return [...result];
@@ -116,7 +116,7 @@ export class ExperienceComponent {
 
 
   onHeroFiltersApply(filters: ExperienceHeroFilters): void {
-    this.selectedCategory.set(filters.category);
+    this.selectedCategory.set(filters.category ?? null);
     this.loadExperiences(1);
   }
 
@@ -153,7 +153,7 @@ export class ExperienceComponent {
     const filters = this.backendFilters();
     this.experiencesLoadSubscription = this.getGuestExperiencesUseCase
       .execute({
-        category: filters.category ?? undefined,
+        category: filters.category || undefined,
         tenantId: filters.tenantId || undefined,
         propertyId: filters.propertyId || undefined,
         sortByPrice: filters.sortByPrice,
@@ -178,15 +178,15 @@ export class ExperienceComponent {
   }
 
   goToExperienceDetails(experienceId: string): void {
-    void this.router.navigate(['/experiences', experienceId]);
+    this.router.navigate(['/experiences', experienceId]);
   }
 
   onGuestLogin(): void {
-    void this.router.navigate(['/guest/login']);
+    this.router.navigate(['/guest/login']);
   }
 
   onMyReservations(): void {
-    void this.router.navigate(['/guest/reservations']);
+    this.router.navigate(['/guest/reservations']);
   }
 
   onGuestLogout(): void {
@@ -194,6 +194,6 @@ export class ExperienceComponent {
   }
 
   goToRoomDetails(unitId: string): void {
-    void this.router.navigate(['/room-details', unitId]);
+    this.router.navigate(['/room-details', unitId]);
   }
 }

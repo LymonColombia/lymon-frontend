@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapClipboard2Check, bootstrapGeoAlt, bootstrapSearch } from '@ng-icons/bootstrap-icons';
@@ -18,8 +18,6 @@ export interface ExperienceHeroFilters {
   providers: [provideIcons({ bootstrapSearch, bootstrapClipboard2Check, bootstrapGeoAlt })],
 })
 export class ExperienceHeroComponent {
-  private readonly destroyRef = inject(DestroyRef);
-
   readonly selectedCategory = input<ExperienceCategoryFilter>(null);
   readonly filtersApply = output<ExperienceHeroFilters>();
 
@@ -32,19 +30,23 @@ export class ExperienceHeroComponent {
 
   constructor() {
     effect(() => {
-      this.categoryFilter.set(this.selectedCategory());
+      this.categoryFilter.set(this.selectedCategory() ?? null);
     });
-
   }
 
   onCategoryFilterChange(value: string | number | null): void {
-    this.categoryFilter.set((typeof value === 'string' ? value : null) as ExperienceCategoryFilter);
+    if (typeof value !== 'string' || value === '') {
+      this.categoryFilter.set(null);
+      return;
+    }
+
+    this.categoryFilter.set(value as ExperienceCategoryFilter);
   }
 
   onSearch(): void {
-  this.filtersApply.emit({
-    category: this.categoryFilter(),
-  });
-}
+    this.filtersApply.emit({
+      category: this.categoryFilter() ?? null,
+    });
+  }
 
 }

@@ -45,11 +45,21 @@ export class ExperienceToolbarComponent {
   }
 
   onSortChange(value: string | number): void {
-    this.sortChange.emit((value === '' ? undefined : value) as ExperienceSortOption);
+    if (value === 'asc' || value === 'desc') {
+      this.sortChange.emit(value);
+      return;
+    }
+
+    this.sortChange.emit(undefined);
   }
 
   onCategoryChange(value: string | number): void {
-    this.categoryChange.emit(value as ExperienceCategoryFilter);
+    if (value === 'TRANSPORTATION') {
+      this.categoryChange.emit(value);
+      return;
+    }
+
+    this.categoryChange.emit(null);
   }
 
 }

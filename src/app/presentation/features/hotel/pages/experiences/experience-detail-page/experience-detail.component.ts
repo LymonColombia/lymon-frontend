@@ -177,7 +177,7 @@ export class ExperienceDetailComponent {
       .subscribe({
         next: (_cart: Cart) => {
           this.isReserving.set(false);
-          void this.router.navigate(['/guest/cart']);
+          this.router.navigate(['/guest/cart']);
         },
         error: () => {
           this.isReserving.set(false);

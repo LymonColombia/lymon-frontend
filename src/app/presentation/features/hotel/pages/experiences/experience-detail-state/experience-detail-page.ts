@@ -42,7 +42,7 @@ export class ExperienceDetailPageComponent {
   }
 
   onBackToExperiences(): void {
-    void this.router.navigate(['/experiences']);
+    this.router.navigate(['/experiences']);
   }
 
   private loadExperience(experienceId: string | null): void {
