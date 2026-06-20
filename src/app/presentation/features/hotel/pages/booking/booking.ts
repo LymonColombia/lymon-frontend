@@ -13,7 +13,7 @@ import { GetPublicUnitsUseCase } from '@/domain/use-cases/property/get-public-un
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { Unit } from '@/domain/entities/staff.model';
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 8;
 
 @Component({
   selector: 'booking-page',
