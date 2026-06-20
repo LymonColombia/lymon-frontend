@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapBagCheck, bootstrapX } from '@ng-icons/bootstrap-icons';
+import { bootstrapBagCheck, bootstrapBuilding, bootstrapStars, bootstrapX } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { Cart, CartExperienceItem, CartReservationItem } from '@/domain/entities/cart.model';
 
@@ -8,7 +8,7 @@ import { Cart, CartExperienceItem, CartReservationItem } from '@/domain/entities
   selector: 'app-order-summary',
   standalone: true,
   imports: [NgIcon, ButtonComponent],
-  providers: [provideIcons({ bootstrapBagCheck, bootstrapX })],
+  providers: [provideIcons({ bootstrapBagCheck, bootstrapBuilding, bootstrapStars, bootstrapX })],
   templateUrl: './order-summary.html',
   styleUrl: './order-summary.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

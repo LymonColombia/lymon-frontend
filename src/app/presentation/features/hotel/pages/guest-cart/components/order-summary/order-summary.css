@@ -1,6 +1,12 @@
 
 
+:host {
+  display: block;
+  height: 100%;
+}
+
 .summary-card {
+  height: 100%;
   background: var(--color-bg-primary);
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-border-light);
@@ -60,6 +66,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  flex: 1;
 }
 
 
@@ -108,10 +115,12 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  background-color: aquamarine;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary-dark);
 }
 
 .summary-item-main {

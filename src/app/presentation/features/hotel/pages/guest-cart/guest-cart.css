@@ -83,7 +83,7 @@
   display: grid;
   grid-template-columns: 3fr 2fr;
   gap: var(--spacing-xl);
-  align-items: start;
+  align-items: stretch;
 }
 
 .payment-panel-slot,

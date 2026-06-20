@@ -3,7 +3,7 @@
 
   <header class="summary-header">
     <div class="summary-header-icon">
-      <ng-icon name="bootstrapBagCheck" size="16px" aria-hidden="true"></ng-icon>
+      <ng-icon name="bootstrapBagCheck" size="20px" aria-hidden="true"></ng-icon>
     </div>
     <div class="summary-header-copy">
       <h2 class="summary-title">Resumen de compra</h2>
@@ -30,7 +30,7 @@
             (click)="onSelectReservation()"
           >
             <div class="summary-item-icon">
-          
+              <ng-icon name="bootstrapBuilding" size="18px" aria-hidden="true"></ng-icon>
             </div>
             <div class="summary-item-main">
               <span class="summary-item-title">{{ reservationTitle(reservationItem) }}</span>
@@ -66,7 +66,8 @@
             [attr.aria-label]="'Seleccionar experiencia ' + (index + 1)"
             (click)="onSelectExperience(index)"
           >
-            <div class="summary-item-icon" >
+            <div class="summary-item-icon">
+              <ng-icon name="bootstrapStars" size="18px" aria-hidden="true"></ng-icon>
             </div>
             <div class="summary-item-main">
               <span class="summary-item-title">{{ experienceTitle(experienceItem, index) }}</span>
