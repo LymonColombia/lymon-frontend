@@ -106,7 +106,7 @@ export class RoomCardComponent implements OnDestroy {
     more.style.display = 'none';
     container.style.maxHeight = 'none';
 
-    const gap = parseFloat(getComputedStyle(container).rowGap) || RoomCardComponent.AMENITY_ROW_GAP_FALLBACK_PX;
+    const gap = Number.parseFloat(getComputedStyle(container).rowGap) || RoomCardComponent.AMENITY_ROW_GAP_FALLBACK_PX;
     const chipHeight = chips[0].offsetHeight;
     const twoRowCutoff = chips[0].offsetTop + chipHeight * 2 + gap;
 

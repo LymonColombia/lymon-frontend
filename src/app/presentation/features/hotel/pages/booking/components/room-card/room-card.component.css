@@ -4,15 +4,24 @@
 }
 
 .room-card {
+  position: relative;
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-xl);
   overflow: hidden;
   transition: transform var(--transition-base), box-shadow var(--transition-base);
-  cursor: pointer;
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.room-card-btn {
+  position: absolute;
+  inset: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
 }
 
 .room-card:hover {
@@ -92,6 +101,7 @@
   position: absolute;
   top: var(--spacing-md);
   right: var(--spacing-md);
+  z-index: 2;
   width: 32px;
   height: 32px;
   display: flex;

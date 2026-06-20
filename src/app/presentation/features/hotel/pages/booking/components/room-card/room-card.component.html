@@ -1,12 +1,10 @@
-<div
-  class="room-card"
-  [class.featured]="room().featured ?? false"
-  role="button"
-  tabindex="0"
-  (click)="onCardClick()"
-  (keydown.enter)="onCardClick()"
-  (keydown.space)="$event.preventDefault(); onCardClick()"
-  [attr.aria-label]="'Ver detalles de ' + room().title">
+<div class="room-card" [class.featured]="room().featured ?? false">
+  <button
+    class="room-card-btn"
+    type="button"
+    (click)="onCardClick()"
+    [attr.aria-label]="'Ver detalles de ' + room().title">
+  </button>
   <div class="room-image">
     <img
       class="room-image-photo"
