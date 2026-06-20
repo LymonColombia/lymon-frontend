@@ -13,7 +13,7 @@ import { GetPublicUnitsUseCase } from '@/domain/use-cases/property/get-public-un
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { Unit } from '@/domain/entities/staff.model';
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 8;
 
 @Component({
   selector: 'booking-page',
@@ -44,6 +44,7 @@ export class BookingComponent implements OnInit {
   readonly isRoomsLoading = signal(false);
   readonly currentPage = signal(1);
   readonly totalPages = signal(1);
+  readonly totalCount = signal(0);
   readonly startDate = signal<string | undefined>(undefined);
   readonly endDate = signal<string | undefined>(undefined);
   readonly minGuests = signal<number | undefined>(undefined);
@@ -98,6 +99,7 @@ export class BookingComponent implements OnInit {
           this.rooms.set(units.map((unit) => this.toRoomCard(unit)));
           this.currentPage.set(pagination.page);
           this.totalPages.set(pagination.totalPages);
+          this.totalCount.set(pagination.total);
           this.isRoomsLoading.set(false);
           if (scrollOnComplete) this.scrollToResults();
         },

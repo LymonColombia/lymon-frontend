@@ -32,6 +32,7 @@ import { PaymentCheckoutResponse, PaymentStatus } from '@/domain/entities/paymen
 import { Cart } from '@/domain/entities/cart.model';
 import { firstValueFrom, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { formatPrice } from '@/presentation/shared/utils/price-formatter';
 
 declare var WidgetCheckout: any;
 
@@ -317,6 +318,8 @@ export class GuestCheckoutComponent implements OnInit {
     this.showExplorerModal.set(false);
     this.selectedExperience.set(exp);
   }
+
+  protected readonly formatPrice = formatPrice;
 
   formatExpPrice(price: number): string {
     return price.toLocaleString('es-CO');
