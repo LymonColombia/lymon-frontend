@@ -21,14 +21,14 @@ interface RefreshResponse {
 let refreshInFlight$: Observable<string> | null = null;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  if (SKIP_DOMAINS.some(domain => req.url.includes(domain)) || isGuestRequest(req.url)) {
+    return next(req);
+  }
+
   const tokenService = inject(TokenService);
   const http = inject(HttpClient);
   const router = inject(Router);
   const accessToken = tokenService.getAccessToken();
-
-   if (SKIP_DOMAINS.some(domain => req.url.includes(domain))) {
-    return next(req);
-   }
 
   if (!accessToken || isRefreshRequest(req.url)) {
     return next(req);
@@ -123,6 +123,10 @@ export function refreshAccessToken(http: HttpClient, tokenService: TokenService)
 
 function isRefreshRequest(url: string): boolean {
   return url.includes(AUTH_REFRESH_PATH);
+}
+
+function isGuestRequest(url: string): boolean {
+  return url.includes(`${environment.apiUrl}/guest/`);
 }
 
 function isTokenExpired(token: string): boolean {
