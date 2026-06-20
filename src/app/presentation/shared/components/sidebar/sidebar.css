@@ -273,6 +273,7 @@
   gap: var(--spacing-md);
   flex: 1;
   min-width: 0;
+  cursor: pointer;
 }
 
 .sidebar--collapsed .profile {

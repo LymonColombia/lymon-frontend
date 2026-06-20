@@ -84,6 +84,8 @@ interface MenuItem {
 export class SidebarComponent implements OnInit {
   @ViewChild('profileMenuContainer', { read: ElementRef })
   private readonly profileMenuContainer?: ElementRef<HTMLElement>;
+  @ViewChild('profileContainer', { read: ElementRef })
+  private readonly profileContainer?: ElementRef<HTMLElement>;
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly getTenantProfileUseCase = inject(GetTenantProfileUseCase);
@@ -115,8 +117,7 @@ export class SidebarComponent implements OnInit {
 
   readonly menuItems: MenuItem[] = [
     { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
-    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/tenant-reservations'},
-    { icon: 'bootstrapArchive', label: 'Inventario', route: '/inventory' },
+    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/tenant-reservations' },
     { icon: 'bootstrapHouseDoor', label: 'Propiedades y Unidades', route: '/properties' },
     { icon: 'bootstrapStar', label: 'Experiencias', route: '/tenant-experiences' },
     { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/register-employee' },
@@ -130,6 +131,15 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
 
   ];
+
+  onMouseEnter(): void {
+    this.isExpanded.set(true);
+  }
+
+  onMouseLeave(): void {
+    this.isExpanded.set(false);
+    this.closeProfileMenu();
+  }
 
   toggleExpanded(): void {
     this.isExpanded.update((v) => !v);
@@ -179,22 +189,21 @@ export class SidebarComponent implements OnInit {
 
   onEscapeKey(): void {
     this.closeProfileMenu();
-    if (this.isExpanded()) {
-      this.toggleExpanded();
-    }
+    this.isExpanded.set(false);
   }
 
   onDocumentClick(event: MouseEvent): void {
     if (!this.isProfileMenuOpen()) return;
 
     const container = this.profileMenuContainer?.nativeElement;
-    if (!container) {
+    const profileContainer = this.profileContainer?.nativeElement;
+    if (!container || !profileContainer) {
       this.closeProfileMenu();
       return;
     }
 
     const target = event.target as Node | null;
-    if (target && container.contains(target)) return;
+    if (target && (container.contains(target) || profileContainer.contains(target))) return;
 
     this.closeProfileMenu();
   }

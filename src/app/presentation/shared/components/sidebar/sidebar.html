@@ -2,18 +2,7 @@
   <div class="sidebar-backdrop" (click)="toggleExpanded()" (keydown)="toggleExpanded()" aria-hidden="true"></div>
 }
 
-<button
-  class="sidebar-float-toggle"
-  type="button"
-  (click)="toggleExpanded()"
-  [title]="isExpanded() ? 'Contraer menú' : 'Expandir menú'"
-  [attr.aria-label]="isExpanded() ? 'Contraer menú lateral' : 'Expandir menú lateral'"
-  [attr.aria-expanded]="isExpanded()"
->
-  <ng-icon name="bootstrapLayoutSidebar" size="20px" aria-hidden="true"></ng-icon>
-</button>
-
-<nav class="sidebar" [class.sidebar--collapsed]="!isExpanded()" [class.sidebar--ready]="transitionsReady()">
+<nav class="sidebar" [class.sidebar--collapsed]="!isExpanded()" [class.sidebar--ready]="transitionsReady()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
   <div class="sidebar-header">
     <a routerLink="/lyhost" class="sidebar-logo-link">
       <img
@@ -47,13 +36,13 @@
   </ul>
 
   <div class="sidebar-footer" aria-label="Perfil">
-    <div class="profile" [class.profile--collapsed]="!isExpanded()">
+    <button type="button" class="profile" [class.profile--collapsed]="!isExpanded()" (click)="toggleProfileMenu()" #profileContainer>
       <div class="profile-avatar" aria-hidden="true" [title]="!isExpanded() ? tenantNameDisplay() : null">{{ tenantInitials() }}</div>
       <div class="profile-text" [class.profile-text--hidden]="!isExpanded()">
         <div class="profile-name" [title]="tenantNameDisplay()">{{ tenantNameDisplay() }}</div>
         <div class="profile-email" [title]="tenantEmailDisplay()">{{ tenantEmailDisplay() }}</div>
       </div>
-    </div>
+    </button>
 
     @if (isExpanded()) {
       <div class="profile-menu-container" #profileMenuContainer>
