@@ -9,22 +9,7 @@ import { LocationMap } from '@/presentation/features/hotel/components/location-m
 import { Cart } from '@/domain/entities/cart.model';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
 import { AddCartExperienceItemUseCase } from '@/domain/use-cases/cart/add-cart-experience-item.use-case';
-
-
-interface AvailabilitySlot {
-  date: string;
-  startTime: string | null;
-  endTime: string | null;
-}
-
-/** Tope  para DATE_RANGE. */
-const MAX_DATE_RANGE_DAYS = 20;
-/** Tope de fechas a generar para  RECURRING. */
-const MAX_RECURRING_RESULTS = 12;
-/** Ventana de búsqueda (en días hacia adelante) para experiencias RECURRING. */
-const RECURRING_SEARCH_WINDOW_DAYS = 15;
-
-const EMPTY_END_TIME='00:00'
+import { buildAvailableSlots } from '@/presentation/shared/utils/experience-availability.util';
 
 @Component({
   selector: 'experience-detail',
@@ -62,7 +47,7 @@ export class ExperienceDetailComponent {
     { label: this.experience().name },
   ]);
 
-  readonly availableSlots = computed(() => this.buildAvailableSlots(this.experience()));
+  readonly availableSlots = computed(() => buildAvailableSlots(this.experience()));
 
   /** Fechas únicas disponiblesderivadas de los slots (sin duplicar por hora). */
   readonly availableDates = computed(() => {
@@ -186,29 +171,6 @@ export class ExperienceDetailComponent {
       });
   }
 
-  private buildAvailableSlots(experience: GuestExperience): AvailabilitySlot[] {
-    switch (experience.availabilityType) {
-      case 'ONE_TIME':
-        return this.buildOneTimeSlots(experience.startAt, experience.endAt);
-
-      case 'DATE_RANGE':
-        return this.buildDateRangeSlots(
-          experience.startAt,
-          experience.endAt,
-          experience.blackoutRanges ?? [],
-        );
-
-      case 'RECURRING':
-        return experience.recurrence
-          ? this.buildRecurringSlots(experience.recurrence, experience.blackoutRanges ?? [])
-          : [];
-
-      default:
-        return [];
-    }
-  }
-
-
   /** ISO a texto legible en español  "19 jun. 2026". */
   private formatDate(value: string): string {
     const parsed = new Date(`${value}T00:00:00`);
@@ -251,147 +213,4 @@ export class ExperienceDetailComponent {
     return fallback.charAt(0).toUpperCase() + fallback.slice(1);
   }
 
-  
-  /**
-   * ONE_TIME
-  **/
-  private buildOneTimeSlots(
-    startAt: string | null,
-    endAt: string | null,
-  ): AvailabilitySlot[] {
-    if (!startAt) return [];
- 
-    return [
-      {
-        date:      this.isoDatePart(startAt),
-        startTime: this.isoTimePart(startAt),
-        endTime:   endAt ? this.isoTimePart(endAt) : null,
-      },
-    ];
-  }
- 
-  /**
-   * DATE_RANGE
-   */
-  private buildDateRangeSlots(
-    startAt: string | null,
-    endAt: string | null,
-    blackoutRanges: Array<{ startAt: string; endAt: string }>,
-  ): AvailabilitySlot[] {
-    if (!startAt || !endAt) return [];
- 
-    const startDateStr = this.isoDatePart(startAt);
-    const endDateStr   = this.isoDatePart(endAt);
- 
-  
-    const cursor    = this.localMidnight(startDateStr);
-    const finalDate = this.localMidnight(endDateStr);
- 
-    if (Number.isNaN(cursor.getTime()) || Number.isNaN(finalDate.getTime()) || cursor > finalDate) {
-      return [];
-    }
- 
-    const dailyStartTime = this.isoTimePart(startAt);
-    const dailyEndTime   = this.isoTimePart(endAt);
- 
-    const slots: AvailabilitySlot[] = [];
-    let daysProcessed = 0;
- 
-    while (cursor <= finalDate && daysProcessed < MAX_DATE_RANGE_DAYS) {
-      const currentDateStr = this.toIsoDate(cursor);
- 
-      if (!this.isDateBlocked(currentDateStr, blackoutRanges)) {
-        slots.push({
-          date:      currentDateStr,
-          startTime: dailyStartTime,
-          endTime:   dailyEndTime,
-        });
-      }
- 
-      cursor.setDate(cursor.getDate() + 1);
-      daysProcessed++;
-    }
- 
-    return slots;
-  }
- 
-  /**
-   * RECURRING
-   */
-  private buildRecurringSlots(
-    recurrence: { daysOfWeek: number[]; startTime?: string; endTime?: string },
-    blackoutRanges: Array<{ startAt: string; endAt: string }>,
-  ): AvailabilitySlot[] {
-    if (!recurrence.daysOfWeek?.length) return [];
- 
-    const allowedDays = new Set(recurrence.daysOfWeek);
- 
-    
-    const endTime =
-      recurrence.endTime && recurrence.endTime !== EMPTY_END_TIME
-        ? recurrence.endTime
-        : null;
- 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
- 
-    const slots: AvailabilitySlot[] = [];
- 
-    for (
-      let offset = 0;
-      offset <RECURRING_SEARCH_WINDOW_DAYS &&
-      slots.length <MAX_RECURRING_RESULTS;
-      offset++
-    ) {
-      const candidate = new Date(today);
-      candidate.setDate(today.getDate() + offset);
- 
-      if (!allowedDays.has(candidate.getDay())) continue;
- 
-      const candidateDateStr = this.toIsoDate(candidate);
-      if (this.isDateBlocked(candidateDateStr, blackoutRanges)) continue;
- 
-      slots.push({
-        date:      candidateDateStr,
-        startTime: recurrence.startTime ?? null,
-        endTime,
-      });
-    }
- 
-    return slots;
-  }
-
-
-  private isoDatePart(isoString: string): string {
-    return isoString.substring(0, 10);
-  }
- 
-
-  private  isoTimePart(isoString: string): string {
-    return isoString.substring(11, 16);
-  }
-
-  private localMidnight(dateStr: string): Date {
-    return new Date(`${dateStr}T00:00:00`);
-  }
- 
-  private toIsoDate(date: Date): string {
-    const year  = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day   = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
- 
-
-  private  isDateBlocked(
-    dateStr: string,
-    blackoutRanges: Array<{ startAt: string; endAt: string }>,
-  ): boolean {
-    return blackoutRanges.some((range) => {
-      const blockStart = this.isoDatePart(range.startAt);
-      const blockEnd   = this.isoDatePart(range.endAt);
-      return dateStr >= blockStart && dateStr <= blockEnd;
-    });
-  }
- 
 }

@@ -101,7 +101,7 @@
           [disabled]="!selectedDate() || isReserving()"
           (click)="onReserveNow()"
         >
-          {{ isReserving() ? 'Reservando...' : 'Reservar ahora' }}
+          {{ isReserving() ? 'Agregando...' : 'Añadir al carrito' }}
         </button>
 
         @if (reservationMessage()) {
