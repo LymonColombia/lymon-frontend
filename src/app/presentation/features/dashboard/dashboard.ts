@@ -27,7 +27,6 @@ import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case'
 import { NotificationPollingService } from '@/infrastructure/services/notification-polling.service';
 import { NotificationPanelComponent } from '@/presentation/shared/components/notification-panel/notification-panel.component';
 import { Reservation } from '@/domain/entities/reservation.model';
-import { Unit } from '@/domain/entities/staff.model';
 
 const RESERVATIONS_PAGE_LIMIT = 500;
 const MONTH_LABELS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -315,16 +314,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }).format(value);
   }
 
-  private normalizeReservationStatus(status: Reservation['status'] | string): string {
-    return String(status ?? '').trim().toLowerCase().replace(/_/g, '-');
+  private normalizeReservationStatus(status: string): string {
+    return String(status ?? '').trim().toLowerCase().replaceAll('_', '-');
   }
 
-  private isActiveReservation(status: Reservation['status'] | string): boolean {
+  private isActiveReservation(status: string): boolean {
     const normalized = this.normalizeReservationStatus(status);
     return normalized === 'active' || normalized === 'check-in' || normalized === 'checked-in';
   }
 
-  private isFinishedReservation(status: Reservation['status'] | string): boolean {
+  private isFinishedReservation(status: string): boolean {
     const normalized = this.normalizeReservationStatus(status);
     return normalized === 'finished' || normalized === 'checked-out' || normalized === 'finalizada';
   }

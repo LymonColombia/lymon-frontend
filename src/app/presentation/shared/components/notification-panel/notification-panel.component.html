@@ -11,13 +11,13 @@
       size="22px"
       aria-hidden="true"
     ></ng-icon>
-    @if (unreadCount() > 0 && !isOpen()) {
-      <span class="badge">{{ badgeCount() }}</span>
-    }
   </button>
+  @if (unreadCount() > 0 && !isOpen()) {
+    <span class="badge">{{ badgeCount() }}</span>
+  }
 
   @if (isOpen()) {
-    <div class="dropdown" (click)="$event.stopPropagation()">
+    <div class="dropdown" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
       <div class="dropdown-header">
         <span class="dropdown-title">Notificaciones</span>
         @if (notifications().length > 0) {

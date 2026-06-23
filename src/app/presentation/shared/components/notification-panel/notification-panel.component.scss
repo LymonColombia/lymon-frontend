@@ -38,6 +38,7 @@
   font-weight: var(--font-weight-bold, 700);
   line-height: 18px;
   text-align: center;
+  pointer-events: none;
 }
 
 .dropdown {
@@ -120,12 +121,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(230, 81, 0, 0.1);
-  color: #e65100;
+  background-color: rgba(178, 62, 0, 0.1);
+  color: #b23e00;
 
   &.reservation {
-    background-color: rgba(47, 128, 237, 0.1);
-    color: #2f80ed;
+    background-color: rgba(25, 103, 210, 0.1);
+    color: #1967d2;
   }
 }
 
@@ -150,7 +151,7 @@
   font-size: var(--font-size-sm, 12px);
   line-height: 1.4;
   color: var(--color-text-primary);
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .item-time {
