@@ -30,6 +30,9 @@ import { Reservation } from '@/domain/entities/reservation.model';
 
 const RESERVATIONS_PAGE_LIMIT = 500;
 const MONTH_LABELS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+const OCCUPIED_STATUSES = ['active', 'check-in', 'checked-in'] as const;
+const FINISHED_STATUSES = ['finished', 'checked-out', 'finalizada'] as const;
+const REVENUE_STATUSES = [...OCCUPIED_STATUSES, ...FINISHED_STATUSES] as const;
 
 @Component({
   selector: 'app-dashboard',
@@ -81,13 +84,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   readonly monthlyRevenue = computed(() =>
     this.reservations()
-      .filter((r) => this.isInCurrentMonth(r.checkIn))
+      .filter((r) => this.isRevenueReservation(r.status) && this.isInCurrentMonth(r.checkIn))
       .reduce((total, r) => total + this.normalizeAmount(r.totalPrice), 0),
   );
 
   readonly totalEarnings = computed(() =>
     this.reservations()
-      .filter((r) => this.parseDateOnly(r.checkIn) !== null)
+      .filter((r) => this.isRevenueReservation(r.status) && this.parseDateOnly(r.checkIn) !== null)
       .reduce((total, r) => total + this.normalizeAmount(r.totalPrice), 0),
   );
 
@@ -97,12 +100,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ),
   );
 
+  readonly revenueReservationsCurrentYear = computed(() =>
+    this.reservations().filter(
+      (r) => this.isRevenueReservation(r.status) && this.isInYear(r.checkOut, this.currentYear),
+    ),
+  );
+
   readonly monthlyStats = computed(() => {
     const stats = this.monthLabels.map((label) => ({ label, revenue: 0, count: 0 }));
-    for (const reservation of this.finishedReservationsCurrentYear()) {
+    for (const reservation of this.revenueReservationsCurrentYear()) {
       const checkOut = this.parseDateOnly(reservation.checkOut);
       if (!checkOut) continue;
       stats[checkOut.getMonth()].revenue += this.normalizeAmount(reservation.totalPrice);
+    }
+    for (const reservation of this.finishedReservationsCurrentYear()) {
+      const checkOut = this.parseDateOnly(reservation.checkOut);
+      if (!checkOut) continue;
       stats[checkOut.getMonth()].count += 1;
     }
     return stats;
@@ -319,13 +332,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private isActiveReservation(status: string): boolean {
-    const normalized = this.normalizeReservationStatus(status);
-    return normalized === 'active' || normalized === 'check-in' || normalized === 'checked-in';
+    return OCCUPIED_STATUSES.includes(
+      this.normalizeReservationStatus(status) as (typeof OCCUPIED_STATUSES)[number],
+    );
   }
 
   private isFinishedReservation(status: string): boolean {
-    const normalized = this.normalizeReservationStatus(status);
-    return normalized === 'finished' || normalized === 'checked-out' || normalized === 'finalizada';
+    return FINISHED_STATUSES.includes(
+      this.normalizeReservationStatus(status) as (typeof FINISHED_STATUSES)[number],
+    );
+  }
+
+  private isRevenueReservation(status: string): boolean {
+    return REVENUE_STATUSES.includes(
+      this.normalizeReservationStatus(status) as (typeof REVENUE_STATUSES)[number],
+    );
   }
 
   private isStayInProgress(checkInValue: string, checkOutValue: string, today: Date): boolean {
