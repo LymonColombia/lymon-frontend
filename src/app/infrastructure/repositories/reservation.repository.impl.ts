@@ -18,10 +18,16 @@ export class ReservationRepositoryImpl extends ReservationRepository {
     super();
   }
 
-  getReservations(params?: { page?: number; limit?: number }): Observable<PaginatedReservations> {
+  getReservations(params?: { page?: number; limit?: number; status?: string; tenantId?: string }): Observable<PaginatedReservations> {
     let httpParams = new HttpParams();
     if (params?.page != null) httpParams = httpParams.set('page', String(params.page));
     if (params?.limit != null) httpParams = httpParams.set('limit', String(params.limit));
+    if (params?.status != null && params.status.trim() !== '') {
+      httpParams = httpParams.set('status', params.status.trim());
+    }
+    if (params?.tenantId != null && params.tenantId.trim() !== '') {
+      httpParams = httpParams.set('tenantId', params.tenantId.trim());
+    }
 
     return this.http
       .get<unknown>(`${this.baseUrl}${this.endpoint}`, { params: httpParams })

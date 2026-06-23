@@ -9,7 +9,7 @@ export interface PaginatedReservations {
 }
 
 export abstract class ReservationRepository {
-  abstract getReservations(params?: { page?: number; limit?: number }): Observable<PaginatedReservations>;
+  abstract getReservations(params?: { page?: number; limit?: number; status?: string; tenantId?: string }): Observable<PaginatedReservations>;
   abstract getReservationById(reservationId: string): Observable<Reservation>;
   abstract create(input: CreateReservationInput): Observable<Reservation>;
   abstract update(reservationId: string, input: UpdateReservationInput): Observable<Reservation>;
