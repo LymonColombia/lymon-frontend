@@ -72,7 +72,7 @@ export class RegisterEmployeeComponent implements OnInit {
   readonly scopeTypeOptions: SelectOption[] = [
     { value: this.SCOPE_TENANT, label: 'TENANT — Todo el hotel' },
     { value: this.SCOPE_PROPERTY, label: 'PROPERTY — Propiedad específica' },
-    { value: this.SCOPE_UNIT, label: 'UNIT — Unidad específica' },
+    { value: this.SCOPE_UNIT, label: 'UNIT — Habitación específica' },
   ];
 
   readonly roleSelectOptions = computed<SelectOption[]>(() => {

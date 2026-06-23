@@ -107,7 +107,7 @@ export class PropertyUnitsComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage.set('No se pudieron cargar las unidades. Inténtalo de nuevo.');
+        this.errorMessage.set('No se pudieron cargar las habitaciones. Inténtalo de nuevo.');
         this.isLoading.set(false);
       },
     });
@@ -140,7 +140,7 @@ export class PropertyUnitsComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.isLoadingEdit.set(false);
-          this.errorMessage.set(err.error?.message ?? 'No se pudo cargar la unidad para editar.');
+          this.errorMessage.set(err.error?.message ?? 'No se pudo cargar la habitación para editar.');
         },
       });
   }
@@ -173,14 +173,14 @@ export class PropertyUnitsComponent implements OnInit {
     this.isDeleting.set(false);
     this.showDeleteConfirm.set(false);
     this.unitToDelete.set(null);
-    this.successMessage.set('Unidad eliminada correctamente.');
+    this.successMessage.set('Habitación eliminada correctamente.');
     const currentPropertyId = this.propertyId();
     if (currentPropertyId) this.loadUnits(currentPropertyId);
   }
 
   private handleDeleteError(err: HttpErrorResponse): void {
     this.isDeleting.set(false);
-    this.errorMessage.set(err.error?.message ?? 'Error al eliminar la unidad. Inténtalo de nuevo.');
+    this.errorMessage.set(err.error?.message ?? 'Error al eliminar la habitación. Inténtalo de nuevo.');
   }
 
   onUnitSaved(): void {
@@ -188,7 +188,7 @@ export class PropertyUnitsComponent implements OnInit {
     this.showUnitModal.set(false);
     this.editingUnit.set(null);
     this.successMessage.set(
-      wasEditing ? 'Unidad actualizada correctamente.' : 'Unidad creada correctamente.',
+      wasEditing ? 'Habitación actualizada correctamente.' : 'Habitación creada correctamente.',
     );
     const currentPropertyId = this.propertyId();
     if (currentPropertyId) this.loadUnits(currentPropertyId);

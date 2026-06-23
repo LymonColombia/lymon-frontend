@@ -25,7 +25,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     detailsSections: [
       {
         title: 'CAPACIDAD',
-        items: ['Hasta 1 propiedad', 'Unidades ilimitadas'],
+        items: ['Hasta 1 propiedad', 'Habitaciones ilimitadas'],
       },
       {
         title: 'INTEGRACIONES',
@@ -47,7 +47,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     detailsSections: [
       {
         title: 'CAPACIDAD',
-        items: ['Hasta 5 propiedades', 'Hasta 2 usuarios', 'Unidades ilimitadas'],
+        items: ['Hasta 5 propiedades', 'Hasta 2 usuarios', 'Habitaciones ilimitadas'],
       },
       {
         title: 'INTEGRACIONES',
@@ -69,7 +69,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     detailsSections: [
       {
         title: 'CAPACIDAD',
-        items: ['Hasta 20 propiedades', 'Hasta 10 usuarios', 'Unidades ilimitadas'],
+        items: ['Hasta 20 propiedades', 'Hasta 10 usuarios', 'Habitaciones ilimitadas'],
       },
       {
         title: 'FUNCIONES PREMIUM',
@@ -91,7 +91,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     detailsSections: [
       {
         title: 'CAPACIDAD',
-        items: ['Propiedades ilimitadas', 'Usuarios ilimitados', 'Unidades ilimitadas'],
+        items: ['Propiedades ilimitadas', 'Usuarios ilimitados', 'Habitaciones ilimitadas'],
       },
       {
         title: 'PREMIUM FEATURES',

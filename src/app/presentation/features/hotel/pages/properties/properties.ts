@@ -8,7 +8,6 @@ import {
   HotelPageMetaDirective,
 } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { PropertyFormComponent } from './components/property-form/property-form.component';
 import { PropertyCardComponent } from './components/property-card/property-card.component';
@@ -21,19 +20,6 @@ import { Property } from '@/domain/entities/staff.model';
 import { CancellationPolicy, PropertyDetail, PropertyType, UpdatePropertyDto } from '@/domain/entities/property.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
-
-const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
-  HOTEL: 'Hotel',
-  CASA: 'Casa',
-  APARTAMENTO: 'Apartamento',
-  VILLA: 'Villa',
-  HOSTAL: 'Hostal',
-  GLAMPING: 'Glamping',
-  RURAL: 'Rural',
-  CASA_DE_CAMPO: 'Casa de campo',
-  FINCA: 'Finca',
-  APARTAHOTEL: 'Apartahoteles',
-};
 
 @Component({
   selector: 'app-properties',
@@ -79,23 +65,6 @@ export class PropertiesComponent implements OnInit {
   private static readonly DEFAULT_CANCELLATION_POLICY: CancellationPolicy = 'STANDARD';
   private static readonly PROPERTY_UNITS_ROUTE = '/property-units';
   private static readonly PROPERTY_INVENTORY_ROUTE = '/properties';
-
-  readonly PROPERTY_TYPES: PropertyType[] = [
-    'HOTEL',
-    'CASA',
-    'APARTAMENTO',
-    'VILLA',
-    'HOSTAL',
-    'GLAMPING',
-    'RURAL',
-    'CASA_DE_CAMPO',
-    'FINCA',
-    'APARTAHOTEL',
-  ];
-  readonly propertyTypeOptions: SelectOption[] = this.PROPERTY_TYPES.map((type) => ({
-    value: type,
-    label: PROPERTY_TYPE_LABELS[type],
-  }));
 
   readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -169,7 +138,6 @@ export class PropertiesComponent implements OnInit {
           this.form.patchValue({
             name: detail.name,
             description: detail.description,
-            propertyType: detail.propertyType,
             addressLocation: {
               address: detail.address,
               lat: detail.location?.lat ?? null,

@@ -131,7 +131,7 @@ export class TenantReservations implements OnInit {
             const allUnits = unitsPerProperty.flat();
             this.unitsMap.set(
               allUnits.reduce<Record<string, string>>((acc, u) => {
-                acc[u.id] = u.name || 'Unidad sin nombre';
+                acc[u.id] = u.name || 'Habitación sin nombre';
                 return acc;
               }, {})
             );
@@ -388,7 +388,7 @@ export class TenantReservations implements OnInit {
     const statusLabel = this.toStatusLabel(res.status);
     const guestName = this.guestsMap()[res.guestId] || res.guestName || res.guestId || 'Huésped desconocido';
     const propertyName = this.propertiesMap()[res.propertyId] || res.propertyId || 'Propiedad desconocida';
-    const unitName = this.unitsMap()[res.unitId] || res.room || res.unitId || 'Unidad desconocida';
+    const unitName = this.unitsMap()[res.unitId] || res.room || res.unitId || 'Habitación desconocida';
 
     return {
       id: res.id,

@@ -3,14 +3,19 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Subject, of, throwError } from 'rxjs';
 import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
+import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
 import { UnitFormModalComponent } from './unit-form-modal.component';
 
 const mockCreateUnit = { execute: vi.fn() };
+const mockUpdateUnit = { execute: vi.fn() };
 
 async function setup(propertyId = 'p1') {
   await TestBed.configureTestingModule({
     imports: [UnitFormModalComponent],
-    providers: [{ provide: CreateUnitUseCase, useValue: mockCreateUnit }],
+    providers: [
+      { provide: CreateUnitUseCase, useValue: mockCreateUnit },
+      { provide: UpdateUnitUseCase, useValue: mockUpdateUnit },
+    ],
     schemas: [NO_ERRORS_SCHEMA],
   })
     .overrideComponent(UnitFormModalComponent, {
@@ -31,14 +36,12 @@ function fillValidForm(component: UnitFormModalComponent) {
     description: 'Habitación con vista al mar',
     inventoryCount: 3,
     maxGuests: 2,
-    standardGuests: 1,
     bathroomsCount: 1,
-    isShared: false,
     pricePerNight: 150,
   });
 
-  const bedroom = component.form.controls.bedrooms.at(0);
-  bedroom.patchValue({ roomName: 'Dormitorio 1' });
+  const bed = component.form.controls.beds.at(0);
+  bed.patchValue({ type: 'QUEEN', count: 1 });
 }
 
 describe('UnitFormModalComponent', () => {
@@ -120,7 +123,7 @@ describe('UnitFormModalComponent', () => {
 
     component.onSubmit();
 
-    expect(component.errorMessage()).toBe('Error al crear la unidad. Inténtalo de nuevo.');
+    expect(component.errorMessage()).toBe('Error al crear la habitación. Inténtalo de nuevo.');
   });
 
   it('should toggle amenities selection', async () => {

@@ -7,9 +7,13 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { PropertyUnitsComponent } from './propertyUnits';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
+import { GetUnitUseCase } from '@/domain/use-cases/property/get-unit.use-case';
+import { DeleteUnitUseCase } from '@/domain/use-cases/property/delete-unit.use-case';
 
 const mockGetUnits = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
+const mockGetUnit = { execute: vi.fn() };
+const mockDeleteUnit = { execute: vi.fn() };
 
 const MOCK_PROPERTY = { id: 'p1', name: 'Hotel Demo', propertyType: 'HOTEL' };
 const MOCK_UNITS = [
@@ -32,6 +36,8 @@ async function setup(pid: string | null = 'p1') {
       provideRouter([]),
       { provide: GetUnitsUseCase, useValue: mockGetUnits },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
+      { provide: GetUnitUseCase, useValue: mockGetUnit },
+      { provide: DeleteUnitUseCase, useValue: mockDeleteUnit },
       { provide: ActivatedRoute, useValue: activatedRouteStub(pid) },
     ],
     schemas: [NO_ERRORS_SCHEMA],
@@ -70,6 +76,8 @@ describe('PropertyUnitsComponent – sin propertyId en URL', () => {
         provideRouter([]),
         { provide: GetUnitsUseCase, useValue: mockGetUnits },
         { provide: GetPropertiesUseCase, useValue: mockGetProperties },
+        { provide: GetUnitUseCase, useValue: mockGetUnit },
+        { provide: DeleteUnitUseCase, useValue: mockDeleteUnit },
         { provide: ActivatedRoute, useValue: activatedRouteStub(null) },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -86,7 +94,7 @@ describe('PropertyUnitsComponent – sin propertyId en URL', () => {
   });
 });
 
-// ─── Carga exitosa de unidades ────────────────────────────────────────────────
+// ─── Carga exitosa de habitaciones ────────────────────────────────────────────────
 describe('PropertyUnitsComponent – carga exitosa', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -95,7 +103,7 @@ describe('PropertyUnitsComponent – carga exitosa', () => {
     mockGetUnits.execute.mockReturnValue(of(MOCK_UNITS));
   });
 
-  it('units contiene las unidades devueltas', async () => {
+  it('units contiene las habitaciones devueltas', async () => {
     const { component } = await setup('p1');
     expect(component.units().length).toBe(2);
   });
@@ -158,8 +166,8 @@ describe('PropertyUnitsComponent – carga en curso', () => {
   });
 });
 
-// ─── Error al cargar unidades ─────────────────────────────────────────────────
-describe('PropertyUnitsComponent – error al cargar unidades', () => {
+// ─── Error al cargar habitaciones ─────────────────────────────────────────────────
+describe('PropertyUnitsComponent – error al cargar habitaciones', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
@@ -170,7 +178,7 @@ describe('PropertyUnitsComponent – error al cargar unidades', () => {
   it('muestra mensaje de error de carga', async () => {
     const { component } = await setup('p1');
     expect(component.errorMessage()).toBe(
-      'No se pudieron cargar las unidades. Inténtalo de nuevo.',
+      'No se pudieron cargar las habitaciones. Inténtalo de nuevo.',
     );
   });
 

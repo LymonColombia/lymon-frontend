@@ -15,9 +15,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { HotelTooltipComponent } from '@/presentation/features/hotel/components/hotel-tooltip/hotel-tooltip';
 import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
 import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
-import { BedType, BedroomDto, UpdateUnitDto } from '@/domain/entities/property.model';
+import { BedDto, BedType, UpdateUnitDto } from '@/domain/entities/property.model';
 import { Unit } from '@/domain/entities/staff.model';
 
 const AMENITY_OPTIONS = [
@@ -43,7 +44,7 @@ const BED_TYPES: BedType[] = ['SINGLE', 'DOUBLE', 'QUEEN', 'KING', 'TWIN', 'BUNK
 @Component({
   selector: 'app-unit-form-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent, HotelTooltipComponent],
   templateUrl: './unit-form-modal.component.html',
   styleUrl: './unit-form-modal.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,6 +66,17 @@ export class UnitFormModalComponent {
   readonly cancelled = output<void>();
 
   protected readonly AMENITY_OPTIONS = AMENITY_OPTIONS;
+  readonly bedTypeOptions: SelectOption[] = BED_TYPES.map((type) => ({ value: type, label: type }));
+
+  readonly form = this.fb.group({
+    name: ['', Validators.required],
+    description: ['', Validators.required],
+    pricePerNight: [null as number | null, [Validators.required, Validators.min(0.01)]],
+    inventoryCount: [1, [Validators.required, Validators.min(1)]],
+    maxGuests: [2, [Validators.required, Validators.min(1)]],
+    bathroomsCount: [1, [Validators.required, Validators.min(1)]],
+    beds: this.fb.array([this.buildBed()], Validators.required),
+  });
 
   constructor() {
     effect(() => {
@@ -72,101 +84,52 @@ export class UnitFormModalComponent {
       if (unit) this.populateForm(unit);
     });
   }
-  readonly bedTypeOptions: SelectOption[] = BED_TYPES.map((type) => ({ value: type, label: type }));
 
-  readonly form = this.fb.group({
-    name: ['', Validators.required],
-    description: ['', Validators.required],
-    inventoryCount: [1, [Validators.required, Validators.min(1)]],
-    maxGuests: [2, [Validators.required, Validators.min(1)]],
-    standardGuests: [1, [Validators.required, Validators.min(1)]],
-    bathroomsCount: [1, [Validators.required, Validators.min(1)]],
-    isShared: [false],
-    pricePerNight: [null as number | null, [Validators.required, Validators.min(0)]],
-    bedrooms: this.fb.array([this.buildBedroom()]),
-    airbnbId: [''],
-    bookingId: [''],
-    vrboId: [''],
-  });
-
-  get bedrooms(): FormArray {
-    return this.form.controls.bedrooms;
+  get beds(): FormArray {
+    return this.form.controls.beds;
   }
 
-  getBedroomAt(index: number): FormGroup {
-    return this.bedrooms.at(index) as FormGroup;
-  }
-
-  getBedsOf(bedroomIndex: number): FormArray {
-    return this.getBedroomAt(bedroomIndex).get('beds') as FormArray;
+  getBedAt(index: number): FormGroup {
+    return this.beds.at(index) as FormGroup;
   }
 
   private populateForm(unit: Unit): void {
     this.form.patchValue({
       name: unit.name,
       description: unit.description ?? '',
+      pricePerNight: unit.pricePerNight ?? null,
       inventoryCount: unit.inventoryCount ?? 1,
       maxGuests: unit.maxGuests ?? 2,
-      standardGuests: unit.standardGuests ?? 1,
       bathroomsCount: unit.bathroomsCount ?? 1,
-      isShared: unit.isShared ?? false,
-      pricePerNight: unit.pricePerNight ?? null,
-      airbnbId: unit.externalIds?.airbnbId ?? '',
-      bookingId: unit.externalIds?.bookingId ?? '',
-      vrboId: unit.externalIds?.vrboId ?? '',
     });
 
-    this.bedrooms.clear();
-    const bedroomsData = unit.bedrooms ?? [];
-    for (const br of bedroomsData) {
-      const bedroomGroup = this.fb.group({
-        roomName: [br.roomName, Validators.required],
-        beds: this.fb.array(
-          br.beds.map(bed =>
-            this.fb.group({
-              type: [bed.type as BedType, Validators.required],
-              count: [bed.count, [Validators.required, Validators.min(1)]],
-            }),
-          ),
-        ),
-      });
-      this.bedrooms.push(bedroomGroup);
+    this.beds.clear();
+    const bedsData = unit.bedrooms?.[0]?.beds ?? [];
+    for (const bed of bedsData) {
+      this.beds.push(this.buildBed(bed.type as BedType, bed.count));
     }
-    if (this.bedrooms.length === 0) {
-      this.bedrooms.push(this.buildBedroom());
+    if (this.beds.length === 0) {
+      this.beds.push(this.buildBed());
     }
 
     this.selectedAmenities.set(new Set(unit.amenities ?? []));
   }
 
-  private buildBedroom(): FormGroup {
+  private buildBed(type: BedType = 'QUEEN', count: number = 1): FormGroup {
     return this.fb.group({
-      roomName: ['', Validators.required],
-      beds: this.fb.array([this.buildBed()]),
+      type: [type, Validators.required],
+      count: [count, [Validators.required, Validators.min(1)]],
     });
   }
 
-  private buildBed(): FormGroup {
-    return this.fb.group({
-      type: ['QUEEN' as BedType, Validators.required],
-      count: [1, [Validators.required, Validators.min(1)]],
-    });
+  addBed(): void {
+    this.beds.push(this.buildBed());
   }
 
-  addBedroom(): void {
-    this.bedrooms.push(this.buildBedroom());
-  }
-
-  removeBedroom(index: number): void {
-    this.bedrooms.removeAt(index);
-  }
-
-  addBed(bedroomIndex: number): void {
-    this.getBedsOf(bedroomIndex).push(this.buildBed());
-  }
-
-  removeBed(bedroomIndex: number, bedIndex: number): void {
-    this.getBedsOf(bedroomIndex).removeAt(bedIndex);
+  removeBed(index: number): void {
+    if (this.beds.length > 1) {
+      this.beds.removeAt(index);
+    }
   }
 
   toggleAmenity(name: string): void {
@@ -202,8 +165,8 @@ export class UnitFormModalComponent {
       : this.createUnitUseCase.execute({ propertyId: this.propertyId(), ...updateDto });
 
     const errorFallback = unitId
-      ? 'Error al actualizar la unidad. Inténtalo de nuevo.'
-      : 'Error al crear la unidad. Inténtalo de nuevo.';
+      ? 'Error al actualizar la habitación. Inténtalo de nuevo.'
+      : 'Error al crear la habitación. Inténtalo de nuevo.';
 
     action$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
@@ -224,17 +187,18 @@ export class UnitFormModalComponent {
       description: raw.description ?? '',
       inventoryCount: raw.inventoryCount ?? 1,
       maxGuests: raw.maxGuests ?? 1,
-      standardGuests: raw.standardGuests ?? 1,
+      standardGuests: raw.maxGuests ?? 1,
       bathroomsCount: raw.bathroomsCount ?? 1,
-      isShared: !!raw.isShared,
+      isShared: false,
       pricePerNight: raw.pricePerNight ?? 0,
       amenities: [...this.selectedAmenities()],
-      bedrooms: raw.bedrooms as BedroomDto[],
-      externalIds: {
-        ...(raw.airbnbId ? { airbnbId: raw.airbnbId } : {}),
-        ...(raw.bookingId ? { bookingId: raw.bookingId } : {}),
-        ...(raw.vrboId ? { vrboId: raw.vrboId } : {}),
-      },
+      bedrooms: [
+        {
+          roomName: raw.name ?? '',
+          beds: raw.beds as BedDto[],
+        },
+      ],
+      externalIds: {},
     };
   }
 }
