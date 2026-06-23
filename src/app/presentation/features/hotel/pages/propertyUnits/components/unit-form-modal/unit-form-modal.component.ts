@@ -15,6 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { FieldLabelComponent } from '@/presentation/shared/components/field-label/field-label.component';
 import { HotelTooltipComponent } from '@/presentation/features/hotel/components/hotel-tooltip/hotel-tooltip';
 import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
 import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
@@ -44,7 +45,7 @@ const BED_TYPES: BedType[] = ['SINGLE', 'DOUBLE', 'QUEEN', 'KING', 'TWIN', 'BUNK
 @Component({
   selector: 'app-unit-form-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent, HotelTooltipComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent, FieldLabelComponent, HotelTooltipComponent],
   templateUrl: './unit-form-modal.component.html',
   styleUrl: './unit-form-modal.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

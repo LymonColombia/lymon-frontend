@@ -1,102 +1,100 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="unit-form">
   @if (errorMessage()) {
-  <div class="alert alert-error">{{ errorMessage() }}</div>
+    <div class="alert alert-error">{{ errorMessage() }}</div>
   }
 
   <div class="form-card">
     <div class="section-title">Información Básica</div>
 
     <div class="form-group">
-      <label>Nombre de la habitación
-        <app-hotel-tooltip ariaLabel="Ayuda nombre">
-          <strong>Nombre de la habitación</strong>
-          Identificador visible para los huéspedes. Ej: Suite Deluxe, Habitación Doble, Cabaña Río.
-        </app-hotel-tooltip>
-        <span class="required">*</span>
-      </label>
-      <app-input type="text" formControlName="name" placeholder="Deluxe Ocean View Suite" />
+      <app-field-label
+        label="Nombre de la habitación"
+        forId="unit-name"
+        description="Identificador visible para los huéspedes. Ej: Suite Deluxe, Habitación Doble, Cabaña Río."
+        [required]="true"
+      />
+      <app-input id="unit-name" type="text" formControlName="name" placeholder="Deluxe Ocean View Suite" />
       @if (form.controls['name'].invalid && form.controls['name'].touched) {
-      <span class="field-error">Campo requerido</span>
+        <span class="field-error">Campo requerido</span>
       }
     </div>
 
     <div class="form-group">
-      <label>Descripción
-        <app-hotel-tooltip ariaLabel="Ayuda descripción">
-          <strong>Descripción</strong>
-          Detalle de las características de la habitación que verán los huéspedes al momento de reservar.
-        </app-hotel-tooltip>
-        <span class="required">*</span>
-      </label>
-      <textarea formControlName="description" rows="3" placeholder="Habitación con vista al mar..."
-        [class.input-invalid]="form.controls['description'].invalid && form.controls['description'].touched"></textarea>
+      <app-field-label
+        label="Descripción"
+        forId="unit-description"
+        description="Detalle de las características de la habitación que verán los huéspedes al momento de reservar."
+        [required]="true"
+      />
+      <textarea
+        id="unit-description"
+        formControlName="description"
+        rows="3"
+        placeholder="Habitación con vista al mar..."
+        [class.input-invalid]="form.controls['description'].invalid && form.controls['description'].touched"
+      ></textarea>
       @if (form.controls['description'].invalid && form.controls['description'].touched) {
-      <span class="field-error">Campo requerido</span>
+        <span class="field-error">Campo requerido</span>
       }
     </div>
 
     <div class="form-row three-col">
       <div class="form-group">
-        <label>Precio por Noche
-          <app-hotel-tooltip ariaLabel="Ayuda precio">
-            <strong>Precio por noche</strong>
-            Tarifa base por noche para este tipo de habitación, en la moneda configurada en tu propiedad.
-          </app-hotel-tooltip>
-          <span class="required">*</span>
-        </label>
-        <app-input type="currency" formControlName="pricePerNight" placeholder="150000" />
+        <app-field-label
+          label="Precio por Noche"
+          forId="unit-price"
+          description="Tarifa base por noche para este tipo de habitación, en la moneda configurada en tu propiedad."
+          [required]="true"
+        />
+        <app-input id="unit-price" type="currency" formControlName="pricePerNight" placeholder="150000" />
         @if (form.controls['pricePerNight'].invalid && form.controls['pricePerNight'].touched) {
-        <span class="field-error">
-          {{ form.controls['pricePerNight'].errors?.['min'] ? 'Debe ser mayor a 0' : 'Campo requerido' }}
-        </span>
+          <span class="field-error">
+            {{ form.controls['pricePerNight'].errors?.['min'] ? 'Debe ser mayor a 0' : 'Campo requerido' }}
+          </span>
         }
       </div>
       <div class="form-group">
-        <label>Cantidad de habitaciones
-          <app-hotel-tooltip ariaLabel="Ayuda inventario">
-            <strong>Cantidad de habitaciones</strong>
-            Cuántas habitaciones físicas existen con estas mismas características. Ej: si tenés 5 habitaciones dobles
-            idénticas, escribí 5.
-          </app-hotel-tooltip>
-          <span class="required">*</span>
-        </label>
-        <app-input type="number" formControlName="inventoryCount" />
+        <app-field-label
+          label="Inventario"
+          forId="unit-inventory"
+          description="Cuántas habitaciones físicas existen con estas mismas características. Ej: si tenés 5 habitaciones dobles idénticas, escribí 5."
+          [required]="true"
+        />
+        <app-input id="unit-inventory" type="number" formControlName="inventoryCount" />
         @if (form.controls['inventoryCount'].invalid && form.controls['inventoryCount'].touched) {
-        <span class="field-error">
-          {{ form.controls['inventoryCount'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
-        </span>
+          <span class="field-error">
+            {{ form.controls['inventoryCount'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+          </span>
         }
       </div>
       <div class="form-group">
-        <label>Máximo de Huéspedes
-          <app-hotel-tooltip ariaLabel="Ayuda huéspedes">
-            <strong>Máximo de huéspedes</strong>
-            Cantidad máxima de personas que pueden alojarse en esta habitación, incluyendo niños.
-          </app-hotel-tooltip>
-          <span class="required">*</span>
-        </label>
-        <app-input type="number" formControlName="maxGuests" />
+        <app-field-label
+          label="Máximo de Huéspedes"
+          forId="unit-max-guests"
+          description="Cantidad máxima de personas que pueden alojarse en esta habitación, incluyendo niños."
+          [required]="true"
+        />
+        <app-input id="unit-max-guests" type="number" formControlName="maxGuests" />
         @if (form.controls['maxGuests'].invalid && form.controls['maxGuests'].touched) {
-        <span class="field-error">
-          {{ form.controls['maxGuests'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
-        </span>
+          <span class="field-error">
+            {{ form.controls['maxGuests'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+          </span>
         }
       </div>
     </div>
 
     <div class="form-group">
-      <label>Cantidad de Baños
-        <app-hotel-tooltip ariaLabel="Ayuda baños">
-          <strong>Cantidad de baños</strong>
-          Número de baños privativos que tiene esta habitación.
-        </app-hotel-tooltip>
-        <span class="required">*</span>
-      </label>
-      <app-input type="number" formControlName="bathroomsCount" />
+      <app-field-label
+        label="Cantidad de Baños"
+        forId="unit-bathrooms"
+        description="Número de baños privativos que tiene esta habitación."
+        [required]="true"
+      />
+      <app-input id="unit-bathrooms" type="number" formControlName="bathroomsCount" />
       @if (form.controls['bathroomsCount'].invalid && form.controls['bathroomsCount'].touched) {
-      <span class="field-error">
-        {{ form.controls['bathroomsCount'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
-      </span>
+        <span class="field-error">
+          {{ form.controls['bathroomsCount'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+        </span>
       }
     </div>
   </div>
@@ -106,45 +104,48 @@
 
     <div formArrayName="beds" class="beds-list">
       @for (bed of beds.controls; track $index; let bedIndex = $index) {
-      <div [formGroupName]="bedIndex" class="bed-row">
-        <div class="form-group">
-          <label>Tipo de cama
-            <app-hotel-tooltip ariaLabel="Ayuda tipo de cama">
-              <strong>Tipo de cama</strong>
-              Categoría de la cama. Ej: King, Queen, Twin, Sencilla.
-            </app-hotel-tooltip>
-            <span class="required">*</span>
-          </label>
-          <app-select [options]="bedTypeOptions" formControlName="type" />
-          @if (getBedAt(bedIndex).controls['type'].invalid && getBedAt(bedIndex).controls['type'].touched) {
-          <span class="field-error">Campo requerido</span>
-          }
+        <div [formGroupName]="bedIndex" class="bed-row">
+          <div class="form-group">
+            <app-field-label
+              label="Tipo de cama"
+              [forId]="'bed-type-' + bedIndex"
+              description="Categoría de la cama. Ej: King, Queen, Twin, Sencilla."
+              [required]="true"
+            />
+            <app-select [id]="'bed-type-' + bedIndex" [options]="bedTypeOptions" formControlName="type" />
+            @if (getBedAt(bedIndex).controls['type'].invalid && getBedAt(bedIndex).controls['type'].touched) {
+              <span class="field-error">Campo requerido</span>
+            }
+          </div>
+          <div class="form-group">
+            <app-field-label
+              label="Cantidad"
+              [forId]="'bed-count-' + bedIndex"
+              description="Cuántas camas de este tipo hay en la habitación."
+              [required]="true"
+            />
+            <app-input [id]="'bed-count-' + bedIndex" type="number" formControlName="count" />
+            @if (getBedAt(bedIndex).controls['count'].invalid && getBedAt(bedIndex).controls['count'].touched) {
+              <span class="field-error">
+                {{ getBedAt(bedIndex).controls['count'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+              </span>
+            }
+          </div>
+          <app-button
+            type="button"
+            variant="text"
+            size="small"
+            [disabled]="beds.length === 1"
+            (clicked)="removeBed(bedIndex)"
+          >
+            Eliminar
+          </app-button>
         </div>
-        <div class="form-group">
-          <label>Cantidad
-            <app-hotel-tooltip ariaLabel="Ayuda cantidad de camas">
-              <strong>Cantidad</strong>
-              Cuántas camas de este tipo hay en la habitación.
-            </app-hotel-tooltip>
-            <span class="required">*</span>
-          </label>
-          <app-input type="number" formControlName="count" />
-          @if (getBedAt(bedIndex).controls['count'].invalid && getBedAt(bedIndex).controls['count'].touched) {
-          <span class="field-error">
-            {{ getBedAt(bedIndex).controls['count'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
-          </span>
-          }
-        </div>
-        <app-button type="button" variant="text" size="small" [disabled]="beds.length === 1"
-          (clicked)="removeBed(bedIndex)">
-          Eliminar
-        </app-button>
-      </div>
       }
     </div>
 
     @if (beds.invalid && beds.touched) {
-    <span class="field-error">Agrega al menos un tipo de cama</span>
+      <span class="field-error">Agrega al menos un tipo de cama</span>
     }
 
     <app-button type="button" variant="outline" size="small" (clicked)="addBed()">
@@ -153,7 +154,8 @@
   </div>
 
   <div class="form-card">
-    <div class="section-title">Amenidades
+    <div class="section-title">
+      <span>Amenidades</span>
       <app-hotel-tooltip ariaLabel="Ayuda amenidades">
         <strong>Amenidades</strong>
         Servicios y comodidades incluidas. Ej: WiFi, TV, Aire acondicionado, Minibar.
@@ -162,10 +164,14 @@
     </div>
     <div class="amenities-grid">
       @for (amenity of AMENITY_OPTIONS; track amenity) {
-      <button type="button" class="amenity-chip" [class.selected]="isAmenitySelected(amenity)"
-        (click)="toggleAmenity(amenity)">
-        {{ amenity }}
-      </button>
+        <button
+          type="button"
+          class="amenity-chip"
+          [class.selected]="isAmenitySelected(amenity)"
+          (click)="toggleAmenity(amenity)"
+        >
+          {{ amenity }}
+        </button>
       }
     </div>
   </div>

@@ -172,11 +172,11 @@
 
                       @if (getRoleGroupAt($index).get('selectedPropertyId')?.value) {
                         <div class="form-group">
-                          <label>Habitaciones <span class="required">*</span></label>
+                          <label [for]="'habitaciones-' + $index">Habitaciones <span class="required">*</span></label>
                           @if (unitsLoadingPerRow()[$index]) {
                             <p class="field-hint">Cargando...</p>
                           } @else {
-                            <select multiple formControlName="resourceIds" class="select-multiple">
+                            <select [id]="'habitaciones-' + $index" multiple formControlName="resourceIds" class="select-multiple">
                               @for (u of getUnitOptionsForRow($index); track u.value) {
                                 <option [value]="u.value">{{ u.label }}</option>
                               }
