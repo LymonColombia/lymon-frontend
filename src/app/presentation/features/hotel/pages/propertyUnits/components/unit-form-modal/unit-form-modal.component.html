@@ -44,7 +44,7 @@
           </app-hotel-tooltip>
           <span class="required">*</span>
         </label>
-        <app-input type="number" formControlName="pricePerNight" placeholder="150" />
+        <app-input type="currency" formControlName="pricePerNight" placeholder="150000" />
         @if (form.controls['pricePerNight'].invalid && form.controls['pricePerNight'].touched) {
         <span class="field-error">
           {{ form.controls['pricePerNight'].errors?.['min'] ? 'Debe ser mayor a 0' : 'Campo requerido' }}
