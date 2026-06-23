@@ -121,11 +121,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(178, 62, 0, 0.1);
+  background-color: #fcece5;
   color: #b23e00;
 
   &.reservation {
-    background-color: rgba(25, 103, 210, 0.1);
+    background-color: #e9f0fa;
     color: #1967d2;
   }
 }
