@@ -22,7 +22,7 @@ export class StorageTestComponent {
     this.result.set(null);
     this.error.set(null);
 
-    this.uploadFileUseCase.execute(file).subscribe({
+    this.uploadFileUseCase.execute(file, 'experiences').subscribe({
       next: (uploaded) => {
         this.result.set(uploaded);
         this.isUploading.set(false);
