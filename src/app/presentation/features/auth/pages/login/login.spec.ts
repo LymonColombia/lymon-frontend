@@ -73,12 +73,12 @@ describe('LoginComponent – inicio de sesión exitoso', () => {
     mockUseCase.execute.mockReturnValue(of(undefined));
   });
 
-  it('navega a /booking tras el éxito', async () => {
+  it('navega a /dashboard tras el éxito', async () => {
     const { component, router } = await setup();
     const navigateSpy = vi.spyOn(router, 'navigate');
     component.form.patchValue({ email: 'admin@lymon.com', password: 'Password1' });
     component.onSubmit();
-    expect(navigateSpy).toHaveBeenCalledWith(['/booking']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard']);
   });
 
   it('isLoading vuelve a false tras el éxito', async () => {

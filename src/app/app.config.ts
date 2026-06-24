@@ -45,6 +45,8 @@ import { GuestExperienceRepository } from '@/domain/repositories/guest-experienc
 import { GuestExperienceRepositoryImpl } from '@/infrastructure/repositories/guest-experience.repository.impl';
 import { PaymentRepository } from '@/domain/repositories/payment.repository';
 import { PaymentRepositoryImpl } from '@/infrastructure/repositories/payment.repository.impl';
+import { PlanRepository } from '@/domain/repositories/plan.repository';
+import { PlanRepositoryImpl } from '@/infrastructure/repositories/plan.repository.impl';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -73,5 +75,6 @@ export const appConfig: ApplicationConfig = {
     { provide: GuestCartRepository, useClass: GuestCartRepositoryImpl },
     { provide: GuestExperienceRepository, useClass: GuestExperienceRepositoryImpl },
     { provide: PaymentRepository, useClass: PaymentRepositoryImpl },
+    { provide: PlanRepository, useClass: PlanRepositoryImpl },
   ],
 };

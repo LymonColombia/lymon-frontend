@@ -36,6 +36,9 @@ export class LoginComponent {
   readonly sessionExpired = signal(
     inject(ActivatedRoute).snapshot.queryParamMap.get('sessionExpired') === 'true',
   );
+  readonly accountCreated = signal(
+    inject(ActivatedRoute).snapshot.queryParamMap.get('registered') === 'true',
+  );
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],

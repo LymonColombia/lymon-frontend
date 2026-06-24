@@ -1,0 +1,400 @@
+:host {
+  display: block;
+}
+
+/* Stepper */
+.register-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 24px 0 32px;
+}
+
+.register-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  position: relative;
+}
+
+.register-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  right: -50%;
+  width: 100%;
+  height: 2px;
+  background: var(--color-border-light);
+  z-index: 0;
+}
+
+.register-step-completed:not(:last-child)::after,
+.register-step-active:not(:last-child)::after {
+  background: var(--color-primary);
+}
+
+.register-step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-tertiary);
+  background: var(--color-bg-tertiary);
+  border: 2px solid var(--color-border-light);
+  z-index: 1;
+  transition: all var(--transition-base);
+}
+
+.register-step-active .register-step-circle {
+  color: var(--color-bg-primary);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.register-step-completed .register-step-circle {
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-primary));
+  border-color: var(--color-primary);
+}
+
+.register-step-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.register-step-active .register-step-label {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.register-step-completed .register-step-label {
+  color: var(--color-primary-dark);
+}
+
+/* Step content */
+.register-step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.register-step-title {
+  font-family: var(--font-primary);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Plans */
+.register-plans-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 0;
+  color: var(--color-text-secondary);
+  font-family: var(--font-primary);
+}
+
+.register-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: register-spin 0.8s linear infinite;
+}
+
+@keyframes register-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.register-plans-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  color: var(--color-error);
+  background: color-mix(in srgb, var(--color-error) 8%, var(--color-bg-primary));
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+}
+
+.register-plans-error p {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: 14px;
+}
+
+.register-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.register-plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 20px;
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-base);
+  font-family: var(--font-primary);
+}
+
+.register-plan-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.register-plan-card-selected {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-primary));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 16%, transparent);
+}
+
+.register-plan-check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: var(--color-primary);
+}
+
+.register-plan-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.register-plan-description {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.register-plan-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: auto;
+}
+
+.register-plan-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.register-plan-price-suffix {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.register-plan-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+
+/* Plan summary */
+.register-plan-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+.register-plan-summary-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+.register-plan-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.register-plan-summary-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.register-plan-summary-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+/* Payment row */
+.register-payment-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .register-payment-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Buttons same size */
+.auth-form .btn-primary,
+.register-btn-secondary {
+  min-height: 52px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+/* Actions */
+.register-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.register-actions .btn-primary,
+.register-actions .register-btn-secondary {
+  flex: 1 1 0;
+}
+
+.register-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-primary);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border: 2px solid var(--color-border-light);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.register-btn-secondary:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.register-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Confirm modal */
+.register-confirm-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: var(--font-primary);
+}
+
+.register-confirm-content > p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.register-confirm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+.register-confirm-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+.register-confirm-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  word-break: break-all;
+}
+
+/* Checkbox white checkmark */
+.checkbox-container input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 2px solid var(--color-border-light);
+  border-radius: 4px;
+  background: var(--color-bg-primary);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.checkbox-container input[type='checkbox']:checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.checkbox-container input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+@media (max-width: 480px) {
+  .register-step-label {
+    display: none;
+  }
+
+  .register-actions {
+    flex-direction: column;
+  }
+}

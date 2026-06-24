@@ -13,6 +13,7 @@ export interface LyhostPlan {
   price: string;
   priceSuffix?: string;
   priceNote?: string;
+  isFree?: boolean;
   detailsSections: LyhostPlanDetailSection[];
 }
 
@@ -22,6 +23,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     name: 'Trial',
     subtitle: 'Prueba Lymon antes de suscribirte',
     price: '$0',
+    isFree: true,
     priceNote: 'Acceso de prueba por tiempo limitado',
     detailsSections: [
       {
@@ -115,4 +117,10 @@ export function normalizePlanType(value: unknown): PlanType | null {
     return 'PLUS';
   }
   return isPlanType(value) ? value : null;
+}
+
+export function isFreePlan(plan: LyhostPlan): boolean {
+  if (plan.isFree === true) return true;
+  const price = plan.price?.trim();
+  return price === '$0' || price === '0' || price === 'Gratis' || plan.type === 'TRIAL';
 }
