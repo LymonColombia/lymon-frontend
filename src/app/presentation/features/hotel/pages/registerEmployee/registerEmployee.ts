@@ -188,8 +188,10 @@ export class RegisterEmployeeComponent implements OnInit {
 
     this.roleAssignments.controls.forEach((group) => {
       const roleGroup = group as FormGroup;
-      messages.push(...this.collectControlErrors(roleGroup.controls['roleId'], 'roleId'));
-      messages.push(...this.collectControlErrors(roleGroup.controls['scopeType'], 'scopeType'));
+      messages.push(
+        ...this.collectControlErrors(roleGroup.controls['roleId'], 'roleId'),
+        ...this.collectControlErrors(roleGroup.controls['scopeType'], 'scopeType'),
+      );
     });
 
     messages.forEach((message) => this.toastService.error(message));

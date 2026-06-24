@@ -1,5 +1,5 @@
 @if (toastService.toasts().length) {
-  <div class="toast-container" role="region" aria-live="polite" aria-label="Notificaciones">
+  <section class="toast-container" aria-live="polite" aria-label="Notificaciones">
     @for (toast of toastService.toasts(); track toast.id) {
       <div class="toast toast--{{ toast.type }}">
         <ng-icon [name]="iconName(toast.type)" size="18px" aria-hidden="true"></ng-icon>
@@ -14,5 +14,5 @@
         </button>
       </div>
     }
-  </div>
+  </section>
 }
