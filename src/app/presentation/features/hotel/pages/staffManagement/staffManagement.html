@@ -3,6 +3,7 @@
   subtitle="Visualiza todos los usuarios registrados por tu tenant"
   iconName="bootstrapPeople"
 >
+  <app-toast />
   <section class="summary-grid" aria-label="Resumen de empleados">
     <article class="summary-card">
       <p class="summary-label">Total de usuarios</p>
@@ -68,12 +69,12 @@
     } @else if (isLoading()) {
       <div class="loading-state">
         <div class="spinner" aria-hidden="true"></div>
-        <p>Cargando empleados...</p>
+        <p>{{ messages.state.loading }}</p>
       </div>
     } @else if (filteredEmployees().length === 0) {
       <div class="empty-state">
-        <p class="empty-title">No se encontraron resultados</p>
-        <p class="empty-subtitle">Intenta con otros términos de búsqueda.</p>
+        <p class="empty-title">{{ messages.state.emptyTitle }}</p>
+        <p class="empty-subtitle">{{ messages.state.emptySubtitle }}</p>
       </div>
     } @else {
       <div class="table-wrapper">
@@ -106,7 +107,7 @@
                 <td>{{ employee.email }}</td>
                 <td>
                   <span class="role-pill" [class.role-pill--admin]="employee.role === 'ADMIN'">
-                    {{ employee.role }}
+                    {{ roleLabel(employee.role) }}
                   </span>
                 </td>
                 <td>
@@ -203,20 +204,20 @@
         <div class="confirm-icon-wrapper confirm-icon-wrapper--danger">
           <ng-icon name="bootstrapTrash" size="24"></ng-icon>
         </div>
-        <h2 id="delete-modal-title">¿Eliminar empleado?</h2>
+        <h2 id="delete-modal-title">{{ messages.confirmation.deleteTitle }}</h2>
       </header>
 
       <div class="modal-body">
-        <p>¿Estás seguro de que deseas eliminar permanentemente a <strong>"{{ employeeToDelete()?.fullName }}"</strong>?</p>
-        <p class="confirm-detail">Esta acción no se puede deshacer y el usuario perderá acceso al sistema.</p>
+        <p>{{ messages.confirmation.deleteMessage(employeeToDelete()?.fullName ?? '') }}</p>
+        <p class="confirm-detail">{{ messages.confirmation.deleteWarning }}</p>
       </div>
 
       <footer class="modal-actions">
         <button type="button" class="btn-ghost" (click)="closeConfirmDelete()" [disabled]="isDeleting() !== null">
-          No, cancelar
+          {{ messages.confirmation.deleteCancel }}
         </button>
         <button type="button" class="btn-primary btn-primary--danger" (click)="confirmDeleteStaff()" [disabled]="isDeleting() !== null">
-          {{ isDeleting() !== null ? 'Eliminando...' : 'Si, eliminar' }}
+          {{ isDeleting() !== null ? messages.confirmation.deleteLoading : messages.confirmation.deleteConfirm }}
         </button>
       </footer>
     </dialog>
@@ -269,7 +270,7 @@
             </div>
             <div class="info-content">
               <span class="info-label">Rol asignado</span>
-              <p id="detail-role">{{ selectedEmployee()?.role }}</p>
+              <p id="detail-role">{{ roleLabel(selectedEmployee()?.role ?? '') }}</p>
             </div>
           </div>
 

@@ -47,6 +47,7 @@ export class InputComponent implements ControlValueAccessor {
   readonly autocomplete = input<string>('off');
   readonly name = input<string>('');
   readonly id = input<string>('');
+  readonly maxlength = input<number | string | null>(null);
 
   readonly valueChange = output<string | number | null>();
   readonly focused = output<void>();
