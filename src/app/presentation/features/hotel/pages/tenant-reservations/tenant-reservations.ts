@@ -16,6 +16,7 @@ import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenant-guests.use-case';
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
+import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 
 export interface ReservationViewModel {
   id: string;
@@ -131,7 +132,7 @@ export class TenantReservations implements OnInit {
             const allUnits = unitsPerProperty.flat();
             this.unitsMap.set(
               allUnits.reduce<Record<string, string>>((acc, u) => {
-                acc[u.id] = u.name || 'Unidad sin nombre';
+                acc[u.id] = u.name || ROOM_MESSAGES.unnamedRoom;
                 return acc;
               }, {})
             );
@@ -388,7 +389,7 @@ export class TenantReservations implements OnInit {
     const statusLabel = this.toStatusLabel(res.status);
     const guestName = this.guestsMap()[res.guestId] || res.guestName || res.guestId || 'Huésped desconocido';
     const propertyName = this.propertiesMap()[res.propertyId] || res.propertyId || 'Propiedad desconocida';
-    const unitName = this.unitsMap()[res.unitId] || res.room || res.unitId || 'Unidad desconocida';
+    const unitName = this.unitsMap()[res.unitId] || res.room || res.unitId || ROOM_MESSAGES.unknownRoom;
 
     return {
       id: res.id,

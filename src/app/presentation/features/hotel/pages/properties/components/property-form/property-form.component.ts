@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import {
   AddressMapPickerComponent,
   NominatimResult,
@@ -15,7 +14,6 @@ import { bootstrapHouseFill } from '@ng-icons/bootstrap-icons';
   imports: [
     ReactiveFormsModule,
     InputComponent,
-    SelectComponent,
     AddressMapPickerComponent,
     NgIcon,
   ],
@@ -26,7 +24,6 @@ import { bootstrapHouseFill } from '@ng-icons/bootstrap-icons';
 })
 export class PropertyFormComponent {
   readonly form = input.required<FormGroup>();
-  readonly propertyTypeOptions = input.required<SelectOption[]>();
 
   onGeocodeResult(result: NominatimResult): void {
     const address = result.address;

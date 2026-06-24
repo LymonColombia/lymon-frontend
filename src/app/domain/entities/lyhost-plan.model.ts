@@ -1,4 +1,5 @@
 import { PlanType } from './auth.model';
+import { ROOM_LABELS } from '@/domain/constants/room.constants';
 
 export interface LyhostPlanDetailSection {
   title: string;
@@ -25,7 +26,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     detailsSections: [
       {
         title: 'CAPACIDAD',
-        items: ['Hasta 1 propiedad', 'Unidades ilimitadas'],
+        items: ['Hasta 1 propiedad', ROOM_LABELS.unlimitedRooms],
       },
       {
         title: 'INTEGRACIONES',
@@ -47,7 +48,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     detailsSections: [
       {
         title: 'CAPACIDAD',
-        items: ['Hasta 5 propiedades', 'Hasta 2 usuarios', 'Unidades ilimitadas'],
+        items: ['Hasta 5 propiedades', 'Hasta 2 usuarios', ROOM_LABELS.unlimitedRooms],
       },
       {
         title: 'INTEGRACIONES',
@@ -69,7 +70,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     detailsSections: [
       {
         title: 'CAPACIDAD',
-        items: ['Hasta 20 propiedades', 'Hasta 10 usuarios', 'Unidades ilimitadas'],
+        items: ['Hasta 20 propiedades', 'Hasta 10 usuarios', ROOM_LABELS.unlimitedRooms],
       },
       {
         title: 'FUNCIONES PREMIUM',
@@ -91,7 +92,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
     detailsSections: [
       {
         title: 'CAPACIDAD',
-        items: ['Propiedades ilimitadas', 'Usuarios ilimitados', 'Unidades ilimitadas'],
+        items: ['Propiedades ilimitadas', 'Usuarios ilimitados', ROOM_LABELS.unlimitedRooms],
       },
       {
         title: 'PREMIUM FEATURES',

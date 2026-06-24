@@ -22,6 +22,7 @@ import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties
 import { GetUnitUseCase } from '@/domain/use-cases/property/get-unit.use-case';
 import { DeleteUnitUseCase } from '@/domain/use-cases/property/delete-unit.use-case';
 import { Unit } from '@/domain/entities/staff.model';
+import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 import { UnitCardComponent } from './components/unit-card/unit-card.component';
 import { UnitFormModalComponent } from './components/unit-form-modal/unit-form-modal.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -107,7 +108,7 @@ export class PropertyUnitsComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage.set('No se pudieron cargar las unidades. Inténtalo de nuevo.');
+        this.errorMessage.set(ROOM_MESSAGES.loadError);
         this.isLoading.set(false);
       },
     });
@@ -140,7 +141,7 @@ export class PropertyUnitsComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.isLoadingEdit.set(false);
-          this.errorMessage.set(err.error?.message ?? 'No se pudo cargar la unidad para editar.');
+          this.errorMessage.set(err.error?.message ?? ROOM_MESSAGES.loadEditError);
         },
       });
   }
@@ -173,14 +174,14 @@ export class PropertyUnitsComponent implements OnInit {
     this.isDeleting.set(false);
     this.showDeleteConfirm.set(false);
     this.unitToDelete.set(null);
-    this.successMessage.set('Unidad eliminada correctamente.');
+    this.successMessage.set(ROOM_MESSAGES.deleteSuccess);
     const currentPropertyId = this.propertyId();
     if (currentPropertyId) this.loadUnits(currentPropertyId);
   }
 
   private handleDeleteError(err: HttpErrorResponse): void {
     this.isDeleting.set(false);
-    this.errorMessage.set(err.error?.message ?? 'Error al eliminar la unidad. Inténtalo de nuevo.');
+    this.errorMessage.set(err.error?.message ?? ROOM_MESSAGES.deleteError);
   }
 
   onUnitSaved(): void {
@@ -188,7 +189,7 @@ export class PropertyUnitsComponent implements OnInit {
     this.showUnitModal.set(false);
     this.editingUnit.set(null);
     this.successMessage.set(
-      wasEditing ? 'Unidad actualizada correctamente.' : 'Unidad creada correctamente.',
+      wasEditing ? ROOM_MESSAGES.updateSuccess : ROOM_MESSAGES.createSuccess,
     );
     const currentPropertyId = this.propertyId();
     if (currentPropertyId) this.loadUnits(currentPropertyId);

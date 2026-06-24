@@ -1,6 +1,6 @@
 <app-hotel-page-layout
   title="Mis Propiedades"
-  subtitle="Gestiona tus propiedades y crea nuevas unidades"
+  subtitle="Gestiona tus propiedades y crea nuevas habitaciones"
   iconName="bootstrapHouseDoorFill"
 >
   <span hotelPageMeta class="properties-count">
@@ -29,7 +29,6 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <app-property-form
           [form]="form"
-          [propertyTypeOptions]="propertyTypeOptions"
         />
 
         <div modal-footer class="form-actions">
@@ -61,7 +60,7 @@
       <div class="empty-state">
         <ng-icon class="empty-state-icon" name="bootstrapHouseDoorFill" size="64px"></ng-icon>
         <p class="empty-title">Aún no tienes propiedades</p>
-        <p class="empty-subtitle">Crea tu primera propiedad para empezar a gestionar unidades</p>
+        <p class="empty-subtitle">Crea tu primera propiedad para empezar a gestionar habitaciones</p>
         <app-button type="button" variant="primary" (clicked)="openForm()">
           Crear primera propiedad
         </app-button>

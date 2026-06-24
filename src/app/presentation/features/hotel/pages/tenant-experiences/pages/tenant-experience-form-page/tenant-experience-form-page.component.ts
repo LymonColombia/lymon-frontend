@@ -104,7 +104,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
           this.unitsLoading.set(false);
         },
         error: () => {
-          this.errorMessage.set('No se pudieron cargar las unidades.');
+          this.errorMessage.set('No se pudieron cargar las habitaciones.');
           this.unitsLoading.set(false);
         }
       });

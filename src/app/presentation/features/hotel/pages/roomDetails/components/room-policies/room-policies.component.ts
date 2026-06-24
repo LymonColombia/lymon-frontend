@@ -20,7 +20,7 @@ export class RoomPoliciesComponent {
     const bathroomsCount = this.unit().bathroomsCount ?? 0;
 
     return [
-      this.unit().isShared ? 'Esta unidad es compartida.' : 'Esta unidad es privada.',
+      this.unit().isShared ? 'Esta habitación es compartida.' : 'Esta habitación es privada.',
       `Capacidad máxima: ${maxGuests} huésped${maxGuests === 1 ? '' : 'es'}.`,
       `Baños disponibles: ${bathroomsCount} baño${bathroomsCount === 1 ? '' : 's'}.`,
       'Consulta condiciones de cancelación al confirmar la reserva.',

@@ -1,6 +1,6 @@
 <app-hotel-page-layout
   [title]="propertyName()"
-  subtitle="Gestiona las unidades de esta propiedad"
+  subtitle="Gestiona las habitaciones de esta propiedad"
   iconName="bootstrapHouseDoorFill"
   [breadcrumbItems]="breadcrumbItems()"
   backLink="/properties"
@@ -14,9 +14,9 @@
     <div class="units-count-row">
       <span class="units-count-chip">
         @if (isLoading()) {
-          Cargando unidades...
+          Cargando habitaciones...
         } @else {
-          {{ units().length }} unidad{{ units().length !== 1 ? 'es' : '' }} registradas
+          {{ units().length }} habitación{{ units().length !== 1 ? 'es' : '' }} registradas
         }
       </span>
     </div>
@@ -31,7 +31,7 @@
     @if (showUnitModal()) {
       <app-modal
         [open]="true"
-        [title]="editingUnit() ? 'Editar Unidad' : 'Nueva Unidad'"
+        [title]="editingUnit() ? 'Editar Habitación' : 'Nueva Habitación'"
         size="large"
         (closed)="closeUnitModal()"
       >
@@ -46,7 +46,7 @@
 
     <app-modal
       [open]="showDeleteConfirm()"
-      title="Eliminar Unidad"
+      title="Eliminar Habitación"
       size="small"
       (closed)="cancelDelete()"
     >
@@ -70,15 +70,15 @@
     @if (isLoading()) {
       <div class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Cargando unidades...</p>
+        <p>Cargando habitaciones...</p>
       </div>
     } @else if (units().length === 0) {
       <div class="empty-state">
         <ng-icon class="empty-state-icon" name="bootstrapHouseDoorFill" size="64px"></ng-icon>
-        <p class="empty-title">Sin unidades</p>
-        <p class="empty-subtitle">Esta propiedad aún no tiene unidades registradas.</p>
+        <p class="empty-title">Sin habitaciones</p>
+        <p class="empty-subtitle">Esta propiedad aún no tiene habitaciones registradas.</p>
         <app-button type="button" variant="primary" (clicked)="navigateToCreateUnit()">
-          Crear primera unidad
+          Crear primera habitación
         </app-button>
       </div>
     } @else {
@@ -95,8 +95,8 @@
           <span class="create-unit-icon" aria-hidden="true">
             <ng-icon name="bootstrapPlus" size="20px"></ng-icon>
           </span>
-          <span class="create-unit-title">Nueva Unidad</span>
-          <span class="create-unit-subtitle">Haz clic para agregar una unidad</span>
+          <span class="create-unit-title">Nueva Habitación</span>
+          <span class="create-unit-subtitle">Haz clic para agregar una habitación</span>
         </button>
       </div>
     }

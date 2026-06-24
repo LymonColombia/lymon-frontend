@@ -6,103 +6,163 @@
   <div class="form-card">
     <div class="section-title">Información Básica</div>
 
-    <div class="form-row">
+    <div class="form-group">
+      <app-field-label
+        label="Nombre de la habitación"
+        forId="unit-name"
+        description="Identificador visible para los huéspedes. Ej: Suite Deluxe, Habitación Doble, Cabaña Río."
+        [required]="true"
+      />
+      <app-input id="unit-name" type="text" formControlName="name" placeholder="Deluxe Ocean View Suite" />
+      @if (form.controls['name'].invalid && form.controls['name'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <app-field-label
+        label="Descripción"
+        forId="unit-description"
+        description="Detalle de las características de la habitación que verán los huéspedes al momento de reservar."
+        [required]="true"
+      />
+      <textarea
+        id="unit-description"
+        aria-label="Descripción"
+        formControlName="description"
+        rows="3"
+        placeholder="Habitación con vista al mar..."
+        [class.input-invalid]="form.controls['description'].invalid && form.controls['description'].touched"
+      ></textarea>
+      @if (form.controls['description'].invalid && form.controls['description'].touched) {
+        <span class="field-error">Campo requerido</span>
+      }
+    </div>
+
+    <div class="form-row three-col">
       <div class="form-group">
-        <label>Nombre de la Unidad <span class="required">*</span></label>
-        <app-input type="text" formControlName="name" placeholder="Deluxe Ocean View Suite" />
+        <app-field-label
+          label="Precio por Noche"
+          forId="unit-price"
+          description="Tarifa base por noche para este tipo de habitación, en la moneda configurada en tu propiedad."
+          [required]="true"
+        />
+        <app-input id="unit-price" type="currency" formControlName="pricePerNight" placeholder="150000" />
+        @if (form.controls['pricePerNight'].invalid && form.controls['pricePerNight'].touched) {
+          <span class="field-error">
+            {{ form.controls['pricePerNight'].errors?.['min'] ? 'Debe ser mayor a 0' : 'Campo requerido' }}
+          </span>
+        }
       </div>
       <div class="form-group">
-        <label>Precio por Noche <span class="required">*</span></label>
-        <app-input type="number" formControlName="pricePerNight" placeholder="150" />
+        <app-field-label
+          label="Inventario"
+          forId="unit-inventory"
+          description="Cuántas habitaciones físicas existen con estas mismas características. Ej: si tenés 5 habitaciones dobles idénticas, escribí 5."
+          [required]="true"
+        />
+        <app-input id="unit-inventory" type="number" formControlName="inventoryCount" />
+        @if (form.controls['inventoryCount'].invalid && form.controls['inventoryCount'].touched) {
+          <span class="field-error">
+            {{ form.controls['inventoryCount'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+          </span>
+        }
+      </div>
+      <div class="form-group">
+        <app-field-label
+          label="Máximo de Huéspedes"
+          forId="unit-max-guests"
+          description="Cantidad máxima de personas que pueden alojarse en esta habitación, incluyendo niños."
+          [required]="true"
+        />
+        <app-input id="unit-max-guests" type="number" formControlName="maxGuests" />
+        @if (form.controls['maxGuests'].invalid && form.controls['maxGuests'].touched) {
+          <span class="field-error">
+            {{ form.controls['maxGuests'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+          </span>
+        }
       </div>
     </div>
 
     <div class="form-group">
-      <label>Descripción <span class="required">*</span></label>
-      <textarea formControlName="description" rows="3" placeholder="Spacious suite with private balcony..."></textarea>
-    </div>
-
-    <div class="form-row four-col">
-      <div class="form-group">
-        <label>Inventario <span class="required">*</span></label>
-        <app-input type="number" formControlName="inventoryCount" />
-      </div>
-      <div class="form-group">
-        <label>Máx. Huéspedes <span class="required">*</span></label>
-        <app-input type="number" formControlName="maxGuests" />
-      </div>
-      <div class="form-group">
-        <label>Huéspedes Estándar <span class="required">*</span></label>
-        <app-input type="number" formControlName="standardGuests" />
-      </div>
-      <div class="form-group">
-        <label>Baños <span class="required">*</span></label>
-        <app-input type="number" formControlName="bathroomsCount" />
-      </div>
-    </div>
-
-    <div class="checkbox-group">
-      <label class="checkbox-label">
-        <input type="checkbox" formControlName="isShared" />
-        <span class="checkbox-text">Unidad compartida</span>
-      </label>
+      <app-field-label
+        label="Cantidad de Baños"
+        forId="unit-bathrooms"
+        description="Número de baños privativos que tiene esta habitación."
+        [required]="true"
+      />
+      <app-input id="unit-bathrooms" type="number" formControlName="bathroomsCount" />
+      @if (form.controls['bathroomsCount'].invalid && form.controls['bathroomsCount'].touched) {
+        <span class="field-error">
+          {{ form.controls['bathroomsCount'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+        </span>
+      }
     </div>
   </div>
 
   <div class="form-card">
-    <div class="section-title">Habitaciones y Camas</div>
+    <div class="section-title">Camas</div>
 
-    <div formArrayName="bedrooms">
-      @for (br of bedrooms.controls; track $index; let bedroomIndex = $index) {
-        <div [formGroupName]="bedroomIndex" class="bedroom-section">
-          <div class="bedroom-header">
-            <span class="bedroom-label">Habitación #{{ bedroomIndex + 1 }}</span>
-            @if (bedrooms.length > 1) {
-              <app-button type="button" variant="text" size="small" (clicked)="removeBedroom(bedroomIndex)">
-                Eliminar
-              </app-button>
-            }
-          </div>
-
+    <div formArrayName="beds" class="beds-list">
+      @for (bed of beds.controls; track $index; let bedIndex = $index) {
+        <div [formGroupName]="bedIndex" class="bed-row">
           <div class="form-group">
-            <label>Nombre de la Habitación <span class="required">*</span></label>
-            <app-input type="text" formControlName="roomName" placeholder="Master Bedroom" />
-          </div>
-
-          <div formArrayName="beds">
-            @for (bed of getBedsOf(bedroomIndex).controls; track $index; let bedIndex = $index) {
-              <div [formGroupName]="bedIndex" class="bed-row">
-                <div class="form-group">
-                  <label>Tipo de Cama</label>
-                  <app-select [options]="bedTypeOptions" formControlName="type" />
-                </div>
-                <div class="form-group">
-                  <label>Cantidad</label>
-                  <app-input type="number" formControlName="count" />
-                </div>
-                @if (getBedsOf(bedroomIndex).length > 1) {
-                  <app-button type="button" variant="text" size="small" (clicked)="removeBed(bedroomIndex, bedIndex)">
-                    Eliminar
-                  </app-button>
-                }
-              </div>
+            <app-field-label
+              label="Tipo de cama"
+              [forId]="'bed-type-' + bedIndex"
+              description="Categoría de la cama. Ej: King, Queen, Twin, Sencilla."
+              [required]="true"
+            />
+            <app-select [id]="'bed-type-' + bedIndex" [options]="bedTypeOptions" formControlName="type" />
+            @if (getBedAt(bedIndex).controls['type'].invalid && getBedAt(bedIndex).controls['type'].touched) {
+              <span class="field-error">Campo requerido</span>
             }
           </div>
-
-          <app-button type="button" variant="outline" size="small" (clicked)="addBed(bedroomIndex)">
-            + Agregar cama
+          <div class="form-group">
+            <app-field-label
+              label="Cantidad"
+              [forId]="'bed-count-' + bedIndex"
+              description="Cuántas camas de este tipo hay en la habitación."
+              [required]="true"
+            />
+            <app-input [id]="'bed-count-' + bedIndex" type="number" formControlName="count" />
+            @if (getBedAt(bedIndex).controls['count'].invalid && getBedAt(bedIndex).controls['count'].touched) {
+              <span class="field-error">
+                {{ getBedAt(bedIndex).controls['count'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+              </span>
+            }
+          </div>
+          <app-button
+            type="button"
+            variant="text"
+            size="small"
+            [disabled]="beds.length === 1"
+            (clicked)="removeBed(bedIndex)"
+          >
+            Eliminar
           </app-button>
         </div>
       }
     </div>
 
-    <app-button type="button" variant="outline" (clicked)="addBedroom()">
-      + Agregar habitación
+    @if (beds.invalid && beds.touched) {
+      <span class="field-error">Agrega al menos un tipo de cama</span>
+    }
+
+    <app-button type="button" variant="outline" size="small" (clicked)="addBed()">
+      + Agregar tipo de cama
     </app-button>
   </div>
 
   <div class="form-card">
-    <div class="section-title">Amenidades</div>
+    <div class="section-title">
+      <span>Amenidades</span>
+      <app-hotel-tooltip ariaLabel="Ayuda amenidades">
+        <strong>Amenidades</strong>
+        Servicios y comodidades incluidas. Ej: WiFi, TV, Aire acondicionado, Minibar.
+      </app-hotel-tooltip>
+      <span class="optional">(Opcional)</span>
+    </div>
     <div class="amenities-grid">
       @for (amenity of AMENITY_OPTIONS; track amenity) {
         <button
@@ -117,28 +177,10 @@
     </div>
   </div>
 
-  <div class="form-card">
-    <div class="section-title">Identificadores Externos <span class="optional">(Opcional)</span></div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Airbnb ID</label>
-        <app-input type="text" formControlName="airbnbId" placeholder="airbnb123456" />
-      </div>
-      <div class="form-group">
-        <label>Booking.com ID</label>
-        <app-input type="text" formControlName="bookingId" placeholder="booking789012" />
-      </div>
-      <div class="form-group">
-        <label>VRBO ID</label>
-        <app-input type="text" formControlName="vrboId" placeholder="vrbo345678" />
-      </div>
-    </div>
-  </div>
-
   <div class="form-actions" modal-footer>
     <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
-    <app-button type="submit" variant="primary" [loading]="isSubmitting()" [disabled]="isSubmitting()">
-      {{ isEditMode() ? 'Guardar cambios' : 'Crear Unidad' }}
+    <app-button type="submit" variant="primary" [loading]="isSubmitting()" [disabled]="form.invalid || isSubmitting()">
+      {{ isEditMode() ? 'Guardar cambios' : 'Crear Habitación' }}
     </app-button>
   </div>
 </form>

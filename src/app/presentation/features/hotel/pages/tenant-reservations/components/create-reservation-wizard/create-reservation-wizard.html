@@ -143,10 +143,10 @@
           </div>
 
           <div class="form-group">
-            <label for="unitSelect">Unidad</label>
+            <label for="unitSelect">Habitación</label>
             <div class="select-wrapper">
               <select id="unitSelect" [(ngModel)]="reservationForm.unitId" name="unitId">
-                <option value="" disabled selected>Selecciona unidad...</option>
+                <option value="" disabled selected>Selecciona habitación...</option>
                 @for (unit of units(); track unit.id) {
                 <option [value]="unit.id">{{ unit.name }}</option>
                 }
