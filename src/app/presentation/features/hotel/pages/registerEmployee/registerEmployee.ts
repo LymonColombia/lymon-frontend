@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { normalizeEmail } from '@/presentation/shared/utils/email.utils';
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { AddStaffUseCase } from '@/domain/use-cases/staff/add-staff.use-case';
 import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
@@ -49,6 +51,7 @@ import {
 })
 export class RegisterEmployeeComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly addStaffUseCase = inject(AddStaffUseCase);
   private readonly getRolesUseCase = inject(GetRolesUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
@@ -105,6 +108,15 @@ export class RegisterEmployeeComponent implements OnInit {
 
   ngOnInit(): void {
     this.syncControlDisabledState();
+
+    this.email.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        const normalized = normalizeEmail(value);
+        if (normalized !== value) {
+          this.email.setValue(normalized, { emitEvent: false });
+        }
+      });
 
     this.getRolesUseCase.execute().subscribe({
       next: (roles) => {
@@ -251,7 +263,7 @@ export class RegisterEmployeeComponent implements OnInit {
     const raw = this.form.getRawValue();
 
     const payload: InviteStaffDto = {
-      email: raw.email as string,
+      email: normalizeEmail(raw.email as string),
       password: raw.password as string,
       fullName: raw.fullName as string,
       document: raw.document as string,
