@@ -9,7 +9,7 @@ import { ReservationRepository } from '@/domain/repositories/reservation.reposit
 export class GetReservationsUseCase {
   private readonly reservationRepository = inject(ReservationRepository);
 
-  execute(params?: { page?: number; limit?: number }): Observable<PaginatedReservations> {
+  execute(params?: { page?: number; limit?: number; status?: string; tenantId?: string }): Observable<PaginatedReservations> {
     return this.reservationRepository.getReservations(params);
   }
 }

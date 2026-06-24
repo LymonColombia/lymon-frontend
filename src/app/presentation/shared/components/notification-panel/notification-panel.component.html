@@ -1,0 +1,50 @@
+<div class="notification-panel">
+  <button
+    type="button"
+    class="bell-button"
+    (click)="toggle()"
+    [attr.aria-expanded]="isOpen()"
+    aria-label="Notificaciones"
+  >
+    <ng-icon
+      [name]="isOpen() ? 'bootstrapBellFill' : 'bootstrapBell'"
+      size="22px"
+      aria-hidden="true"
+    ></ng-icon>
+  </button>
+  @if (unreadCount() > 0 && !isOpen()) {
+    <span class="badge">{{ badgeCount() }}</span>
+  }
+
+  @if (isOpen()) {
+    <div class="dropdown" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+      <div class="dropdown-header">
+        <span class="dropdown-title">Notificaciones</span>
+        @if (notifications().length > 0) {
+          <button type="button" class="mark-read-button" (click)="markAllRead()">
+            Marcar todo leído
+          </button>
+        }
+      </div>
+
+      <div class="dropdown-body">
+        @if (notifications().length === 0) {
+          <div class="empty-state">Sin notificaciones nuevas</div>
+        } @else {
+          @for (notification of notifications(); track notification.id) {
+            <div class="notification-item" [class.unread]="!notification.read">
+              <div class="item-icon" [class.reservation]="notification.type === 'reservation'">
+                <ng-icon [name]="iconName(notification)" size="18px" aria-hidden="true"></ng-icon>
+              </div>
+              <div class="item-content">
+                <span class="item-type">{{ typeLabel(notification) }}</span>
+                <p class="item-message">{{ notification.message }}</p>
+                <span class="item-time">{{ relativeTime(notification.detectedAt) }}</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+</div>
