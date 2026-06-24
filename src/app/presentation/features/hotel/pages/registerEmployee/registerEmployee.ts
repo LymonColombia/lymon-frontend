@@ -8,6 +8,7 @@ import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Role, Property, Unit, ScopeType, InviteStaffDto } from '@/domain/entities/staff.model';
+import { ROOM_LABELS } from '@/domain/constants/room.constants';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
@@ -72,7 +73,7 @@ export class RegisterEmployeeComponent implements OnInit {
   readonly scopeTypeOptions: SelectOption[] = [
     { value: this.SCOPE_TENANT, label: 'TENANT — Todo el hotel' },
     { value: this.SCOPE_PROPERTY, label: 'PROPERTY — Propiedad específica' },
-    { value: this.SCOPE_UNIT, label: 'UNIT — Habitación específica' },
+    { value: this.SCOPE_UNIT, label: ROOM_LABELS.unitScopeLabel },
   ];
 
   readonly roleSelectOptions = computed<SelectOption[]>(() => {

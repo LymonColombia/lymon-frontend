@@ -17,6 +17,7 @@ import { CreateReservationUseCase } from '@/domain/use-cases/reservation/create-
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenant-guests.use-case';
+import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 
 @Component({
   selector: 'app-create-reservation-wizard',
@@ -102,7 +103,7 @@ export class CreateReservationWizardComponent implements OnInit {
 
     this.getUnitsUseCase.execute(propertyId).subscribe({
       next: (unitList) => {
-        this.units.set(unitList.map(u => ({ id: u.id || '', name: u.name || 'Unidad sin nombre' })));
+        this.units.set(unitList.map(u => ({ id: u.id || '', name: u.name || ROOM_MESSAGES.unnamedRoom })));
       },
       error: (err) => console.error('Error fetching units', err)
     });
@@ -196,7 +197,7 @@ export class CreateReservationWizardComponent implements OnInit {
 
     if (!guestId) return 'Debes seleccionar un huésped.';
     if (!propertyId) return 'Debes seleccionar una propiedad.';
-    if (!unitId) return 'Debes seleccionar una unidad.';
+    if (!unitId) return 'Debes seleccionar una habitación.';
     if (!checkIn) return 'Debes seleccionar la fecha de entrada.';
     if (!checkOut) return 'Debes seleccionar la fecha de salida.';
 

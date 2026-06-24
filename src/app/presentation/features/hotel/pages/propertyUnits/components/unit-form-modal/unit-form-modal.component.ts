@@ -21,6 +21,7 @@ import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-c
 import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
 import { BedDto, BedType, UpdateUnitDto } from '@/domain/entities/property.model';
 import { Unit } from '@/domain/entities/staff.model';
+import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 
 const AMENITY_OPTIONS = [
   'WiFi',
@@ -166,8 +167,8 @@ export class UnitFormModalComponent {
       : this.createUnitUseCase.execute({ propertyId: this.propertyId(), ...updateDto });
 
     const errorFallback = unitId
-      ? 'Error al actualizar la habitación. Inténtalo de nuevo.'
-      : 'Error al crear la habitación. Inténtalo de nuevo.';
+      ? ROOM_MESSAGES.updateErrorFallback
+      : ROOM_MESSAGES.createErrorFallback;
 
     action$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {

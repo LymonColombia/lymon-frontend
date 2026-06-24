@@ -13,6 +13,7 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { ROOM_LABELS } from '@/domain/constants/room.constants';
 import {
   bootstrapBarChartFill,
   bootstrapCalendar,
@@ -118,7 +119,7 @@ export class SidebarComponent implements OnInit {
   readonly menuItems: MenuItem[] = [
     { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
     { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/tenant-reservations' },
-    { icon: 'bootstrapHouseDoor', label: 'Propiedades y Habitaciones', route: '/properties' },
+    { icon: 'bootstrapHouseDoor', label: ROOM_LABELS.propertiesAndRooms, route: '/properties' },
     { icon: 'bootstrapStar', label: 'Experiencias', route: '/tenant-experiences' },
     { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/register-employee' },
     { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/employee-management' },

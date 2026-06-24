@@ -9,6 +9,7 @@ import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case'
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitUseCase } from '@/domain/use-cases/property/get-unit.use-case';
 import { DeleteUnitUseCase } from '@/domain/use-cases/property/delete-unit.use-case';
+import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 
 const mockGetUnits = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
@@ -178,7 +179,7 @@ describe('PropertyUnitsComponent – error al cargar habitaciones', () => {
   it('muestra mensaje de error de carga', async () => {
     const { component } = await setup('p1');
     expect(component.errorMessage()).toBe(
-      'No se pudieron cargar las habitaciones. Inténtalo de nuevo.',
+      ROOM_MESSAGES.loadError,
     );
   });
 

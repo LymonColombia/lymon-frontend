@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { Subject, of, throwError } from 'rxjs';
 import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
 import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
+import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 import { UnitFormModalComponent } from './unit-form-modal.component';
 
 const mockCreateUnit = { execute: vi.fn() };
@@ -123,7 +124,7 @@ describe('UnitFormModalComponent', () => {
 
     component.onSubmit();
 
-    expect(component.errorMessage()).toBe('Error al crear la habitación. Inténtalo de nuevo.');
+    expect(component.errorMessage()).toBe(ROOM_MESSAGES.createErrorFallback);
   });
 
   it('should toggle amenities selection', async () => {
