@@ -1,17 +1,7 @@
 <app-hotel-page-layout title="Gestion de Turnos"
   subtitle="Crea turnos fijos y asignalos a empleados por propiedad y fecha" iconName="bootstrapClockHistory">
 
-  @if (notification()) {
-  <div class="notification-toast" [class]="'notification-toast--' + notification()!.type">
-    <div class="notification-content">
-      <ng-icon [name]="notification()!.type === 'error' ? 'bootstrapExclamationTriangle' : 'bootstrapCheckCircle'"
-        size="18">
-      </ng-icon>
-      <span>{{ notification()!.message }}</span>
-    </div>
-    <div class="notification-timeline"></div>
-  </div>
-  }
+  <app-toast />
 
   @if (isConfirmUnassignModalOpen()) {
   <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmUnassignModal()"
@@ -70,7 +60,9 @@
               style="background: var(--color-bg-secondary); color: var(--color-text-secondary);">Actual</span>
             }
           </div>
-          <p class="fixed-time" style="margin-top: 0.25rem; font-size: 0.85rem;">{{ shift.timeRange }}</p>
+          <p class="fixed-time" style="margin-top: 0.25rem; font-size: 0.85rem;">
+            {{ shift.timeRange }} | {{ formatShortDate(shift.startDate) }} → {{ formatShortDate(shift.endDate) }}
+          </p>
           <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin-top: 0.25rem;">{{ shift.propertyName
             }}</p>
         </button>
@@ -93,9 +85,17 @@
     </header>
 
     <div class="modal-body" style="text-align: center;">
+      @if (changeShiftCurrentStarted()) {
+      <p>El turno actualmente asignado a <strong>{{ staffToChangeShift()?.staffName }}</strong> ya está en curso. Al
+        continuar, se desasignará el turno actual y se asignará el nuevo turno seleccionado.</p>
+      <p class="confirm-detail" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 0.5rem;">
+        ¿Estás
+        seguro de que deseás continuar?</p>
+      } @else {
       <p>¿Estás seguro que deseas cambiar el turno de <strong>{{ staffToChangeShift()?.staffName }}</strong>?</p>
       <p class="confirm-detail" style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 0.5rem;">Se
         desasignará el turno actual y se asignará el nuevo seleccionado.</p>
+      }
     </div>
 
     <footer class="modal-actions" style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -287,8 +287,9 @@
         <label class="search-field">
           <div class="search-input-wrap">
             <ng-icon name="bootstrapSearch" size="15" class="search-icon"></ng-icon>
-            <input type="text" class="search-input search-input--with-icon" [value]="fixedSearch()"
-              (input)="onFixedSearch($event)" placeholder="Buscar por nombre..." aria-label="Buscar turnos fijos" />
+            <input type="text" class="search-input search-input--with-icon search-field--name" [value]="fixedSearch()"
+              (input)="onFixedSearch($event)" placeholder="Buscar por nombre del turno..."
+              aria-label="Buscar turnos fijos" />
             @if (fixedSearch()) {
             <button type="button" class="search-clear-btn" (click)="clearFixedSearch()" aria-label="Limpiar búsqueda">
               <ng-icon name="bootstrapEraser" size="14"></ng-icon>
@@ -431,14 +432,27 @@
         <div class="form-section-fields form-section-fields--2col">
           <label class="field-group">
             <span class="field-label">Fecha de inicio <span class="field-required">*</span></span>
-            <input type="date" class="field-input" [value]="newShiftStartDate()"
-              (input)="onNewShiftStartDateInput($event)" />
+            <app-shift-date-picker
+              id="shift-start-date"
+              name="shift-start-date"
+              placeholder="Seleccionar"
+              [value]="newShiftStartDate()"
+              [minDate]="todayIso()"
+              [maxDate]="newShiftEndDate()"
+              [rangeAnchor]="newShiftEndDate()"
+              (dateChange)="onNewShiftStartDateInput($event)" />
           </label>
 
           <label class="field-group">
             <span class="field-label">Fecha de fin <span class="field-required">*</span></span>
-            <input type="date" class="field-input" [value]="newShiftEndDate()"
-              (input)="onNewShiftEndDateInput($event)" />
+            <app-shift-date-picker
+              id="shift-end-date"
+              name="shift-end-date"
+              placeholder="Seleccionar"
+              [value]="newShiftEndDate()"
+              [minDate]="newShiftStartDate() || todayIso()"
+              [rangeAnchor]="newShiftStartDate()"
+              (dateChange)="onNewShiftEndDateInput($event)" />
           </label>
         </div>
       </div>
@@ -473,12 +487,6 @@
         </div>
       </div>
 
-      @if (createShiftError()) {
-      <div class="form-error-banner">
-        <span class="form-error-icon">⚠</span>
-        {{ createShiftError() }}
-      </div>
-      }
     </div>
 
     <footer class="modal-actions">
@@ -545,19 +553,25 @@
 
       <label class="field-group">
         <span class="field-label">Turno</span>
-        <select class="field-input" [value]="assignmentShiftId() ?? ''" (change)="onAssignmentShiftChange($event)"
-          [disabled]="!assignmentProperty() || !assignmentEmployee()">
-          <option value="">Seleccione un turno</option>
+        @if (!assignmentProperty() || !assignmentEmployee()) {
+        <div class="field-input field-input--disabled">Seleccioná propiedad y empleado primero</div>
+        } @else if (assignmentShiftOptions().length === 0) {
+        <div class="field-input field-input--disabled">No hay turnos disponibles</div>
+        } @else {
+        <div class="shift-selector-list">
           @for (shift of assignmentShiftOptions(); track shift.id) {
-          <option [value]="shift.id">{{ shift.name }} ({{ shift.timeRange }})</option>
+          <button type="button" class="shift-selector-option"
+            [class.shift-selector-option--selected]="assignmentShiftId()?.toString() === shift.id.toString()"
+            (click)="selectAssignmentShift(shift.id)">
+            <span class="shift-selector-name">{{ shift.name }}</span>
+            <span class="shift-selector-meta">{{ shift.timeRange }} | {{ formatShortDate(shift.startDate) }} → {{
+              formatShortDate(shift.endDate) }}</span>
+          </button>
           }
-        </select>
+        </div>
+        }
       </label>
     </div>
-
-    @if (createAssignmentError()) {
-    <p class="form-error">{{ createAssignmentError() }}</p>
-    }
 
     <footer class="modal-actions">
       <button type="button" class="btn-ghost" [disabled]="isAssigning()" (click)="closeCreateAssignmentModal()">
@@ -907,8 +921,8 @@
 
                 <div class="gantt-day-shifts">
                   @for (segment of getOverviewAssignmentsForDay(day.iso); track segment.id + segment.gridColumn) {
-                  <div class="gantt-bar gantt-bar--overview gantt-bar--readonly"
-                    [class]="getShiftColorClass(segment)" [style.grid-column]="segment.gridColumn"
+                  <div class="gantt-bar gantt-bar--overview gantt-bar--readonly" [class]="getShiftColorClass(segment)"
+                    [style.grid-column]="segment.gridColumn"
                     title="{{ segment.shiftName }} - {{ segment.employeeName }}">
                     <div class="gantt-bar-info">
                       <span class="gantt-bar-label">{{ segment.employeeName }}</span>
