@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ToastService } from '@/presentation/shared/services/toast.service';
 import { ToastComponent } from '@/presentation/shared/components/toast/toast.component';
+import { ShiftDatePickerComponent } from '@/presentation/shared/components/shift-date-picker/shift-date-picker.component';
 import { translateHttpError } from '@/presentation/shared/utils/http-error-translator';
 import { SHIFT_BACKEND_MESSAGES } from '@/domain/constants/shift-messages.constants';
 import { CreateShiftUseCase } from '@/domain/use-cases/shift/create-shift.use-case';
@@ -86,7 +87,7 @@ interface ShiftOption {
 @Component({
   selector: 'app-staff-shift',
   standalone: true,
-  imports: [HotelPageLayoutComponent, FormsModule, NgIconComponent, ToastComponent],
+  imports: [HotelPageLayoutComponent, FormsModule, NgIconComponent, ToastComponent, ShiftDatePickerComponent],
   providers: [
     provideIcons({
       bootstrapTrash,
@@ -1335,14 +1336,12 @@ export class StaffShiftComponent implements OnInit {
     this.newShiftEnd.set(target?.value ?? '');
   }
 
-  onNewShiftStartDateInput(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    this.newShiftStartDate.set(target?.value ?? '');
+  onNewShiftStartDateInput(value: string): void {
+    this.newShiftStartDate.set(value);
   }
 
-  onNewShiftEndDateInput(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    this.newShiftEndDate.set(target?.value ?? '');
+  onNewShiftEndDateInput(value: string): void {
+    this.newShiftEndDate.set(value);
   }
 
   onNewShiftNotesInput(event: Event): void {

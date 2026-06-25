@@ -1,0 +1,52 @@
+<div class="sdp-wrapper">
+  @if (label()) {
+  <label class="sdp-label" [for]="id()">{{ label() }}</label>
+  }
+
+  <button
+    type="button"
+    class="sdp-trigger"
+    [id]="id()"
+    [attr.name]="name()"
+    [disabled]="disabled()"
+    [attr.aria-expanded]="isOpen()"
+    (click)="toggle()"
+  >
+    <span class="sdp-trigger-text">{{ displayValue() }}</span>
+    <ng-icon name="bootstrapCalendar3" size="16px" aria-hidden="true"></ng-icon>
+  </button>
+
+  @if (isOpen()) {
+  <div class="sdp-dropdown" (mouseleave)="onMouseLeave()">
+    <div class="sdp-header">
+      <button type="button" class="sdp-nav-btn" (click)="prevMonth()" aria-label="Mes anterior">‹</button>
+      <span class="sdp-month-year">{{ monthLabel() }} {{ currentYear() }}</span>
+      <button type="button" class="sdp-nav-btn" (click)="nextMonth()" aria-label="Mes siguiente">›</button>
+    </div>
+
+    <div class="sdp-grid">
+      @for (name of ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']; track name) {
+      <div class="sdp-day-name">{{ name }}</div>
+      }
+
+      @for (day of calendarDays(); track day.date.getTime()) {
+      <button
+        type="button"
+        class="sdp-day"
+        [class.sdp-day--current-month]="day.isCurrentMonth"
+        [class.sdp-day--other-month]="!day.isCurrentMonth"
+        [class.sdp-day--selected]="isSelected(day)"
+        [class.sdp-day--anchor]="isAnchor(day)"
+        [class.sdp-day--range]="isInRange(day)"
+        [class.sdp-day--disabled]="isDisabled(day)"
+        [disabled]="isDisabled(day)"
+        (mouseenter)="onHover(day)"
+        (click)="select(day)"
+      >
+        {{ day.date.getDate() }}
+      </button>
+      }
+    </div>
+  </div>
+  }
+</div>

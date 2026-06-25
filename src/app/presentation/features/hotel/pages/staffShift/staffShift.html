@@ -432,14 +432,27 @@
         <div class="form-section-fields form-section-fields--2col">
           <label class="field-group">
             <span class="field-label">Fecha de inicio <span class="field-required">*</span></span>
-            <input type="date" class="field-input" [value]="newShiftStartDate()"
-              (input)="onNewShiftStartDateInput($event)" />
+            <app-shift-date-picker
+              id="shift-start-date"
+              name="shift-start-date"
+              placeholder="Seleccionar"
+              [value]="newShiftStartDate()"
+              [minDate]="todayIso()"
+              [maxDate]="newShiftEndDate()"
+              [rangeAnchor]="newShiftEndDate()"
+              (dateChange)="onNewShiftStartDateInput($event)" />
           </label>
 
           <label class="field-group">
             <span class="field-label">Fecha de fin <span class="field-required">*</span></span>
-            <input type="date" class="field-input" [value]="newShiftEndDate()"
-              (input)="onNewShiftEndDateInput($event)" />
+            <app-shift-date-picker
+              id="shift-end-date"
+              name="shift-end-date"
+              placeholder="Seleccionar"
+              [value]="newShiftEndDate()"
+              [minDate]="newShiftStartDate() || todayIso()"
+              [rangeAnchor]="newShiftStartDate()"
+              (dateChange)="onNewShiftEndDateInput($event)" />
           </label>
         </div>
       </div>
