@@ -1,18 +1,22 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { normalizeEmail, minLocalPartLength } from '@/presentation/shared/utils/email.utils';
+import { ToastService } from '@/presentation/shared/services/toast.service';
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { AddStaffUseCase } from '@/domain/use-cases/staff/add-staff.use-case';
 import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Role, Property, Unit, ScopeType, InviteStaffDto } from '@/domain/entities/staff.model';
-import { ROOM_LABELS } from '@/domain/constants/room.constants';
+import { EMPLOYEE_MESSAGES, getBackendErrorMessage } from '@/domain/constants/employee-messages.constants';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ToastComponent } from '@/presentation/shared/components/toast/toast.component';
 import {
   bootstrapEye,
   bootstrapEyeSlash,
@@ -33,6 +37,7 @@ import {
     InputComponent,
     SelectComponent,
     ButtonComponent,
+    ToastComponent,
   ],
   providers: [
     provideIcons({
@@ -49,6 +54,8 @@ import {
 })
 export class RegisterEmployeeComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly toastService = inject(ToastService);
   private readonly addStaffUseCase = inject(AddStaffUseCase);
   private readonly getRolesUseCase = inject(GetRolesUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
@@ -59,7 +66,6 @@ export class RegisterEmployeeComponent implements OnInit {
   readonly rolesLoading = signal(true);
   readonly propertiesLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
-  readonly successMessage = signal<string | null>(null);
   readonly showPassword = signal(false);
   readonly availableRoles = signal<Role[]>([]);
   readonly availableProperties = signal<Property[]>([]);
@@ -71,9 +77,9 @@ export class RegisterEmployeeComponent implements OnInit {
   readonly SCOPE_UNIT: ScopeType = 'UNIT';
 
   readonly scopeTypeOptions: SelectOption[] = [
-    { value: this.SCOPE_TENANT, label: 'TENANT — Todo el hotel' },
-    { value: this.SCOPE_PROPERTY, label: 'PROPERTY — Propiedad específica' },
-    { value: this.SCOPE_UNIT, label: ROOM_LABELS.unitScopeLabel },
+    { value: this.SCOPE_TENANT, label: 'Todo el hotel' },
+    { value: this.SCOPE_PROPERTY, label: 'Propiedad específica' },
+    { value: this.SCOPE_UNIT, label: 'Unidad específica' },
   ];
 
   readonly roleSelectOptions = computed<SelectOption[]>(() => {
@@ -83,7 +89,10 @@ export class RegisterEmployeeComponent implements OnInit {
 
     return [
       { value: '', label: 'Seleccionar...' },
-      ...this.availableRoles().map((role) => ({ value: role.id, label: role.name })),
+      ...this.availableRoles().map((role) => ({
+        value: role.id,
+        label: EMPLOYEE_MESSAGES.roleLabel[role.name.toUpperCase() as keyof typeof EMPLOYEE_MESSAGES.roleLabel] ?? role.name,
+      })),
     ];
   });
 
@@ -98,13 +107,22 @@ export class RegisterEmployeeComponent implements OnInit {
   readonly form = this.fb.group({
     fullName: ['', [Validators.required]],
     document: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', [Validators.required, Validators.email, Validators.maxLength(254), minLocalPartLength(8)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     roleAssignments: this.fb.array([this.buildRoleGroup()]),
   });
 
   ngOnInit(): void {
     this.syncControlDisabledState();
+
+    this.email.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        const normalized = normalizeEmail(value);
+        if (normalized !== value) {
+          this.email.setValue(normalized, { emitEvent: false });
+        }
+      });
 
     this.getRolesUseCase.execute().subscribe({
       next: (roles) => {
@@ -114,7 +132,7 @@ export class RegisterEmployeeComponent implements OnInit {
       },
       error: () => {
         this.rolesLoading.set(false);
-        this.errorMessage.set('No se pudieron cargar los roles disponibles.');
+        this.errorMessage.set(EMPLOYEE_MESSAGES.error.loadRoles);
         this.syncControlDisabledState();
       },
     });
@@ -146,6 +164,37 @@ export class RegisterEmployeeComponent implements OnInit {
   }
   get roleAssignments(): FormArray {
     return this.form.controls.roleAssignments;
+  }
+
+  private readonly errorMessages: Record<string, Record<string, string>> =
+    EMPLOYEE_MESSAGES.validation as Record<string, Record<string, string>>;
+
+  private collectControlErrors(control: AbstractControl, fieldName: string): string[] {
+    if (!control.errors) return [];
+    const map = this.errorMessages[fieldName] ?? {};
+    return Object.keys(control.errors)
+      .map((errorKey) => map[errorKey])
+      .filter((message): message is string => !!message);
+  }
+
+  private showValidationErrorsAsToasts(): void {
+    const controls = this.form.controls;
+    const messages: string[] = [
+      ...this.collectControlErrors(controls.fullName, 'fullName'),
+      ...this.collectControlErrors(controls.document, 'document'),
+      ...this.collectControlErrors(controls.email, 'email'),
+      ...this.collectControlErrors(controls.password, 'password'),
+    ];
+
+    this.roleAssignments.controls.forEach((group) => {
+      const roleGroup = group as FormGroup;
+      messages.push(
+        ...this.collectControlErrors(roleGroup.controls['roleId'], 'roleId'),
+        ...this.collectControlErrors(roleGroup.controls['scopeType'], 'scopeType'),
+      );
+    });
+
+    messages.forEach((message) => this.toastService.error(message));
   }
 
   getRoleGroupAt(index: number): FormGroup {
@@ -241,17 +290,17 @@ export class RegisterEmployeeComponent implements OnInit {
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.showValidationErrorsAsToasts();
       return;
     }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     const raw = this.form.getRawValue();
 
     const payload: InviteStaffDto = {
-      email: raw.email as string,
+      email: normalizeEmail(raw.email as string),
       password: raw.password as string,
       fullName: raw.fullName as string,
       document: raw.document as string,
@@ -276,7 +325,7 @@ export class RegisterEmployeeComponent implements OnInit {
     this.addStaffUseCase.execute(payload).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.successMessage.set('Empleado registrado correctamente.');
+        this.toastService.success(EMPLOYEE_MESSAGES.success.create);
         this.form.reset();
         while (this.roleAssignments.length > 1) {
           this.roleAssignments.removeAt(1);
@@ -293,13 +342,14 @@ export class RegisterEmployeeComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
         if (err.status === 409) {
-          this.errorMessage.set('Ya existe un empleado con este correo electrónico.');
+          this.toastService.error(EMPLOYEE_MESSAGES.error.conflict);
         } else if (err.status === 401) {
-          this.errorMessage.set('No autorizado. Por favor inicia sesión de nuevo.');
+          this.toastService.error(EMPLOYEE_MESSAGES.error.unauthorized);
         } else if (err.status === 400) {
-          this.errorMessage.set(err.error?.message ?? 'Datos inválidos. Verifica los campos.');
+          const backendMessage = getBackendErrorMessage(err.error?.message);
+          this.toastService.error(backendMessage ?? 'El usuario ya es miembro de este tenant.');
         } else {
-          this.errorMessage.set('Ocurrió un error inesperado. Inténtalo de nuevo.');
+          this.toastService.error(EMPLOYEE_MESSAGES.error.unexpected);
         }
       },
     });

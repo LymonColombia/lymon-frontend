@@ -8,8 +8,14 @@ import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
 import { DeleteStaffUseCase } from '@/domain/use-cases/staff/delete-staff.use-case';
 import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
 import { Role, StaffMember } from '@/domain/entities/staff.model';
+import {
+  EMPLOYEE_MESSAGES,
+  getEmployeeRoleLabel,
+} from '@/domain/constants/employee-messages.constants';
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ToastComponent } from '@/presentation/shared/components/toast/toast.component';
+import { ToastService } from '@/presentation/shared/services/toast.service';
 
 interface EmployeeRow {
   id: string;
@@ -24,7 +30,7 @@ interface EmployeeRow {
 @Component({
   selector: 'app-staff-management',
   standalone: true,
-  imports: [HotelPageLayoutComponent, NgIcon, ButtonComponent],
+  imports: [HotelPageLayoutComponent, NgIcon, ButtonComponent, ToastComponent],
   providers: [provideIcons({ 
     bootstrapPeople, 
     bootstrapTrash, 
@@ -47,6 +53,7 @@ export class StaffManagementComponent implements OnInit {
   private readonly getStaffUseCase = inject(GetStaffUseCase);
   private readonly getRolesUseCase = inject(GetRolesUseCase);
   private readonly deleteStaffUseCase = inject(DeleteStaffUseCase);
+  private readonly toastService = inject(ToastService);
 
   readonly isLoading = signal(true);
   readonly isDeleting = signal<string | null>(null);
@@ -57,6 +64,7 @@ export class StaffManagementComponent implements OnInit {
   readonly copyNotification = signal<{ show: boolean; message: string }>({ show: false, message: '' });
   readonly errorMessage = signal<string | null>(null);
   readonly employees = signal<EmployeeRow[]>([]);
+  readonly messages = EMPLOYEE_MESSAGES;
   readonly searchQuery = signal('');
   readonly selectedLetter = signal<string | null>(null);
   readonly roles = signal<Role[]>([]);
@@ -84,8 +92,9 @@ export class StaffManagementComponent implements OnInit {
       const fullName = this.normalizeText(employee.fullName);
       const email = this.normalizeText(employee.email);
       const role = this.normalizeText(employee.role);
+      const roleLabel = this.normalizeText(this.roleLabel(employee.role));
 
-      return fullName.includes(query) || email.includes(query) || role.includes(query);
+      return fullName.includes(query) || email.includes(query) || role.includes(query) || roleLabel.includes(query);
     });
   });
 
@@ -144,7 +153,7 @@ export class StaffManagementComponent implements OnInit {
           this.errorMessage.set(null);
         },
         error: () => {
-          this.errorMessage.set('No fue posible cargar los empleados registrados.');
+          this.errorMessage.set(EMPLOYEE_MESSAGES.error.loadEmployees);
           this.isLoading.set(false);
         },
       });
@@ -167,7 +176,7 @@ export class StaffManagementComponent implements OnInit {
 
   copyToClipboard(text: string): void {
     navigator.clipboard.writeText(text).then(() => {
-      this.copyNotification.set({ show: true, message: '¡Copiado al portapapeles!' });
+      this.copyNotification.set({ show: true, message: EMPLOYEE_MESSAGES.copy });
       setTimeout(() => {
         this.copyNotification.set({ show: false, message: '' });
       }, 2500);
@@ -192,11 +201,12 @@ export class StaffManagementComponent implements OnInit {
         next: () => {
           this.isDeleting.set(null);
           this.closeConfirmDelete();
+          this.toastService.success(EMPLOYEE_MESSAGES.success.delete);
           this.refreshStaff();
         },
         error: () => {
           this.isDeleting.set(null);
-          this.errorMessage.set('Ocurrió un error al intentar eliminar el empleado.');
+          this.toastService.error(EMPLOYEE_MESSAGES.error.deleteEmployee);
         },
       });
   }
@@ -216,6 +226,10 @@ export class StaffManagementComponent implements OnInit {
     if (page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
     }
+  }
+
+  roleLabel(role: string): string {
+    return getEmployeeRoleLabel(role);
   }
 
   private normalizeText(text: string): string {
