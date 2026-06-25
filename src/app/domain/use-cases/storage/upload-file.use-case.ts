@@ -10,7 +10,7 @@ export class UploadFileUseCase {
 
   execute(file: File, category: MediaCategory): Observable<UploadedFile> {
     return this.storageRepository
-      .getPresignedUrl({ fileName: file.name, contentType: file.type, category })
+      .getPresignedUrl({ fileName: file.name, contentType: file.type, fileSize: file.size, category })
       .pipe(
         switchMap(({ presignedUrl, fileUrl, key }) =>
           this.storageRepository

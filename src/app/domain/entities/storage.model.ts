@@ -3,6 +3,7 @@ export type MediaCategory = 'experiences' | 'units' | 'properties';
 export interface GetPresignedUrlRequest {
   fileName: string;
   contentType: string;
+  fileSize: number;
   category: MediaCategory;
 }
 
