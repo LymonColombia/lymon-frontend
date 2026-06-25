@@ -307,6 +307,23 @@
         }
       </form>
 
+      <p
+        style="
+          text-align: center;
+          margin-top: 16px;
+          font-family: var(--font-primary);
+          font-size: 14px;
+          color: var(--color-text-secondary);
+        "
+      >
+        ¿Ya tienes cuenta?
+        <a
+          routerLink="/login"
+          style="color: var(--color-primary-dark); text-decoration: none; font-weight: 600"
+          >Inicia sesión</a
+        >
+      </p>
+
       <app-modal [open]="isTermsOpen()" title="Términos y Condiciones" size="medium" (closed)="closeTermsModal()">
         <div class="terms-content">
           <p>Estos términos regulan la relación entre la plataforma de gestión hotelera (en adelante, "La Plataforma") y
