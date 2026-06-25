@@ -10,6 +10,10 @@ import {
 import { FormsModule } from '@angular/forms';
 
 import { HotelPageLayoutComponent } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
+import { ToastService } from '@/presentation/shared/services/toast.service';
+import { ToastComponent } from '@/presentation/shared/components/toast/toast.component';
+import { translateHttpError } from '@/presentation/shared/utils/http-error-translator';
+import { SHIFT_BACKEND_MESSAGES } from '@/domain/constants/shift-messages.constants';
 import { CreateShiftUseCase } from '@/domain/use-cases/shift/create-shift.use-case';
 import { GetShiftsUseCase } from '@/domain/use-cases/shift/get-shifts.use-case';
 import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
@@ -82,7 +86,7 @@ interface ShiftOption {
 @Component({
   selector: 'app-staff-shift',
   standalone: true,
-  imports: [HotelPageLayoutComponent, FormsModule, NgIconComponent],
+  imports: [HotelPageLayoutComponent, FormsModule, NgIconComponent, ToastComponent],
   providers: [
     provideIcons({
       bootstrapTrash,
@@ -120,6 +124,7 @@ export class StaffShiftComponent implements OnInit {
   private readonly unassignStaffFromShiftUseCase = inject(UnassignStaffFromShiftUseCase);
   private readonly getStaffUseCase = inject(GetStaffUseCase);
   private readonly staffRepository = inject(StaffRepository);
+  private readonly toastService = inject(ToastService);
 
   // ── Tab navigation ──────────────────────────────────────────────────────────
   readonly activeTab = signal<PreviewTab>('calendar');
@@ -136,7 +141,6 @@ export class StaffShiftComponent implements OnInit {
   readonly assignmentProperty = signal('');
   readonly assignmentEmployee = signal('');
   readonly assignmentShiftId = signal<string | number | null>(null);
-  readonly createAssignmentError = signal('');
 
   readonly isEmployeeSelectorModalOpen = signal(false);
   readonly employeeSearch = signal('');
@@ -161,9 +165,6 @@ export class StaffShiftComponent implements OnInit {
   ];
   readonly yearsArray = Array.from({ length: 11 }, (_, i) => 2020 + i);
 
-  readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
-  private notificationTimeout: any;
-
   readonly currentWeekStart = signal<Date>(this.getStartOfWeek(new Date()));
 
   readonly newShiftStaffMemberIds = signal<string[]>([]);
@@ -175,7 +176,6 @@ export class StaffShiftComponent implements OnInit {
   readonly newShiftNotes = signal('');
 
   readonly newShiftName = signal('');
-  readonly createShiftError = signal('');
 
   readonly staffMembers = signal<StaffMember[]>([]);
   readonly properties = signal<Property[]>([]);
@@ -939,14 +939,14 @@ export class StaffShiftComponent implements OnInit {
       switchMap(() => this.assignStaffToShiftUseCase.execute(newId, [data.staffId]))
     ).subscribe({
       next: () => {
-        this.showNotification(`Se ha cambiado el turno de ${data.staffName} exitosamente.`, 'success');
+        this.toastService.success('Turno cambiado correctamente.');
         this.loadFixedShifts();
         this.closeConfirmChangeModal();
         this.closeChangeShiftModal();
         this.isChangingShift.set(false);
       },
-      error: () => {
-        this.showNotification('Error al realizar el cambio de turno.', 'error');
+      error: (err: unknown) => {
+        this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
         this.isChangingShift.set(false);
       }
     });
@@ -959,13 +959,13 @@ export class StaffShiftComponent implements OnInit {
     this.isUnassigning.set(true);
     this.unassignStaffFromShiftUseCase.execute(data.shiftId, [data.staffId]).subscribe({
       next: () => {
-        this.showNotification(`Se ha desasignado a ${data.staffName} exitosamente.`, 'success');
+        this.toastService.success('Empleado desasignado correctamente.');
         this.loadFixedShifts();
         this.closeConfirmUnassignModal();
         this.isUnassigning.set(false);
       },
-      error: () => {
-        this.showNotification('Error al desasignar al empleado.', 'error');
+      error: (err: unknown) => {
+        this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
         this.isUnassigning.set(false);
       }
     });
@@ -974,21 +974,21 @@ export class StaffShiftComponent implements OnInit {
   confirmDeleteShift(): void {
     const detail = this.selectedShiftDetail();
     if (!detail?.id) {
-      this.showNotification('Error: ID del turno no encontrado', 'error');
+      this.toastService.error('No se encontró el turno.');
       return;
     }
 
     this.isDeleting.set(true);
     this.deleteShiftUseCase.execute(detail.id.toString()).subscribe({
       next: () => {
-        this.showNotification('Turno eliminado correctamente', 'success');
+        this.toastService.success('Turno eliminado correctamente.');
         this.isDeleting.set(false);
         this.closeConfirmDeleteModal();
         this.closeShiftDetail();
         this.loadFixedShifts();
       },
-      error: () => {
-        this.showNotification('Error al eliminar el turno', 'error');
+      error: (err: unknown) => {
+        this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
         this.isDeleting.set(false);
       }
     });
@@ -997,7 +997,14 @@ export class StaffShiftComponent implements OnInit {
   confirmUpdateShift(): void {
     const detail = this.selectedShiftDetail();
     if (!detail?.id || !detail?.propertyId) {
-      this.showNotification('Error: Información del turno incompleta', 'error');
+      this.toastService.error('Información del turno incompleta.');
+      return;
+    }
+
+    const validationErrors = this.validateEditShift();
+    if (validationErrors.length > 0) {
+      validationErrors.forEach((message) => this.toastService.error(message));
+      this.closeConfirmEditModal();
       return;
     }
 
@@ -1014,32 +1021,21 @@ export class StaffShiftComponent implements OnInit {
 
     this.updateShiftUseCase.execute(detail.id.toString(), updateData).subscribe({
       next: () => {
-        this.showNotification('Turno actualizado correctamente', 'success');
+        this.toastService.success('Turno actualizado correctamente.');
         this.loadFixedShifts();
         this.closeShiftDetail();
         this.isUpdating.set(false);
       },
-      error: () => {
-        this.showNotification('Error al actualizar el turno', 'error');
+      error: (err: unknown) => {
+        this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
         this.isUpdating.set(false);
         this.closeConfirmEditModal();
       }
     });
   }
 
-  showNotification(message: string, type: 'error' | 'success' = 'error'): void {
-    if (this.notificationTimeout) {
-      clearTimeout(this.notificationTimeout);
-    }
-    this.notification.set({ message, type });
-    this.notificationTimeout = setTimeout(() => {
-      this.notification.set(null);
-    }, 5000);
-  }
-
   openCreateAssignmentModal(): void {
     this.isCreateAssignmentModalOpen.set(true);
-    this.createAssignmentError.set('');
     this.assignmentProperty.set('');
     this.assignmentEmployee.set('');
     this.assignmentShiftId.set(null);
@@ -1223,16 +1219,25 @@ export class StaffShiftComponent implements OnInit {
     let employeeId = this.assignmentEmployee().trim();
     const shiftId = this.assignmentShiftId();
 
-    if (!propertyId || !employeeId || shiftId === null || shiftId === '') {
-      this.showNotification(
-        'Completa propiedad, empleado y turno para crear la asignación.', 'error'
-      );
+    const assignmentErrors = this.validateAssignment();
+    if (assignmentErrors.length > 0) {
+      assignmentErrors.forEach((message) => this.toastService.error(message));
       return;
     }
 
     const shift = this.fixedShifts().find(s => s.id === shiftId);
     if (!shift) {
-      this.showNotification('El turno seleccionado no es válido.', 'error');
+      this.toastService.error('El turno seleccionado no es válido.');
+      return;
+    }
+
+    const today = this.todayIso();
+    if (shift.startDate && shift.startDate < today) {
+      this.toastService.error('No se puede asignar un turno con fecha de inicio pasada.');
+      return;
+    }
+    if (shift.endDate && shift.endDate < today) {
+      this.toastService.error('No se puede asignar un turno con fecha de fin pasada.');
       return;
     }
 
@@ -1253,24 +1258,23 @@ export class StaffShiftComponent implements OnInit {
       });
 
       if (conflictingShift) {
-        this.showNotification(
-          `Conflicto: El empleado ya tiene el turno "${conflictingShift.name}" del ${conflictingShift.startDate} al ${conflictingShift.endDate}.`,
-          'error'
+        this.toastService.error(
+          `Conflicto: El empleado ya tiene el turno "${conflictingShift.name}" del ${conflictingShift.startDate} al ${conflictingShift.endDate}.`
         );
         return;
       }
     }
 
     this.isAssigning.set(true);
-    this.assignStaffToShiftUseCase.execute(shiftId.toString(), [employeeId]).subscribe({
+    this.assignStaffToShiftUseCase.execute(shiftId!.toString(), [employeeId]).subscribe({
       next: () => {
-        this.showNotification('Turno asignado correctamente.', 'success');
+        this.toastService.success('Turno asignado correctamente.');
         this.loadFixedShifts();
         this.closeCreateAssignmentModal();
         this.isAssigning.set(false);
       },
-      error: () => {
-        this.showNotification('Error al asignar el turno.', 'error');
+      error: (err: unknown) => {
+        this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
         this.isAssigning.set(false);
       }
     });
@@ -1278,7 +1282,6 @@ export class StaffShiftComponent implements OnInit {
 
   openCreateShiftModal(): void {
     this.isCreateModalOpen.set(true);
-    this.createShiftError.set('');
     if (!this.newShiftPropertyId() && this.properties().length > 0) {
       this.newShiftPropertyId.set(this.properties()[0].id);
     }
@@ -1342,6 +1345,12 @@ export class StaffShiftComponent implements OnInit {
   }
 
   createShift(): void {
+    const validationErrors = this.validateCreateShift();
+    if (validationErrors.length > 0) {
+      validationErrors.forEach((message) => this.toastService.error(message));
+      return;
+    }
+
     const name = this.newShiftName().trim();
     const staffMemberIds = this.newShiftStaffMemberIds();
     const propertyId = this.newShiftPropertyId().trim();
@@ -1351,44 +1360,7 @@ export class StaffShiftComponent implements OnInit {
     const endHour = this.newShiftEnd().trim();
     const notes = this.newShiftNotes().trim();
 
-    if (!name) {
-      this.showNotification('Ingresa un nombre para el turno.');
-      return;
-    }
-
-    if (!propertyId) {
-      this.showNotification('Selecciona una propiedad.');
-      return;
-    }
-    if (!startDate || !endDate) {
-      this.showNotification('Completa las fechas de inicio y fin del turno.');
-      return;
-    }
-    const today = this.todayIso();
-    if (startDate < today) {
-      this.showNotification('La fecha de inicio no puede ser una fecha pasada.');
-      return;
-    }
-    if (endDate < today) {
-      this.showNotification('La fecha de fin no puede ser una fecha pasada.');
-      return;
-    }
-    if (startDate > endDate) {
-      this.showNotification('La fecha de inicio no puede ser posterior a la fecha de fin.');
-      return;
-    }
-    if (!startHour || !endHour) {
-      this.showNotification('Completa el horario de inicio y salida del turno.');
-      return;
-    }
-
-    if (startHour === endHour) {
-      this.showNotification('La hora de inicio y salida no pueden ser iguales.');
-      return;
-    }
-
     this.isCreatingShift.set(true);
-    this.createShiftError.set('');
 
     this.createShiftUseCase
       .execute({
@@ -1403,28 +1375,71 @@ export class StaffShiftComponent implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.showNotification('Turno creado exitosamente.', 'success');
-          this.loadFixedShifts(); // Refresh the list from server
+          this.toastService.success('Turno creado correctamente.');
+          this.loadFixedShifts();
           this.isCreatingShift.set(false);
           this.closeCreateShiftModal();
         },
         error: (err: unknown) => {
-          let message = 'Ocurrio un error al crear el turno. Intenta de nuevo.';
-          if (err && typeof err === 'object') {
-            const httpErr = err as Record<string, unknown>;
-            const body = httpErr['error'] as Record<string, unknown> | null;
-            if (typeof body?.['message'] === 'string' && body['message']) {
-              message = body['message'];
-            } else if (Array.isArray(body?.['message']) && body['message'].length > 0) {
-              message = (body['message'] as string[]).join(' ');
-            } else if (typeof httpErr['message'] === 'string' && httpErr['message']) {
-              message = httpErr['message'];
-            }
-          }
-          this.showNotification(message);
+          this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
           this.isCreatingShift.set(false);
         },
       });
+  }
+
+  private validateCreateShift(): string[] {
+    const errors: string[] = [];
+    const name = this.newShiftName().trim();
+    const propertyId = this.newShiftPropertyId().trim();
+    const startDate = this.newShiftStartDate().trim();
+    const endDate = this.newShiftEndDate().trim();
+    const startHour = this.newShiftStart().trim();
+    const endHour = this.newShiftEnd().trim();
+    const today = this.todayIso();
+
+    if (!name) errors.push('El nombre del turno es obligatorio.');
+    if (!propertyId) errors.push('Seleccioná una propiedad.');
+    if (!startDate) errors.push('La fecha de inicio es obligatoria.');
+    if (!endDate) errors.push('La fecha de fin es obligatoria.');
+    if (startDate && startDate < today) errors.push('La fecha de inicio no puede ser una fecha pasada.');
+    if (endDate && endDate < today) errors.push('La fecha de fin no puede ser una fecha pasada.');
+    if (startDate && endDate && startDate > endDate) errors.push('La fecha de inicio no puede ser posterior a la fecha de fin.');
+    if (!startHour) errors.push('La hora de inicio es obligatoria.');
+    if (!endHour) errors.push('La hora de fin es obligatoria.');
+    if (startHour && endHour && startHour === endHour) errors.push('La hora de inicio y de fin no pueden ser iguales.');
+
+    return errors;
+  }
+
+  private validateEditShift(): string[] {
+    const errors: string[] = [];
+
+    if (!this.editShiftNameValue.trim()) errors.push('El nombre del turno es obligatorio.');
+    if (!this.editStartDateValue.trim()) errors.push('La fecha de inicio es obligatoria.');
+    if (!this.editEndDateValue.trim()) errors.push('La fecha de fin es obligatoria.');
+    if (this.editStartDateValue && this.editEndDateValue && this.editStartDateValue > this.editEndDateValue) {
+      errors.push('La fecha de inicio no puede ser posterior a la fecha de fin.');
+    }
+    if (!this.editStartHourValue.trim()) errors.push('La hora de inicio es obligatoria.');
+    if (!this.editEndHourValue.trim()) errors.push('La hora de fin es obligatoria.');
+    if (this.editStartHourValue && this.editEndHourValue && this.editStartHourValue === this.editEndHourValue) {
+      errors.push('La hora de inicio y de fin no pueden ser iguales.');
+    }
+
+    return errors;
+  }
+
+  private validateAssignment(): string[] {
+    const errors: string[] = [];
+    const propertyId = this.assignmentProperty().trim();
+    const employeeId = this.assignmentEmployee().trim();
+    const shiftId = this.assignmentShiftId();
+
+    if (!propertyId) errors.push('Seleccioná una propiedad.');
+    if (!employeeId) errors.push('Seleccioná un empleado.');
+    if (shiftId === null || shiftId === '') errors.push('Seleccioná un turno.');
+
+    return errors;
   }
 
   private resetCreateShiftForm(): void {
@@ -1436,7 +1451,6 @@ export class StaffShiftComponent implements OnInit {
     this.newShiftStart.set('');
     this.newShiftEnd.set('');
     this.newShiftNotes.set('');
-    this.createShiftError.set('');
     this.isCreatingShift.set(false);
   }
 
@@ -1444,7 +1458,6 @@ export class StaffShiftComponent implements OnInit {
     this.assignmentProperty.set('');
     this.assignmentEmployee.set('');
     this.assignmentShiftId.set(null);
-    this.createAssignmentError.set('');
   }
 
   private formatDateLabel(dateIso: string): string {

@@ -1,17 +1,7 @@
 <app-hotel-page-layout title="Gestion de Turnos"
   subtitle="Crea turnos fijos y asignalos a empleados por propiedad y fecha" iconName="bootstrapClockHistory">
 
-  @if (notification()) {
-  <div class="notification-toast" [class]="'notification-toast--' + notification()!.type">
-    <div class="notification-content">
-      <ng-icon [name]="notification()!.type === 'error' ? 'bootstrapExclamationTriangle' : 'bootstrapCheckCircle'"
-        size="18">
-      </ng-icon>
-      <span>{{ notification()!.message }}</span>
-    </div>
-    <div class="notification-timeline"></div>
-  </div>
-  }
+  <app-toast />
 
   @if (isConfirmUnassignModalOpen()) {
   <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmUnassignModal()"
@@ -473,12 +463,6 @@
         </div>
       </div>
 
-      @if (createShiftError()) {
-      <div class="form-error-banner">
-        <span class="form-error-icon">⚠</span>
-        {{ createShiftError() }}
-      </div>
-      }
     </div>
 
     <footer class="modal-actions">
@@ -554,10 +538,6 @@
         </select>
       </label>
     </div>
-
-    @if (createAssignmentError()) {
-    <p class="form-error">{{ createAssignmentError() }}</p>
-    }
 
     <footer class="modal-actions">
       <button type="button" class="btn-ghost" [disabled]="isAssigning()" (click)="closeCreateAssignmentModal()">
