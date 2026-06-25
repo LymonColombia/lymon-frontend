@@ -51,10 +51,11 @@ describe('UploadFileUseCase', () => {
       return new Promise<void>((resolve) => {
         const file = makeFile('photo.jpg', 'image/jpeg');
 
-        useCase.execute(file).subscribe(() => {
+        useCase.execute(file, 'experiences').subscribe(() => {
           expect(repositoryMock.getPresignedUrl).toHaveBeenCalledWith({
             fileName: 'photo.jpg',
             contentType: 'image/jpeg',
+            category: 'experiences',
           });
           expect(repositoryMock.getPresignedUrl).toHaveBeenCalledTimes(1);
           resolve();
@@ -66,7 +67,7 @@ describe('UploadFileUseCase', () => {
       return new Promise<void>((resolve) => {
         const file = makeFile('photo.jpg', 'image/jpeg');
 
-        useCase.execute(file).subscribe(() => {
+        useCase.execute(file, 'experiences').subscribe(() => {
           expect(repositoryMock.uploadToPresignedUrl).toHaveBeenCalledWith(PRESIGNED_URL, file);
           expect(repositoryMock.uploadToPresignedUrl).toHaveBeenCalledTimes(1);
           resolve();
@@ -84,7 +85,7 @@ describe('UploadFileUseCase', () => {
           contentType: 'image/jpeg',
         };
 
-        useCase.execute(file).subscribe((result) => {
+        useCase.execute(file, 'experiences').subscribe((result) => {
           expect(result).toEqual(expected);
           resolve();
         });
@@ -96,7 +97,7 @@ describe('UploadFileUseCase', () => {
       return new Promise<void>((resolve) => {
         const file = makeFile('document.pdf', 'application/pdf');
 
-        useCase.execute(file).subscribe((result) => {
+        useCase.execute(file, 'experiences').subscribe((result) => {
           expect(result.fileName).toBe('document.pdf');
           expect(result.contentType).toBe('application/pdf');
           resolve();
@@ -111,7 +112,7 @@ describe('UploadFileUseCase', () => {
 
         const file = makeFile();
 
-        useCase.execute(file).subscribe({
+        useCase.execute(file, 'experiences').subscribe({
           error: (err) => {
             expect(err).toBe(networkError);
             expect(repositoryMock.uploadToPresignedUrl).not.toHaveBeenCalled();
@@ -128,7 +129,7 @@ describe('UploadFileUseCase', () => {
 
         const file = makeFile();
 
-        useCase.execute(file).subscribe({
+        useCase.execute(file, 'experiences').subscribe({
           error: (err) => {
             expect(err).toBe(uploadError);
             expect(repositoryMock.getPresignedUrl).toHaveBeenCalledTimes(1);
@@ -142,7 +143,7 @@ describe('UploadFileUseCase', () => {
       return new Promise<void>((resolve) => {
         const file = makeFile('hotel-report.final.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 
-        useCase.execute(file).subscribe((result) => {
+        useCase.execute(file, 'experiences').subscribe((result) => {
           expect(result.fileName).toBe('hotel-report.final.docx');
           expect(result.contentType).toBe(
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -150,6 +151,7 @@ describe('UploadFileUseCase', () => {
           expect(repositoryMock.getPresignedUrl).toHaveBeenCalledWith({
             fileName: 'hotel-report.final.docx',
             contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            category: 'experiences',
           });
           resolve();
         });

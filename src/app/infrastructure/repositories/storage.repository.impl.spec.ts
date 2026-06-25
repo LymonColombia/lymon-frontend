@@ -31,6 +31,7 @@ describe('StorageRepositoryImpl', () => {
     const request: GetPresignedUrlRequest = {
       fileName: 'photo.jpg',
       contentType: 'image/jpeg',
+      category: 'experiences',
     };
 
     const mockDto: GetPresignedUrlResponseDto = {

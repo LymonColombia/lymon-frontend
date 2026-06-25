@@ -1,6 +1,9 @@
+export type MediaCategory = 'experiences' | 'units' | 'properties';
+
 export interface GetPresignedUrlRequest {
   fileName: string;
   contentType: string;
+  category: MediaCategory;
 }
 
 export interface GetPresignedUrlResponse {

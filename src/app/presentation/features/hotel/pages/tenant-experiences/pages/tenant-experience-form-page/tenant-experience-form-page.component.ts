@@ -121,7 +121,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
     this.startSaving();
 
     const persistedExperience$ = payload.coverImageFile
-      ? this.createImageStorageUseCase.execute({ file: payload.coverImageFile }).pipe(
+      ? this.createImageStorageUseCase.execute({ file: payload.coverImageFile, category: 'experiences' }).pipe(
           map(({ fileUrl }) => ({
             ...payload.experience,
             coverImageUrl: fileUrl,

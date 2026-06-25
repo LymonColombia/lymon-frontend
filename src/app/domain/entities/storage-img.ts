@@ -1,5 +1,8 @@
+import { MediaCategory } from './storage.model';
+
 export interface ImageStorage {
   file: File;
+  category: MediaCategory;
 }
 
 export type ImageContentType =

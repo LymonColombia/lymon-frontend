@@ -34,6 +34,7 @@ export class ImageStorageRepositoryImpl extends ImageStorageRepository {
       .post<PresignedUrlResponse>(BASE_URL, {
         fileName,
         contentType,
+        category: input.category,
       })
       .pipe(
         map((response) => {
