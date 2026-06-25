@@ -163,6 +163,13 @@
 
 .search-field {
   display: block;
+
+}
+
+.search-field--name {
+  min-width: 280px;
+  flex-shrink: 0;
+  min-width: 300px;
 }
 
 .search-input {
@@ -450,6 +457,7 @@
   gap: var(--spacing-sm);
   flex-wrap: wrap;
 }
+
 
 .gantt-wrapper {
   overflow-x: auto;
@@ -786,6 +794,54 @@
   cursor: not-allowed;
   border-color: var(--color-border-light);
   opacity: 0.8;
+}
+
+.field-input--disabled {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.shift-selector-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.shift-selector-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.shift-selector-option:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border-light));
+  background: color-mix(in srgb, var(--color-primary) 4%, var(--color-bg-primary));
+}
+
+.shift-selector-option--selected {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-primary));
+}
+
+.shift-selector-name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+}
+
+.shift-selector-meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
 }
 
 .form-error {

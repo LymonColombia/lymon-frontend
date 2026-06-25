@@ -45,7 +45,8 @@ function translateCustomMessage(message: string, translations: Record<string, st
 
 export function translateHttpError(
   error: HttpErrorResponse | unknown,
-  customTranslations: Record<string, string> = {}
+  customTranslations: Record<string, string> = {},
+  fallbackMessage?: string
 ): string {
   const backendMessage = extractBackendMessage(error);
 
@@ -58,8 +59,8 @@ export function translateHttpError(
   }
 
   if (error instanceof HttpErrorResponse) {
-    return STATUS_MESSAGES[error.status] ?? FALLBACK_MESSAGE;
+    return STATUS_MESSAGES[error.status] ?? fallbackMessage ?? FALLBACK_MESSAGE;
   }
 
-  return FALLBACK_MESSAGE;
+  return fallbackMessage ?? FALLBACK_MESSAGE;
 }

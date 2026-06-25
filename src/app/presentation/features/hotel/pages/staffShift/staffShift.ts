@@ -1,4 +1,4 @@
-import { switchMap } from 'rxjs';
+import { switchMap, catchError, EMPTY } from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -186,6 +186,7 @@ export class StaffShiftComponent implements OnInit {
   readonly isConfirmUnassignModalOpen = signal(false);
   readonly isChangeShiftModalOpen = signal(false);
   readonly isConfirmChangeModalOpen = signal(false);
+  readonly changeShiftCurrentStarted = signal(false);
   readonly staffToUnassign = signal<{ shiftId: string; staffId: string; staffName: string } | null>(null);
   readonly staffToChangeShift = signal<{ currentShiftId: string; currentShiftName: string; staffId: string; staffName: string } | null>(null);
   readonly newSelectedShiftId = signal<string | null>(null);
@@ -916,12 +917,20 @@ export class StaffShiftComponent implements OnInit {
 
   closeChangeShiftModal(): void {
     this.isChangeShiftModalOpen.set(false);
+    this.isConfirmChangeModalOpen.set(false);
+    this.changeShiftCurrentStarted.set(false);
     this.staffToChangeShift.set(null);
     this.newSelectedShiftId.set(null);
   }
 
   selectNewShift(shiftId: string | number): void {
+    const data = this.staffToChangeShift();
+    if (!data) return;
+
     this.newSelectedShiftId.set(shiftId.toString());
+
+    const currentShift = this.fixedShifts().find(s => s.id.toString() === data.currentShiftId);
+    this.changeShiftCurrentStarted.set(!!currentShift && this.isShiftStarted(currentShift));
     this.isConfirmChangeModalOpen.set(true);
   }
 
@@ -936,7 +945,20 @@ export class StaffShiftComponent implements OnInit {
 
     this.isChangingShift.set(true);
     this.unassignStaffFromShiftUseCase.execute(data.currentShiftId, [data.staffId]).pipe(
-      switchMap(() => this.assignStaffToShiftUseCase.execute(newId, [data.staffId]))
+      switchMap(() =>
+        this.assignStaffToShiftUseCase.execute(newId, [data.staffId]).pipe(
+          catchError(() => {
+            this.toastService.error(
+              'El turno anterior fue desasignado pero no se pudo asignar el nuevo turno. Revisá el estado del empleado.'
+            );
+            this.loadFixedShifts();
+            this.closeConfirmChangeModal();
+            this.closeChangeShiftModal();
+            this.isChangingShift.set(false);
+            return EMPTY;
+          })
+        )
+      )
     ).subscribe({
       next: () => {
         this.toastService.success('Turno cambiado correctamente.');
@@ -946,7 +968,7 @@ export class StaffShiftComponent implements OnInit {
         this.isChangingShift.set(false);
       },
       error: (err: unknown) => {
-        this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
+        this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES, 'No se pudo desasignar el turno actual. Intentá de nuevo.'));
         this.isChangingShift.set(false);
       }
     });
@@ -1208,10 +1230,8 @@ export class StaffShiftComponent implements OnInit {
     this.assignmentEmployee.set(target?.value ?? '');
   }
 
-  onAssignmentShiftChange(event: Event): void {
-    const target = event.target as HTMLSelectElement | null;
-    const value = target?.value ?? null;
-    this.assignmentShiftId.set(value);
+  selectAssignmentShift(shiftId: string | number): void {
+    this.assignmentShiftId.set(shiftId.toString());
   }
 
   createAssignment(): void {
@@ -1460,6 +1480,16 @@ export class StaffShiftComponent implements OnInit {
     this.assignmentShiftId.set(null);
   }
 
+  formatShortDate(dateIso: string | null | undefined): string {
+    if (!dateIso) return 'N/A';
+    const date = new Date(`${dateIso}T00:00:00`);
+    return new Intl.DateTimeFormat('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date);
+  }
+
   private formatDateLabel(dateIso: string): string {
     const date = new Date(`${dateIso}T00:00:00`);
     return new Intl.DateTimeFormat('es-ES', {
@@ -1522,6 +1552,16 @@ export class StaffShiftComponent implements OnInit {
         Array.isArray(ra.scope.resourceIds) &&
         ra.scope.resourceIds.includes(propertyId);
     });
+  }
+
+  private isShiftStarted(shift: FixedShiftCard): boolean {
+    if (!shift.startDate || !shift.timeRange) return false;
+
+    const [startHour] = shift.timeRange.split('-').map(part => part.trim());
+    if (!startHour) return false;
+
+    const startDateTime = new Date(`${shift.startDate}T${startHour}`);
+    return !isNaN(startDateTime.getTime()) && startDateTime <= new Date();
   }
 
   private normalizeText(value: string): string {
