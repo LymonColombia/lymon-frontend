@@ -4,22 +4,45 @@ import { of, throwError, Subject } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RegisterComponent } from './register';
 import { RegisterUseCase } from '@/domain/use-cases/auth/register.use-case';
+import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
+import { GetPlansUseCase } from '@/domain/use-cases/plan/get-plans.use-case';
+import { LYHOST_PLANS } from '@/domain/entities/lyhost-plan.model';
+import { TokenService } from '@/infrastructure/services/token.service';
+import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-const mockUseCase = { execute: vi.fn() };
+const mockRegisterUseCase = { execute: vi.fn() };
+const mockLoginUseCase = { execute: vi.fn() };
+const mockGetPlansUseCase = { execute: vi.fn() };
+const mockTokenService = { clear: vi.fn(), store: vi.fn() };
+const mockUserSessionService = { clear: vi.fn(), setUser: vi.fn(), currentUser: vi.fn() };
 
-const VALID_FORM = {
+const VALID_STEP_ONE = {
   tenantName: 'Hotel Lymon',
-  email: 'admin@hotel.com',
+  email: 'administrador@hotel.com',
   password: 'Password1',
   confirmPassword: 'Password1',
-  planType: 'TRIAL' as const,
   terms: true,
+};
+
+const VALID_PAYMENT = {
+  cardName: 'Juan Pérez',
+  cardNumber: '4111111111111111',
+  expiry: '12/30',
+  cvv: '123',
 };
 
 async function setup() {
   await TestBed.configureTestingModule({
     imports: [RegisterComponent],
-    providers: [provideRouter([]), { provide: RegisterUseCase, useValue: mockUseCase }],
+    providers: [
+      provideRouter([]),
+      { provide: RegisterUseCase, useValue: mockRegisterUseCase },
+      { provide: LoginUseCase, useValue: mockLoginUseCase },
+      { provide: GetPlansUseCase, useValue: mockGetPlansUseCase },
+      { provide: TokenService, useValue: mockTokenService },
+      { provide: UserSessionService, useValue: mockUserSessionService },
+    ],
   }).compileComponents();
 
   const fixture = TestBed.createComponent(RegisterComponent);
@@ -29,147 +52,269 @@ async function setup() {
   return { fixture, component, router };
 }
 
-// ─── Formulario inválido ─────────────────────────────────────────────────────
-describe('RegisterComponent – formulario inválido', () => {
+describe('RegisterComponent – paso 1', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    TestBed.resetTestingModule();
+    mockGetPlansUseCase.execute.mockReturnValue(of([...LYHOST_PLANS]));
   });
 
-  it('no llama al use-case si los campos están vacíos', async () => {
-    const { component } = await setup();
-    component.onSubmit();
-    expect(mockUseCase.execute).not.toHaveBeenCalled();
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
-  it('marca todos los campos como tocados', async () => {
+  it('inicia en el paso 1', async () => {
     const { component } = await setup();
-    const spy = vi.spyOn(component.form, 'markAllAsTouched');
-    component.onSubmit();
+    expect(component.currentStep()).toBe(1);
+  });
+
+  it('no avanza si el paso 1 es inválido y marca campos tocados', async () => {
+    const { component } = await setup();
+    const spy = vi.spyOn(component.stepOneForm, 'markAllAsTouched');
+    component.goToStepTwo();
     expect(spy).toHaveBeenCalled();
+    expect(component.currentStep()).toBe(1);
   });
 
-  it('no llama al use-case si los términos no están aceptados', async () => {
+  it('no avanza si las contraseñas no coinciden', async () => {
     const { component } = await setup();
-    component.form.patchValue({ ...VALID_FORM, terms: false });
-    component.onSubmit();
-    expect(mockUseCase.execute).not.toHaveBeenCalled();
+    component.stepOneForm.patchValue({
+      ...VALID_STEP_ONE,
+      confirmPassword: 'OtraPass1',
+    });
+    component.goToStepTwo();
+    expect(component.currentStep()).toBe(1);
   });
 
-  it('no llama al use-case si las contraseñas no coinciden', async () => {
+  it('no avanza si los términos no están aceptados', async () => {
     const { component } = await setup();
-    component.form.patchValue({ ...VALID_FORM, confirmPassword: 'OtherPass1' });
-    component.onSubmit();
-    expect(mockUseCase.execute).not.toHaveBeenCalled();
+    component.stepOneForm.patchValue({ ...VALID_STEP_ONE, terms: false });
+    component.goToStepTwo();
+    expect(component.currentStep()).toBe(1);
   });
 
-  it('no llama al use-case si el nombre es menor a 3 caracteres', async () => {
+  it('valida longitud mínima de la parte local del correo', async () => {
     const { component } = await setup();
-    component.form.patchValue({ ...VALID_FORM, tenantName: 'AB' });
-    component.onSubmit();
-    expect(mockUseCase.execute).not.toHaveBeenCalled();
+    component.stepOneForm.patchValue({ ...VALID_STEP_ONE, email: 'a@b.com' });
+    expect(component.emailControl.hasError('minLocalPartLength')).toBe(true);
+  });
+
+  it('avanza al paso 2 cuando el paso 1 es válido y carga planes', async () => {
+    const { component } = await setup();
+    component.stepOneForm.patchValue(VALID_STEP_ONE);
+    component.goToStepTwo();
+    expect(component.currentStep()).toBe(2);
+    expect(mockGetPlansUseCase.execute).toHaveBeenCalled();
   });
 });
 
-// ─── Carga en curso ──────────────────────────────────────────────────────────
-describe('RegisterComponent – carga en curso', () => {
+describe('RegisterComponent – paso 2', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    TestBed.resetTestingModule();
+    mockGetPlansUseCase.execute.mockReturnValue(of([...LYHOST_PLANS]));
   });
 
-  it('isLoading es true mientras el observable no emite', async () => {
-    const pending = new Subject<void>();
-    mockUseCase.execute.mockReturnValue(pending.asObservable());
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  async function reachStepTwo(component: RegisterComponent) {
+    component.stepOneForm.patchValue(VALID_STEP_ONE);
+    component.goToStepTwo();
+  }
+
+  it('muestra error si la carga de planes falla y permite reintentar', async () => {
+    mockGetPlansUseCase.execute.mockReturnValue(throwError(() => new Error('fail')));
     const { component } = await setup();
-    component.form.patchValue(VALID_FORM);
-    component.onSubmit();
-    expect(component.isLoading()).toBe(true);
-  });
-});
+    await reachStepTwo(component);
+    expect(component.plansError()).toBeTruthy();
 
-// ─── Registro exitoso ─────────────────────────────────────────────────────────
-describe('RegisterComponent – registro exitoso', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(of(undefined));
+    mockGetPlansUseCase.execute.mockReturnValue(of([...LYHOST_PLANS]));
+    component.loadPlans();
+    expect(component.plansError()).toBeNull();
+    expect(component.availablePlans().length).toBeGreaterThan(0);
   });
 
-  it('navega a /booking tras el éxito', async () => {
+  it('no avanza al paso 3 sin plan seleccionado', async () => {
+    const { component } = await setup();
+    await reachStepTwo(component);
+    component.goToStepThree();
+    expect(component.currentStep()).toBe(2);
+  });
+
+  it('avanza al paso 3 tras seleccionar un plan', async () => {
+    const { component } = await setup();
+    await reachStepTwo(component);
+    component.selectPlan('PLUS');
+    component.goToStepThree();
+    expect(component.currentStep()).toBe(3);
+  });
+
+  it('volver atrás conserva los datos del paso 1', async () => {
+    const { component } = await setup();
+    await reachStepTwo(component);
+    component.goBackToStepOne();
+    expect(component.currentStep()).toBe(1);
+    expect(component.stepOneForm.value.email).toBe(VALID_STEP_ONE.email);
+  });
+
+  it('detecta plan trial como gratuito y oculta paso 3', async () => {
+    const { component } = await setup();
+    await reachStepTwo(component);
+    component.selectPlan('TRIAL');
+    expect(component.isTrialSelected()).toBe(true);
+    expect(component.visibleStepLabels()).toHaveLength(2);
+  });
+
+  it('registra directamente al elegir trial sin pasar por pago', async () => {
+    mockRegisterUseCase.execute.mockReturnValue(of({ message: 'ok', user: {}, tokens: {} }));
+    mockLoginUseCase.execute.mockReturnValue(of({ user: {}, tokens: {} }));
     const { component, router } = await setup();
+    await reachStepTwo(component);
+    component.selectPlan('TRIAL');
     const navigateSpy = vi.spyOn(router, 'navigate');
-    component.form.patchValue(VALID_FORM);
-    component.onSubmit();
-    expect(navigateSpy).toHaveBeenCalledWith(['/booking']);
+
+    component.onTrialRegister();
+
+    expect(mockRegisterUseCase.execute).toHaveBeenCalledWith({
+      tenantName: VALID_STEP_ONE.tenantName,
+      email: VALID_STEP_ONE.email,
+      password: VALID_STEP_ONE.password,
+      planType: 'TRIAL',
+    });
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard']);
   });
 
-  it('isLoading vuelve a false tras el éxito', async () => {
+  it('vuelve a 3 pasos si se cambia de trial a plan de pago', async () => {
     const { component } = await setup();
-    component.form.patchValue(VALID_FORM);
-    component.onSubmit();
-    expect(component.isLoading()).toBe(false);
-  });
-
-  it('no muestra mensaje de error tras el éxito', async () => {
-    const { component } = await setup();
-    component.form.patchValue(VALID_FORM);
-    component.onSubmit();
-    expect(component.errorMessage()).toBeNull();
+    await reachStepTwo(component);
+    component.selectPlan('TRIAL');
+    expect(component.visibleStepLabels()).toHaveLength(2);
+    component.selectPlan('PLUS');
+    expect(component.isTrialSelected()).toBe(false);
+    expect(component.visibleStepLabels()).toHaveLength(3);
   });
 });
 
-// ─── Error 409 (correo duplicado) ─────────────────────────────────────────────
-describe('RegisterComponent – error 409 (correo duplicado)', () => {
+describe('RegisterComponent – paso 3 y registro', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 409 })));
+    mockGetPlansUseCase.execute.mockReturnValue(of([...LYHOST_PLANS]));
+    vi.useFakeTimers();
   });
 
-  it('muestra mensaje de cuenta existente', async () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  async function reachStepThree(component: RegisterComponent) {
+    component.stepOneForm.patchValue(VALID_STEP_ONE);
+    component.goToStepTwo();
+    component.selectPlan('PLUS');
+    component.goToStepThree();
+  }
+
+  it('no abre el modal si los datos de pago son inválidos', async () => {
     const { component } = await setup();
-    component.form.patchValue(VALID_FORM);
-    component.onSubmit();
+    await reachStepThree(component);
+    const spy = vi.spyOn(component.stepThreeForm, 'markAllAsTouched');
+    component.openConfirmModal();
+    expect(spy).toHaveBeenCalled();
+    expect(component.isConfirmModalOpen()).toBe(false);
+    expect(mockRegisterUseCase.execute).not.toHaveBeenCalled();
+  });
+
+  it('abre modal de confirmación con datos de tarjeta', async () => {
+    const { component } = await setup();
+    await reachStepThree(component);
+    component.stepThreeForm.patchValue(VALID_PAYMENT);
+
+    component.openConfirmModal();
+
+    expect(component.isConfirmModalOpen()).toBe(true);
+    expect(component.cardNumberConfirmMask()).toContain('1111');
+  });
+
+  it('muestra "Procesando…" durante el delay simulado tras confirmar', async () => {
+    const { component } = await setup();
+    await reachStepThree(component);
+    component.stepThreeForm.patchValue(VALID_PAYMENT);
+    mockRegisterUseCase.execute.mockReturnValue(new Subject().asObservable());
+
+    component.openConfirmModal();
+    component.onFinalRegister();
+    expect(component.isProcessingPayment()).toBe(true);
+  });
+
+  it('registra con los datos del paso 1 y plan, sin datos de tarjeta', async () => {
+    const { component } = await setup();
+    await reachStepThree(component);
+    component.stepThreeForm.patchValue(VALID_PAYMENT);
+    mockRegisterUseCase.execute.mockReturnValue(of({ message: 'ok', user: {}, tokens: {} }));
+    mockLoginUseCase.execute.mockReturnValue(of({ user: {}, tokens: {} }));
+
+    component.openConfirmModal();
+    component.onFinalRegister();
+    vi.advanceTimersByTime(1500);
+
+    expect(mockRegisterUseCase.execute).toHaveBeenCalledWith({
+      tenantName: VALID_STEP_ONE.tenantName,
+      email: VALID_STEP_ONE.email,
+      password: VALID_STEP_ONE.password,
+      planType: 'PLUS',
+    });
+  });
+
+  it('auto-login exitoso redirige al dashboard', async () => {
+    const { component, router } = await setup();
+    await reachStepThree(component);
+    component.stepThreeForm.patchValue(VALID_PAYMENT);
+    mockRegisterUseCase.execute.mockReturnValue(of({ message: 'ok', user: {}, tokens: {} }));
+    mockLoginUseCase.execute.mockReturnValue(of({ user: {}, tokens: {} }));
+    const navigateSpy = vi.spyOn(router, 'navigate');
+
+    component.openConfirmModal();
+    component.onFinalRegister();
+    vi.advanceTimersByTime(1500);
+
+    expect(mockLoginUseCase.execute).toHaveBeenCalledWith({
+      email: VALID_STEP_ONE.email,
+      password: VALID_STEP_ONE.password,
+    });
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard']);
+  });
+
+  it('auto-login fallido redirige al login con mensaje de cuenta creada', async () => {
+    const { component, router } = await setup();
+    await reachStepThree(component);
+    component.stepThreeForm.patchValue(VALID_PAYMENT);
+    mockRegisterUseCase.execute.mockReturnValue(of({ message: 'ok', user: {}, tokens: {} }));
+    mockLoginUseCase.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 401 })),
+    );
+    const navigateSpy = vi.spyOn(router, 'navigate');
+
+    component.openConfirmModal();
+    component.onFinalRegister();
+    vi.advanceTimersByTime(1500);
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/login'], {
+      queryParams: { registered: 'true' },
+    });
+  });
+
+  it('muestra mensaje de error si el registro falla', async () => {
+    const { component } = await setup();
+    await reachStepThree(component);
+    component.stepThreeForm.patchValue(VALID_PAYMENT);
+    mockRegisterUseCase.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 409 })),
+    );
+
+    component.openConfirmModal();
+    component.onFinalRegister();
+    vi.advanceTimersByTime(1500);
+
     expect(component.errorMessage()).toBe('Ya existe una cuenta con este correo.');
-  });
-
-  it('isLoading vuelve a false', async () => {
-    const { component } = await setup();
-    component.form.patchValue(VALID_FORM);
-    component.onSubmit();
-    expect(component.isLoading()).toBe(false);
-  });
-});
-
-// ─── Error 400 ────────────────────────────────────────────────────────────────
-describe('RegisterComponent – error 400 (datos inválidos)', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 400 })));
-  });
-
-  it('muestra mensaje de datos inválidos', async () => {
-    const { component } = await setup();
-    component.form.patchValue(VALID_FORM);
-    component.onSubmit();
-    expect(component.errorMessage()).toBe('Datos inválidos. Verifica los campos.');
-  });
-});
-
-// ─── Error inesperado ─────────────────────────────────────────────────────────
-describe('RegisterComponent – error inesperado', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
-  });
-
-  it('muestra mensaje de error inesperado', async () => {
-    const { component } = await setup();
-    component.form.patchValue(VALID_FORM);
-    component.onSubmit();
-    expect(component.errorMessage()).toBe('Ocurrió un error inesperado. Inténtalo de nuevo.');
+    expect(component.isProcessingPayment()).toBe(false);
   });
 });

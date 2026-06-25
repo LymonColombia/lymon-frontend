@@ -18,6 +18,10 @@
         <div class="warning-banner">Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</div>
       }
 
+      @if (accountCreated()) {
+        <div class="warning-banner">Tu cuenta fue creada. Iniciá sesión para continuar.</div>
+      }
+
       @if (errorMessage()) {
         <div class="error-banner">{{ errorMessage() }}</div>
       }
