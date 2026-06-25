@@ -167,9 +167,8 @@
 }
 
 .search-field--name {
-  min-width: 280px;
+  min-width: 320px;
   flex-shrink: 0;
-  min-width: 300px;
 }
 
 .search-input {

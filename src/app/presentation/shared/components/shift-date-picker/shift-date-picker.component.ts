@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   HostListener,
   inject,
   input,
@@ -11,7 +12,6 @@ import {
 } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar3 } from '@ng-icons/bootstrap-icons';
-import { ElementRef } from '@angular/core';
 
 interface CalendarDay {
   date: Date;
@@ -35,7 +35,7 @@ function toIso(date: Date): string {
 function parseIso(value: string | null | undefined): Date | null {
   if (!value) return null;
   const date = new Date(`${value}T00:00:00`);
-  return isNaN(date.getTime()) ? null : date;
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function isSameDay(a: Date, b: Date): boolean {
@@ -169,8 +169,8 @@ export class ShiftDatePickerComponent {
     const hovered = this.hoveredDate();
     const boundary = this.anchorDate() ?? this.selectedDate();
     if (!hovered || !boundary) return false;
-    const start = hovered < boundary ? hovered : boundary;
-    const end = hovered > boundary ? hovered : boundary;
+    const start = new Date(Math.min(hovered.getTime(), boundary.getTime()));
+    const end = new Date(Math.max(hovered.getTime(), boundary.getTime()));
     const date = day.date;
     return date >= start && date <= end;
   }

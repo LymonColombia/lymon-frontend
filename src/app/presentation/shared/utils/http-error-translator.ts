@@ -44,7 +44,7 @@ function translateCustomMessage(message: string, translations: Record<string, st
 }
 
 export function translateHttpError(
-  error: HttpErrorResponse | unknown,
+  error: unknown,
   customTranslations: Record<string, string> = {},
   fallbackMessage?: string
 ): string {

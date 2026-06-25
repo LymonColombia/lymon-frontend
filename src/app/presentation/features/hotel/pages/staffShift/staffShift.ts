@@ -1560,7 +1560,7 @@ export class StaffShiftComponent implements OnInit {
     if (!startHour) return false;
 
     const startDateTime = new Date(`${shift.startDate}T${startHour}`);
-    return !isNaN(startDateTime.getTime()) && startDateTime <= new Date();
+    return !Number.isNaN(startDateTime.getTime()) && startDateTime <= new Date();
   }
 
   private normalizeText(value: string): string {
