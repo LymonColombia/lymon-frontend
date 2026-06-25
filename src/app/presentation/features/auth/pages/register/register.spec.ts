@@ -162,7 +162,7 @@ describe('RegisterComponent – paso 2', () => {
     await reachStepTwo(component);
     component.selectPlan('TRIAL');
     expect(component.isTrialSelected()).toBe(true);
-    expect(component.visibleStepLabels().length).toBe(2);
+    expect(component.visibleStepLabels()).toHaveLength(2);
   });
 
   it('registra directamente al elegir trial sin pasar por pago', async () => {
@@ -188,10 +188,10 @@ describe('RegisterComponent – paso 2', () => {
     const { component } = await setup();
     await reachStepTwo(component);
     component.selectPlan('TRIAL');
-    expect(component.visibleStepLabels().length).toBe(2);
+    expect(component.visibleStepLabels()).toHaveLength(2);
     component.selectPlan('PLUS');
     expect(component.isTrialSelected()).toBe(false);
-    expect(component.visibleStepLabels().length).toBe(3);
+    expect(component.visibleStepLabels()).toHaveLength(3);
   });
 });
 

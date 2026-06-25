@@ -41,11 +41,13 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   return password === confirmPassword ? null : { passwordsMismatch: true };
 }
 
+const EXPIRY_REGEX = /^(\d{2})\/(\d{2})$/;
+
 function futureExpiryValidator(control: AbstractControl): ValidationErrors | null {
   const value = control.value;
   if (!value || typeof value !== 'string') return null;
 
-  const match = value.match(/^(\d{2})\/(\d{2})$/);
+  const match = EXPIRY_REGEX.exec(value);
   if (!match) return { expiryInvalid: true };
 
   const month = Number.parseInt(match[1], 10);
@@ -332,7 +334,7 @@ export class RegisterComponent {
     this.isProcessingPayment.set(true);
     this.errorMessage.set(null);
 
-    window.setTimeout(() => {
+    globalThis.setTimeout(() => {
       this.submitRegistration();
     }, 1500);
   }

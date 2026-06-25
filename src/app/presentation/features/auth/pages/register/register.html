@@ -143,9 +143,18 @@
           } @else {
           <div class="register-plans-grid" role="radiogroup" aria-label="Planes disponibles">
             @for (plan of availablePlans(); track plan.type) {
-            <button type="button" class="register-plan-card"
-              [class.register-plan-card-selected]="planTypeControl.value === plan.type" (click)="selectPlan(plan.type)"
-              [attr.aria-checked]="planTypeControl.value === plan.type" role="radio">
+            <label
+              class="register-plan-card"
+              [class.register-plan-card-selected]="planTypeControl.value === plan.type"
+              [for]="'plan-' + plan.type"
+            >
+              <input
+                type="radio"
+                class="register-plan-radio"
+                formControlName="planType"
+                [value]="plan.type"
+                [id]="'plan-' + plan.type"
+              />
               @if (planTypeControl.value === plan.type) {
               <span class="register-plan-check" aria-hidden="true">
                 <ng-icon name="bootstrapCheckCircleFill" size="18px"></ng-icon>
@@ -162,7 +171,7 @@
               @if (plan.priceNote) {
               <p class="register-plan-note">{{ plan.priceNote }}</p>
               }
-            </button>
+            </label>
             }
           </div>
           }
@@ -268,8 +277,8 @@
                 <input [type]="showCvv() ? 'text' : 'password'" id="cvv" formControlName="cvv"
                   (input)="onCvvInput($event)" placeholder="123" inputmode="numeric" autocomplete="cc-csc"
                   maxlength="4" />
-                <button type="button" class="password-toggle" (click)="toggleCvvVisibility()"
-                  aria-label="Mostrar/ocultar CVV">
+                <button type="button" class="password-toggle" (click)="toggleCvvVisibility()">
+                  <span class="visually-hidden">Mostrar/ocultar CVV</span>
                   @if (showCvv()) {
                   <ng-icon name="bootstrapEyeSlash" size="18px" aria-hidden="true"></ng-icon>
                   } @else {
