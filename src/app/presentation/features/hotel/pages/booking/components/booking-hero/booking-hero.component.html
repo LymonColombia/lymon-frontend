@@ -5,7 +5,7 @@
   </div>
 
   @if (isCalendarOpen()) {
-    <div class="cal-backdrop" (click)="closeCalendar()" aria-hidden="true"></div>
+    <div class="cal-backdrop" aria-hidden="true"></div>
   }
 
   <div class="hero-content">
@@ -31,7 +31,7 @@
             {{ checkInDisplay() ?? 'dd/mm/aaaa' }}
           </span>
         </button>
-        <label class="search-label">Fecha de Entrada</label>
+        <span class="search-label">Fecha de Entrada</span>
       </div>
 
       <div class="search-field">
@@ -47,10 +47,10 @@
             {{ checkOutDisplay() ?? 'dd/mm/aaaa' }}
           </span>
         </button>
-        <label class="search-label">Fecha de Salida</label>
+        <span class="search-label">Fecha de Salida</span>
       </div>
 
-      <div class="cal-dropdown" [class.is-open]="isCalendarOpen()" role="dialog" aria-label="Calendario de fechas">
+      <div class="cal-dropdown" [class.is-open]="isCalendarOpen()" aria-label="Calendario de fechas">
         <app-calendar
           [initialStartDate]="checkInDate()"
           [initialEndDate]="checkOutDate()"

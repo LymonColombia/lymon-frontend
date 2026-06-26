@@ -40,7 +40,7 @@
           </button>
         </div>
 
-        <div class="nav-cal-dropdown" [class.is-open]="isCalendarOpen()" role="dialog" aria-label="Calendario de fechas">
+        <div class="nav-cal-dropdown" [class.is-open]="isCalendarOpen()" aria-label="Calendario de fechas">
           <app-calendar
             [initialStartDate]="checkIn() ?? null"
             [initialEndDate]="checkOut() ?? null"

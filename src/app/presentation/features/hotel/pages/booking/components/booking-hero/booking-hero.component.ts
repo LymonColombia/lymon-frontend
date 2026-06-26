@@ -102,7 +102,7 @@ export class BookingHeroComponent implements OnInit {
   private formatDate(dateStr: string | null): string | null {
     if (!dateStr) return null;
     const parts = dateStr.split('-').map(Number);
-    if (parts.length !== 3 || parts.some(isNaN)) return null;
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
     return `${parts[2]} ${SHORT_MONTH_NAMES[parts[1] - 1]} ${parts[0]}`;
   }
 }

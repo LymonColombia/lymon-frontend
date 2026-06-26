@@ -95,7 +95,7 @@ export class RoomDetailsComponent implements OnInit {
     if (!ci || !co) return 0;
     const [cy, cm, cd] = ci.split('-').map(Number);
     const [oy, om, od] = co.split('-').map(Number);
-    if ([cy, cm, cd, oy, om, od].some(isNaN)) return 0;
+    if ([cy, cm, cd, oy, om, od].some(Number.isNaN)) return 0;
     return Math.round(
       (new Date(oy, om - 1, od).getTime() - new Date(cy, cm - 1, cd).getTime()) / 86_400_000,
     );
