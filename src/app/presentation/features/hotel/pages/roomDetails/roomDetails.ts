@@ -68,7 +68,7 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomDetailsComponent implements OnInit {
-  readonly router = inject(Router);
+  private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitUseCase = inject(GetPublicUnitUseCase);

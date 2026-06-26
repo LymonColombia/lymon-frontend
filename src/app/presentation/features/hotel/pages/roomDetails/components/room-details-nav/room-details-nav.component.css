@@ -45,17 +45,71 @@
   box-shadow: 0 8px 32px color-mix(in srgb, var(--color-primary) 15%, transparent);
 }
 
-.mini-search-field {
-  width: 160px;
+.nav-date-trigger-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
-.mini-search-field app-input {
-  display: block;
+.mini-search-field {
+  width: 130px;
+}
+
+.nav-date-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
   width: 100%;
+  height: 38px;
+  padding: 0 var(--spacing-sm);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.nav-date-trigger:hover,
+.nav-date-trigger:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.nav-date-trigger .is-placeholder {
+  color: var(--color-text-disabled);
 }
 
 .field-icon {
   color: var(--color-primary-dark);
+  flex-shrink: 0;
+}
+
+.nav-cal-dropdown {
+  position: absolute;
+  top: calc(100% + var(--spacing-sm));
+  left: 0;
+  z-index: var(--z-dropdown);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.97);
+  transform-origin: top left;
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base),
+    visibility var(--transition-base);
+}
+
+.nav-cal-dropdown.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
 }
 
 .mini-guest-stepper {
@@ -124,13 +178,13 @@
   color: var(--color-primary-dark);
   background: var(--color-bg-primary);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .mini-search-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .nav-actions {
@@ -161,7 +215,7 @@
 .cart-action:focus-visible {
   color: var(--color-bg-primary);
   background: var(--color-primary);
-  border-color: none;
+  border-color: transparent;
   transform: translateY(-1px);
   outline: none;
 }
