@@ -181,14 +181,26 @@ export class RoomDetailsComponent implements OnInit {
 
     this.errorMessage.set(null);
 
-    this.getCartUseCase.execute().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (cart) => {
+    this.getCartUseCase.execute().pipe(
+      switchMap((cart) => {
         const existing = cart?.reservationItem;
-        if (existing && existing.unitId !== unit.id) {
-          this.replaceConfirmation.set({ unit, existing });
-          return;
+        if (!existing || existing.unitId === unit.id) {
+          return of({ existing: null as CartReservationItem | null, existingUnit: null as Unit | null });
         }
-        this.saveDraft(unit);
+        return this.getPublicUnitUseCase.execute(existing.unitId).pipe(
+          map((existingUnit) => ({ existing, existingUnit: existingUnit as Unit | null })),
+          catchError(() => of({ existing, existingUnit: null as Unit | null })),
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: ({ existing, existingUnit }) => {
+        if (existing) {
+          const enriched = existingUnit ? { ...existing, unitName: existingUnit.name } : existing;
+          this.replaceConfirmation.set({ unit, existing: enriched });
+        } else {
+          this.saveDraft(unit);
+        }
       },
       error: () => this.saveDraft(unit),
     });
