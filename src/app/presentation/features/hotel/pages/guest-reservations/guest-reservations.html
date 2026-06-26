@@ -78,43 +78,58 @@
           </div>
 
           <!-- Date range -->
-          <div class="dates-row">
-            <div class="date-field">
-              <div class="date-field-header">
-                <label class="date-label" for="fromDate">Check-in</label>
-                @if (fromDate()) {
-                  <button class="date-clear-btn" type="button" (click)="clearFromDate()" aria-label="Limpiar fecha de check-in">
-                    Limpiar
-                  </button>
-                }
+          <div class="filter-date-wrapper">
+            <div class="dates-row">
+              <div class="date-field">
+                <div class="date-field-header">
+                  <span class="date-label">Check-in</span>
+                  @if (fromDate()) {
+                    <button class="date-clear-btn" type="button" (click)="clearFromDate()" aria-label="Limpiar fecha de check-in">
+                      Limpiar
+                    </button>
+                  }
+                </div>
+                <button
+                  class="filter-date-trigger"
+                  type="button"
+                  (click)="toggleFilterCalendar()"
+                  [attr.aria-expanded]="isFilterCalendarOpen()"
+                  aria-label="Seleccionar fecha de check-in">
+                  <ng-icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+                  <span [class.is-placeholder]="!fromDateDisplay()">{{ fromDateDisplay() ?? 'dd/mm/aaaa' }}</span>
+                </button>
               </div>
-              <app-input
-                type="date"
-                id="fromDate"
-                name="fromDate"
-                size="medium"
-                [formControl]="fromDateControl"
-                (valueChange)="onFromDateChange($event)"
-              />
+
+              <div class="date-field">
+                <div class="date-field-header">
+                  <span class="date-label">Check-out</span>
+                  @if (toDate()) {
+                    <button class="date-clear-btn" type="button" (click)="clearToDate()" aria-label="Limpiar fecha de check-out">
+                      Limpiar
+                    </button>
+                  }
+                </div>
+                <button
+                  class="filter-date-trigger"
+                  type="button"
+                  (click)="toggleFilterCalendar()"
+                  [attr.aria-expanded]="isFilterCalendarOpen()"
+                  aria-label="Seleccionar fecha de check-out">
+                  <ng-icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+                  <span [class.is-placeholder]="!toDateDisplay()">{{ toDateDisplay() ?? 'dd/mm/aaaa' }}</span>
+                </button>
+              </div>
             </div>
 
-            <div class="date-field">
-              <div class="date-field-header">
-                <label class="date-label" for="toDate">Check-out</label>
-                @if (toDate()) {
-                  <button class="date-clear-btn" type="button" (click)="clearToDate()" aria-label="Limpiar fecha de check-out">
-                    Limpiar
-                  </button>
-                }
+            <div class="filter-cal-dropdown" [class.is-open]="isFilterCalendarOpen()" role="dialog" aria-label="Calendario de fechas">
+              <div class="filter-cal-inner">
+                <app-mini-calendar
+                  [initialStartDate]="fromDate() ?? null"
+                  [initialEndDate]="toDate() ?? null"
+                  (dateRangeChange)="onFilterDateRangeChange($event)"
+                  (closeRequested)="closeFilterCalendar()">
+                </app-mini-calendar>
               </div>
-              <app-input
-                type="date"
-                id="toDate"
-                name="toDate"
-                size="medium"
-                [formControl]="toDateControl"
-                (valueChange)="onToDateChange($event)"
-              />
             </div>
           </div>
 
