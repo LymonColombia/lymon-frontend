@@ -267,6 +267,7 @@ export class CalendarComponent {
 
   private parseDate(dateStr: string): Date {
     const [y, m, d] = dateStr.split('-').map(Number);
+    if (isNaN(y) || isNaN(m) || isNaN(d)) return new Date();
     return new Date(y, m - 1, d);
   }
 }

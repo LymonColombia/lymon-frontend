@@ -172,7 +172,8 @@ export class RoomDetailsNavComponent {
 
   private formatDate(dateStr: string | null): string | null {
     if (!dateStr) return null;
-    const [yearStr, monthStr, dayStr] = dateStr.split('-');
-    return `${Number(dayStr)} ${SHORT_MONTH_NAMES[Number(monthStr) - 1]} ${Number(yearStr)}`;
+    const parts = dateStr.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(isNaN)) return null;
+    return `${parts[2]} ${SHORT_MONTH_NAMES[parts[1] - 1]} ${parts[0]}`;
   }
 }
