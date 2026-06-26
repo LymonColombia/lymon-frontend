@@ -68,8 +68,9 @@ export interface BaseExperience {
   priceCop: number;
   durationHours: number;
   capacity: number;
+  minCapacity: number;
   coverImageUrl: string;
-  location: ExperienceLocation;
+  location?: ExperienceLocation;
   availabilityType: ExperienceAvailabilityType;
   allowStandalonePurchase?: boolean;
   allowReservationPurchase?: boolean;
@@ -90,18 +91,28 @@ export interface Experience extends BaseExperience {
 export type PropertyExperience = Experience & { scope: 'PROPERTY' };
 export type TenantExperience = Experience & { scope: 'TENANT' };
 
-export type CreateExperienceDto = Omit<Experience, 'id' | 'propertyName' | 'units'| 'tenantId'>;
+export type CreateExperienceDto = Omit<
+  Experience,
+  'id' | 'propertyName' | 'units' | 'tenantId' | 'scope' | 'durationHours'
+> & {
+  scope?: never;
+  propertyId: string;
+  unitIds: string[];
+  durationHours?: number;
+  location?: ExperienceLocation;
+  min_capacity?: number;
+};
 export type UpdateExperienceDto = Partial<
   Pick<
     Experience,
-   //| 'scope'
     | 'name'
     | 'description'
-    //| 'propertyId'
-    //| 'unitIds'
+    | 'propertyId'
+    | 'unitIds'
     | 'priceCop'
     | 'durationHours'
     | 'capacity'
+    | 'minCapacity'
     | 'coverImageUrl'
     | 'location'
     | 'availabilityType'
@@ -126,9 +137,6 @@ export interface ExperiencesResponse {
 }
 
 export interface ExperienceResponse {
-  data:
-    | Experience
-    | {
-        experience?: Experience;
-      };
+  message?: string;
+  data: Experience;
 }

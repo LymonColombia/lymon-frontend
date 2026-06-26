@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapGrid, bootstrapListUl, bootstrapPlus, bootstrapStars } from '@ng-icons/bootstrap-icons';
+import { bootstrapGrid, bootstrapListUl, bootstrapPlus, bootstrapStar } from '@ng-icons/bootstrap-icons';
 
 import {
   HotelPageActionsDirective,
@@ -31,7 +31,7 @@ type ExperienceViewMode = 'CARDS' | 'TABLE';
     ExperienceTableComponent,
     NgIcon,
 ],
-  providers: [provideIcons({ bootstrapStars, bootstrapPlus, bootstrapGrid, bootstrapListUl})],
+  providers: [provideIcons({ bootstrapStar, bootstrapPlus, bootstrapGrid, bootstrapListUl})],
   templateUrl: './tenant-experiences-page.component.html',
   styleUrl: './tenant-experiences-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

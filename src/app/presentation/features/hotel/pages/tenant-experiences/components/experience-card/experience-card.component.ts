@@ -10,7 +10,7 @@ import {
   bootstrapTrash
 } from '@ng-icons/bootstrap-icons';
 
-import { formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,getAvailabilitySummary } from '../../models/experience-form.model';
+import { formatCurrencyCop,getCategoryLabel,getAvailabilitySummary } from '../../models/experience-form.model';
 import { Experience } from '@/domain/entities/experience.model';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 
@@ -31,8 +31,11 @@ export class ExperienceCardComponent {
 
   readonly priceLabel = computed(() => formatCurrencyCop(this.experience().priceCop));
   readonly categoryLabel = computed(() => getCategoryLabel(this.experience().category));
-  readonly scopeBadgeLabel = computed(() => getScopeBadgeLabel(this.experience().scope));
   readonly availabilitySummary = computed(() => getAvailabilitySummary(this.experience()));
+  readonly locationLabel = computed(() => {
+    const location = this.experience().location;
+    return location?.label ||'Punto de recogida acordada con usario';
+  });
 
   onView(): void {
     const id = this.experience().id;

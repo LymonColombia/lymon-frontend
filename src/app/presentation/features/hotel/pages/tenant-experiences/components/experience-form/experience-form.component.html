@@ -4,51 +4,51 @@
 
     <div class="form-row">
       <div class="form-group">
-        <label for="scope">Disponibilidad
-
-          <app-hotel-tooltip ariaLabel="Ayuda disponibilidad" position="top">
-            Indica para quienes esta disponible<br>
-            <b>Propiedad</b> limita a unidades especificas de una propiedad <br />
-            <b>Global</b> disponible para todos.
-          </app-hotel-tooltip>
-
-          <span class="required">*</span></label>
-        <app-select id="scope" [options]="scopeOptions" formControlName="scope" />
-      </div>
-
-      <div class="form-group">
         <label for="category">Categoria <span class="required">*</span></label>
         <app-select id="category" [options]="categoryOptions" formControlName="category" />
       </div>
     </div>
 
-    @if (isPropertyScope()) {
     <div class="form-row">
       <div class="form-group">
-        <label for="propertyId">Propiedad</label>
-        <app-select id="propertyId" [options]="propertyOptions" formControlName="propertyId"
-          (valueChange)="onPropertyChanged($event)" />
+        <label for="propertyId">
+          Propiedad 
+          <app-hotel-tooltip ariaLabel="Ayuda sobre propiedad" position="top">
+            Asocia esta experiencia exclusivamente a una propiedad y sus unidades.
+          </app-hotel-tooltip>
+        </label>
+        <app-select
+          id="propertyId"
+          [options]="propertyOptions"
+          formControlName="propertyId"
+          (valueChange)="onPropertyChanged($event)"
+        />
       </div>
+
       <div class="form-group">
-        <legend>Unidades</legend>
+        <label for="unitsId">
+          Unidades
+          <app-hotel-tooltip ariaLabel="Ayuda sobre unidades" position="top">
+            Serán las unidades asociadas a esta experiencia dentro de la propiedad elegida.
+          </app-hotel-tooltip>
+        </label>
         @if (unitsLoading) {
-        <p class="field-hint">Cargando unidades...</p>
+          <p class="field-hint">Cargando unidades...</p>
         } @else {
-        <div class="checklist-shell">
-          @for (unit of unitOptions; track unit.value) {
-          <label class="checklist-item">
-            <input type="checkbox" [checked]="isUnitSelected(unit.value.toString())" (change)="
-                        onUnitChecklistToggle(unit.value.toString(), $any($event.target).checked)
-                      " />
-            <span>{{ unit.label }}</span>
-          </label>
-          }
-        </div>
-        }
+          <div class="checklist-shell">
+            @for (unit of unitOptions; track unit.value) {
+              <label class="checklist-item">
+                <input
+                  type="checkbox"
+                  [checked]="isUnitSelected(unit.value.toString())"
+                  (change)="onUnitChecklistToggle(unit.value.toString(), $any($event.target).checked)"
+                />
+                <span>{{ unit.label }}</span>
+              </label>
+            }
+          </div>}
       </div>
     </div>
-    }
-    
 
     <div class="form-row">
       <div class="form-group">
@@ -62,19 +62,30 @@
         <app-button class="drop-file">
           <ng-icon name="bootstrapCloudUpload" size="16px"></ng-icon>
           <span class="drop-label"> Subir imagen</span>
-          <input #coverImageInputElement id="coverImageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif"
-            class="file-input" aria-label="Seleccionar imagen de portada" (change)="onCoverImageSelected($event)" />
+          <input
+            #coverImageInputElement
+            id="coverImageInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            class="file-input"
+            aria-label="Seleccionar imagen de portada"
+            (change)="onCoverImageSelected($event)"
+          />
         </app-button>
 
         @if (coverImagePreviewUrl(); as previewUrl) {
-        <div class="image-container">
-          <div class="image-preview-shell">
-            <img class="image-preview" [src]="previewUrl" alt="Vista previa de portada" />
-          </div>
-          <button type="button" class="text-button image-remove-button" (click)="onRemoveCoverImage(coverImageInputElement)">
+          <div class="image-container">
+            <div class="image-preview-shell">
+              <img class="image-preview" [src]="previewUrl" alt="Vista previa de portada" />
+            </div>
+            <button
+              type="button"
+              class="text-button image-remove-button"
+              (click)="onRemoveCoverImage(coverImageInputElement)"
+            >
               Quitar imagen
             </button>
-        </div>
+          </div>
         }
       </div>
     </div>
@@ -91,79 +102,83 @@
         <label for="precioCop">Precio (COP) <span class="required">*</span></label>
         <app-input type="currency" formControlName="priceCop" placeholder="120.000" />
       </div>
+
+      @if (!isTransportationCategory()) {
+        <div class="form-group">
+          <label for="duracion">Duracion (horas) <span class="required">*</span></label>
+          <app-input type="number" formControlName="durationHours" placeholder="2" />
+        </div>
+      }
       <div class="form-group">
-        <label for="duracion">Duracion (horas) <span class="required">*</span></label>
-        <app-input type="number" formControlName="durationHours" placeholder="2" />
+        <label for="capacidad">Capacidad máxima<span class="required">*</span></label>
+        <app-input type="number" formControlName="capacity" placeholder="8" />
       </div>
       <div class="form-group">
-        <label for="capacidad">Capacidad <span class="required">*</span></label>
-        <app-input type="number" formControlName="capacity" placeholder="8" />
+        <label for="minCapacity">Capacidad minima <span class="required">*</span></label>
+        <app-input type="number" formControlName="minCapacity" placeholder="1" />
       </div>
     </div>
 
     <div class="section-separator">Ubicacion</div>
-    <div class="form-row" [formGroup]="form.controls.location">
 
-      <div class="form-group">
-        <label class="field-label" for="meetingPoint">
-          Ubicacion en el mapa
-          <app-hotel-tooltip ariaLabel="Ayuda sobre punto de encuentro" position="top">
-            <strong>Busca y selecciona ubicacion en el mapa</strong>
-             Se guardarán las coordenadas de ese lugar, lo que permitirá mostrar la ubicación exacta.
-          </app-hotel-tooltip>
-          <span class="required">*</span>
-        </label>
-        <app-map-picker [initialLocation]="initialLocationSignal()" (locationChanged)="onLocationChanged($event)"></app-map-picker>
+    @if (isTransportationCategory()) {
+      <div class="info-banner">
+        <strong>Punto de recogida y llegada.</strong>
+        Se confirma y acuerda una vez realizada la reserva con el usuario.
       </div>
+    } @else {
       
 
       <div class="form-group">
-        <label class="field-label" for="meetingPoint">
+        <label class="field-label" for="locationLabel">
           Punto de Encuentro
           <app-hotel-tooltip ariaLabel="Ayuda sobre punto de encuentro" position="top">
             <strong>Punto de encuentro</strong>
-            Lugar exacto donde se debe presentar el huésped o donde inicia la recogida.
+            Lugar exacto donde se debe presentar el huesped o donde inicia la recogida.
           </app-hotel-tooltip>
           <span class="required">*</span>
         </label>
-        <app-input id="meetingPoint" formControlName="label" placeholder="Lobby principal o recepcion" />
-        @if (form.controls.location.controls.label.invalid && form.controls.location.controls.label.touched) {
-          <span class="field-error">Campo requerido</span>
-        }
-
-        <label class="field-label" for="address">
-          Dirección
-          <app-hotel-tooltip ariaLabel="Ayuda sobre ubicacion de la experiencia" position="top">
-            <strong>Ubicacion de la experiencia</strong>
-            Direccion donde se realiza la experiencia o inicia el servicio.
-          </app-hotel-tooltip>
-          <span class="required">*</span>
-        </label>
-        <app-input id="address" formControlName="address" placeholder="Cra 10 #20-30" />
-        @if (form.controls.location.controls.address.invalid && form.controls.location.controls.address.touched) {
+        <app-input id="locationLabel" formControlName="locationLabel" placeholder="Lobby principal o recepcion" />
+        @if (form.controls.locationLabel.invalid && form.controls.locationLabel.touched) {
           <span class="field-error">Campo requerido</span>
         }
       </div>
-    </div>
+
+      <div class="form-group">
+        <label class="field-label" for="locationMap">
+          Ubicacion en el mapa
+          <app-hotel-tooltip ariaLabel="Ayuda sobre ubicacion" position="top">
+            <strong>Busca y selecciona ubicacion en el mapa</strong>
+            Se guardan la direccion y las coordenadas del punto seleccionado.
+          </app-hotel-tooltip>
+          <span class="required">*</span>
+        </label>
+        <app-address-map-picker formControlName="location"></app-address-map-picker>
+        @if (form.controls.location.invalid && form.controls.location.touched) {
+          <span class="field-error">Campo requerido</span>
+        }
+      </div>
+    }
+
+  
 
     <div class="section-separator">Disponibilidad</div>
-  
+
     <div class="form-group availability-type-group">
-      <label for="availabilityType">Tipo de disponibilidad 
+      <label for="availabilityType">Tipo de disponibilidad
         <span class="required">*</span>
           <app-hotel-tooltip ariaLabel="Ayuda sobre disponibilidad" position="top">
               <strong>¿Como se configura la disponibilidad?</strong>
               <br/><br/>
               <b>Rango de fechas:</b> Rango específico de fechas y horas. Puedes agregar múltiples rangos de fechas bloqueadas dentro del rango principal.
               <br/><br/>
-              <b>Recurrente:</b> Disponible en días específicos de la semana y horas definidas, repitiéndose cada semana.
+              <b>Recurrente:</b> Disponible en días específicos de la semana repitiéndose cada semana.
               <br/><br/>
               <b>Una sola vez:</b> Una vez en un rango específico de fecha y hora, sin opciones de recurrencia o bloqueos adicionales.
           </app-hotel-tooltip>
         </label>
-      <app-select [options]="availabilityTypeOptions" formControlName="availabilityType" />
+      <app-select [options]="availabilityTypeOptions()" formControlName="availabilityType" />
     </div>
-
 
     @if (isDateRange() || isOneTime()) {
       <div class="form-row">
@@ -228,26 +243,27 @@
         @if (form.controls.recurrence.controls.daysOfWeek.invalid && form.controls.recurrence.controls.daysOfWeek.touched) {
           <span class="field-error">Selecciona al menos un dia</span>
         }
-        
       </div>
 
-      <div class="form-row" [formGroup]="form.controls.recurrence">
-        <div class="form-group">
-          <label for="startTime">Hora inicio <span class="required">*</span></label>
-          <input type="time" id="startTime" formControlName="startTime" />
-          @if (form.controls.recurrence.controls.startTime.invalid && form.controls.recurrence.controls.startTime.touched) {
-            <span class="field-error">Campo requerido</span>
-          }
-        </div>
+      @if (showRecurringTimeFields()) {
+        <div class="form-row" [formGroup]="form.controls.recurrence">
+          <div class="form-group">
+            <label for="startTime">Hora inicio <span class="required">*</span></label>
+            <input type="time" id="startTime" formControlName="startTime" />
+            @if (form.controls.recurrence.controls.startTime.invalid && form.controls.recurrence.controls.startTime.touched) {
+              <span class="field-error">Campo requerido</span>
+            }
+          </div>
 
-        <div class="form-group">
-          <label for="endTime">Hora fin <span class="required">*</span></label>
-          <input type="time" id="endTime" formControlName="endTime" />
-          @if (form.controls.recurrence.controls.endTime.invalid && form.controls.recurrence.controls.endTime.touched) {
-            <span class="field-error">Campo requerido</span>
-          }
+          <div class="form-group">
+            <label for="endTime">Hora fin <span class="required">*</span></label>
+            <input type="time" id="endTime" formControlName="endTime" />
+            @if (form.controls.recurrence.controls.endTime.invalid && form.controls.recurrence.controls.endTime.touched) {
+              <span class="field-error">Campo requerido</span>
+            }
+          </div>
         </div>
-      </div>
+      } 
     }
 
     <div class="form-actions">

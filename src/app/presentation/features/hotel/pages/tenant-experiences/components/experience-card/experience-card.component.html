@@ -8,14 +8,13 @@
 
   <div class="experience-content">
     <div class="card-top">
-      <span class="scope-badge">{{ scopeBadgeLabel() }}</span>
-      <span class="category-badge">{{ categoryLabel() }}</span>
+      <span class="scope-badge">{{ categoryLabel() }}</span>
     </div>
 
     <h3 class="experience-name">{{ experience().name }}</h3>
      <p class="meta-line">
         <ng-icon name="bootstrapGeoAltFill" size="14px"></ng-icon>
-        {{ experience().location.label }}
+        {{ locationLabel() }}
       </p>
 
     <div class="meta-grid">
@@ -24,13 +23,15 @@
         <ng-icon name="bootstrapTagFill" size="14px"></ng-icon>
         {{ priceLabel() }}
       </p>
+      @if(experience().durationHours){
       <p class="meta-line">
         <ng-icon name="bootstrapClockFill" size="14px"></ng-icon>
         {{ experience().durationHours }} hora{{ experience().durationHours !== 1 ? 's' : '' }}
       </p>
+      }
       <p class="meta-line">
         <ng-icon name="bootstrapPeopleFill" size="14px"></ng-icon>
-        Capacidad {{ experience().capacity }}
+        {{ experience().minCapacity }}-{{ experience().capacity }} personas
       </p>
     </div>
 

@@ -3,11 +3,11 @@
     <thead>
       <tr>
         <th>Experiencia</th>
-        <th>Tipo</th>
         <th>Categoria</th>
         <th>Precio</th>
         <th>Duracion</th>
-        <th>Capacidad</th>
+        <th>Capacidad Min.</th>
+        <th>Capacidad Max.</th>
         <th>Disponibilidad</th>
         <th></th>
       </tr>
@@ -20,17 +20,15 @@
               <img [src]="experience.coverImageUrl" [alt]="'Portada de ' + experience.name" />
               <div class="name-meta">
                 <strong>{{ experience.name }}</strong>
-                <span>{{ experience.location.label }}</span>
+                <span>{{ experience.location?.label || 'Punto acordado con el usuario' }}</span>
               </div>
             </div>
           </td>
-          <td>
-            <span class="scope-badge">{{ getScopeBadgeLabel(experience.scope) }}</span>
-          </td>
           <td>{{ getCategoryLabel(experience.category) }}</td>
           <td>{{ formatCurrencyCop(experience.priceCop) }}</td>
-          <td>{{ experience.durationHours }} h</td>
-          <td>{{ experience.capacity }}</td>
+          <td class="center-td">{{ experience.durationHours }} h</td>
+          <td class="center-td">{{ experience.minCapacity }}</td>
+          <td class="center-td">{{ experience.capacity }}</td>
           <td class="availability-cell">{{ getAvailabilitySummary(experience) }}</td>
           <td>
             <div class="row-actions">

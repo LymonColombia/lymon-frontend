@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { provideIcons } from '@ng-icons/core';
-import { bootstrapStars } from '@ng-icons/bootstrap-icons';
+import { bootstrapStar } from '@ng-icons/bootstrap-icons';
 import { of, switchMap, map } from 'rxjs';
 
 import { CreateExperienceDto, Experience, UpdateExperienceDto } from '@/domain/entities/experience.model';
@@ -30,7 +30,7 @@ import { ExperienceFormSubmitPayload } from '../../models/experience-form.model'
     ExperienceFormComponent,
     ModalComponent,
   ],
-  providers: [provideIcons({ bootstrapStars })],
+  providers: [provideIcons({ bootstrapStar })],
   templateUrl: './tenant-experience-form-page.component.html',
   styleUrl: './tenant-experience-form-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -247,9 +247,12 @@ export class TenantExperienceFormPageComponent implements OnInit {
     return {
       name: dto.name,
       description: dto.description,
+      propertyId: dto.propertyId,
+      unitIds: dto.unitIds,
       priceCop: dto.priceCop,
       durationHours: dto.durationHours,
       capacity: dto.capacity,
+      minCapacity: dto.minCapacity,
       coverImageUrl: dto.coverImageUrl,
       location: dto.location,
       availabilityType: dto.availabilityType,

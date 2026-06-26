@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } fr
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload } from '@ng-icons/bootstrap-icons';
-import { CreateExperienceDto,Experience,ExperienceAvailabilityType,ExperienceScope} from '@/domain/entities/experience.model';
+import { CreateExperienceDto,Experience,ExperienceAvailabilityType} from '@/domain/entities/experience.model';
 import {
   DAY_OPTIONS,
   BlackoutRangeFormControls,
@@ -14,14 +14,25 @@ import { InputComponent } from '@/presentation/shared/components/input/input.com
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { HotelTooltipComponent } from '@/presentation/features/hotel/components/hotel-tooltip/hotel-tooltip';
-import { MapPickerComponent, MapPickerLocation } from '@/presentation/features/hotel/components/map-picker/map-picker';
+import {
+  AddressMapPickerComponent,
+  AddressLocationValue,
+} from '@/presentation/shared/components/address-map-picker/address-map-picker.component';
 
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 @Component({
   selector: 'app-experience-form',
   standalone: true,
-  imports: [ReactiveFormsModule,InputComponent,ButtonComponent,SelectComponent,HotelTooltipComponent,NgIcon,MapPickerComponent ],
+  imports: [
+    ReactiveFormsModule,
+    InputComponent,
+    ButtonComponent,
+    SelectComponent,
+    HotelTooltipComponent,
+    NgIcon,
+    AddressMapPickerComponent,
+  ],
   providers: [provideIcons({ bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload })],
   templateUrl: './experience-form.component.html',
   styleUrl: './experience-form.component.css',
@@ -46,43 +57,43 @@ export class ExperienceFormComponent implements OnChanges {
   readonly selectedCoverImageFile = signal<File | null>(null);
 
 
-  readonly initialLocationSignal = signal<MapPickerLocation | null>(null);
-  readonly scopeSignal = signal<ExperienceScope>('TENANT');
-  readonly availabilityTypeSignal = signal<ExperienceAvailabilityType>('DATE_RANGE');
+  readonly categorySignal = signal('TRANSPORTATION');
+  readonly availabilityTypeSignal = signal<ExperienceAvailabilityType>('RECURRING');
 
 
   readonly isEditingMode = computed(() => Boolean(this.initialExperience));
-  readonly isPropertyScope = computed(() => this.scopeSignal() === 'PROPERTY');
+  readonly isTransportationCategory = computed(() => this.categorySignal() === 'TRANSPORTATION');
   readonly isDateRange = computed(() => this.availabilityTypeSignal() === 'DATE_RANGE');
   readonly isRecurring = computed(() => this.availabilityTypeSignal() === 'RECURRING');
   readonly isOneTime = computed(() => this.availabilityTypeSignal() === 'ONE_TIME');
+  readonly showRecurringTimeFields = computed(
+    () => this.isRecurring() && !this.isTransportationCategory(),
+  );
 
   private appliedExperienceId: string | null = null;
 
   readonly categoryOptions: SelectOption[] = [
     { value: 'TRANSPORTATION', label: 'Transporte' },
+     {value: 'TRANSP', label: 'Transpo' }
   ];
-  readonly scopeOptions: SelectOption[] = [
-    { value: 'TENANT', label: 'Global' },
-    { value: 'PROPERTY', label: 'Propiedad' },
-  ];
-  readonly availabilityTypeOptions: SelectOption[] = [
-    { value: 'DATE_RANGE', label: 'Rango de Fechas' },
-    { value: 'RECURRING', label: 'Recurrencia' },
-    { value: 'ONE_TIME', label: 'Una sola vez' },
-  ];
+  
+  readonly availabilityTypeOptions = computed<SelectOption[]>(() =>
+    this.isTransportationCategory()
+      ? [{ value: 'RECURRING', label: 'Recurrencia' }]
+      : [
+          { value: 'DATE_RANGE', label: 'Rango de Fechas' },
+          { value: 'RECURRING', label: 'Recurrencia' },
+          { value: 'ONE_TIME', label: 'Una sola vez' },
+        ],
+  );
   readonly dayOptions = DAY_OPTIONS;
 
   readonly form = this.fb.group<ExperienceFormControls>({
-    scope: this.fb.control<ExperienceScope>('TENANT', {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    propertyId: this.fb.control('', { nonNullable: true }),
+    propertyId: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
     unitIds: this.fb.control<string[]>([], { nonNullable: true }),
     name: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
     description: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-    category: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
+    category: this.fb.control('TRANSPORTATION', { nonNullable: true, validators: [Validators.required] }),
     priceCop: this.fb.control<number | undefined>(undefined, {
       nonNullable: true,
       validators: [Validators.required, Validators.min(1)],
@@ -95,8 +106,12 @@ export class ExperienceFormComponent implements OnChanges {
       nonNullable: true,
       validators: [Validators.required, Validators.min(1)],
     }),
+    minCapacity: this.fb.control<number | undefined>(undefined, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(1)],
+    }),
     coverImageUrl: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-    availabilityType: this.fb.control<ExperienceAvailabilityType>('DATE_RANGE', {
+    availabilityType: this.fb.control<ExperienceAvailabilityType>('RECURRING', {
       nonNullable: true,
       validators: [Validators.required],
     }),
@@ -111,11 +126,9 @@ export class ExperienceFormComponent implements OnChanges {
       startTime: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
       endTime: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
     }),
-    location: this.fb.group({
-      label: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-      address: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-      lat: this.fb.control<number|null>(null, { nonNullable: true, validators: [Validators.required] }),
-      lng: this.fb.control<number|null>(null, { nonNullable: true, validators: [Validators.required] }),
+    locationLabel: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
+    location: this.fb.control<AddressLocationValue | null>(null, {
+      validators: [Validators.required],
     }),
   });
 
@@ -127,11 +140,18 @@ export class ExperienceFormComponent implements OnChanges {
   constructor() {
     this.destroyRef.onDestroy(() => this.revokeCoverImageObjectUrl());
     this.syncAvailabilityValidators(this.form.controls.availabilityType.value);
+    this.syncLocationValidators(this.form.controls.category.value);
+    this.syncDurationValidators(this.form.controls.category.value);
+    this.enforceTransportationAvailability(this.form.controls.category.value);
 
-    
-    this.form.controls.scope.valueChanges
+    this.form.controls.category.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => this.scopeSignal.set(value));
+      .subscribe((category) => {
+        this.categorySignal.set(category);
+        this.syncLocationValidators(category);
+        this.syncDurationValidators(category);
+        this.enforceTransportationAvailability(category);
+      });
 
     this.form.controls.availabilityType.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -164,7 +184,7 @@ export class ExperienceFormComponent implements OnChanges {
   
     if (optionsChanged && !optionsChanged.firstChange) {
       const exp = this.initialExperience;
-      if (exp?.scope === 'PROPERTY' && exp.propertyId) {
+      if (exp?.propertyId) {
         this.propertyChanged.emit(exp.propertyId);
       }
     }
@@ -184,23 +204,6 @@ export class ExperienceFormComponent implements OnChanges {
 
   onCancel(): void {
     this.cancelled.emit();
-  }
-
-  onLocationChanged(location: MapPickerLocation | null): void {
-    this.form.controls.location.patchValue(
-      location ? { lat: location.lat, lng: location.lng } : { lat: null, lng: null },
-    );
-  }
-
-  private getInitialLocationFromExperience(experience: Experience): MapPickerLocation | null {
-    const loc = experience.location;
-    if (loc?.lat === null || loc?.lng === null) return null;
-
-    return {
-      lat: loc.lat,
-      lng: loc.lng,
-      address: loc.address,
-    };
   }
 
   onPropertyChanged(value: string | number): void {
@@ -274,7 +277,6 @@ export class ExperienceFormComponent implements OnChanges {
 
 
   private applyExperience(experience: Experience): void {
-    
     const blackoutControls = (experience.blackoutRanges ?? []).map((range) =>
       this.createBlackoutRangeGroup(
         this.toLocalDateTime(range.startAt),
@@ -285,15 +287,16 @@ export class ExperienceFormComponent implements OnChanges {
 
     this.form.patchValue(this.toFormValue(experience));
 
-    this.scopeSignal.set(experience.scope);
+    this.categorySignal.set(experience.category);
     this.availabilityTypeSignal.set(experience.availabilityType);
+    this.syncLocationValidators(experience.category);
+    this.syncDurationValidators(experience.category);
     this.syncAvailabilityValidators(experience.availabilityType);
+    this.enforceTransportationAvailability(experience.category);
 
     this.setCoverImagePreviewFromExperience(experience);
 
-    this.initialLocationSignal.set(this.getInitialLocationFromExperience(experience));
-
-    if (experience.scope === 'PROPERTY' && experience.propertyId) {
+    if (experience.propertyId) {
       this.propertyChanged.emit(experience.propertyId);
     }
 
@@ -303,13 +306,19 @@ export class ExperienceFormComponent implements OnChanges {
   private syncAvailabilityValidators(type: ExperienceAvailabilityType): void {
     const { startAt, endAt, recurrence } = this.form.controls;
     const { daysOfWeek, startTime, endTime } = recurrence.controls;
+    const transportation = this.isTransportationCategory();
 
     if (type === 'RECURRING') {
       startAt.clearValidators();
       endAt.clearValidators();
       daysOfWeek.setValidators([Validators.required]);
-      startTime.setValidators([Validators.required]);
-      endTime.setValidators([Validators.required]);
+      if (transportation) {
+        startTime.clearValidators();
+        endTime.clearValidators();
+      } else {
+        startTime.setValidators([Validators.required]);
+        endTime.setValidators([Validators.required]);
+      }
     } else {
       startAt.setValidators([Validators.required]);
       endAt.setValidators([Validators.required]);
@@ -323,31 +332,70 @@ export class ExperienceFormComponent implements OnChanges {
     );
   }
 
+  private syncLocationValidators(category: string): void {
+    const locationLabel = this.form.controls.locationLabel;
+    const location = this.form.controls.location;
+    const required = category !== 'TRANSPORTATION';
+
+    if (required) {
+      locationLabel.setValidators([Validators.required]);
+      location.setValidators([Validators.required]);
+    } else {
+      locationLabel.clearValidators();
+      location.clearValidators();
+    }
+
+    locationLabel.updateValueAndValidity({ emitEvent: false });
+    location.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private syncDurationValidators(category: string): void {
+    const durationHours = this.form.controls.durationHours;
+
+    if (category === 'TRANSPORTATION') {
+      durationHours.clearValidators();
+    } else {
+      durationHours.setValidators([Validators.required, Validators.min(1)]);
+    }
+
+    durationHours.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private enforceTransportationAvailability(category: string): void {
+    if (category !== 'TRANSPORTATION') {
+      return;
+    }
+
+    this.form.controls.availabilityType.setValue('RECURRING', { emitEvent: false });
+    this.availabilityTypeSignal.set('RECURRING');
+    this.form.controls.startAt.setValue('', { emitEvent: false });
+    this.form.controls.endAt.setValue('', { emitEvent: false });
+    this.form.controls.recurrence.controls.startTime.setValue('00:00', { emitEvent: false });
+    this.form.controls.recurrence.controls.endTime.setValue('23:59', { emitEvent: false });
+    this.syncAvailabilityValidators('RECURRING');
+  }
+
 
   private buildPayload(): CreateExperienceDto {
     const raw = this.form.getRawValue();
+    const location = this.resolveLocation(raw.locationLabel, raw.location);
     return {
-      scope: raw.scope,
       name: raw.name,
       description: raw.description,
       category: raw.category,
       priceCop: raw.priceCop,
-      durationHours: raw.durationHours,
+      durationHours: this.isTransportationCategory() ? undefined : raw.durationHours,
       capacity: raw.capacity,
+      min_capacity: raw.minCapacity,
       coverImageUrl: raw.coverImageUrl,
       availabilityType: raw.availabilityType,
-      propertyId: raw.scope === 'PROPERTY' ? raw.propertyId || undefined : undefined,
-      unitIds: raw.scope === 'PROPERTY' && raw.unitIds?.length ? raw.unitIds : undefined,
+      propertyId: raw.propertyId,
+      unitIds: raw.unitIds,
       startAt: this.resolveStartAt(raw.availabilityType, raw.startAt),
       endAt: this.resolveEndAt(raw.availabilityType, raw.endAt),
       blackoutRanges: this.resolveBlackoutRanges(raw.availabilityType, raw.blackoutRanges),
       recurrence: this.resolveRecurrence(raw.availabilityType, raw.recurrence),
-      location: {
-        label: raw.location.label,
-        address: raw.location.address,
-        lat: raw.location.lat,
-        lng: raw.location.lng,
-      },
+      ...(location ? { location } : {}),
       allowStandalonePurchase: true,
       allowReservationPurchase: true,
     } as CreateExperienceDto;
@@ -356,7 +404,6 @@ export class ExperienceFormComponent implements OnChanges {
 
   private toFormValue(experience: Experience) {
     return {
-      scope: experience.scope,
       propertyId: experience.propertyId ?? '',
       unitIds: experience.unitIds ?? [],
       name: experience.name,
@@ -365,6 +412,7 @@ export class ExperienceFormComponent implements OnChanges {
       priceCop: experience.priceCop,
       durationHours: experience.durationHours,
       capacity: experience.capacity,
+      minCapacity: experience.minCapacity,
       coverImageUrl: experience.coverImageUrl,
       availabilityType: experience.availabilityType,
       startAt: this.toLocalDateTime(experience.startAt),
@@ -374,12 +422,14 @@ export class ExperienceFormComponent implements OnChanges {
         startTime: experience.recurrence?.startTime ?? '',
         endTime: experience.recurrence?.endTime ?? '',
       },
-      location: {
-        label: experience.location.label,
-        address: experience.location.address,
-        lat: experience.location.lat,
-        lng: experience.location.lng,
-      },
+      locationLabel: experience.location?.label ?? '',
+      location: experience.location
+        ? {
+            address: experience.location.address,
+            lat: experience.location.lat,
+            lng: experience.location.lng,
+          }
+        : null,
     };
   }
 
@@ -418,6 +468,15 @@ export class ExperienceFormComponent implements OnChanges {
     recurrence: Experience['recurrence'],
   ): Experience['recurrence'] | undefined {
     if (type !== 'RECURRING' || !recurrence) return undefined;
+
+    if (this.isTransportationCategory()) {
+      return {
+        daysOfWeek: recurrence.daysOfWeek,
+        startTime: '00:00',
+        endTime: '23:59',
+      };
+    }
+
     return {
       daysOfWeek: recurrence.daysOfWeek,
       startTime: recurrence.startTime,
@@ -425,9 +484,28 @@ export class ExperienceFormComponent implements OnChanges {
     };
   }
 
+  private resolveLocation(
+    label: string,
+    location: AddressLocationValue | null,
+  ): Experience['location'] | undefined {
+    if (!location?.address || !location?.lat || !location?.lng) {
+      return undefined;
+    }
+
+    if (this.form.controls.category.value !== 'TRANSPORTATION' && !label.trim()) {
+      return undefined;
+    }
+
+    return {
+      label: label.trim() || location.address,
+      address: location.address,
+      lat: location.lat,
+      lng: location.lng,
+    };
+  }
+
   private resetFormToDefaults(): void {
     this.form.reset({
-      scope: 'TENANT',
       propertyId: '',
       unitIds: [],
       name: '',
@@ -436,24 +514,26 @@ export class ExperienceFormComponent implements OnChanges {
       priceCop: undefined,
       durationHours: undefined,
       capacity: undefined,
+      minCapacity: undefined,
       coverImageUrl: '',
       availabilityType: 'DATE_RANGE',
       startAt: '',
       endAt: '',
       recurrence: { daysOfWeek: [], startTime: '', endTime: '' },
-      location: { label: '', address: '', lat: 0, lng: 0 },
+      locationLabel: '',
+      location: null,
     }, { emitEvent: false });
 
     this.form.setControl('blackoutRanges', this.fb.array<FormGroup<BlackoutRangeFormControls>>([]));
 
-   
-    this.scopeSignal.set('TENANT');
-    this.availabilityTypeSignal.set('DATE_RANGE');
-    this.syncAvailabilityValidators('DATE_RANGE');
+    this.categorySignal.set('TRANSPORTATION');
+    this.availabilityTypeSignal.set('RECURRING');
+    this.syncLocationValidators('TRANSPORTATION');
+    this.syncDurationValidators('TRANSPORTATION');
+    this.enforceTransportationAvailability('TRANSPORTATION');
     this.revokeCoverImageObjectUrl();
     this.coverImagePreviewUrl.set(null);
     this.selectedCoverImageFile.set(null);
-    this.initialLocationSignal.set(null);
   }
 
   private toLocalDateTime(value?: string): string {

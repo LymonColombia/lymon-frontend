@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signa
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStars } from '@ng-icons/bootstrap-icons';
+import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStar } from '@ng-icons/bootstrap-icons';
 import { Experience } from '@/domain/entities/experience.model';
 import {
   HotelPageActionsDirective,
@@ -11,7 +11,7 @@ import {
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
 import { LocationMap } from "@/presentation/features/hotel/components/location-map/location-map";
-import {formatDayList, formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,} from '../../models/experience-form.model';
+import { formatDayList, formatCurrencyCop, getCategoryLabel } from '../../models/experience-form.model';
 @Component({
   selector: 'app-tenant-experience-detail-page',
   standalone: true,
@@ -22,7 +22,7 @@ import {formatDayList, formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,} f
     NgIcon,
     LocationMap
 ],
-  providers: [provideIcons({ bootstrapStars, bootstrapPencilSquare , bootstrapCash,bootstrapClock,bootstrapPeopleFill,bootstrapCalendar3,bootstrapDashCircle,bootstrapBuilding,bootstrapGeoAlt,bootstrapFlag,bootstrapSignpost})],
+  providers: [provideIcons({ bootstrapStar, bootstrapPencilSquare , bootstrapCash,bootstrapClock,bootstrapPeopleFill,bootstrapCalendar3,bootstrapDashCircle,bootstrapBuilding,bootstrapGeoAlt,bootstrapFlag,bootstrapSignpost})],
   templateUrl: './tenant-experience-detail-page.component.html',
   styleUrl: './tenant-experience-detail-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,9 +37,50 @@ export class TenantExperienceDetailPageComponent {
   readonly errorMessage = signal<string | null>(null);
   readonly experience = signal<Experience | null>(null);
 
-  readonly scopeBadge = computed(() => {
+
+  readonly durationLabel = computed(() => {
     const item = this.experience();
-    return item ? getScopeBadgeLabel(item.scope) : '';
+    const durationHours = item?.durationHours;
+    if (durationHours == null) {
+      return 'No especificada';
+    }
+    return `${durationHours}h`;
+  });
+
+  readonly minCapacityLabel = computed(() => {
+    const item = this.experience();
+    const minCapacity = item?.minCapacity 
+    return minCapacity === null ?  'No especificada':`${minCapacity}`;
+  });
+
+  readonly associationPropertyLabel = computed(() => {
+    const item = this.experience();
+    if (!item) return 'No asociada';
+    return item.propertyName ?? item.propertyId ?? 'No asociada';
+  });
+  
+  readonly associatedUnitLabels = computed(() => {
+    const item = this.experience();
+    if (!item) return [];
+
+    if (item.units?.length) {
+      return item.units.map((unit) => unit.name);
+    }
+
+    return item.unitIds ?? [];
+  });
+
+  readonly hasAssociation = computed(() => {
+    const item = this.experience();
+    return Boolean(item?.propertyId || item?.unitIds?.length );
+  });
+
+  readonly availabilityTypeLabel = computed(() => {
+    const type = this.experience()?.availabilityType;
+    if (type === 'DATE_RANGE') return 'Rango de fechas';
+    if (type === 'RECURRING') return 'Recurrencia';
+    if (type === 'ONE_TIME') return 'Una sola vez';
+    return 'No especificada';
   });
 
   readonly categoryLabel = computed(() => {

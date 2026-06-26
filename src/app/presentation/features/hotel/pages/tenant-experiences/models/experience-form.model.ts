@@ -1,5 +1,6 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { CreateExperienceDto, Experience, ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
+import { CreateExperienceDto, Experience, ExperienceAvailabilityType } from '@/domain/entities/experience.model';
+import type { AddressLocationValue } from '@/presentation/shared/components/address-map-picker/address-map-picker.component';
 
 export interface DayOption {
   value: number;
@@ -37,15 +38,7 @@ export interface RecurrenceFormControls {
   endTime: FormControl<string>;
 }
 
-export interface LocationFormControls {
-  label: FormControl<string>;
-  address: FormControl<string>;
-  lat: FormControl<number|null>; 
-  lng: FormControl<number|null>;
-}
-
 export interface ExperienceFormControls {
-  scope: FormControl<ExperienceScope>;
   propertyId: FormControl<string>;
   unitIds: FormControl<string[]>;
   name: FormControl<string>;
@@ -54,19 +47,25 @@ export interface ExperienceFormControls {
   priceCop: FormControl<number|undefined>;
   durationHours: FormControl<number|undefined>;
   capacity: FormControl<number|undefined>;
+  minCapacity: FormControl<number|undefined>;
   coverImageUrl: FormControl<string>;
   availabilityType: FormControl<ExperienceAvailabilityType>;
   startAt: FormControl<string>;
   endAt: FormControl<string>;
   blackoutRanges: FormArray<FormGroup<BlackoutRangeFormControls>>;
   recurrence: FormGroup<RecurrenceFormControls>;
-  location: FormGroup<LocationFormControls>;
+  locationLabel: FormControl<string>;
+  location: FormControl<AddressLocationValue | null>;
 }
 
 export interface ExperienceFormSubmitPayload {
   experience: CreateExperienceDto;
   coverImageFile: File | null;
 }
+
+export const EXPERIENCE_CATEGORY_LABELS: Readonly<Record<string, string>> = {
+  TRANSPORTATION: 'Transporte',
+};
 
 export function formatDayList(daysOfWeek: number[]): string {
   if (daysOfWeek.length === 0) {
@@ -88,8 +87,8 @@ export function formatCurrencyCop(priceCop: number): string {
 }
 
 export function getCategoryLabel(category: string): string {
-  const normalized = category.toLowerCase();
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  const normalized = category.trim().toUpperCase();
+  return EXPERIENCE_CATEGORY_LABELS[normalized] ?? normalized.charAt(0) + normalized.slice(1).toLowerCase();
 }
 
 export function getScopeBadgeLabel(scope: Experience['scope']): string {

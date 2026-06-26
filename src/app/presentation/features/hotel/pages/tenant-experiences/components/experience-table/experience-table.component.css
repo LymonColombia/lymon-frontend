@@ -18,6 +18,10 @@ td {
   border-bottom: var(--input-border-width) solid var(--color-border-light);
 }
 
+.center-td{
+  text-align: center;
+}
+
 th {
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
