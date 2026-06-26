@@ -20,6 +20,7 @@ import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 
 export interface ReservationViewModel {
   id: string;
+  reservationNumber: number;
   guestName: string;
   guestEmail: string;
   guestPhone: string;
@@ -393,6 +394,7 @@ export class TenantReservations implements OnInit {
 
     return {
       id: res.id,
+      reservationNumber: res.reservationNumber ?? 0,
       guestName,
       guestEmail: '',
       guestPhone: '',

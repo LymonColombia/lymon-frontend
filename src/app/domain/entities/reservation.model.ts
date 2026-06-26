@@ -1,5 +1,6 @@
 export interface Reservation {
     id: string;
+    reservationNumber?: number;
     tenantId: string;
     propertyId: string;
     unitId: string;

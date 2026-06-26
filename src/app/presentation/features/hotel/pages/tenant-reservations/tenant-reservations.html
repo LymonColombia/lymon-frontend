@@ -79,7 +79,7 @@
                     </span>
                     <div class="guest-info flex flex-col items-start gap-1 ml-4">
                       <span class="main-text font-medium">{{ res.guestName }}</span>
-                      <span class="sub-text text-sm text-gray-500">{{ res.id }}</span>
+                      <span class="sub-text text-sm text-gray-500">{{ res.reservationNumber }}</span>
                     </div>
                   </div>
                 </td>
@@ -125,7 +125,7 @@
               <header class="modal-header">
                   <div class="modal-title-group">
                       <ng-icon name="bootstrapCalendarEvent" class="modal-icon"></ng-icon>
-                      <h2 class="modal-title">Detalle de Reserva {{ res.id }}</h2>
+                      <h2 class="modal-title">Detalle de Reserva {{ res.reservationNumber }}</h2>
                   </div>
                   <button type="button" class="icon-btn" (click)="closeDetails()" aria-label="Cerrar modal">
                       <ng-icon name="bootstrapX"></ng-icon>
