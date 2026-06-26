@@ -137,13 +137,13 @@
 }
 
 .step-item.active .step-icon {
-  background: var(--color-primary, #2ec094);
-  color: var(--color-primary-dark, #084539);
+  background: var(--color-primary-dark, #084539);
+  color: white;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #2ec094) 15%, transparent);
 }
 
 .step-item.completed .step-icon {
-  background: var(--color-success-text, #15803d);
+  background: var(--color-primary, #2ec094);
   color: white;
 }
 
@@ -156,11 +156,11 @@
 }
 
 .step-item.active span {
-  color: var(--color-primary);
+  color: var(--color-primary-dark);
 }
 
 .step-item.completed span {
-  color: var(--color-success-text);
+  color: var(--color-primary);
 }
 
 .step-item.disabled {
@@ -179,7 +179,7 @@
 }
 
 .step-line.completed {
-  background: var(--color-success-text);
+  background: var(--color-primary-dark);
 }
 
 .wizard-content {
@@ -377,7 +377,7 @@ select {
 
 .btn-primary {
   background: var(--color-primary, #2ec094);
-  color: var(--color-primary-dark, #084539);
+  color: white;
   box-shadow: 0 2px 4px color-mix(in srgb, var(--color-primary, #2ec094) 20%, transparent);
 }
 
@@ -417,12 +417,14 @@ select {
 }
 
 .btn-emerald {
-  background: var(--color-success-text, #15803d);
+  background: var(--color-primary, #2ec094);
   color: white;
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-primary, #2ec094) 20%, transparent);
 }
 
 .btn-emerald:hover {
-  background: #166534;
+  background: var(--color-primary-dark, #084539);
+  color: white;
   transform: translateY(-1px);
 }
 
