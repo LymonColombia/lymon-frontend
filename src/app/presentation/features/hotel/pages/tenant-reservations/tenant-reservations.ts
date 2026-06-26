@@ -18,6 +18,7 @@ import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenan
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
+import { ShiftDatePickerComponent } from '../../../../shared/components/shift-date-picker/shift-date-picker.component';
 
 export interface ReservationViewModel {
   id: string;
@@ -37,7 +38,7 @@ export interface ReservationViewModel {
 @Component({
   selector: 'app-tenant-reservations',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent, ShiftDatePickerComponent],
   templateUrl: './tenant-reservations.html',
   styleUrls: ['./tenant-reservations.css'],
   viewProviders: [
@@ -94,6 +95,8 @@ export class TenantReservations implements OnInit {
     checkOut: '',
     notes: ''
   };
+
+  showCheckInInfoModal = signal(false);
 
   ngOnInit(): void {
     this.loadReferenceDataAndReservations();
@@ -372,6 +375,50 @@ export class TenantReservations implements OnInit {
     return status.toLowerCase().replaceAll('_', '-') === 'confirmada';
   }
 
+  isCheckInDateReached(checkIn: string): boolean {
+    if (!checkIn) return false;
+    const today = this.getTodayUtc();
+    const checkInDate = this.parseUtcDate(checkIn);
+    return checkInDate.getTime() <= today.getTime();
+  }
+
+  openCheckInInfoModal(): void {
+    this.showCheckInInfoModal.set(true);
+  }
+
+  closeCheckInInfoModal(): void {
+    this.showCheckInInfoModal.set(false);
+  }
+
+  onCheckInAttempt(event: Event): void {
+    const reservation = this.selectedReservation();
+    if (!reservation) return;
+    if (!this.isCheckInDateReached(reservation.checkIn)) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.openCheckInInfoModal();
+    }
+  }
+
+  onCheckInButtonClicked(res: ReservationViewModel): void {
+    if (this.isProcessingStatus()) return;
+    if (!this.isCheckInDateReached(res.checkIn)) {
+      this.openCheckInInfoModal();
+      return;
+    }
+    this.checkInReservation();
+  }
+
+  private getTodayUtc(): Date {
+    const now = new Date();
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  }
+
+  private parseUtcDate(value: string): Date {
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, day));
+  }
+
   canCheckOutReservation(status: string): boolean {
     const normalized = status.toLowerCase().replaceAll('_', '-');
     return normalized === 'check-in' || normalized === 'checked-in';
@@ -436,6 +483,14 @@ export class TenantReservations implements OnInit {
   private toDateInputValue(value: string): string {
     if (!value) return '';
     return value;
+  }
+
+  get today(): string {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private validateEditForm(): string | null {

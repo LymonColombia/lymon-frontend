@@ -169,12 +169,27 @@
 
           <div class="form-group">
             <label for="checkIn">Fecha de Entrada</label>
-            <input type="date" id="checkIn" [(ngModel)]="reservationForm.checkIn" name="checkIn">
+            <app-shift-date-picker
+              id="checkIn"
+              name="checkIn"
+              [value]="reservationForm.checkIn"
+              [minDate]="today"
+              [maxDate]="reservationForm.checkOut"
+              [rangeAnchor]="reservationForm.checkOut"
+              (dateChange)="reservationForm.checkIn = $event">
+            </app-shift-date-picker>
           </div>
 
           <div class="form-group">
             <label for="checkOut">Fecha de Salida</label>
-            <input type="date" id="checkOut" [(ngModel)]="reservationForm.checkOut" name="checkOut">
+            <app-shift-date-picker
+              id="checkOut"
+              name="checkOut"
+              [value]="reservationForm.checkOut"
+              [minDate]="reservationForm.checkIn || today"
+              [rangeAnchor]="reservationForm.checkIn"
+              (dateChange)="reservationForm.checkOut = $event">
+            </app-shift-date-picker>
           </div>
 
           <div class="form-group full-width">

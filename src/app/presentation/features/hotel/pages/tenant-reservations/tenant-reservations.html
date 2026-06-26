@@ -1,8 +1,5 @@
-<app-hotel-page-layout
-  title="Gestión de Reservaciones"
-  subtitle="Visualiza todas las reservas registradas en tus propiedades"
-  iconName="bootstrapCalendarEvent"
->
+<app-hotel-page-layout title="Gestión de Reservaciones"
+  subtitle="Visualiza todas las reservas registradas en tus propiedades" iconName="bootstrapCalendarEvent">
   <section class="summary-grid" aria-label="Resumen de reservaciones">
     <article class="summary-card">
       <p class="summary-label">Total de Reservas</p>
@@ -28,13 +25,8 @@
           <div class="search-container">
             <div class="search-input-wrapper">
               <ng-icon name="bootstrapSearch" class="search-icon"></ng-icon>
-              <input
-                type="text"
-                placeholder="Buscar por ID, nombre o propiedad..."
-                (input)="onSearchChange($event)"
-                class="search-input"
-                aria-label="Buscar reservaciones"
-              />
+              <input type="text" placeholder="Buscar por ID, nombre o propiedad..." (input)="onSearchChange($event)"
+                class="search-input" aria-label="Buscar reservaciones" />
             </div>
           </div>
           <button class="btn-create-header" aria-label="Crear Reserva" (click)="openWizard()">
@@ -47,301 +39,326 @@
 
     <div class="table-wrapper">
       @if (isLoading()) {
-        <p class="empty-state">Cargando reservas...</p>
+      <p class="empty-state">Cargando reservas...</p>
       } @else if (errorMessage()) {
-        <p class="empty-state error">{{ errorMessage() }}</p>
+      <p class="empty-state error">{{ errorMessage() }}</p>
       } @else if (reservations().length === 0) {
-        <p class="empty-state">No hay reservas registradas.</p>
+      <p class="empty-state">No hay reservas registradas.</p>
       } @else {
-        <table class="employees-table">
-          <thead>
-            <tr>
-              <th class="col-name">Reserva / Huésped</th>
-              <th class="col-email">Propiedad / Habitación</th>
-              <th class="col-role">Check In / Out</th>
-              <th class="col-status">Estado</th>
-              <th class="col-actions">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (res of reservations(); track res.id) {
-              <tr
-                class="employee-row"
-                (click)="openDetails(res)"
-                (keydown.enter)="openDetails(res)"
-                tabindex="0"
-                aria-label="Ver detalles de reserva"
-              >
-                <td>
-                  <div class="name-cell">
-                    <span class="avatar reservation-avatar">
-                       <ng-icon name="bootstrapCalendarEvent"></ng-icon>
-                    </span>
-                    <div class="guest-info flex flex-col items-start gap-1 ml-4">
-                      <span class="main-text font-medium">{{ res.guestName }}</span>
-                      <span class="sub-text text-sm text-gray-500">{{ res.reservationNumber }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                   <div class="stacked-cell flex flex-col items-start gap-1">
-                     <span class="main-text font-medium">{{ res.propertyName }}</span>
-                     <span class="sub-text text-sm text-gray-500">{{ res.unitName }}</span>
-                   </div>
-                </td>
-                <td>
-                   <div class="stacked-cell flex flex-col items-start gap-1">
-                     <span class="main-text font-medium">{{ res.checkIn }}</span>
-                     <span class="sub-text text-sm text-gray-500">al {{ res.checkOut }}</span>
-                   </div>
-                </td>
-                <td>
-                  <span class="status-pill" [ngClass]="'status-' + res.status.toLowerCase()">
-                    {{ res.status }}
-                  </span>
-                </td>
-                <td>
-                   <button type="button" class="btn-outline-small" (click)="$event.stopPropagation(); openDetails(res)">
-                      Detalles
-                   </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-        <div class="pagination-bar">
-          <button class="btn btn-ghost" (click)="prevPage()" [disabled]="currentPage() === 1 || isLoading()">Anterior</button>
-          <span class="page-indicator">Página {{ currentPage() }} de {{ totalPages() }}</span>
-          <button class="btn btn-ghost" (click)="nextPage()" [disabled]="currentPage() >= totalPages() || isLoading()">Siguiente</button>
-        </div>
+      <table class="employees-table">
+        <thead>
+          <tr>
+            <th class="col-name">Reserva / Huésped</th>
+            <th class="col-email">Propiedad / Habitación</th>
+            <th class="col-role">Check In / Out</th>
+            <th class="col-status">Estado</th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (res of reservations(); track res.id) {
+          <tr class="employee-row" (click)="openDetails(res)" (keydown.enter)="openDetails(res)" tabindex="0"
+            aria-label="Ver detalles de reserva">
+            <td>
+              <div class="name-cell">
+                <span class="avatar reservation-avatar">
+                  <ng-icon name="bootstrapCalendarEvent"></ng-icon>
+                </span>
+                <div class="guest-info flex flex-col items-start gap-1 ml-4">
+                  <span class="main-text font-medium">{{ res.guestName }}</span>
+                  <span class="sub-text text-sm text-gray-500">{{ res.reservationNumber }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="stacked-cell flex flex-col items-start gap-1">
+                <span class="main-text font-medium">{{ res.propertyName }}</span>
+                <span class="sub-text text-sm text-gray-500">{{ res.unitName }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="stacked-cell flex flex-col items-start gap-1">
+                <span class="main-text font-medium">{{ res.checkIn }}</span>
+                <span class="sub-text text-sm text-gray-500">al {{ res.checkOut }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-pill" [ngClass]="'status-' + res.status.toLowerCase()">
+                {{ res.status }}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="btn-outline-small" (click)="$event.stopPropagation(); openDetails(res)">
+                Detalles
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      <div class="pagination-bar">
+        <button class="btn btn-ghost" (click)="prevPage()"
+          [disabled]="currentPage() === 1 || isLoading()">Anterior</button>
+        <span class="page-indicator">Página {{ currentPage() }} de {{ totalPages() }}</span>
+        <button class="btn btn-ghost" (click)="nextPage()"
+          [disabled]="currentPage() >= totalPages() || isLoading()">Siguiente</button>
+      </div>
       }
     </div>
   </section>
-  
+
   @if (selectedReservation(); as res) {
-      <div class="modal-overlay-wrapper" (keydown.escape)="closeDetails()">
-          <button type="button" class="modal-overlay-backdrop" (click)="closeDetails()" aria-label="Cerrar detalles"></button>
-          <div class="modal-container">
-              <header class="modal-header">
-                  <div class="modal-title-group">
-                      <ng-icon name="bootstrapCalendarEvent" class="modal-icon"></ng-icon>
-                      <h2 class="modal-title">Detalle de Reserva {{ res.reservationNumber }}</h2>
-                  </div>
-                  <button type="button" class="icon-btn" (click)="closeDetails()" aria-label="Cerrar modal">
-                      <ng-icon name="bootstrapX"></ng-icon>
-                  </button>
-              </header>
-              <div class="modal-content-scroll">
-                  <div class="details-grid">
-                      <section class="detail-group">
-                          <h3 class="group-title">Información del Huésped</h3>
-                          <div class="group-content">
-                              <div class="detail-item">
-                                  <span class="detail-label">Nombre</span>
-                                  <span class="detail-value">{{ res.guestName }}</span>
-                              </div>
-                              <div class="detail-item">
-                                  <span class="detail-label">Correo</span>
-                                  <span class="detail-value">{{ res.guestEmail }}</span>
-                              </div>
-                              <div class="detail-item">
-                                  <span class="detail-label">Teléfono</span>
-                                  <span class="detail-value">{{ res.guestPhone }}</span>
-                              </div>
-                          </div>
-                      </section>
-                      <section class="detail-group">
-                          <h3 class="group-title">Alojamiento</h3>
-                          <div class="group-content">
-                              <div class="detail-item">
-                                  <span class="detail-label">Propiedad</span>
-                                  <span class="detail-value">{{ res.propertyName }}</span>
-                              </div>
-                              <div class="detail-item">
-                                  <span class="detail-label">Habitación</span>
-                                  <span class="detail-value">{{ res.unitName }}</span>
-                              </div>
-                          </div>
-                      </section>
-                      <section class="detail-group highlight-group">
-                          <h3 class="group-title">Datos de Estancia</h3>
-                          <div class="group-content">
-                              <div class="detail-item">
-                                  <span class="detail-label">Fecha Check-in</span>
-                                  <span class="detail-value">{{ res.checkIn }}</span>
-                              </div>
-                              <div class="detail-item">
-                                  <span class="detail-label">Fecha Check-out</span>
-                                  <span class="detail-value">{{ res.checkOut }}</span>
-                              </div>
-                              <div class="detail-item">
-                                  <span class="detail-label">Estado</span>
-                                  <span class="detail-value status-pill status-{{res.status | lowercase}}">{{ res.status }}</span>
-                              </div>
-                              <div class="detail-item total-item">
-                                  <span class="detail-label">Monto Total</span>
-                                  <span class="detail-value text-xl">${{ res.totalAmount | number:'1.2-2' }}</span>
-                              </div>
-                          </div>
-                      </section>
-                  </div>
-                  
-                   @if (statusActionError()) {
-                   <div class="confirm-error">
-                     <ng-icon name="bootstrapInfoCircle"></ng-icon>
-                     {{ statusActionError() }}
-                   </div>
-                   }
-<div class="modal-actions-bar">
-    <div class="secondary-actions">
-        @if (canEditReservation(res.status)) {
-        <app-button variant="secondary" size="small"
-            [disabled]="isProcessingStatus()"
-            (clicked)="openEditModal()">
-            <ng-icon name="bootstrapPencil"></ng-icon> Editar
-        </app-button>
-        }
-        @if (canCancelReservation(res.status)) {
-        <app-button variant="secondary" size="small"
-            [disabled]="isProcessingStatus()"
-            (clicked)="openCancelConfirm()">
-            Cancelar Reserva
-        </app-button>
-        }
-    </div>
-    <div class="primary-actions">
-        @if (canConfirmReservation(res.status)) {
-        <app-button variant="primary" size="small"
-            [loading]="isProcessingStatus()"
-            [disabled]="isProcessingStatus()"
-            (clicked)="confirmReservation()">
-            <ng-icon name="bootstrapCheck"></ng-icon>
-            {{ isProcessingStatus() ? 'Procesando...' : 'Confirmar Reserva' }}
-        </app-button>
-        }
-        @if (canCheckInReservation(res.status)) {
-        <app-button variant="primary" size="small"
-            [loading]="isProcessingStatus()"
-            [disabled]="isProcessingStatus()"
-            (clicked)="checkInReservation()">
-            Check-in
-        </app-button>
-        }
-        @if (canCheckOutReservation(res.status)) {
-        <app-button variant="primary" size="small"
-            [loading]="isProcessingStatus()"
-            [disabled]="isProcessingStatus()"
-            (clicked)="checkOutReservation()">
-            Check-out
-        </app-button>
-        }
-    </div>
-</div>
+  <div class="modal-overlay-wrapper" (keydown.escape)="closeDetails()">
+    <button type="button" class="modal-overlay-backdrop" (click)="closeDetails()" aria-label="Cerrar detalles"></button>
+    <div class="modal-container">
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <ng-icon name="bootstrapCalendarEvent" class="modal-icon"></ng-icon>
+          <h2 class="modal-title">Detalle de Reserva {{ res.reservationNumber }}</h2>
+        </div>
+        <button type="button" class="icon-btn" (click)="closeDetails()" aria-label="Cerrar modal">
+          <ng-icon name="bootstrapX"></ng-icon>
+        </button>
+      </header>
+      <div class="modal-content-scroll">
+        <div class="details-grid">
+          <section class="detail-group">
+            <h3 class="group-title">Información del Huésped</h3>
+            <div class="group-content">
+              <div class="detail-item">
+                <span class="detail-label">Nombre</span>
+                <span class="detail-value">{{ res.guestName }}</span>
               </div>
+              <div class="detail-item">
+                <span class="detail-label">Correo</span>
+                <span class="detail-value">{{ res.guestEmail }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Teléfono</span>
+                <span class="detail-value">{{ res.guestPhone }}</span>
+              </div>
+            </div>
+          </section>
+          <section class="detail-group">
+            <h3 class="group-title">Alojamiento</h3>
+            <div class="group-content">
+              <div class="detail-item">
+                <span class="detail-label">Propiedad</span>
+                <span class="detail-value">{{ res.propertyName }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Habitación</span>
+                <span class="detail-value">{{ res.unitName }}</span>
+              </div>
+            </div>
+          </section>
+          <section class="detail-group highlight-group">
+            <h3 class="group-title">Datos de Estancia</h3>
+            <div class="group-content">
+              <div class="detail-item">
+                <span class="detail-label">Fecha Check-in</span>
+                <span class="detail-value">{{ res.checkIn }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Fecha Check-out</span>
+                <span class="detail-value">{{ res.checkOut }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Estado</span>
+                <span class="detail-value status-pill status-{{res.status | lowercase}}">{{ res.status }}</span>
+              </div>
+              <div class="detail-item total-item">
+                <span class="detail-label">Monto Total</span>
+                <span class="detail-value text-xl">${{ res.totalAmount | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        @if (statusActionError()) {
+        <div class="confirm-error">
+          <ng-icon name="bootstrapInfoCircle"></ng-icon>
+          {{ statusActionError() }}
+        </div>
+        }
+        <div class="modal-actions-bar">
+          <div class="secondary-actions">
+            @if (canEditReservation(res.status)) {
+            <app-button variant="secondary" size="small" [disabled]="isProcessingStatus()" (clicked)="openEditModal()">
+              <ng-icon name="bootstrapPencil"></ng-icon> Editar
+            </app-button>
+            }
+            @if (canCancelReservation(res.status)) {
+            <app-button variant="secondary" size="small" [disabled]="isProcessingStatus()"
+              (clicked)="openCancelConfirm()">
+              Cancelar Reserva
+            </app-button>
+            }
           </div>
+          <div class="primary-actions">
+            @if (canConfirmReservation(res.status)) {
+            <app-button variant="primary" size="small" [loading]="isProcessingStatus()"
+              [disabled]="isProcessingStatus()" (clicked)="confirmReservation()">
+              <ng-icon name="bootstrapCheck"></ng-icon>
+              {{ isProcessingStatus() ? 'Procesando...' : 'Confirmar Reserva' }}
+            </app-button>
+            }
+        @if (canCheckInReservation(res.status)) {
+        <div (click.capture)="onCheckInAttempt($event)" [class.check-in-blocked]="!isCheckInDateReached(res.checkIn)">
+          <app-button variant="primary" size="small"
+              [loading]="isProcessingStatus()"
+              [disabled]="isProcessingStatus()"
+              (clicked)="onCheckInButtonClicked(res)">
+              Check-in
+          </app-button>
+        </div>
+        }
+            @if (canCheckOutReservation(res.status)) {
+            <app-button variant="primary" size="small" [loading]="isProcessingStatus()"
+              [disabled]="isProcessingStatus()" (clicked)="checkOutReservation()">
+              Check-out
+            </app-button>
+            }
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
   }
 
   @if (showCancelConfirm()) {
-    <div class="modal-overlay-wrapper" (keydown.escape)="closeCancelConfirm()">
-      <button type="button" class="modal-overlay-backdrop" (click)="closeCancelConfirm()" aria-label="Cerrar confirmación"></button>
-      <div class="modal-container confirm-modal">
-        <header class="modal-header">
-          <div class="modal-title-group">
-            <ng-icon name="bootstrapX" class="modal-icon text-danger"></ng-icon>
-            <h2 class="modal-title">Confirmar Cancelación</h2>
+  <div class="modal-overlay-wrapper" (keydown.escape)="closeCancelConfirm()">
+    <button type="button" class="modal-overlay-backdrop" (click)="closeCancelConfirm()"
+      aria-label="Cerrar confirmación"></button>
+    <div class="modal-container confirm-modal">
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <ng-icon name="bootstrapX" class="modal-icon text-danger"></ng-icon>
+          <h2 class="modal-title">Confirmar Cancelación</h2>
+        </div>
+        <button type="button" class="icon-btn" (click)="closeCancelConfirm()" aria-label="Cerrar modal">
+          <ng-icon name="bootstrapX"></ng-icon>
+        </button>
+      </header>
+      <div class="modal-content-scroll">
+        <p class="confirm-message">¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer.
+        </p>
+        @if (cancelError()) {
+        <div class="confirm-error">
+          <ng-icon name="bootstrapInfoCircle"></ng-icon>
+          {{ cancelError() }}
+        </div>
+        }
+        <div class="modal-actions-bar">
+          <div class="secondary-actions">
+            <app-button variant="secondary" size="small" [disabled]="isCancelling()" (clicked)="closeCancelConfirm()">
+              Volver
+            </app-button>
           </div>
-          <button type="button" class="icon-btn" (click)="closeCancelConfirm()" aria-label="Cerrar modal">
-            <ng-icon name="bootstrapX"></ng-icon>
-          </button>
-        </header>
-        <div class="modal-content-scroll">
-          <p class="confirm-message">¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer.</p>
-          @if (cancelError()) {
-          <div class="confirm-error">
-            <ng-icon name="bootstrapInfoCircle"></ng-icon>
-            {{ cancelError() }}
+          <div class="primary-actions">
+            <app-button variant="danger" size="small" [loading]="isCancelling()" [disabled]="isCancelling()"
+              (clicked)="cancelReservation()">
+              {{ isCancelling() ? 'Cancelando...' : 'Sí, Cancelar Reserva' }}
+            </app-button>
           </div>
-          }
-<div class="modal-actions-bar">
-  <div class="secondary-actions">
-    <app-button variant="secondary" size="small"
-        [disabled]="isCancelling()"
-        (clicked)="closeCancelConfirm()">
-        Volver
-    </app-button>
-  </div>
-  <div class="primary-actions">
-    <app-button variant="danger" size="small"
-        [loading]="isCancelling()"
-        [disabled]="isCancelling()"
-        (clicked)="cancelReservation()">
-        {{ isCancelling() ? 'Cancelando...' : 'Sí, Cancelar Reserva' }}
-    </app-button>
-  </div>
-</div>
         </div>
       </div>
     </div>
+  </div>
   }
 
   @if (showEditModal()) {
-    <div class="modal-overlay-wrapper" (keydown.escape)="closeEditModal()">
-      <button type="button" class="modal-overlay-backdrop" (click)="closeEditModal()" aria-label="Cerrar edición"></button>
-      <div class="modal-container">
-        <header class="modal-header">
-          <div class="modal-title-group">
-            <ng-icon name="bootstrapPencil" class="modal-icon"></ng-icon>
-            <h2 class="modal-title">Editar Reserva</h2>
+  <div class="modal-overlay-wrapper" (keydown.escape)="closeEditModal()">
+    <button type="button" class="modal-overlay-backdrop" (click)="closeEditModal()"
+      aria-label="Cerrar edición"></button>
+    <div class="modal-container">
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <ng-icon name="bootstrapPencil" class="modal-icon"></ng-icon>
+          <h2 class="modal-title">Editar Reserva</h2>
+        </div>
+        <button type="button" class="icon-btn" (click)="closeEditModal()" aria-label="Cerrar modal">
+          <ng-icon name="bootstrapX"></ng-icon>
+        </button>
+      </header>
+      <div class="modal-content-scroll">
+        <form class="wizard-form grid-2-cols">
+          @if (updateError()) {
+          <div class="error-message">
+            <ng-icon name="bootstrapInfoCircle"></ng-icon>
+            {{ updateError() }}
           </div>
-          <button type="button" class="icon-btn" (click)="closeEditModal()" aria-label="Cerrar modal">
-            <ng-icon name="bootstrapX"></ng-icon>
-          </button>
-        </header>
-        <div class="modal-content-scroll">
-          <form class="wizard-form grid-2-cols">
-            @if (updateError()) {
-            <div class="error-message">
-              <ng-icon name="bootstrapInfoCircle"></ng-icon>
-              {{ updateError() }}
-            </div>
-            }
-            <div class="form-group">
-              <label for="editCheckIn">Fecha de Entrada</label>
-              <input type="date" id="editCheckIn" [(ngModel)]="editForm.checkIn" name="editCheckIn">
-            </div>
-            <div class="form-group">
-              <label for="editCheckOut">Fecha de Salida</label>
-              <input type="date" id="editCheckOut" [(ngModel)]="editForm.checkOut" name="editCheckOut">
-            </div>
-            <div class="form-group full-width">
-              <label for="editNotes">Notas</label>
-              <textarea id="editNotes" [(ngModel)]="editForm.notes" name="editNotes" rows="3" placeholder="Notas adicionales..."></textarea>
-            </div>
-          </form>
-<div class="modal-actions-bar">
-  <div class="secondary-actions">
-    <app-button variant="secondary" size="small"
-        [disabled]="isUpdating()"
-        (clicked)="closeEditModal()">
-        Cancelar
-    </app-button>
-  </div>
-  <div class="primary-actions">
-    <app-button variant="primary" size="small"
-        [loading]="isUpdating()"
-        [disabled]="isUpdating()"
-        (clicked)="updateReservation()">
-        {{ isUpdating() ? 'Guardando...' : 'Guardar Cambios' }}
-    </app-button>
-  </div>
-</div>
+          }
+          <div class="form-group">
+            <label for="editCheckIn">Fecha de Entrada</label>
+            <app-shift-date-picker id="editCheckIn" name="editCheckIn" [value]="editForm.checkIn" [minDate]="today"
+              [maxDate]="editForm.checkOut" [rangeAnchor]="editForm.checkOut" (dateChange)="editForm.checkIn = $event">
+            </app-shift-date-picker>
+          </div>
+          <div class="form-group">
+            <label for="editCheckOut">Fecha de Salida</label>
+            <app-shift-date-picker id="editCheckOut" name="editCheckOut" [value]="editForm.checkOut"
+              [minDate]="editForm.checkIn || today" [rangeAnchor]="editForm.checkIn"
+              (dateChange)="editForm.checkOut = $event">
+            </app-shift-date-picker>
+          </div>
+          <div class="form-group full-width">
+            <label for="editNotes">Notas</label>
+            <textarea id="editNotes" [(ngModel)]="editForm.notes" name="editNotes" rows="3"
+              placeholder="Notas adicionales..."></textarea>
+          </div>
+        </form>
+        <div class="modal-actions-bar">
+          <div class="secondary-actions">
+            <app-button variant="secondary" size="small" [disabled]="isUpdating()" (clicked)="closeEditModal()">
+              Cancelar
+            </app-button>
+          </div>
+          <div class="primary-actions">
+            <app-button variant="primary" size="small" [loading]="isUpdating()" [disabled]="isUpdating()"
+              (clicked)="updateReservation()">
+              {{ isUpdating() ? 'Guardando...' : 'Guardar Cambios' }}
+            </app-button>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+  }
+
+  @if (showCheckInInfoModal()) {
+  <div class="modal-overlay-wrapper" (keydown.escape)="closeCheckInInfoModal()">
+    <button type="button" class="modal-overlay-backdrop" (click)="closeCheckInInfoModal()"
+      aria-label="Cerrar información"></button>
+    <div class="modal-container confirm-modal">
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <ng-icon name="bootstrapInfoCircle" class="modal-icon text-danger"></ng-icon>
+          <h2 class="modal-title">Check-in no disponible</h2>
+        </div>
+        <button type="button" class="icon-btn" (click)="closeCheckInInfoModal()" aria-label="Cerrar modal">
+          <ng-icon name="bootstrapX"></ng-icon>
+        </button>
+      </header>
+      <div class="modal-content-scroll">
+        <p class="confirm-message">No se puede hacer check-in antes de la fecha programada.</p>
+        @if (selectedReservation(); as res) {
+        <p class="confirm-message"><strong>Fecha de check-in:</strong> {{ res.checkIn }}</p>
+        }
+        <div class="modal-actions-bar">
+          <div class="primary-actions">
+            <app-button variant="primary" size="small" (clicked)="closeCheckInInfoModal()">
+              Entendido
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   }
 
   @if (showWizard()) {
-    <app-create-reservation-wizard (closeWizard)="closeWizard()" (reservationCreated)="onReservationCreated()"></app-create-reservation-wizard>
+  <app-create-reservation-wizard (closeWizard)="closeWizard()"
+    (reservationCreated)="onReservationCreated()"></app-create-reservation-wizard>
   }
 </app-hotel-page-layout>

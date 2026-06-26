@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, signal, output, inject, OnInit } fr
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { ShiftDatePickerComponent } from '../../../../../../shared/components/shift-date-picker/shift-date-picker.component';
 import {
   bootstrapCheck,
   bootstrapPersonPlus,
@@ -22,7 +23,7 @@ import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 @Component({
   selector: 'app-create-reservation-wizard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, ShiftDatePickerComponent],
   templateUrl: './create-reservation-wizard.html',
   styleUrls: ['./create-reservation-wizard.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -190,6 +191,14 @@ export class CreateReservationWizardComponent implements OnInit {
         console.error('Error creating reservation:', err);
       }
     });
+  }
+
+  get today(): string {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private validateReservation(): string | null {
