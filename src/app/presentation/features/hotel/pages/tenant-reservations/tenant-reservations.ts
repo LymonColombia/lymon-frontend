@@ -96,6 +96,8 @@ export class TenantReservations implements OnInit {
     notes: ''
   };
 
+  showCheckInInfoModal = signal(false);
+
   ngOnInit(): void {
     this.loadReferenceDataAndReservations();
   }
@@ -371,6 +373,50 @@ export class TenantReservations implements OnInit {
 
   canCheckInReservation(status: string): boolean {
     return status.toLowerCase().replaceAll('_', '-') === 'confirmada';
+  }
+
+  isCheckInDateReached(checkIn: string): boolean {
+    if (!checkIn) return false;
+    const today = this.getTodayUtc();
+    const checkInDate = this.parseUtcDate(checkIn);
+    return checkInDate.getTime() <= today.getTime();
+  }
+
+  openCheckInInfoModal(): void {
+    this.showCheckInInfoModal.set(true);
+  }
+
+  closeCheckInInfoModal(): void {
+    this.showCheckInInfoModal.set(false);
+  }
+
+  onCheckInAttempt(event: Event): void {
+    const reservation = this.selectedReservation();
+    if (!reservation) return;
+    if (!this.isCheckInDateReached(reservation.checkIn)) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.openCheckInInfoModal();
+    }
+  }
+
+  onCheckInButtonClicked(res: ReservationViewModel): void {
+    if (this.isProcessingStatus()) return;
+    if (!this.isCheckInDateReached(res.checkIn)) {
+      this.openCheckInInfoModal();
+      return;
+    }
+    this.checkInReservation();
+  }
+
+  private getTodayUtc(): Date {
+    const now = new Date();
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  }
+
+  private parseUtcDate(value: string): Date {
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, day));
   }
 
   canCheckOutReservation(status: string): boolean {
