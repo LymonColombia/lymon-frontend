@@ -188,8 +188,8 @@ export class RoomDetailsComponent implements OnInit {
           return of({ existing: null as CartReservationItem | null, existingUnit: null as Unit | null });
         }
         return this.getPublicUnitUseCase.execute(existing.unitId).pipe(
-          map((existingUnit) => ({ existing, existingUnit: existingUnit as Unit | null })),
-          catchError(() => of({ existing, existingUnit: null as Unit | null })),
+          map((existingUnit) => ({ existing, existingUnit })),
+          catchError(() => of({ existing, existingUnit: null })),
         );
       }),
       takeUntilDestroyed(this.destroyRef),
