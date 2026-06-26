@@ -15,9 +15,6 @@ import { PropertiesComponent } from '@/presentation/features/hotel/pages/propert
 import { RegisterEmployeeComponent } from '@/presentation/features/hotel/pages/registerEmployee/registerEmployee';
 import { StaffManagementComponent } from '@/presentation/features/hotel/pages/staffManagement/staffManagement';
 import { RoomDetailsComponent } from '@/presentation/features/hotel/pages/roomDetails/roomDetails';
-import { SalesSummaryComponent } from '@/presentation/features/hotel/pages/salesSummary/salesSummary';
-import { CalendarSyncComponent } from '@/presentation/features/hotel/pages/calendarSync/calendarSync';
-import { EmailConfigComponent } from '@/presentation/features/hotel/pages/emailConfig/emailConfig';
 import { CreateIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/create/createIncidentReport';
 import { IncidentReportListComponent } from '@/presentation/features/hotel/pages/incidentReport/list/incidentReportList';
 import { EditIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/edit/editIncidentReport';
@@ -109,9 +106,6 @@ export const routes: Routes = [
       { path: 'employee-management', component: StaffManagementComponent },
       { path: 'room-details/:unitId', component: RoomDetailsComponent },
       { path: 'room-details', component: RoomDetailsComponent },
-      { path: 'sales-summary', component: SalesSummaryComponent },
-      { path: 'calendar-sync', component: CalendarSyncComponent },
-      { path: 'email-config', component: EmailConfigComponent },
       { path: 'plans', component: PlansComponent },
       { path: 'settings', component: TenantSettingsComponent },
       { path: 'change-password', redirectTo: 'settings', pathMatch: 'full' },
