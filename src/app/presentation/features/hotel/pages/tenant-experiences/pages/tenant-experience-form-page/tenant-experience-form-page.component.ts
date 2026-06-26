@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { provideIcons } from '@ng-icons/core';
+import { of, switchMap, map, forkJoin } from 'rxjs';
 import { bootstrapStar } from '@ng-icons/bootstrap-icons';
-import { of, switchMap, map } from 'rxjs';
 
 import { CreateExperienceDto, Experience, UpdateExperienceDto } from '@/domain/entities/experience.model';
 import { CreateExperienceUseCase } from '@/domain/use-cases/experience/create-experience.use-case';
@@ -120,24 +120,38 @@ export class TenantExperienceFormPageComponent implements OnInit {
   onSubmitExperience(payload: ExperienceFormSubmitPayload): void {
     this.startSaving();
 
-    const persistedExperience$ = payload.coverImageFile
-      ? this.createImageStorageUseCase.execute({ file: payload.coverImageFile, category: 'experiences' }).pipe(
-          map(({ fileUrl }) => ({
-            ...payload.experience,
-            coverImageUrl: fileUrl,
-          })),
-        )
-      : of(payload.experience);
+    // Upload media first, keeping the returned keys (not URLs). The cover is
+    // re-uploaded only when the user picked a new file; otherwise its existing key is reused.
+    const coverKey$ = payload.coverImageFile
+      ? this.uploadExperienceMedia(payload.coverImageFile)
+      : of<string | undefined>(payload.existingCoverKey ?? undefined);
 
-    persistedExperience$
+    const newMediaKeys$ = payload.newMediaFiles.length
+      ? forkJoin(payload.newMediaFiles.map((file) => this.uploadExperienceMedia(file)))
+      : of<string[]>([]);
+
+    forkJoin({ coverKey: coverKey$, newMediaKeys: newMediaKeys$ })
       .pipe(
-        switchMap((experienceDto) => {
+        switchMap(({ coverKey, newMediaKeys }) => {
+          // Cover is mediaKeys[0]; then the kept gallery keys, then the freshly uploaded ones.
+          const mediaKeys = [
+            ...(coverKey ? [coverKey] : []),
+            ...payload.keptMediaItems.map((item) => item.key),
+            ...newMediaKeys,
+          ];
           const editingId = this.editingExperienceId();
+
           if (editingId) {
-            return this.updateExperienceUseCase.execute(editingId, this.toUpdateExperienceDto(experienceDto));
+            return this.updateExperienceUseCase.execute(
+              editingId,
+              this.toUpdateExperienceDto(payload.experience, mediaKeys),
+            );
           }
 
-          return this.createExperienceUseCase.execute(experienceDto);
+          return this.createExperienceUseCase.execute({
+            ...payload.experience,
+            mediaKeys,
+          });
         }),
         takeUntilDestroyed(this.destroyRef),
       )
@@ -145,6 +159,12 @@ export class TenantExperienceFormPageComponent implements OnInit {
         next: () => this.handleSaveSuccess('Experiencia guardada correctamente.'),
         error: (error) => this.handleSaveError('No se pudo guardar la experiencia.', error),
       });
+  }
+
+  private uploadExperienceMedia(file: File) {
+    return this.createImageStorageUseCase
+      .execute({ file, category: 'experiences' })
+      .pipe(map(({ key }) => key));
   }
 
   onCancel(): void {
@@ -243,7 +263,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
       });
   }
 
-  private toUpdateExperienceDto(dto: CreateExperienceDto): UpdateExperienceDto {
+  private toUpdateExperienceDto(dto: CreateExperienceDto, mediaKeys: string[]): UpdateExperienceDto {
     return {
       name: dto.name,
       description: dto.description,
@@ -253,7 +273,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
       durationHours: dto.durationHours,
       capacity: dto.capacity,
       minimumParticipants: dto.minimumParticipants,
-      coverImageUrl: dto.coverImageUrl,
+
       location: dto.location,
       availabilityType: dto.availabilityType,
       startAt: dto.startAt,
@@ -262,6 +282,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
       blackoutRanges: dto.blackoutRanges,
       allowStandalonePurchase: dto.allowStandalonePurchase,
       allowReservationPurchase: dto.allowReservationPurchase,
+      mediaKeys,
     };
   }
 }

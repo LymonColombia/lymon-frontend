@@ -3,6 +3,20 @@
   font-family: var(--font-primary);
 }
 
+.experience-gallery {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.experience-gallery-thumb {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 
 .alert {
   padding: var(--spacing-md) var(--spacing-lg);

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { Experience } from '@/domain/entities/experience.model';
 import { provideIcons, NgIcon } from "@ng-icons/core";
 import {  bootstrapTrash ,bootstrapEye, bootstrapPencilSquare} from '@ng-icons/bootstrap-icons';
+import { coverImageOf } from '@/presentation/shared/utils/media.util';
 import { formatCurrencyCop,getCategoryLabel,getAvailabilitySummary } from '../../models/experience-form.model';
 
 @Component({
@@ -23,6 +24,7 @@ export class ExperienceTableComponent {
   readonly formatCurrencyCop = formatCurrencyCop;
   readonly getCategoryLabel = getCategoryLabel;
   readonly getAvailabilitySummary = getAvailabilitySummary;
+  readonly coverImageOf = coverImageOf;
 
   onView(id: string | undefined): void {
     if (id) {

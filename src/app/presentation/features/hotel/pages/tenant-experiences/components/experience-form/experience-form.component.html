@@ -91,6 +91,14 @@
     </div>
 
     <div class="form-group">
+      <label>Galería de fotos</label>
+      <app-media-gallery-input
+        [initialItems]="galleryInitialItems()"
+        (selectionChange)="onGallerySelectionChange($event)"
+      />
+    </div>
+
+    <div class="form-group">
       <label for="description">Descripcion <span class="required">*</span></label>
       <textarea id="description" formControlName="description" rows="3"></textarea>
     </div>

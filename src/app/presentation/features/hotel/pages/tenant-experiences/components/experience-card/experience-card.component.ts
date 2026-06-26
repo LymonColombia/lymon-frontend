@@ -13,6 +13,7 @@ import {
 import { formatCurrencyCop,getCategoryLabel,getAvailabilitySummary } from '../../models/experience-form.model';
 import { Experience } from '@/domain/entities/experience.model';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { coverImageOf } from '@/presentation/shared/utils/media.util';
 
 @Component({
   selector: 'app-experience-card',
@@ -29,6 +30,7 @@ export class ExperienceCardComponent {
   readonly edit = output<string>();
   readonly delete = output<string>();
 
+  readonly imageUrl = computed(() => coverImageOf(this.experience().mediaUrls));
   readonly priceLabel = computed(() => formatCurrencyCop(this.experience().priceCop));
   readonly categoryLabel = computed(() => getCategoryLabel(this.experience().category));
   readonly availabilitySummary = computed(() => getAvailabilitySummary(this.experience()));

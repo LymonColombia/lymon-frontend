@@ -1,3 +1,17 @@
+.experience-gallery {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.experience-gallery-thumb {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 .experience-detail-card {
   max-width: var(--max-width-2xl);
   margin: 0 auto;

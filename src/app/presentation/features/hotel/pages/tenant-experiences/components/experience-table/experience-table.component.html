@@ -17,7 +17,7 @@
         <tr>
           <td>
             <div class="name-cell">
-              <img [src]="experience.coverImageUrl" [alt]="'Portada de ' + experience.name" />
+              <img [src]="coverImageOf(experience.mediaUrls)" [alt]="'Portada de ' + experience.name" />
               <div class="name-meta">
                 <strong>{{ experience.name }}</strong>
                 <span>{{ experience.location?.label || 'Punto acordado con el usuario' }}</span>

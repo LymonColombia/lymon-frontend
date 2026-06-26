@@ -24,15 +24,24 @@
     <p>Cargando experiencia...</p>
   </div>
   } @else if (experience(); as item) {
-  <div class="experience-layout">
-    <div class="experience-hero">
-      <img class="experience-hero-image" [src]="item.coverImageUrl" [alt]="item.name" />
-      <div class="experience-hero-overlay">
-        <span class="experience-hero-category-chip">{{ categoryLabel() }}</span>
-        <h1 class="experience-hero-name">{{ item.name }}</h1>
-        <p class="experience-hero-description">{{ item.description }}</p>
+    <div class="experience-layout">
+
+      <div class="experience-hero">
+        <img class="experience-hero-image" [src]="coverImageOf(item.mediaUrls)" [alt]="item.name" />
+        <div class="experience-hero-overlay">
+          <span class="experience-hero-category-chip">{{ categoryLabel() }}</span>
+          <h1 class="experience-hero-name">{{ item.name }}</h1>
+          <p class="experience-hero-description">{{ item.description }}</p>
+        </div>
       </div>
-    </div>
+
+      @if (galleryUrls().length) {
+        <div class="experience-gallery">
+          @for (url of galleryUrls(); track url) {
+            <img class="experience-gallery-thumb" [src]="url" loading="lazy" [alt]="item.name" />
+          }
+        </div>
+      }
 
     <div class="stats-row">
       <div class="stat-card">

@@ -15,6 +15,7 @@ export class GuestExperienceMapper {
       durationHours: dto.durationHours,
       capacity: dto.capacity,
       coverImageUrl: dto.coverImageUrl,
+      mediaUrls: dto.mediaUrls ?? [],
       location: {
         label: dto.location.label,
         address: dto.location.address,

@@ -20,3 +20,15 @@ export interface UploadedFile {
   contentType: string;
 }
 
+/**
+ * A media item the client tracks while editing: the object `key` needed for
+ * writes, paired with the public `url` returned by reads for display.
+ */
+export interface MediaItem {
+  key: string;
+  url: string;
+}
+
+// ponytail: assumes public URL is <host>/<key>; pathname minus leading slash == object key
+export const keyFromMediaUrl = (url: string): string => new URL(url).pathname.slice(1);
+

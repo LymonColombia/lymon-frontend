@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Unit } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapStar, bootstrapStarFill } from '@ng-icons/bootstrap-icons';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';
+import { coverImageOf } from '@/presentation/shared/utils/media.util';
 
 const TOTAL_STARS = 5;
 
@@ -18,6 +19,8 @@ const TOTAL_STARS = 5;
 export class RoomHeroComponent {
   readonly unit = input.required<Unit>();
   readonly viewRatings = output<void>();
+
+  readonly heroImage = computed(() => coverImageOf(this.unit().mediaUrls));
 
   protected getStars(): boolean[] {
     const rating = this.unit().rating ?? 0;

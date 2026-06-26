@@ -11,7 +11,7 @@
         <div class="hero-image-container">
           <img
             class="hero-image"
-            [src]="experience().coverImageUrl"
+            [src]="coverImageUrl()"
             [alt]=" experience().name"
           />
           <span class="image-location-tag">
@@ -19,6 +19,14 @@
             {{ locationPointLabel() }}
           </span>
         </div>
+
+        @if (galleryUrls().length) {
+          <div class="experience-gallery">
+            @for (url of galleryUrls(); track url) {
+              <img class="experience-gallery-thumb" [src]="url" loading="lazy" [alt]="experience().name" />
+            }
+          </div>
+        }
 
         <div class="rating-price-bar">
           <div class="rating-price-stars">

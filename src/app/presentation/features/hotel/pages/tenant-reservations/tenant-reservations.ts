@@ -17,9 +17,11 @@ import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case'
 import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenant-guests.use-case';
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
+import { ButtonComponent } from '../../../../shared/components/button/button.component';
 
 export interface ReservationViewModel {
   id: string;
+  reservationNumber: number;
   guestName: string;
   guestEmail: string;
   guestPhone: string;
@@ -35,7 +37,7 @@ export interface ReservationViewModel {
 @Component({
   selector: 'app-tenant-reservations',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent],
   templateUrl: './tenant-reservations.html',
   styleUrls: ['./tenant-reservations.css'],
   viewProviders: [
@@ -393,6 +395,7 @@ export class TenantReservations implements OnInit {
 
     return {
       id: res.id,
+      reservationNumber: res.reservationNumber ?? 0,
       guestName,
       guestEmail: '',
       guestPhone: '',

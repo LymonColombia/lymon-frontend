@@ -18,6 +18,12 @@ import {
   AddressMapPickerComponent,
   AddressLocationValue,
 } from '@/presentation/shared/components/address-map-picker/address-map-picker.component';
+import { MapPickerComponent, MapPickerLocation } from '@/presentation/features/hotel/components/map-picker/map-picker';
+import {
+  MediaGalleryInputComponent,
+  MediaGallerySelection,
+} from '@/presentation/shared/components/media-gallery-input/media-gallery-input.component';
+import { MediaItem, keyFromMediaUrl } from '@/domain/entities/storage.model';
 
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
@@ -33,6 +39,7 @@ const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'i
     NgIcon,
     AddressMapPickerComponent,
   ],
+  imports: [ReactiveFormsModule,InputComponent,ButtonComponent,SelectComponent,HotelTooltipComponent,NgIcon,MapPickerComponent,MediaGalleryInputComponent ],
   providers: [provideIcons({ bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload })],
   templateUrl: './experience-form.component.html',
   styleUrl: './experience-form.component.css',
@@ -55,6 +62,11 @@ export class ExperienceFormComponent implements OnChanges {
 
   readonly coverImagePreviewUrl = signal<string | null>(null);
   readonly selectedCoverImageFile = signal<File | null>(null);
+
+  readonly galleryInitialItems = signal<MediaItem[]>([]);
+  readonly gallerySelection = signal<MediaGallerySelection>({ kept: [], newFiles: [] });
+  // Cover key reused on edit when the user doesn't replace the cover; null once a new file is picked.
+  readonly existingCoverKey = signal<string | null>(null);
 
 
   readonly categorySignal = signal('TRANSPORTATION');
@@ -196,10 +208,18 @@ export class ExperienceFormComponent implements OnChanges {
       this.form.markAllAsTouched();
       return;
     }
+    const gallery = this.gallerySelection();
     this.submitted.emit({
       experience: this.buildPayload(),
       coverImageFile: this.selectedCoverImageFile(),
+      existingCoverKey: this.existingCoverKey(),
+      keptMediaItems: gallery.kept,
+      newMediaFiles: gallery.newFiles,
     });
+  }
+
+  onGallerySelectionChange(selection: MediaGallerySelection): void {
+    this.gallerySelection.set(selection);
   }
 
   onCancel(): void {
@@ -295,6 +315,11 @@ export class ExperienceFormComponent implements OnChanges {
     this.enforceTransportationAvailability(experience.category);
 
     this.setCoverImagePreviewFromExperience(experience);
+
+    // mediaUrls[0] is the cover; the rest is the gallery.
+    this.galleryInitialItems.set(
+      (experience.mediaUrls ?? []).slice(1).map((url) => ({ key: keyFromMediaUrl(url), url })),
+    );
 
     if (experience.propertyId) {
       this.propertyChanged.emit(experience.propertyId);
@@ -534,6 +559,9 @@ export class ExperienceFormComponent implements OnChanges {
     this.revokeCoverImageObjectUrl();
     this.coverImagePreviewUrl.set(null);
     this.selectedCoverImageFile.set(null);
+    this.existingCoverKey.set(null);
+    this.galleryInitialItems.set([]);
+    this.initialLocationSignal.set(null);
   }
 
   private toLocalDateTime(value?: string): string {
@@ -555,6 +583,7 @@ export class ExperienceFormComponent implements OnChanges {
   private setCoverImagePreview(file: File): void {
     this.revokeCoverImageObjectUrl();
     this.selectedCoverImageFile.set(file);
+    this.existingCoverKey.set(null); // a new file supersedes the existing cover key
     this.coverImageObjectUrl = URL.createObjectURL(file);
     this.coverImagePreviewUrl.set(this.coverImageObjectUrl);
     this.form.controls.coverImageUrl.setValue(this.coverImageObjectUrl);
@@ -565,14 +594,18 @@ export class ExperienceFormComponent implements OnChanges {
   private setCoverImagePreviewFromExperience(experience: Experience): void {
     this.revokeCoverImageObjectUrl();
     this.selectedCoverImageFile.set(null);
-    this.coverImagePreviewUrl.set(experience.coverImageUrl || null);
-    this.form.controls.coverImageUrl.setValue(experience.coverImageUrl ?? '');
+    // Cover is mediaUrls[0] under the key-based model (coverImageUrl kept as a fallback).
+    const coverUrl = experience.mediaUrls?.[0] ?? experience.coverImageUrl ?? '';
+    this.existingCoverKey.set(coverUrl ? keyFromMediaUrl(coverUrl) : null);
+    this.coverImagePreviewUrl.set(coverUrl || null);
+    this.form.controls.coverImageUrl.setValue(coverUrl);
     this.form.controls.coverImageUrl.updateValueAndValidity({ emitEvent: false });
   }
 
   private clearCoverImageSelection(): void {
     this.revokeCoverImageObjectUrl();
     this.selectedCoverImageFile.set(null);
+    this.existingCoverKey.set(null);
     this.coverImagePreviewUrl.set(null);
     this.form.controls.coverImageUrl.setValue('');
     this.form.controls.coverImageUrl.markAsDirty();

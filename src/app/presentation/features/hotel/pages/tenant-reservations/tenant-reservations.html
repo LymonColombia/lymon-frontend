@@ -79,7 +79,7 @@
                     </span>
                     <div class="guest-info flex flex-col items-start gap-1 ml-4">
                       <span class="main-text font-medium">{{ res.guestName }}</span>
-                      <span class="sub-text text-sm text-gray-500">{{ res.id }}</span>
+                      <span class="sub-text text-sm text-gray-500">{{ res.reservationNumber }}</span>
                     </div>
                   </div>
                 </td>
@@ -125,7 +125,7 @@
               <header class="modal-header">
                   <div class="modal-title-group">
                       <ng-icon name="bootstrapCalendarEvent" class="modal-icon"></ng-icon>
-                      <h2 class="modal-title">Detalle de Reserva {{ res.id }}</h2>
+                      <h2 class="modal-title">Detalle de Reserva {{ res.reservationNumber }}</h2>
                   </div>
                   <button type="button" class="icon-btn" (click)="closeDetails()" aria-label="Cerrar modal">
                       <ng-icon name="bootstrapX"></ng-icon>
@@ -192,33 +192,51 @@
                      {{ statusActionError() }}
                    </div>
                    }
-                   <div class="modal-actions-bar">
-                       <div class="primary-actions">
-                           @if (canConfirmReservation(res.status)) {
-                           <button class="btn btn-emerald" (click)="confirmReservation()" [disabled]="isProcessingStatus()">
-                             @if (isProcessingStatus()) {
-                             Procesando...
-                             } @else {
-                             <ng-icon name="bootstrapCheck"></ng-icon> Confirmar Reserva
-                             }
-                           </button>
-                           }
-                       </div>
-                       <div class="secondary-actions">
-                           @if (canCheckInReservation(res.status)) {
-                           <button class="btn btn-blue" (click)="checkInReservation()" [disabled]="isProcessingStatus()">Check-in</button>
-                           }
-                           @if (canCheckOutReservation(res.status)) {
-                           <button class="btn btn-purple" (click)="checkOutReservation()" [disabled]="isProcessingStatus()">Check-out</button>
-                           }
-                            @if (canEditReservation(res.status)) {
-                            <button class="btn btn-amber" (click)="openEditModal()" [disabled]="isProcessingStatus()"><ng-icon name="bootstrapPencil"></ng-icon> Editar</button>
-                            }
-                            @if (canCancelReservation(res.status)) {
-                            <button class="btn btn-danger" (click)="openCancelConfirm()" [disabled]="isProcessingStatus()">Cancelar Reserva</button>
-                            }
-                       </div>
-                   </div>
+<div class="modal-actions-bar">
+    <div class="secondary-actions">
+        @if (canEditReservation(res.status)) {
+        <app-button variant="secondary" size="small"
+            [disabled]="isProcessingStatus()"
+            (clicked)="openEditModal()">
+            <ng-icon name="bootstrapPencil"></ng-icon> Editar
+        </app-button>
+        }
+        @if (canCancelReservation(res.status)) {
+        <app-button variant="secondary" size="small"
+            [disabled]="isProcessingStatus()"
+            (clicked)="openCancelConfirm()">
+            Cancelar Reserva
+        </app-button>
+        }
+    </div>
+    <div class="primary-actions">
+        @if (canConfirmReservation(res.status)) {
+        <app-button variant="primary" size="small"
+            [loading]="isProcessingStatus()"
+            [disabled]="isProcessingStatus()"
+            (clicked)="confirmReservation()">
+            <ng-icon name="bootstrapCheck"></ng-icon>
+            {{ isProcessingStatus() ? 'Procesando...' : 'Confirmar Reserva' }}
+        </app-button>
+        }
+        @if (canCheckInReservation(res.status)) {
+        <app-button variant="primary" size="small"
+            [loading]="isProcessingStatus()"
+            [disabled]="isProcessingStatus()"
+            (clicked)="checkInReservation()">
+            Check-in
+        </app-button>
+        }
+        @if (canCheckOutReservation(res.status)) {
+        <app-button variant="primary" size="small"
+            [loading]="isProcessingStatus()"
+            [disabled]="isProcessingStatus()"
+            (clicked)="checkOutReservation()">
+            Check-out
+        </app-button>
+        }
+    </div>
+</div>
               </div>
           </div>
       </div>
@@ -245,16 +263,23 @@
             {{ cancelError() }}
           </div>
           }
-          <div class="modal-actions-bar">
-            <button class="btn btn-ghost" (click)="closeCancelConfirm()" [disabled]="isCancelling()">Volver</button>
-            <button class="btn btn-danger" (click)="cancelReservation()" [disabled]="isCancelling()">
-              @if (isCancelling()) {
-              Cancelando...
-              } @else {
-              Sí, Cancelar Reserva
-              }
-            </button>
-          </div>
+<div class="modal-actions-bar">
+  <div class="secondary-actions">
+    <app-button variant="secondary" size="small"
+        [disabled]="isCancelling()"
+        (clicked)="closeCancelConfirm()">
+        Volver
+    </app-button>
+  </div>
+  <div class="primary-actions">
+    <app-button variant="danger" size="small"
+        [loading]="isCancelling()"
+        [disabled]="isCancelling()"
+        (clicked)="cancelReservation()">
+        {{ isCancelling() ? 'Cancelando...' : 'Sí, Cancelar Reserva' }}
+    </app-button>
+  </div>
+</div>
         </div>
       </div>
     </div>
@@ -294,16 +319,23 @@
               <textarea id="editNotes" [(ngModel)]="editForm.notes" name="editNotes" rows="3" placeholder="Notas adicionales..."></textarea>
             </div>
           </form>
-          <div class="modal-actions-bar">
-            <button class="btn btn-ghost" (click)="closeEditModal()" [disabled]="isUpdating()">Cancelar</button>
-            <button class="btn btn-emerald" (click)="updateReservation()" [disabled]="isUpdating()">
-              @if (isUpdating()) {
-              Guardando...
-              } @else {
-              Guardar Cambios
-              }
-            </button>
-          </div>
+<div class="modal-actions-bar">
+  <div class="secondary-actions">
+    <app-button variant="secondary" size="small"
+        [disabled]="isUpdating()"
+        (clicked)="closeEditModal()">
+        Cancelar
+    </app-button>
+  </div>
+  <div class="primary-actions">
+    <app-button variant="primary" size="small"
+        [loading]="isUpdating()"
+        [disabled]="isUpdating()"
+        (clicked)="updateReservation()">
+        {{ isUpdating() ? 'Guardando...' : 'Guardar Cambios' }}
+    </app-button>
+  </div>
+</div>
         </div>
       </div>
     </div>

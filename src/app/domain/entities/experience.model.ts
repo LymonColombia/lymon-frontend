@@ -86,21 +86,19 @@ export interface Experience extends BaseExperience {
   endAt?: string;
   blackoutRanges?: BlackoutRange[];
   recurrence?: ExperienceRecurrence;
+  // Public gallery URLs derived server-side from the stored media keys (read-only).
+  mediaUrls?: string[];
 }
 
 export type PropertyExperience = Experience & { scope: 'PROPERTY' };
 export type TenantExperience = Experience & { scope: 'TENANT' };
 
+// Write shape: media travels as keys, never URLs. The cover is mediaKeys[0].
 export type CreateExperienceDto = Omit<
   Experience,
-  'id' | 'propertyName' | 'units' | 'tenantId' | 'scope' | 'durationHours'
+  'id' | 'propertyName' | 'units' | 'tenantId' | 'coverImageUrl' | 'mediaUrls'
 > & {
-  scope?: never;
-  propertyId: string;
-  unitIds: string[];
-  durationHours?: number;
-  location?: ExperienceLocation;
-  minimumParticipants?: number;
+  mediaKeys?: string[];
 };
 export type UpdateExperienceDto = Partial<
   Pick<
@@ -112,8 +110,6 @@ export type UpdateExperienceDto = Partial<
     | 'priceCop'
     | 'durationHours'
     | 'capacity'
-    | 'minimumParticipants'
-    | 'coverImageUrl'
     | 'location'
     | 'availabilityType'
     | 'startAt'
@@ -124,6 +120,7 @@ export type UpdateExperienceDto = Partial<
     | 'allowReservationPurchase'
   >
 > & {
+  // Replace-all: send every key to keep (cover first), omitted keys are purged server-side.
   mediaKeys?: string[];
 };
 
