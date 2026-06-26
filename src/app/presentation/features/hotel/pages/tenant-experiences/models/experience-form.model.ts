@@ -47,7 +47,7 @@ export interface ExperienceFormControls {
   priceCop: FormControl<number|undefined>;
   durationHours: FormControl<number|undefined>;
   capacity: FormControl<number|undefined>;
-  minCapacity: FormControl<number|undefined>;
+  minimumParticipants: FormControl<number|undefined>;
   coverImageUrl: FormControl<string>;
   availabilityType: FormControl<ExperienceAvailabilityType>;
   startAt: FormControl<string>;

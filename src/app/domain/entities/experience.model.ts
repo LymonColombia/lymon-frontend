@@ -68,7 +68,7 @@ export interface BaseExperience {
   priceCop: number;
   durationHours: number;
   capacity: number;
-  minCapacity: number;
+  minimumParticipants: number;
   coverImageUrl: string;
   location?: ExperienceLocation;
   availabilityType: ExperienceAvailabilityType;
@@ -100,7 +100,7 @@ export type CreateExperienceDto = Omit<
   unitIds: string[];
   durationHours?: number;
   location?: ExperienceLocation;
-  min_capacity?: number;
+  minimumParticipants?: number;
 };
 export type UpdateExperienceDto = Partial<
   Pick<
@@ -112,7 +112,7 @@ export type UpdateExperienceDto = Partial<
     | 'priceCop'
     | 'durationHours'
     | 'capacity'
-    | 'minCapacity'
+    | 'minimumParticipants'
     | 'coverImageUrl'
     | 'location'
     | 'availabilityType'

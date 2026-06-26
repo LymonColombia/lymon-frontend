@@ -252,7 +252,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
       priceCop: dto.priceCop,
       durationHours: dto.durationHours,
       capacity: dto.capacity,
-      minCapacity: dto.minCapacity,
+      minimumParticipants: dto.minimumParticipants,
       coverImageUrl: dto.coverImageUrl,
       location: dto.location,
       availabilityType: dto.availabilityType,

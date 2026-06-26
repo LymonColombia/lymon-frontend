@@ -6,8 +6,8 @@
         <th>Categoria</th>
         <th>Precio</th>
         <th>Duracion</th>
-        <th>Capacidad Min.</th>
-        <th>Capacidad Max.</th>
+        <th>Participantes Min.</th>
+        <th>Participantes Max.</th>
         <th>Disponibilidad</th>
         <th></th>
       </tr>
@@ -27,7 +27,7 @@
           <td>{{ getCategoryLabel(experience.category) }}</td>
           <td>{{ formatCurrencyCop(experience.priceCop) }}</td>
           <td class="center-td">{{ experience.durationHours }} h</td>
-          <td class="center-td">{{ experience.minCapacity }}</td>
+          <td class="center-td">{{ experience.minimumParticipants }}</td>
           <td class="center-td">{{ experience.capacity }}</td>
           <td class="availability-cell">{{ getAvailabilitySummary(experience) }}</td>
           <td>

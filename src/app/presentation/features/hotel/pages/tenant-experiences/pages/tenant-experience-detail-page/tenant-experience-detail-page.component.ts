@@ -47,16 +47,10 @@ export class TenantExperienceDetailPageComponent {
     return `${durationHours}h`;
   });
 
-  readonly minCapacityLabel = computed(() => {
-    const item = this.experience();
-    const minCapacity = item?.minCapacity 
-    return minCapacity === null ?  'No especificada':`${minCapacity}`;
-  });
 
   readonly associationPropertyLabel = computed(() => {
     const item = this.experience();
-    if (!item) return 'No asociada';
-    return item.propertyName ?? item.propertyId ?? 'No asociada';
+    return item?.propertyName ??  'No asociada';
   });
   
   readonly associatedUnitLabels = computed(() => {

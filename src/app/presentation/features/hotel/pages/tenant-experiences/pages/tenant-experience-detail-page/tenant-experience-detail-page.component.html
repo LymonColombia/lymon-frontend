@@ -63,20 +63,20 @@
         </div>
         <div class="stat-card-body">
           <strong class="stat-card-value">{{ item.capacity }}</strong>
-          <span class="stat-card-sub">participantes máximo</span>
+          <span class="stat-card-sub">participantes máximos</span>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-card-header">
-          <span class="stat-card-label">Capacidad mínima</span>
-          <ng-icon name="bootstrapPeopleFill" size="22px" class="stat-card-icon" />
+            <span class="stat-card-label">Participantes mínimos</span>
+            <ng-icon name="bootstrapPeopleFill" size="22px" class="stat-card-icon" />
+          </div>
+          <div class="stat-card-body">
+            <strong class="stat-card-value">{{ item.minimumParticipants }}</strong>
+            <span class="stat-card-sub">participantes mínimos</span>
+          </div>
         </div>
-        <div class="stat-card-body">
-          <strong class="stat-card-value">{{ minCapacityLabel() }}</strong>
-          <span class="stat-card-sub">participantes mínimos</span>
-        </div>
-      </div>
     </div>
 
     <div class="content-grid">
