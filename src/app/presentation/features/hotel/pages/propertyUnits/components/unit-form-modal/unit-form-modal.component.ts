@@ -12,15 +12,23 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { FieldLabelComponent } from '@/presentation/shared/components/field-label/field-label.component';
 import { HotelTooltipComponent } from '@/presentation/features/hotel/components/hotel-tooltip/hotel-tooltip';
+import {
+  MediaGalleryInputComponent,
+  MediaGallerySelection,
+} from '@/presentation/shared/components/media-gallery-input/media-gallery-input.component';
 import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
 import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
+import { UpdateUnitMediaKeysUseCase } from '@/domain/use-cases/property/update-unit-media-keys.use-case';
+import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/image-storage.use-case';
 import { BedDto, BedType, UpdateUnitDto } from '@/domain/entities/property.model';
 import { Unit } from '@/domain/entities/staff.model';
+import { MediaItem, keyFromMediaUrl } from '@/domain/entities/storage.model';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 
 const AMENITY_OPTIONS = [
@@ -46,7 +54,7 @@ const BED_TYPES: BedType[] = ['SINGLE', 'DOUBLE', 'QUEEN', 'KING', 'TWIN', 'BUNK
 @Component({
   selector: 'app-unit-form-modal',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent, FieldLabelComponent, HotelTooltipComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent, FieldLabelComponent, HotelTooltipComponent, MediaGalleryInputComponent],
   templateUrl: './unit-form-modal.component.html',
   styleUrl: './unit-form-modal.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +63,8 @@ export class UnitFormModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly createUnitUseCase = inject(CreateUnitUseCase);
   private readonly updateUnitUseCase = inject(UpdateUnitUseCase);
+  private readonly updateUnitMediaKeysUseCase = inject(UpdateUnitMediaKeysUseCase);
+  private readonly createImageStorageUseCase = inject(CreateImageStorageUseCase);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly propertyId = input.required<string>();
@@ -62,6 +72,8 @@ export class UnitFormModalComponent {
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly selectedAmenities = signal<Set<string>>(new Set());
+  readonly galleryInitialItems = signal<MediaItem[]>([]);
+  readonly gallerySelection = signal<MediaGallerySelection>({ kept: [], newFiles: [] });
   readonly isEditMode = computed(() => this.unitToEdit() !== null);
 
   readonly saved = output<void>();
@@ -115,6 +127,14 @@ export class UnitFormModalComponent {
     }
 
     this.selectedAmenities.set(new Set(unit.amenities ?? []));
+
+    this.galleryInitialItems.set(
+      (unit.mediaUrls ?? []).map((url) => ({ key: keyFromMediaUrl(url), url })),
+    );
+  }
+
+  onGallerySelectionChange(selection: MediaGallerySelection): void {
+    this.gallerySelection.set(selection);
   }
 
   private buildBed(type: BedType = 'QUEEN', count: number = 1): FormGroup {
@@ -160,26 +180,59 @@ export class UnitFormModalComponent {
     this.errorMessage.set(null);
 
     const updateDto = this.buildUpdateDto();
-    const unitId = this.unitToEdit()?.id;
+    const editingId = this.unitToEdit()?.id;
+    const selection = this.gallerySelection();
 
-    const action$ = unitId
-      ? this.updateUnitUseCase.execute(unitId, updateDto)
-      : this.createUnitUseCase.execute({ propertyId: this.propertyId(), ...updateDto });
-
-    const errorFallback = unitId
+    const errorFallback = editingId
       ? ROOM_MESSAGES.updateErrorFallback
       : ROOM_MESSAGES.createErrorFallback;
 
-    action$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.saved.emit();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.isSubmitting.set(false);
-        this.errorMessage.set(err.error?.message ?? errorFallback);
-      },
-    });
+    // Upload new photos first (no unit id needed), keeping the returned keys.
+    const newKeys$: Observable<string[]> = selection.newFiles.length
+      ? forkJoin(
+          selection.newFiles.map((file) =>
+            this.createImageStorageUseCase
+              .execute({ file, category: 'units' })
+              .pipe(map(({ key }) => key)),
+          ),
+        )
+      : of([]);
+
+    newKeys$
+      .pipe(
+        switchMap((newKeys) => {
+          const save$ = editingId
+            ? this.updateUnitUseCase.execute(editingId, updateDto)
+            : this.createUnitUseCase.execute({ propertyId: this.propertyId(), ...updateDto });
+          return save$.pipe(map((response) => ({ response, newKeys })));
+        }),
+        switchMap(({ response, newKeys }) => {
+          const unitId = editingId ?? this.extractUnitId(response);
+          const mediaKeys = [...selection.kept.map((item) => item.key), ...newKeys];
+          // Replace-all sync: always on edit (handles removals); on create only when photos were added.
+          const shouldSync = unitId && (editingId ? true : newKeys.length > 0);
+          return shouldSync
+            ? this.updateUnitMediaKeysUseCase.execute(unitId!, mediaKeys)
+            : of(null);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.saved.emit();
+        },
+        error: (err: HttpErrorResponse) => {
+          this.isSubmitting.set(false);
+          this.errorMessage.set(err.error?.message ?? errorFallback);
+        },
+      });
+  }
+
+  // ponytail: covers the known NestJS create-response shapes; null means we skip media sync
+  private extractUnitId(response: unknown): string | null {
+    const body = response as { id?: string; data?: { id?: string; unit?: { id?: string } } };
+    return body?.data?.unit?.id ?? body?.data?.id ?? body?.id ?? null;
   }
 
   private buildUpdateDto(): UpdateUnitDto {

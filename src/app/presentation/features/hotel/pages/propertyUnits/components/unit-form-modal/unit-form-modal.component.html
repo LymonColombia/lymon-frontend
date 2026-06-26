@@ -156,6 +156,17 @@
 
   <div class="form-card">
     <div class="section-title">
+      <span>Galería de fotos</span>
+      <span class="optional">(Opcional)</span>
+    </div>
+    <app-media-gallery-input
+      [initialItems]="galleryInitialItems()"
+      (selectionChange)="onGallerySelectionChange($event)"
+    />
+  </div>
+
+  <div class="form-card">
+    <div class="section-title">
       <span>Amenidades</span>
       <app-hotel-tooltip ariaLabel="Ayuda amenidades">
         <strong>Amenidades</strong>

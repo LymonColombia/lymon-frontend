@@ -1,5 +1,6 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { CreateExperienceDto, Experience, ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
+import { MediaItem } from '@/domain/entities/storage.model';
 
 export interface DayOption {
   value: number;
@@ -65,7 +66,14 @@ export interface ExperienceFormControls {
 
 export interface ExperienceFormSubmitPayload {
   experience: CreateExperienceDto;
+  /** A freshly picked cover file (its key becomes mediaKeys[0]), or null when unchanged. */
   coverImageFile: File | null;
+  /** Existing cover key (mediaKeys[0]) reused on edit when no new cover file was picked. */
+  existingCoverKey: string | null;
+  /** Existing gallery photos the user kept (their keys survive the replace-all write). */
+  keptMediaItems: MediaItem[];
+  /** Newly picked gallery files still to be uploaded. */
+  newMediaFiles: File[];
 }
 
 export function formatDayList(daysOfWeek: number[]): string {

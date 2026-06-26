@@ -26,6 +26,8 @@ export interface Unit {
   amenities?: string[];
   bathroomsCount?: number;
   rating?: number | null;
+  // Public gallery URLs derived server-side from the stored media keys (read-only).
+  mediaUrls?: string[];
   externalIds?: {
     airbnbId?: string;
     bookingId?: string;

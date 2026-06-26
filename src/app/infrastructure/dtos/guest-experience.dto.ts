@@ -17,6 +17,7 @@ export interface GuestExperienceDto {
   durationHours: number;
   capacity: number;
   coverImageUrl: string;
+  mediaUrls?: string[];
   location: GuestExperienceLocationDto;
   availabilityType: string;
   startAt: string | null;
