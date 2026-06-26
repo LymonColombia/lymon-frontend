@@ -2,6 +2,8 @@
   display: block;
 }
 
+/* ── Container ── */
+
 .mini-cal {
   width: 268px;
   padding: var(--spacing-md);
@@ -9,6 +11,51 @@
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
+}
+
+/* ── Inline variant ── */
+
+.mini-cal.variant-inline {
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.mini-cal.variant-inline .cal-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.mini-cal.variant-inline .cal-nav-btn {
+  width: 28px;
+  height: 28px;
+}
+
+.mini-cal.variant-inline .cal-month-label {
+  font-size: var(--font-size-sm);
+}
+
+.mini-cal.variant-inline .cal-weekday {
+  font-size: 10px;
+}
+
+.mini-cal.variant-inline .cal-days {
+  gap: 2px;
+}
+
+.mini-cal.variant-inline .cal-day {
+  font-size: var(--font-size-xs);
+}
+
+.mini-cal.variant-inline .cal-day:hover:not(:disabled):not(.is-start):not(.is-end):not(.is-hover-end) {
+  transform: none;
+}
+
+.mini-cal.variant-inline .cal-day.is-start,
+.mini-cal.variant-inline .cal-day.is-end {
+  transform: none;
 }
 
 /* ── Header ── */
@@ -192,4 +239,52 @@
 .cal-day.is-today:not(.is-start):not(.is-end) {
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
+}
+
+/* ── Legend ── */
+
+.cal-legend {
+  display: flex;
+  justify-content: space-around;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-family: var(--font-secondary);
+  font-size: 10px;
+  line-height: 1;
+  color: var(--color-text-secondary);
+}
+
+.legend-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.dot-selected {
+  background: var(--color-primary);
+}
+
+.dot-range {
+  background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  border: 1px solid var(--color-border-light);
+}
+
+.dot-today {
+  border: 2px solid var(--color-primary);
+  background: transparent;
+}
+
+.dot-occupied {
+  background: color-mix(in srgb, var(--color-error) 40%, transparent);
+  border: 1px solid var(--color-error);
 }

@@ -26,7 +26,7 @@ import { RoomHeroComponent } from './components/room-hero/room-hero.component';
 import { RoomGeneralInfoComponent } from './components/room-general-info/room-general-info.component';
 import { RoomAmenitiesComponent } from './components/room-amenities/room-amenities.component';
 import { RoomPoliciesComponent } from './components/room-policies/room-policies.component';
-import { RoomBookingCalendarComponent, BookingDateRange } from './components/room-booking-calendar/room-booking-calendar.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
 import { RoomRatingsComponent } from './components/room-ratings/room-ratings.component';
 import { RoomDetailsNavComponent, RoomDetailsSearchParams } from './components/room-details-nav/room-details-nav.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -53,7 +53,7 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
     RoomGeneralInfoComponent,
     RoomAmenitiesComponent,
     RoomPoliciesComponent,
-    RoomBookingCalendarComponent,
+    CalendarComponent,
     RoomRatingsComponent,
     NgIconComponent,
   ],
@@ -160,7 +160,7 @@ export class RoomDetailsComponent implements OnInit {
     });
   }
 
-  onDateRangeChange(range: BookingDateRange): void {
+  onDateRangeChange(range: DateRange): void {
     this.checkIn.set(range.checkIn);
     this.checkOut.set(range.checkOut);
   }

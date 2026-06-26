@@ -27,7 +27,7 @@ import {
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
-import { MiniCalendarComponent, DateRange } from '@/presentation/shared/components/mini-calendar/mini-calendar.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
 import { GetGuestReservationsUseCase } from '@/domain/use-cases/reservation/get-guest-reservations.use-case';
 import {
   GetGuestReservationsParams,
@@ -80,7 +80,7 @@ const SORT_ORDER_OPTIONS: SelectOption[] = [
     ReservationCardComponent,
     RateReservationModalComponent,
     SelectComponent,
-    MiniCalendarComponent,
+    CalendarComponent,
   ],
   providers: [
     provideIcons({

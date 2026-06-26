@@ -22,7 +22,7 @@ import {
   bootstrapSearch,
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { MiniCalendarComponent, DateRange } from '@/presentation/shared/components/mini-calendar/mini-calendar.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
 
 export interface RoomDetailsSearchParams {
   checkIn?: string;
@@ -38,7 +38,7 @@ const DATE_TRIGGER_SELECTOR = '.nav-date-trigger-wrapper';
 @Component({
   selector: 'room-details-nav',
   standalone: true,
-  imports: [ButtonComponent, MiniCalendarComponent, NgOptimizedImage, NgIcon, RouterModule],
+  imports: [ButtonComponent, CalendarComponent, NgOptimizedImage, NgIcon, RouterModule],
   providers: [
     provideIcons({
       bootstrapBoxArrowInRight,

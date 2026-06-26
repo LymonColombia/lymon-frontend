@@ -26,10 +26,12 @@
 
           <div class="booking-body">
             <div class="booking-left">
-              <room-booking-calendar
+              <app-calendar
+                variant="inline"
+                [showLegend]="true"
                 [occupiedRanges]="occupiedRanges()"
                 (dateRangeChange)="onDateRangeChange($event)">
-              </room-booking-calendar>
+              </app-calendar>
 
               <div class="guests-selector">
                 <label class="guests-label">Huéspedes</label>

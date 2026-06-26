@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapPeopleFill, bootstrapSearch } from '@ng-icons/bootstrap-icons';
-import { MiniCalendarComponent, DateRange } from '@/presentation/shared/components/mini-calendar/mini-calendar.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
 
 export interface BookingSearchParams {
   startDate?: string;
@@ -28,7 +28,7 @@ const DATE_WRAPPER_SELECTOR = '.date-trigger-wrapper';
 @Component({
   selector: 'booking-hero',
   standalone: true,
-  imports: [NgIcon, MiniCalendarComponent],
+  imports: [NgIcon, CalendarComponent],
   providers: [provideIcons({ bootstrapCalendar, bootstrapPeopleFill, bootstrapSearch })],
   templateUrl: './booking-hero.component.html',
   styleUrl: './booking-hero.component.css',

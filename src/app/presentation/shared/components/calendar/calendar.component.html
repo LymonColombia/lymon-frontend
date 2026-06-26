@@ -1,13 +1,22 @@
-<div class="calendar">
+<div class="mini-cal" [class.variant-inline]="variant() === 'inline'">
   <div class="cal-header">
-    <button class="cal-nav-btn" type="button" (click)="prevMonth()" [disabled]="isAtCurrentMonth()" aria-label="Mes anterior">
-      <ng-icon name="bootstrapChevronLeft" size="14px" aria-hidden="true"></ng-icon>
+    <button
+      class="cal-nav-btn"
+      type="button"
+      (click)="prevMonth()"
+      [disabled]="isAtCurrentMonth()"
+      aria-label="Mes anterior">
+      <ng-icon name="bootstrapChevronLeft" size="12px" aria-hidden="true"></ng-icon>
     </button>
     <span class="cal-month-label">{{ monthLabel() }}</span>
     <button class="cal-nav-btn" type="button" (click)="nextMonth()" aria-label="Mes siguiente">
-      <ng-icon name="bootstrapChevronRight" size="14px" aria-hidden="true"></ng-icon>
+      <ng-icon name="bootstrapChevronRight" size="12px" aria-hidden="true"></ng-icon>
     </button>
   </div>
+
+  @if (prompt()) {
+    <p class="cal-prompt">{{ prompt() }}</p>
+  }
 
   <div class="cal-weekdays">
     @for (wd of weekdays; track wd) {
@@ -38,22 +47,24 @@
     }
   </div>
 
-  <div class="cal-legend">
-    <div class="legend-item">
-      <span class="legend-dot dot-selected"></span>
-      <span>Seleccionado</span>
+  @if (showLegend()) {
+    <div class="cal-legend">
+      <div class="legend-item">
+        <span class="legend-dot dot-selected"></span>
+        <span>Seleccionado</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot dot-range"></span>
+        <span>Rango</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot dot-today"></span>
+        <span>Hoy</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot dot-occupied"></span>
+        <span>Ocupado</span>
+      </div>
     </div>
-    <div class="legend-item">
-      <span class="legend-dot dot-range"></span>
-      <span>Rango</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-dot dot-today"></span>
-      <span>Hoy</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-dot dot-occupied"></span>
-      <span>Ocupado</span>
-    </div>
-  </div>
+  }
 </div>

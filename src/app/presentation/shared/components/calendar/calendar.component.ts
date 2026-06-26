@@ -43,19 +43,21 @@ const DAYS_IN_WEEK = 7;
 const ISO_DATE_PREFIX_LENGTH = 10;
 
 @Component({
-  selector: 'app-mini-calendar',
+  selector: 'app-calendar',
   standalone: true,
   imports: [NgIcon],
   providers: [provideIcons({ bootstrapChevronLeft, bootstrapChevronRight })],
-  templateUrl: './mini-calendar.component.html',
-  styleUrl: './mini-calendar.component.css',
+  templateUrl: './calendar.component.html',
+  styleUrl: './calendar.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MiniCalendarComponent {
+export class CalendarComponent {
   readonly occupiedRanges = input<OccupiedDateRange[]>([]);
   readonly initialStartDate = input<string | null>(null);
   readonly initialEndDate = input<string | null>(null);
   readonly singleDate = input<boolean>(false);
+  readonly variant = input<'popup' | 'inline'>('popup');
+  readonly showLegend = input<boolean>(false);
 
   readonly dateRangeChange = output<DateRange>();
   readonly closeRequested = output<void>();

@@ -51,12 +51,12 @@
       </div>
 
       <div class="cal-dropdown" [class.is-open]="isCalendarOpen()" role="dialog" aria-label="Calendario de fechas">
-        <app-mini-calendar
+        <app-calendar
           [initialStartDate]="checkInDate()"
           [initialEndDate]="checkOutDate()"
           (dateRangeChange)="onDateRangeChange($event)"
           (closeRequested)="closeCalendar()">
-        </app-mini-calendar>
+        </app-calendar>
       </div>
     </div>
 

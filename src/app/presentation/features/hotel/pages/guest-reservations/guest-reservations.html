@@ -123,12 +123,12 @@
 
             <div class="filter-cal-dropdown" [class.is-open]="isFilterCalendarOpen()" role="dialog" aria-label="Calendario de fechas">
               <div class="filter-cal-inner">
-                <app-mini-calendar
+                <app-calendar
                   [initialStartDate]="fromDate() ?? null"
                   [initialEndDate]="toDate() ?? null"
                   (dateRangeChange)="onFilterDateRangeChange($event)"
                   (closeRequested)="closeFilterCalendar()">
-                </app-mini-calendar>
+                </app-calendar>
               </div>
             </div>
           </div>
