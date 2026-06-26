@@ -3,6 +3,7 @@ import { Experience } from '@/domain/entities/experience.model';
 import { provideIcons, NgIcon } from "@ng-icons/core";
 import {  bootstrapTrash ,bootstrapEye, bootstrapPencilSquare} from '@ng-icons/bootstrap-icons';
 import { formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,getAvailabilitySummary } from '../../models/experience-form.model';
+import { coverImageOf } from '@/presentation/shared/utils/media.util';
 
 @Component({
   selector: 'app-experience-table',
@@ -24,6 +25,7 @@ export class ExperienceTableComponent {
   readonly getCategoryLabel = getCategoryLabel;
   readonly getScopeBadgeLabel = getScopeBadgeLabel;
   readonly getAvailabilitySummary = getAvailabilitySummary;
+  readonly coverImageOf = coverImageOf;
 
   onView(id: string | undefined): void {
     if (id) {

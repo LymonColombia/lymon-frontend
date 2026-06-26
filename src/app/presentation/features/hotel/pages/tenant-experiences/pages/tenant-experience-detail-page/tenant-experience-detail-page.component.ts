@@ -12,6 +12,7 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button.
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
 import { LocationMap } from "@/presentation/features/hotel/components/location-map/location-map";
 import {formatDayList, formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,} from '../../models/experience-form.model';
+import { coverImageOf } from '@/presentation/shared/utils/media.util';
 @Component({
   selector: 'app-tenant-experience-detail-page',
   standalone: true,
@@ -51,6 +52,10 @@ export class TenantExperienceDetailPageComponent {
     const item = this.experience();
     return item ? formatCurrencyCop(item.priceCop) : '';
   });
+
+  // Cover is mediaUrls[0] (placeholder when empty); the rest is the gallery.
+  readonly coverImageOf = coverImageOf;
+  readonly galleryUrls = computed(() => this.experience()?.mediaUrls?.slice(1) ?? []);
 
 
   constructor() {

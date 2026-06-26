@@ -10,6 +10,7 @@ import { Cart } from '@/domain/entities/cart.model';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
 import { AddCartExperienceItemUseCase } from '@/domain/use-cases/cart/add-cart-experience-item.use-case';
 import { buildAvailableSlots } from '@/presentation/shared/utils/experience-availability.util';
+import { coverImageOf } from '@/presentation/shared/utils/media.util';
 
 @Component({
   selector: 'experience-detail',
@@ -46,6 +47,10 @@ export class ExperienceDetailComponent {
     { label: 'Experiencias', route: '/experiences' },
     { label: this.experience().name },
   ]);
+
+  // Cover is mediaUrls[0] (placeholder when empty); the rest is the gallery.
+  readonly coverImageUrl = computed(() => coverImageOf(this.experience().mediaUrls));
+  readonly galleryUrls = computed(() => this.experience().mediaUrls.slice(1));
 
   readonly availableSlots = computed(() => buildAvailableSlots(this.experience()));
 

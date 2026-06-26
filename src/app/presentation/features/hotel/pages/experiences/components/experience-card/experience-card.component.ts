@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
+import { coverImageOf } from '@/presentation/shared/utils/media.util';
 import {
   bootstrapAward,
   bootstrapClock,
@@ -42,7 +43,7 @@ export class ExperienceCardComponent {
   private readonly titleMaxChars = 25;
   private readonly descriptionMaxChars = 80;
 
-  readonly imageUrl = computed(() => this.experience().coverImageUrl);
+  readonly imageUrl = computed(() => coverImageOf(this.experience().mediaUrls));
   readonly titleLabel = computed(() => this.experience().name);
   readonly locationLabel = computed(() => {
     const location = this.experience().location;
