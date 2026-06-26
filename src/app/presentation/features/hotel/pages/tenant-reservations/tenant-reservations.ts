@@ -18,6 +18,7 @@ import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenan
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
+import { ShiftDatePickerComponent } from '../../../../shared/components/shift-date-picker/shift-date-picker.component';
 
 export interface ReservationViewModel {
   id: string;
@@ -37,7 +38,7 @@ export interface ReservationViewModel {
 @Component({
   selector: 'app-tenant-reservations',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent, ShiftDatePickerComponent],
   templateUrl: './tenant-reservations.html',
   styleUrls: ['./tenant-reservations.css'],
   viewProviders: [
@@ -436,6 +437,14 @@ export class TenantReservations implements OnInit {
   private toDateInputValue(value: string): string {
     if (!value) return '';
     return value;
+  }
+
+  get today(): string {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private validateEditForm(): string | null {
