@@ -34,28 +34,11 @@
 /* Image */
 
 .room-image {
-  position: relative;
-  width: 100%;
-  height: 220px;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
-}
-
-.room-image-photo {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-slow);
-}
-
-.room-card:hover .room-image-photo {
-  transform: scale(1.05);
-}
-
-.room-image-placeholder {
-  width: 100%;
-  height: 100%;
+  height: 220px;
+  --carousel-frame-height: 100%;
+  --carousel-radius: 0;
 }
 
 .image-gradient {

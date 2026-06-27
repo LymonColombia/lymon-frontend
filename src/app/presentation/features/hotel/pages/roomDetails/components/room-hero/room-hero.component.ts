@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Unit } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapStar, bootstrapStarFill } from '@ng-icons/bootstrap-icons';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';
-import { coverImageOf } from '@/presentation/shared/utils/media.util';
+import { ImageCarouselComponent } from '@/presentation/shared/components/image-carousel/image-carousel.component';
 
 const TOTAL_STARS = 5;
 
 @Component({
   selector: 'app-room-hero',
   standalone: true,
-  imports: [NgIconComponent],
+  imports: [NgIconComponent, ImageCarouselComponent],
   providers: [provideIcons({ bootstrapStarFill, bootstrapStar })],
   templateUrl: './room-hero.component.html',
   styleUrl: './room-hero.component.css',
@@ -19,8 +19,6 @@ const TOTAL_STARS = 5;
 export class RoomHeroComponent {
   readonly unit = input.required<Unit>();
   readonly viewRatings = output<void>();
-
-  readonly heroImage = computed(() => coverImageOf(this.unit().mediaUrls));
 
   protected getStars(): boolean[] {
     const rating = this.unit().rating ?? 0;
