@@ -86,7 +86,7 @@
   top: calc(100% + var(--spacing-xs));
   left: 0;
   right: 0;
-  z-index: var(--z-dropdown);
+  z-index: calc(var(--z-tooltip) + 1);
   max-height: 220px;
   overflow-y: auto;
   margin: 0;
