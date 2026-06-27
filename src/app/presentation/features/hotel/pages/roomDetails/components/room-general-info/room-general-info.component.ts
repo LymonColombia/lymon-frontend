@@ -1,11 +1,19 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Unit } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople } from '@ng-icons/bootstrap-icons';
+
+const SINGLE_BED_ICON = 'single-bed';
+
+const BED_ICON_MAP: Record<string, string> = {
+  SINGLE: SINGLE_BED_ICON,
+  TWIN: SINGLE_BED_ICON,
+  BUNK: SINGLE_BED_ICON,
+  DOUBLE: 'double-bed',
+  KING: 'king-bed',
+  QUEEN: 'king-bed',
+  SOFA_BED: 'sofa-bed',
+};
 
 const BED_LABELS: Record<string, string> = {
   KING: 'King',
@@ -33,8 +41,8 @@ interface BedSummary {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomGeneralInfoComponent {
-  private readonly http = inject(HttpClient);
-  private readonly sanitizer = inject(DomSanitizer);
+  protected readonly bathIcon = 'bath';
+  protected readonly singleBedIcon = SINGLE_BED_ICON;
 
   readonly unit = input.required<Unit>();
 
@@ -67,32 +75,7 @@ export class RoomGeneralInfoComponent {
     this.bedBreakdown().reduce((sum, b) => sum + b.count, 0)
   );
 
-  private loadSvg(name: string) {
-    return toSignal(
-      this.http.get(`/extra-icons/${name}.svg`, { responseType: 'text' }).pipe(
-        map((svg) => this.sanitizer.bypassSecurityTrustHtml(svg))
-      ),
-      { initialValue: '' as unknown as SafeHtml }
-    );
-  }
-
-  protected readonly bathIcon = this.loadSvg('bath');
-  protected readonly singleBedIcon = this.loadSvg('single-bed');
-  private readonly doubleBedIcon = this.loadSvg('double-bed');
-  private readonly kingBedIcon = this.loadSvg('king-bed');
-  private readonly sofaBedIcon = this.loadSvg('sofa-bed');
-
-  private readonly BED_ICON_MAP: Record<string, () => SafeHtml> = {
-    SINGLE: () => this.singleBedIcon(),
-    TWIN: () => this.singleBedIcon(),
-    BUNK: () => this.singleBedIcon(),
-    DOUBLE: () => this.doubleBedIcon(),
-    KING: () => this.kingBedIcon(),
-    QUEEN: () => this.kingBedIcon(),
-    SOFA_BED: () => this.sofaBedIcon(),
-  };
-
-  protected getBedIcon(type: string): SafeHtml {
-    return (this.BED_ICON_MAP[type] ?? (() => this.singleBedIcon()))();
+  protected getBedIcon(type: string): string {
+    return BED_ICON_MAP[type] ?? SINGLE_BED_ICON;
   }
 }

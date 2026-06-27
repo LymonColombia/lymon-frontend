@@ -6,21 +6,13 @@
       @for (category of groupedAmenities(); track category.name) {
         <div class="category-group">
           <div class="category-header">
-            @if (getCategoryCustomSvg(category.name); as svg) {
-              <span class="amenity-icon" [innerHTML]="svg" aria-hidden="true"></span>
-            } @else {
-              <ng-icon [name]="category.icon" size="16px" aria-hidden="true"></ng-icon>
-            }
+            <ng-icon class="amenity-icon" [name]="category.icon" size="16px" aria-hidden="true"></ng-icon>
             <span class="category-name">{{ category.name }}</span>
           </div>
           <div class="amenities-list">
             @for (amenity of category.amenities; track amenity) {
               <div class="amenity-item">
-                @if (hasCustomSvg(amenity)) {
-                  <span class="amenity-icon" [innerHTML]="getCustomSvgIcon(amenity)" aria-hidden="true"></span>
-                } @else {
-                  <ng-icon [name]="getAmenityIcon(amenity)" size="16px" aria-hidden="true"></ng-icon>
-                }
+                <ng-icon class="amenity-icon" [name]="getAmenityIcon(amenity)" size="16px" aria-hidden="true"></ng-icon>
                 <span>{{ amenity }}</span>
               </div>
             }

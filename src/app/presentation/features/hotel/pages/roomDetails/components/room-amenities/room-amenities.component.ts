@@ -1,13 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBriefcase,
   bootstrapCupHot,
-  bootstrapDroplet,
   bootstrapForkKnife,
   bootstrapGrid,
   bootstrapSafe,
@@ -55,14 +50,16 @@ const AMENITY_CATEGORY_MAP: Record<string, string> = {
   Lavavajillas: 'Cocina',
 };
 
+const DEFAULT_ICON = 'bootstrapGrid';
+
 const CATEGORY_ICON_MAP: Record<string, string> = {
   Conectividad: 'bootstrapWifi',
   Climatización: 'bootstrapThermometerSun',
   Comodidad: 'bootstrapBriefcase',
-  Baño: 'bootstrapDroplet',
+  Baño: 'toilet',
   Exterior: 'bootstrapSunrise',
   Cocina: 'bootstrapForkKnife',
-  Otros: 'bootstrapGrid',
+  Otros: DEFAULT_ICON,
 };
 
 const AMENITY_ICON_MAP: Record<string, string> = {
@@ -75,6 +72,19 @@ const AMENITY_ICON_MAP: Record<string, string> = {
   'Caja Fuerte': 'bootstrapSafe',
   Cocina: 'bootstrapForkKnife',
   Nevera: 'bootstrapForkKnife',
+  Balcón: 'balcony',
+  Terraza: 'balcony',
+  Bañera: 'bath',
+  Ducha: 'bath',
+  Jacuzzi: 'bath',
+  Escritorio: 'desk',
+  'Secador de Pelo': 'hair-dryer',
+  'Secadora de Cabello': 'hair-dryer',
+  Plancha: 'iron',
+  'Mini Bar': 'mini-bar',
+  Minibar: 'mini-bar',
+  'Vista al Mar': 'sea',
+  'Baño Privado': 'toilet',
 };
 
 @Component({
@@ -85,7 +95,6 @@ const AMENITY_ICON_MAP: Record<string, string> = {
     provideIcons({
       bootstrapBriefcase,
       bootstrapCupHot,
-      bootstrapDroplet,
       bootstrapForkKnife,
       bootstrapGrid,
       bootstrapSafe,
@@ -101,8 +110,6 @@ const AMENITY_ICON_MAP: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomAmenitiesComponent {
-  private readonly http = inject(HttpClient);
-  private readonly sanitizer = inject(DomSanitizer);
   readonly amenities = input<string[]>([]);
 
   readonly groupedAmenities = computed((): AmenityCategory[] => {
@@ -118,62 +125,12 @@ export class RoomAmenitiesComponent {
 
     return Object.entries(groups).map(([name, amenities]) => ({
       name,
-      icon: CATEGORY_ICON_MAP[name] ?? 'bootstrapGrid',
+      icon: CATEGORY_ICON_MAP[name] ?? DEFAULT_ICON,
       amenities,
     }));
   });
 
-  private loadSvg(name: string) {
-    return toSignal(
-      this.http.get(`/extra-icons/${name}.svg`, { responseType: 'text' }).pipe(
-        map((svg) => this.sanitizer.bypassSecurityTrustHtml(svg))
-      ),
-      { initialValue: '' as unknown as SafeHtml }
-    );
-  }
-
-  private readonly balconySvg = this.loadSvg('balcony');
-  private readonly bathSvg = this.loadSvg('bath');
-  private readonly deskSvg = this.loadSvg('desk');
-  private readonly hairDryerSvg = this.loadSvg('hair-dryer');
-  private readonly ironSvg = this.loadSvg('iron');
-  private readonly miniBarSvg = this.loadSvg('mini-bar');
-  private readonly seaSvg = this.loadSvg('sea');
-  private readonly toiletSvg = this.loadSvg('toilet');
-
-  private readonly CATEGORY_CUSTOM_SVG_MAP: Record<string, () => SafeHtml> = {
-    Baño: () => this.toiletSvg(),
-  };
-
-  protected getCategoryCustomSvg(name: string): SafeHtml | null {
-    return this.CATEGORY_CUSTOM_SVG_MAP[name]?.() ?? null;
-  }
-
-  private readonly CUSTOM_SVG_MAP: Record<string, () => SafeHtml> = {
-    Balcón: () => this.balconySvg(),
-    Terraza: () => this.balconySvg(),
-    Bañera: () => this.bathSvg(),
-    Ducha: () => this.bathSvg(),
-    Jacuzzi: () => this.bathSvg(),
-    Escritorio: () => this.deskSvg(),
-    'Secador de Pelo': () => this.hairDryerSvg(),
-    'Secadora de Cabello': () => this.hairDryerSvg(),
-    Plancha: () => this.ironSvg(),
-    'Mini Bar': () => this.miniBarSvg(),
-    Minibar: () => this.miniBarSvg(),
-    'Vista al Mar': () => this.seaSvg(),
-    'Baño Privado': () => this.toiletSvg(),
-  };
-
-  protected hasCustomSvg(amenity: string): boolean {
-    return amenity in this.CUSTOM_SVG_MAP;
-  }
-
-  protected getCustomSvgIcon(amenity: string): SafeHtml {
-    return (this.CUSTOM_SVG_MAP[amenity] ?? (() => this.toiletSvg()))();
-  }
-
   protected getAmenityIcon(amenity: string): string {
-    return AMENITY_ICON_MAP[amenity] ?? 'bootstrapGrid';
+    return AMENITY_ICON_MAP[amenity] ?? DEFAULT_ICON;
   }
 }

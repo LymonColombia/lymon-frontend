@@ -179,9 +179,9 @@ readonly guestEmail = this.guestTokenService.getGuestEmail();
       price: unit.pricePerNight ?? 0,
       description: unit.description ?? 'Sin descripción disponible para esta habitación.',
       features: [
-        { icon: 'extraSingleBed', label: this.getBedsSummary(unit) },
+        { icon: 'single-bed', label: this.getBedsSummary(unit) },
         {
-          icon: 'extraBath',
+          icon: 'bath',
           label: `${unit.bathroomsCount ?? 0} baño${(unit.bathroomsCount ?? 0) === 1 ? '' : 's'}`,
         },
         {

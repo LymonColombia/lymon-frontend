@@ -4,15 +4,10 @@ import {
   ElementRef,
   OnDestroy,
   afterNextRender,
-  inject,
   input,
   output,
   viewChild,
 } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';
 import {
@@ -22,10 +17,7 @@ import {
   bootstrapStarFill,
 } from '@ng-icons/bootstrap-icons';
 
-export type RoomFeatureIconName =
-  | 'extraSingleBed'
-  | 'extraBath'
-  | 'bootstrapPeopleFill';
+export type RoomFeatureIconName = 'single-bed' | 'bath' | 'bootstrapPeopleFill';
 
 export interface BookingRoomFeature {
   readonly label: string;
@@ -66,8 +58,6 @@ export interface BookingRoomCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomCardComponent implements OnDestroy {
-  private readonly http = inject(HttpClient);
-  private readonly sanitizer = inject(DomSanitizer);
   readonly room = input.required<BookingRoomCard>();
   readonly viewDetails = output<string>();
 
@@ -138,27 +128,6 @@ export class RoomCardComponent implements OnDestroy {
     }
 
     container.style.maxHeight = `${chipHeight * 2 + gap}px`;
-  }
-
-  private loadSvg(name: string) {
-    return toSignal(
-      this.http.get(`/extra-icons/${name}.svg`, { responseType: 'text' }).pipe(
-        map((svg) => this.sanitizer.bypassSecurityTrustHtml(svg))
-      ),
-      { initialValue: '' as unknown as SafeHtml }
-    );
-  }
-
-  private readonly singleBedSvg = this.loadSvg('single-bed');
-  private readonly bathSvg = this.loadSvg('bath');
-
-  private readonly FEATURE_SVG_MAP: Record<string, () => SafeHtml> = {
-    extraSingleBed: () => this.singleBedSvg(),
-    extraBath: () => this.bathSvg(),
-  };
-
-  protected getFeatureSvg(icon: RoomFeatureIconName): SafeHtml | null {
-    return this.FEATURE_SVG_MAP[icon]?.() ?? null;
   }
 
   protected getStars(): boolean[] {

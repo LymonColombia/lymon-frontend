@@ -51,11 +51,7 @@
     <div class="room-features">
       @for (feature of room().features; track feature.label) {
         <div class="feature">
-          @if (getFeatureSvg(feature.icon); as svg) {
-            <span class="feature-icon feature-svg-icon" [innerHTML]="svg" aria-hidden="true"></span>
-          } @else {
-            <ng-icon class="feature-icon" [name]="feature.icon" size="14px" aria-hidden="true"></ng-icon>
-          }
+          <ng-icon class="feature-icon feature-svg-icon" [name]="feature.icon" size="14px" aria-hidden="true"></ng-icon>
           <span>{{ feature.label }}</span>
         </div>
       }

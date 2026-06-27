@@ -1,6 +1,7 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { ApplicationConfig, inject, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
+import { provideNgIconLoader, withCaching } from '@ng-icons/core';
 import { AuthRepository } from '@/domain/repositories/auth.repository';
 import { AuthRepositoryImpl } from '@/infrastructure/repositories/auth.repository.impl';
 import { UserRepository } from '@/domain/repositories/user.repository';
@@ -49,11 +50,20 @@ import { PlanRepository } from '@/domain/repositories/plan.repository';
 import { PlanRepositoryImpl } from '@/infrastructure/repositories/plan.repository.impl';
 import { routes } from './app.routes';
 
+const ICON_LOADER_BASE_PATH = '/extra-icons';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([guestAuthInterceptor, authInterceptor])),
+    provideNgIconLoader(
+      (name) =>
+        inject(HttpClient).get(`${ICON_LOADER_BASE_PATH}/${name}.svg`, {
+          responseType: 'text',
+        }),
+      withCaching()
+    ),
     { provide: AuthRepository, useClass: AuthRepositoryImpl },
     { provide: UserRepository, useClass: UserRepositoryImpl },
     { provide: IncidentReportRepository, useClass: IncidentReportRepositoryImpl },
