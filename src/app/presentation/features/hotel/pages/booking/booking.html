@@ -19,6 +19,7 @@
     <booking-toolbar
       [resultsCount]="totalCount()"
       [sortBy]="sortBy()"
+      [initialQuery]="searchQuery()"
       (searchQueryChange)="onSearchQueryChange($event)"
       (sortChange)="onSortChange($event)">
     </booking-toolbar>
