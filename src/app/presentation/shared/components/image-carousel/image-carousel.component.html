@@ -1,0 +1,51 @@
+<div class="carousel">
+  <div class="carousel-frame">
+    <div class="carousel-track" [style.transform]="trackTransform()">
+      @for (image of slides(); track $index) {
+        <div class="carousel-slide">
+          <div
+            class="carousel-bg"
+            [style.background-image]="'url(' + image + ')'"
+            aria-hidden="true">
+          </div>
+          <img class="carousel-img" [src]="image" [alt]="alt()" />
+        </div>
+      }
+    </div>
+
+    <ng-content></ng-content>
+
+    @if (hasMultiple()) {
+      <button
+        type="button"
+        class="carousel-arrow carousel-arrow--prev"
+        (click)="prev($event)"
+        aria-label="Imagen anterior">
+        <ng-icon name="bootstrapChevronLeft" size="18px" aria-hidden="true"></ng-icon>
+      </button>
+      <button
+        type="button"
+        class="carousel-arrow carousel-arrow--next"
+        (click)="next($event)"
+        aria-label="Imagen siguiente">
+        <ng-icon name="bootstrapChevronRight" size="18px" aria-hidden="true"></ng-icon>
+      </button>
+    }
+  </div>
+
+  @if (showThumbnails() && hasMultiple()) {
+    <div class="carousel-thumbs">
+      @for (image of slides(); track $index; let i = $index) {
+        <button
+          type="button"
+          class="carousel-thumb"
+          [class.carousel-thumb--active]="i === currentIndex()"
+          (click)="select(i)"
+          [attr.aria-label]="'Ver imagen ' + (i + 1)"
+          [attr.aria-current]="i === currentIndex()">
+          <img [src]="image" alt="" />
+        </button>
+      }
+    </div>
+  }
+</div>

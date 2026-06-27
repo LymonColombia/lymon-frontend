@@ -30,14 +30,9 @@
   flex-direction: column;
 }
 
-.room-image {
+.room-carousel {
+  display: block;
   width: 100%;
-  height: auto;
-  flex: 1;
-  min-height: 0;
-  object-fit: cover;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
   margin-bottom: var(--spacing-xl);
 }
 
@@ -154,10 +149,6 @@
     grid-template-columns: 1fr;
     gap: var(--spacing-2xl);
     min-height: auto;
-  }
-
-  .room-image {
-    height: 300px;
   }
 
   .hero-side-content {

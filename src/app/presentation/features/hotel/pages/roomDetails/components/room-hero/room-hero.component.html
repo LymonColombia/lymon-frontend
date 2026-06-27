@@ -4,7 +4,12 @@
 
 <div class="image-description-section">
   <div class="room-image-container">
-    <img [src]="heroImage()" [alt]="unit().name" class="room-image" />
+    <app-image-carousel
+      class="room-carousel"
+      [images]="unit().mediaUrls ?? []"
+      [alt]="unit().name"
+      [showThumbnails]="true">
+    </app-image-carousel>
 
     <div class="room-meta">
       <div class="room-rating">
