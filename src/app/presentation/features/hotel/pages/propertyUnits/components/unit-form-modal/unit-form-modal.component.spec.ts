@@ -291,6 +291,18 @@ describe('UnitFormModalComponent – CREATE – extractUnitId response shapes', 
 
     expect(mockUpdateUnitMediaKeys.execute).toHaveBeenCalledWith('unit-deep', expect.any(Array));
   });
+
+  it('should extract unitId from { data: { unitId } } response shape', async () => {
+    mockCreateUnit.execute.mockReturnValue(of({ message: 'Unit created successfully', data: { unitId: 'unit-actual' } }));
+
+    const { component } = await setup();
+    fillValidForm(component);
+    component.gallerySelection.set({ kept: [], newFiles: [makeFile()] });
+
+    component.onSubmit();
+
+    expect(mockUpdateUnitMediaKeys.execute).toHaveBeenCalledWith('unit-actual', expect.any(Array));
+  });
 });
 
 // ─── EDIT with media ──────────────────────────────────────────────────────────
