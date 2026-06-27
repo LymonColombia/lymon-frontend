@@ -228,6 +228,19 @@
 
 <app-modal [open]="isAssignSupplierModalOpen()" title="Asignar Proveedor" size="small"
   (closed)="closeAssignSupplierModal()">
+  @if (supplierSelectionOptions().length <= 1) {
+  <div class="empty-supplier-state">
+    <p class="empty-supplier-title">No hay proveedores registrados</p>
+    <p class="empty-supplier-text">
+      Debes crear un proveedor antes de poder asignarlo al insumo
+      <strong>{{ selectedItemForSupplier()?.name }}</strong>.
+    </p>
+    <app-button type="button" variant="primary" (clicked)="closeAssignSupplierAndOpenCreateProvider()">
+      <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+      Crear proveedor
+    </app-button>
+  </div>
+  } @else {
   <form [formGroup]="supplierAssignmentForm" (ngSubmit)="assignSupplier()" class="supply-form assign-supplier-form">
     <div class="form-group mb-6">
       <p class="mb-4 text-sm text-gray-500">Selecciona el proveedor para el item: <strong>{{
@@ -238,13 +251,21 @@
           [options]="supplierSelectionOptions()"></app-select>
       </div>
     </div>
-    <div class="modal-footer-custom">
-      <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Cancelar</app-button>
-      <app-button type="submit" variant="primary" [loading]="isSavingSupplierAssignment()">
-        Asignar
-      </app-button>
-    </div>
   </form>
+  }
+
+  @if (supplierSelectionOptions().length <= 1) {
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Cancelar</app-button>
+  </div>
+  } @else {
+  <div modal-footer class="modal-footer-custom">
+    <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Cancelar</app-button>
+    <app-button type="button" variant="primary" (clicked)="assignSupplier()" [loading]="isSavingSupplierAssignment()">
+      Asignar
+    </app-button>
+  </div>
+  }
 </app-modal>
 
 <app-modal [open]="isSupplyModalOpen()" [title]="modalTitle()" size="medium" (closed)="closeSupplyModal()">

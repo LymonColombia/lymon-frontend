@@ -533,6 +533,11 @@ export class InventoryComponent implements OnInit {
     this.selectedItemForSupplier.set(null);
   }
 
+  closeAssignSupplierAndOpenCreateProvider(): void {
+    this.closeAssignSupplierModal();
+    this.openCreateProviderModal();
+  }
+
   closeSupplyModal(): void {
     this.isSupplyModalOpen.set(false);
     if (!this.supplySaved) {
