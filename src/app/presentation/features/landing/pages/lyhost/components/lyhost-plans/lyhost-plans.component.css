@@ -3,8 +3,32 @@
 }
 
 .lyhost-plans {
+  position: relative;
+  overflow: hidden;
   padding: var(--spacing-5xl) 0;
-  background: var(--color-bg-tertiary);
+  background: var(--color-primary-dark);
+}
+
+.plans-grid-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+}
+
+.lyhost-plans::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--spacing-6xl) * 2);
+  background: linear-gradient(to bottom, transparent, var(--color-primary-dark));
+  pointer-events: none;
+}
+
+.lyhost-plans .container {
+  position: relative;
+  z-index: 1;
 }
 
 .plans-header {
@@ -18,8 +42,8 @@
   justify-content: center;
   padding: var(--spacing-xs) var(--spacing-md);
   border-radius: var(--radius-full);
-  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
-  background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 50%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
   margin-bottom: var(--spacing-2xl);
 }
 
@@ -36,7 +60,7 @@
   font-size: clamp(var(--font-size-3xl), 3.5vw, calc(var(--font-size-4xl) * 1.05));
   line-height: var(--line-height-tight);
   letter-spacing: -0.02em;
-  color: var(--color-text-primary);
+  color: var(--color-bg-primary);
 }
 
 .plans-header h2 span {
@@ -49,7 +73,7 @@
   font-family: var(--font-secondary);
   font-size: var(--font-size-md);
   line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
+  color: color-mix(in srgb, var(--color-bg-primary) 75%, transparent);
 }
 
 .billing-toggle {

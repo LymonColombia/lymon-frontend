@@ -13,6 +13,17 @@
   background: var(--color-bg-primary);
 }
 
+.lyhost-hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--spacing-6xl) * 2);
+  background: linear-gradient(to bottom, transparent, var(--color-bg-primary));
+  pointer-events: none;
+}
+
 .hero-grid-bg {
   position: absolute;
   inset: 0;

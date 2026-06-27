@@ -13,7 +13,6 @@ import { LyhostNavComponent } from './components/lyhost-nav/lyhost-nav.component
 import { LyhostHeroComponent } from './components/lyhost-hero/lyhost-hero.component';
 import { LyhostPlansComponent } from './components/lyhost-plans/lyhost-plans.component';
 import { LyhostFeaturesComponent } from './components/lyhost-features/lyhost-features.component';
-import { LyhostEcosystemComponent } from './components/lyhost-ecosystem/lyhost-ecosystem.component';
 
 @Component({
   selector: 'app-lyhost-page',
@@ -23,7 +22,6 @@ import { LyhostEcosystemComponent } from './components/lyhost-ecosystem/lyhost-e
     LyhostHeroComponent,
     LyhostPlansComponent,
     LyhostFeaturesComponent,
-    LyhostEcosystemComponent,
     FooterComponent,
   ],
   templateUrl: './lyhost-page.component.html',

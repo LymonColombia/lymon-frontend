@@ -26,9 +26,8 @@ export class LyhostNavComponent {
 
   readonly links: LyhostNavLink[] = [
     { label: 'Explorar', sectionId: 'explorar' },
-    { label: 'Planes', sectionId: 'planes' },
     { label: 'Características', sectionId: 'caracteristicas' },
-    { label: 'Para Gestores', sectionId: 'para-gestores' },
+    { label: 'Planes', sectionId: 'planes' },
   ];
 
   toggleMobileMenu(): void {
