@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   OnDestroy,
-  Signal,
   afterNextRender,
   inject,
   input,
@@ -11,7 +10,9 @@ import {
   viewChild,
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';
 import {
@@ -66,6 +67,7 @@ export interface BookingRoomCard {
 })
 export class RoomCardComponent implements OnDestroy {
   private readonly http = inject(HttpClient);
+  private readonly sanitizer = inject(DomSanitizer);
   readonly room = input.required<BookingRoomCard>();
   readonly viewDetails = output<string>();
 
@@ -138,25 +140,30 @@ export class RoomCardComponent implements OnDestroy {
     container.style.maxHeight = `${chipHeight * 2 + gap}px`;
   }
 
-  private loadSvg(name: string): Signal<string> {
-    return toSignal(this.http.get(`/extra-icons/${name}.svg`, { responseType: 'text' }), { initialValue: '' });
+  private loadSvg(name: string) {
+    return toSignal(
+      this.http.get(`/extra-icons/${name}.svg`, { responseType: 'text' }).pipe(
+        map((svg) => this.sanitizer.bypassSecurityTrustHtml(svg))
+      ),
+      { initialValue: '' as unknown as SafeHtml }
+    );
   }
 
   private readonly singleBedSvg = this.loadSvg('single-bed');
   private readonly bathSvg = this.loadSvg('bath');
 
-  private readonly FEATURE_SVG_MAP: Record<string, () => string> = {
+  private readonly FEATURE_SVG_MAP: Record<string, () => SafeHtml> = {
     extraSingleBed: () => this.singleBedSvg(),
     extraBath: () => this.bathSvg(),
   };
 
-  protected getFeatureSvg(icon: RoomFeatureIconName): string | null {
+  protected getFeatureSvg(icon: RoomFeatureIconName): SafeHtml | null {
     return this.FEATURE_SVG_MAP[icon]?.() ?? null;
   }
 
   protected getStars(): boolean[] {
     const rating = this.room().rating;
-    if (rating === undefined || rating === null) return [];
+    if (rating === undefined) return [];
     return Array.from({ length: 5 }, (_, i) => i < rating);
   }
 
