@@ -89,7 +89,7 @@ describe('TenantReservations', () => {
     it('default active filter shows pending, confirmed and check-in only', () => {
       component.statusFilter.set('active');
       const result = component.filteredReservations();
-      expect(result.length).toBe(3);
+      expect(result).toHaveLength(3);
       expect(result.some((r) => r.status === 'Cancelada')).toBe(false);
       expect(result.some((r) => r.status === 'Finalizada')).toBe(false);
     });
@@ -97,47 +97,47 @@ describe('TenantReservations', () => {
     it('shows only pending reservations when pending filter is active', () => {
       component.statusFilter.set('pending');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].status).toBe('Pendiente');
     });
 
     it('shows only confirmed reservations when confirmed filter is active', () => {
       component.statusFilter.set('confirmed');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].status).toBe('Confirmada');
     });
 
     it('shows only checked-in reservations when checked-in filter is active', () => {
       component.statusFilter.set('checked-in');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].status).toBe('Check-in');
     });
 
     it('shows only finished reservations when finished filter is active', () => {
       component.statusFilter.set('finished');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].status).toBe('Finalizada');
     });
 
     it('shows only cancelled reservations when cancelled filter is active', () => {
       component.statusFilter.set('cancelled');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].status).toBe('Cancelada');
     });
 
     it('shows all reservations when all filter is active', () => {
       component.statusFilter.set('all');
-      expect(component.filteredReservations().length).toBe(5);
+      expect(component.filteredReservations()).toHaveLength(5);
     });
 
     it('searches across guest name, email, reservation id and property by default', () => {
       component.searchTerm.set('Ana');
       const result = component.filteredReservations();
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result.every((r) =>
         r.guestName.toLowerCase().includes('ana') ||
         r.guestEmail.toLowerCase().includes('ana')
@@ -147,28 +147,28 @@ describe('TenantReservations', () => {
     it('finds reservation by email', () => {
       component.searchTerm.set('luis@mail.com');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].guestEmail).toBe('luis@mail.com');
     });
 
     it('finds reservation by reservation number', () => {
       component.searchTerm.set('1004');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].reservationNumber).toBe(1004);
     });
 
     it('finds reservation by property or unit name', () => {
       component.searchTerm.set('vista mar');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].propertyName).toBe('Vista Mar');
     });
 
     it('finds reservation by unit name across all fields', () => {
       component.searchTerm.set('Suite 101');
       const result = component.filteredReservations();
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].unitName).toBe('Suite 101');
     });
 
@@ -187,7 +187,7 @@ describe('TenantReservations', () => {
       component.filteredCurrentPage.set(1);
 
       expect(component.filteredTotalPages()).toBe(3);
-      expect(component.pagedReservations().length).toBe(10);
+      expect(component.pagedReservations()).toHaveLength(10);
       expect(component.pagedReservations()[0].reservationNumber).toBe(2000);
 
       component.nextPage();
@@ -197,7 +197,7 @@ describe('TenantReservations', () => {
       component.statusFilter.set('confirmed');
       component.filteredCurrentPage.set(1);
       expect(component.filteredTotalPages()).toBe(1);
-      expect(component.pagedReservations().length).toBe(1);
+      expect(component.pagedReservations()).toHaveLength(1);
     });
   });
 });
