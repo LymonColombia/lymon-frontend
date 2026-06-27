@@ -154,6 +154,35 @@
 }
 
 /* ========================================
+   TUTORIAL HIGHLIGHT ANIMATION
+   ======================================== */
+
+@keyframes tutorial-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(46, 192, 148, 0.5);
+  }
+
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 12px rgba(46, 192, 148, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(46, 192, 148, 0);
+  }
+}
+
+.tutorial-highlight-pulse:not(app-button) {
+  animation: tutorial-pulse 1.5s ease-in-out infinite;
+}
+
+app-button.tutorial-highlight-pulse .btn-inner {
+  animation: tutorial-pulse 1.5s ease-in-out infinite;
+}
+
+/* ========================================
    GLOBAL RESETS & BASE STYLES
    ======================================== */
 

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
+import { TutorialService } from '@/presentation/shared/services/tutorial.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -30,6 +31,7 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly loginUseCase = inject(LoginUseCase);
   private readonly router = inject(Router);
+  private readonly tutorialService = inject(TutorialService);
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -57,9 +59,13 @@ export class LoginComponent {
     const { email, password } = this.form.getRawValue();
 
     this.loginUseCase.execute({ email: email!, password: password! }).subscribe({
-      next: () => {
+      next: (response) => {
         this.isLoading.set(false);
-        this.router.navigate(['/dashboard']);
+        if (response.user.tutorialCompleted === false) {
+          this.tutorialService.start();
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);

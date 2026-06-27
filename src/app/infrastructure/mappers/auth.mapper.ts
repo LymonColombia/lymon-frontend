@@ -16,6 +16,7 @@ export class AuthMapper {
         planType: raw.data.planType,
         role: raw.data.role,
         emailVerified: raw.data.emailVerified,
+        tutorialCompleted: raw.data.tutorialCompleted === true || raw.data.tutorialCompleted === 'true',
       },
       tokens: {
         accessToken: raw.data.accessToken,

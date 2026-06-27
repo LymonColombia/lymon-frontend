@@ -77,7 +77,7 @@
         <ng-icon class="empty-state-icon" name="bootstrapHouseDoorFill" size="64px"></ng-icon>
         <p class="empty-title">Sin habitaciones</p>
         <p class="empty-subtitle">Esta propiedad aún no tiene habitaciones registradas.</p>
-        <app-button type="button" variant="primary" (clicked)="navigateToCreateUnit()">
+        <app-button type="button" variant="primary" (clicked)="navigateToCreateUnit()" [tutorialHighlight]="1">
           Crear primera habitación
         </app-button>
       </div>
@@ -91,7 +91,7 @@
           />
         }
 
-        <button type="button" class="create-unit-card" (click)="navigateToCreateUnit()">
+        <button type="button" class="create-unit-card" (click)="navigateToCreateUnit()" [tutorialHighlight]="1">
           <span class="create-unit-icon" aria-hidden="true">
             <ng-icon name="bootstrapPlus" size="20px"></ng-icon>
           </span>

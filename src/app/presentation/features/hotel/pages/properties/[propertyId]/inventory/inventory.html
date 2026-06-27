@@ -65,13 +65,13 @@
             (click)="toggleCategoriesDropdown()" (keydown.escape)="toggleCategoriesDropdown()"></button>
           }
         </div>
-        <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()">
+        <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()" [tutorialHighlight]="2">
           <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
           Agregar Insumo
         </app-button>
       </div>
       } @else {
-      <app-button type="button" variant="primary" (clicked)="openCreateProviderModal()">
+      <app-button type="button" variant="primary" (clicked)="openCreateProviderModal()" [tutorialHighlight]="3">
         <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
         Agregar Proveedor
       </app-button>

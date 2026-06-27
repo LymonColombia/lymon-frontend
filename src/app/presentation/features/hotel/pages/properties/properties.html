@@ -61,7 +61,7 @@
         <ng-icon class="empty-state-icon" name="bootstrapHouseDoorFill" size="64px"></ng-icon>
         <p class="empty-title">Aún no tienes propiedades</p>
         <p class="empty-subtitle">Crea tu primera propiedad para empezar a gestionar habitaciones</p>
-        <app-button type="button" variant="primary" (clicked)="openForm()">
+        <app-button type="button" variant="primary" (clicked)="openForm()" [tutorialHighlight]="0">
           Crear primera propiedad
         </app-button>
       </div>
@@ -77,7 +77,7 @@
           />
         }
         
-        <button class="create-property-card" type="button" (click)="openForm()">
+        <button class="create-property-card" type="button" (click)="openForm()" [tutorialHighlight]="0">
           <span class="create-property-icon" aria-hidden="true">
             <ng-icon name="bootstrapPlus" size="20px"></ng-icon>
           </span>
