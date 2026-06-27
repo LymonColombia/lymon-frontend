@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
@@ -36,6 +36,8 @@ import { GetInventoryItemsUseCase } from '@/domain/use-cases/inventory/get-inven
 import { AssociateInventorySupplierUseCase } from '@/domain/use-cases/inventory/associate-inventory-supplier.use-case';
 import { DeleteInventoryItemUseCase } from '@/domain/use-cases/inventory/delete-inventory-item.use-case';
 import { GetSupplierItemsUseCase } from '@/domain/use-cases/supplier/get-supplier-items.use-case';
+import { TutorialService } from '@/presentation/shared/services/tutorial.service';
+import { TutorialHighlightDirective } from '@/presentation/shared/directives/tutorial-highlight.directive';
 
 type StockState = 'NORMAL' | 'BAJO' | 'CRITICO';
 
@@ -74,6 +76,7 @@ interface ProviderRow {
     SelectComponent,
     ButtonComponent,
     ModalComponent,
+    TutorialHighlightDirective,
   ],
   providers: [
     provideIcons({
@@ -108,6 +111,10 @@ export class InventoryComponent implements OnInit {
   private readonly deleteInventoryItemUseCase = inject(DeleteInventoryItemUseCase);
   private readonly getSupplierItemsUseCase = inject(GetSupplierItemsUseCase);
   private readonly route = inject(ActivatedRoute);
+  private readonly tutorialService = inject(TutorialService);
+
+  private supplySaved = false;
+  private providerSaved = false;
 
   readonly propertyId = signal<string | null>(null);
 
@@ -276,6 +283,16 @@ export class InventoryComponent implements OnInit {
   readonly totalPages = computed(() => {
     return this.activeTab() === 'supplies' ? this.totalSuppliesPages() : this.totalProvidersPages();
   });
+
+  constructor() {
+    effect(() => {
+      if (!this.tutorialService.isActive()) return;
+      const tab = this.tutorialService.requestedInventoryTab();
+      if (!tab) return;
+      this.setActiveTab(tab);
+      this.tutorialService.clearRequestedInventoryTab();
+    });
+  }
 
   readonly searchPlaceholder = computed(() => {
     if (this.activeTab() === 'providers') {
@@ -509,6 +526,10 @@ export class InventoryComponent implements OnInit {
 
   closeSupplyModal(): void {
     this.isSupplyModalOpen.set(false);
+    if (!this.supplySaved) {
+      this.tutorialService.resetActionButtonClicked(2);
+    }
+    this.supplySaved = false;
   }
 
   openCreateCategoryModal(): void {
@@ -624,11 +645,13 @@ export class InventoryComponent implements OnInit {
       useCase.execute(id, payload).subscribe({
         next: () => {
           this.isSavingSupply.set(false);
+          this.supplySaved = true;
           this.showNotification('¡Insumo creado con éxito!', 'success');
           this.closeSupplyModal();
           this.supplyForm.reset();
-          
+
           this.loadSupplies(id);
+          this.tutorialService.stepCompleted$.next();
         },
         error: (err: unknown) => {
           console.error('Error creating supply', err);
@@ -761,6 +784,10 @@ export class InventoryComponent implements OnInit {
   closeProviderModal(): void {
     this.isProviderModalOpen.set(false);
     this.editingProviderId.set(null);
+    if (!this.providerSaved) {
+      this.tutorialService.resetActionButtonClicked(3);
+    }
+    this.providerSaved = false;
   }
 
   saveProvider(): void {
@@ -786,11 +813,13 @@ export class InventoryComponent implements OnInit {
       this.supplierRepository.createSupplier(payload).subscribe({
         next: () => {
           this.isSavingProvider.set(false);
+          this.providerSaved = true;
           this.showNotification('¡Proveedor agregado con éxito!', 'success');
           this.closeProviderModal();
           this.providerForm.reset();
-          
+
           this.loadProviders();
+          this.tutorialService.stepCompleted$.next();
         },
         error: (err) => {
           console.error('Error creating supplier', err);

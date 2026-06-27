@@ -26,6 +26,7 @@ export interface AuthUser {
   planType?: PlanType;
   role?: UserRole;
   emailVerified?: boolean;
+  tutorialCompleted?: boolean;
 }
 
 export interface LoginResponse {

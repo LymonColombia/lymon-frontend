@@ -30,6 +30,8 @@ import {
   bootstrapHouseDoorFill,
   bootstrapPlus,
 } from '@ng-icons/bootstrap-icons';
+import { TutorialService } from '@/presentation/shared/services/tutorial.service';
+import { TutorialHighlightDirective } from '@/presentation/shared/directives/tutorial-highlight.directive';
 
 @Component({
   selector: 'app-property-units',
@@ -43,6 +45,7 @@ import {
     UnitCardComponent,
     UnitFormModalComponent,
     NgIcon,
+    TutorialHighlightDirective,
   ],
   providers: [provideIcons({ bootstrapHouseDoorFill, bootstrapPlus })],
   templateUrl: './propertyUnits.html',
@@ -58,6 +61,9 @@ export class PropertyUnitsComponent implements OnInit {
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitUseCase = inject(GetUnitUseCase);
   private readonly deleteUnitUseCase = inject(DeleteUnitUseCase);
+  private readonly tutorialService = inject(TutorialService);
+
+  private unitSaved = false;
 
   readonly isLoading = signal(true);
   readonly isLoadingEdit = signal(false);
@@ -124,6 +130,10 @@ export class PropertyUnitsComponent implements OnInit {
   closeUnitModal(): void {
     this.showUnitModal.set(false);
     this.editingUnit.set(null);
+    if (!this.unitSaved) {
+      this.tutorialService.resetActionButtonClicked(1);
+    }
+    this.unitSaved = false;
   }
 
   openEditUnit(unit: Unit): void {
@@ -186,6 +196,7 @@ export class PropertyUnitsComponent implements OnInit {
 
   onUnitSaved(): void {
     const wasEditing = !!this.editingUnit();
+    this.unitSaved = !wasEditing;
     this.showUnitModal.set(false);
     this.editingUnit.set(null);
     this.successMessage.set(
@@ -193,5 +204,8 @@ export class PropertyUnitsComponent implements OnInit {
     );
     const currentPropertyId = this.propertyId();
     if (currentPropertyId) this.loadUnits(currentPropertyId);
+    if (!wasEditing) {
+      this.tutorialService.stepCompleted$.next();
+    }
   }
 }

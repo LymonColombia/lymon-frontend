@@ -1,6 +1,11 @@
 import { Observable } from 'rxjs';
-import { ChangePasswordRequest, ChangePasswordResponse } from '@/domain/entities/user.model';
+import {
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+  CompleteTutorialResponse,
+} from '@/domain/entities/user.model';
 
 export abstract class UserRepository {
   abstract changePassword(data: ChangePasswordRequest): Observable<ChangePasswordResponse>;
+  abstract completeTutorial(): Observable<CompleteTutorialResponse>;
 }

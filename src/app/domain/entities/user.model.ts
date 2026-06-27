@@ -7,3 +7,8 @@ export interface ChangePasswordRequest {
 export interface ChangePasswordResponse {
   message: string;
 }
+
+export interface CompleteTutorialResponse {
+  tutorialCompleted: boolean;
+  message?: string;
+}

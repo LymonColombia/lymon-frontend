@@ -177,7 +177,7 @@
       </label>
 
       <button type="button" class="btn-primary btn-assign" (click)="openCreateAssignmentModal()"
-        aria-label="Asignar turno">
+        aria-label="Asignar turno" [tutorialHighlight]="6">
         <ng-icon name="bootstrapPersonPlusFill" size="15"></ng-icon>
         Asignar turno
       </button>
@@ -314,7 +314,7 @@
 
 
 
-        <button type="button" class="btn-primary" (click)="openCreateShiftModal()">
+        <button type="button" class="btn-primary" (click)="openCreateShiftModal()" [tutorialHighlight]="5">
           + Crear turno fijo
         </button>
       </div>
