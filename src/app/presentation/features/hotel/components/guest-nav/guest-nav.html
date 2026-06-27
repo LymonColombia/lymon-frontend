@@ -6,34 +6,40 @@
       {{ backButtonLabel() }}
     </button>
 
-    <a routerLink="/lyhost" class="nav-logo">
+    <a routerLink="/booking" class="nav-logo">
       <img src="/images/LyHost.svg" alt="LyHost" />
     </a>
 
-    <div class="nav-profile-wrapper">
-      <div class="nav-profile" (click)="toggleDropdown()" [class.nav-profile--open]="isDropdownOpen()">
-        <div class="profile-avatar" aria-hidden="true">{{ initials() }}</div>
-        <div class="profile-info">
-          <span class="profile-name">{{ profileLabel() }}</span>
-          <span class="profile-email">{{ guestEmail() }}</span>
+    <div class="nav-actions">
+      <div class="nav-profile-wrapper">
+        <div class="nav-profile" (click)="toggleDropdown()" [class.nav-profile--open]="isDropdownOpen()">
+          <div class="profile-avatar" aria-hidden="true">{{ initials() }}</div>
+          <div class="profile-info">
+            <span class="profile-name">{{ profileLabel() }}</span>
+            <span class="profile-email">{{ guestEmail() }}</span>
+          </div>
+          <ng-icon
+            name="bootstrapChevronDown"
+            size="13px"
+            class="profile-chevron"
+            [class.profile-chevron--open]="isDropdownOpen()"
+            aria-hidden="true"
+          />
         </div>
-        <ng-icon
-          name="bootstrapChevronDown"
-          size="13px"
-          class="profile-chevron"
-          [class.profile-chevron--open]="isDropdownOpen()"
-          aria-hidden="true"
-        />
+
+        @if (isDropdownOpen()) {
+          <div class="profile-dropdown" role="menu" aria-label="Profile actions">
+            <button class="profile-dropdown-option profile-dropdown-option--danger" type="button" role="menuitem" (click)="onLogout()">
+              <ng-icon name="bootstrapBoxArrowRight" size="15px" aria-hidden="true" />
+              Cerrar sesión
+            </button>
+          </div>
+        }
       </div>
 
-      @if (isDropdownOpen()) {
-        <div class="profile-dropdown" role="menu" aria-label="Profile actions">
-          <button class="profile-dropdown-option profile-dropdown-option--danger" type="button" role="menuitem" (click)="onLogout()">
-            <ng-icon name="bootstrapBoxArrowRight" size="15px" aria-hidden="true" />
-            Cerrar sesión
-          </button>
-        </div>
-      }
+      <a class="cart-action" routerLink="/guest/cart" aria-label="Ir al carrito" title="Ir al carrito">
+        <ng-icon name="bootstrapCart" size="18px" aria-hidden="true" />
+      </a>
     </div>
 
   </div>

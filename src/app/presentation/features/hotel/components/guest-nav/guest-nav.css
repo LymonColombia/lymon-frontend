@@ -60,6 +60,46 @@
   display: block;
 }
 
+/* ===== ACTIONS ===== */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.cart-action {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.cart-action:hover,
+.cart-action:focus-visible {
+  color: var(--color-bg-primary);
+  background: var(--color-primary);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.cart-action ng-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ===== PROFILE ===== */
 
 .nav-profile-wrapper {

@@ -127,9 +127,10 @@ export class CheckinComponent {
   readonly guestEmail = this.guestTokenService.getGuestEmail() ?? '';
 
   readonly idTypeOptions: SelectOption[] = [
-    { value: 'INE_IFE', label: 'INE / IFE' },
+    { value: 'CC', label: 'Cédula de ciudadanía' },
+    { value: 'TI', label: 'Tarjeta de identidad' },
+    { value: 'RC', label: 'Registro civil' },
     { value: 'PASSPORT', label: 'Pasaporte' },
-    { value: 'LICENSE', label: 'Licencia' },
   ];
 
   readonly checkinForm = this.fb.group({
