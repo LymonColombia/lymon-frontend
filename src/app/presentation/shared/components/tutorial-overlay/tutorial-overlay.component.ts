@@ -59,11 +59,16 @@ export class TutorialOverlayComponent {
     () => this.currentStep() === this.totalSteps - 1,
   );
   readonly isActionStep = computed(() => this.step().type === 'action');
+  readonly showBackButton = computed(() => this.currentStep() > 0);
 
   readonly showAbandonConfirm = signal(false);
 
   onNext(): void {
     this.tutorialService.nextStep();
+  }
+
+  onPrevious(): void {
+    this.tutorialService.previousStep();
   }
 
   onSkip(): void {

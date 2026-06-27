@@ -26,7 +26,18 @@
     <p class="tutorial-description">{{ step().description }}</p>
   </div>
 
-  <div class="tutorial-footer">
+  <div class="tutorial-footer" [class.tutorial-footer--two]="showBackButton()">
+    @if (showBackButton()) {
+      <app-button
+        type="button"
+        variant="ghost"
+        fullWidth
+        (clicked)="onPrevious()"
+      >
+        Atrás
+      </app-button>
+    }
+
     @if (isActionStep()) {
       <app-button
         type="button"

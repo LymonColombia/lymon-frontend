@@ -107,6 +107,12 @@
   padding: 0 var(--spacing-lg) var(--spacing-lg);
 }
 
+.tutorial-footer--two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
 .tutorial-abandon-text {
   margin: 0;
   font-size: var(--font-size-sm);

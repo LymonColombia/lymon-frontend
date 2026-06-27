@@ -144,6 +144,11 @@ export class TutorialService {
     this.goToStep(this.currentStep() + 1);
   }
 
+  previousStep(): void {
+    if (this.processing) return;
+    this.goToStep(this.currentStep() - 1);
+  }
+
   goToStep(index: number): void {
     if (this.processing) return;
 
@@ -164,6 +169,7 @@ export class TutorialService {
     this.actionButtonClicked.update((set) => {
       const next = new Set(set);
       next.delete(index);
+      next.delete(index + 1);
       return next;
     });
     this.requestedShiftModal.set(null);
