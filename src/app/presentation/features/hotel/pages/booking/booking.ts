@@ -212,6 +212,7 @@ export class BookingComponent implements OnInit {
       featured: (unit.pricePerNight ?? 0) >= 200,
       maxGuests: unit.maxGuests ?? unit.standardGuests,
       rating: unit.rating ?? undefined,
+      images: unit.mediaUrls ?? [],
     };
   }
 

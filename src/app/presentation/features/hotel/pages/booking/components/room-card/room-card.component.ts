@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';
+import { ImageCarouselComponent } from '@/presentation/shared/components/image-carousel/image-carousel.component';
 import {
   bootstrapDoorOpenFill,
   bootstrapGeoAlt,
@@ -41,7 +42,7 @@ export interface BookingRoomCard {
   readonly badgeLabel: string;
   readonly badgeVariant?: 'available' | 'shared' | 'last';
   readonly featured?: boolean;
-  readonly imageUrl?: string;
+  readonly images?: readonly string[];
   readonly rating?: number;
   readonly reviews?: number;
   readonly location?: string;
@@ -51,7 +52,7 @@ export interface BookingRoomCard {
 @Component({
   selector: 'booking-room-card',
   standalone: true,
-  imports: [NgIcon],
+  imports: [NgIcon, ImageCarouselComponent],
   providers: [
     provideIcons({
       bootstrapDoorOpenFill,

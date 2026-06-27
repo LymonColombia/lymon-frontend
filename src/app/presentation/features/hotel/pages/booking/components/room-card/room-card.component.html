@@ -1,15 +1,19 @@
-<div class="room-card" [class.featured]="room().featured ?? false">
+<div
+  class="room-card"
+  [class.featured]="room().featured ?? false"
+  (mouseenter)="carousel.play()"
+  (mouseleave)="carousel.stop()">
   <button
     class="room-card-btn"
     type="button"
     (click)="onCardClick()"
     [attr.aria-label]="'Ver detalles de ' + room().title">
   </button>
-  <div class="room-image">
-    <img
-      class="room-image-photo"
-      [src]="room().imageUrl ?? 'images/suite2.avif'"
-      [alt]="'Imagen de ' + room().title" />
+  <app-image-carousel
+    #carousel
+    class="room-image"
+    [images]="room().images ?? []"
+    [alt]="'Imagen de ' + room().title">
 
     <div class="image-gradient" aria-hidden="true"></div>
 
@@ -34,7 +38,7 @@
       <span class="price-amount">${{ formatPrice(room().price) }}</span>
       <span class="price-period">/noche</span>
     </div>
-  </div>
+  </app-image-carousel>
 
   <div class="room-content">
     <div class="room-meta">
