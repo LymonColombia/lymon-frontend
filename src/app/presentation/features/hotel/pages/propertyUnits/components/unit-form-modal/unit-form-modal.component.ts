@@ -239,8 +239,8 @@ export class UnitFormModalComponent {
 
   // ponytail: covers the known NestJS create-response shapes; null means we skip media sync
   private extractUnitId(response: unknown): string | null {
-    const body = response as { id?: string; data?: { id?: string; unit?: { id?: string } } };
-    return body?.data?.unit?.id ?? body?.data?.id ?? body?.id ?? null;
+    const body = response as { id?: string; data?: { unitId?: string; id?: string; unit?: { id?: string } } };
+    return body?.data?.unitId ?? body?.data?.unit?.id ?? body?.data?.id ?? body?.id ?? null;
   }
 
   private buildUpdateDto(): UpdateUnitDto {
