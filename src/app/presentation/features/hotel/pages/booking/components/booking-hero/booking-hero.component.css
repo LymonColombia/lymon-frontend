@@ -9,6 +9,8 @@
   z-index: 1;
 }
 
+/* ── Decorations ── */
+
 .hero-decorations {
   position: absolute;
   inset: 0;
@@ -40,7 +42,20 @@
   opacity: 0.05;
 }
 
+/* ── Backdrop (blocks interaction with content below hero) ── */
+
+.cal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background: transparent;
+  cursor: default;
+}
+
+/* ── Hero content ── */
+
 .hero-content {
+  position: relative;
   max-width: var(--max-width-xl);
   margin: 0 auto;
   animation: fadeSlideUp 0.5s ease forwards;
@@ -67,8 +82,12 @@
   color: var(--color-primary-dark);
 }
 
+/* ── Search bar (elevated above backdrop) ── */
+
 .search-bar {
   --field-height: 45px;
+  position: relative;
+  z-index: 10;
   width: fit-content;
   margin: 0 auto;
   display: flex;
@@ -101,12 +120,7 @@ fieldset.search-field {
   font-family: var(--font-secondary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.search-field app-input {
-  display: block;
-  width: 100%;
+  color: color-mix(in srgb, var(--color-bg-primary) 90%, transparent);
 }
 
 .search-field .guest-stepper {
@@ -170,7 +184,83 @@ fieldset.search-field {
 
 .field-icon {
   color: var(--color-primary-dark);
+  flex-shrink: 0;
 }
+
+/* ── Date trigger ── */
+
+.date-trigger-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-md);
+}
+
+.date-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  height: var(--field-height);
+  min-width: 148px;
+  padding: 0 var(--spacing-md);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.date-trigger:hover,
+.date-trigger:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.date-trigger:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.date-trigger-value {
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.date-trigger-value.is-placeholder {
+  color: var(--color-text-disabled);
+  font-weight: var(--font-weight-regular);
+}
+
+/* ── Calendar dropdown ── */
+
+.cal-dropdown {
+  position: absolute;
+  top: calc(100% + var(--spacing-sm));
+  left: 0;
+  z-index: 20;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.97);
+  transform-origin: top left;
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base),
+    visibility var(--transition-base);
+}
+
+.cal-dropdown.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* ── Search button ── */
 
 .btn-search {
   display: flex;
@@ -188,21 +278,21 @@ fieldset.search-field {
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition-fast), transform var(--transition-fast);
   align-self: flex-end;
   margin-left: var(--spacing-md);
 }
 
 .btn-search:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-1px);
 }
 
 @keyframes fadeSlideUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(var(--spacing-lg));
   }
   to {
     opacity: 1;

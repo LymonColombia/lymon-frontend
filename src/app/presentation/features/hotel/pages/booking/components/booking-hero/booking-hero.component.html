@@ -4,6 +4,10 @@
     <div class="hero-decoration hero-decoration--bottom-left"></div>
   </div>
 
+  @if (isCalendarOpen()) {
+    <div class="cal-backdrop" aria-hidden="true"></div>
+  }
+
   <div class="hero-content">
     <p class="hero-eyebrow">Explora alojamientos únicos</p>
     <h1 class="hero-title">
@@ -13,28 +17,47 @@
   </div>
 
   <div class="search-bar">
-    <div class="search-field">
-      <app-input
-        type="date"
-        id="checkin"
-        name="checkin"
-        [hasIcon]="true"
-        [formControl]="checkInControl">
-        <ng-icon icon class="field-icon" name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
-      </app-input>
-      <label for="checkin" class="search-label">Fecha de Entrada</label>
-    </div>
+    <div class="date-trigger-wrapper">
+      <div class="search-field">
+        <button
+          class="date-trigger"
+          type="button"
+          [class.has-value]="checkInDisplay()"
+          (click)="toggleCalendar()"
+          [attr.aria-expanded]="isCalendarOpen()"
+          aria-label="Seleccionar fecha de entrada">
+          <ng-icon class="field-icon" name="bootstrapCalendar" size="15px" aria-hidden="true"></ng-icon>
+          <span class="date-trigger-value" [class.is-placeholder]="!checkInDisplay()">
+            {{ checkInDisplay() ?? 'dd/mm/aaaa' }}
+          </span>
+        </button>
+        <span class="search-label">Fecha de Entrada</span>
+      </div>
 
-    <div class="search-field">
-      <app-input
-        type="date"
-        id="checkout"
-        name="checkout"
-        [hasIcon]="true"
-        [formControl]="checkOutControl">
-        <ng-icon icon class="field-icon" name="bootstrapCalendar" size="16px" aria-hidden="true"></ng-icon>
-      </app-input>
-      <label for="checkout" class="search-label">Fecha de Salida</label>
+      <div class="search-field">
+        <button
+          class="date-trigger"
+          type="button"
+          [class.has-value]="checkOutDisplay()"
+          (click)="toggleCalendar()"
+          [attr.aria-expanded]="isCalendarOpen()"
+          aria-label="Seleccionar fecha de salida">
+          <ng-icon class="field-icon" name="bootstrapCalendar" size="15px" aria-hidden="true"></ng-icon>
+          <span class="date-trigger-value" [class.is-placeholder]="!checkOutDisplay()">
+            {{ checkOutDisplay() ?? 'dd/mm/aaaa' }}
+          </span>
+        </button>
+        <span class="search-label">Fecha de Salida</span>
+      </div>
+
+      <div class="cal-dropdown" [class.is-open]="isCalendarOpen()" aria-label="Calendario de fechas">
+        <app-calendar
+          [initialStartDate]="checkInDate()"
+          [initialEndDate]="checkOutDate()"
+          (dateRangeChange)="onDateRangeChange($event)"
+          (closeRequested)="closeCalendar()">
+        </app-calendar>
+      </div>
     </div>
 
     <fieldset class="search-field">

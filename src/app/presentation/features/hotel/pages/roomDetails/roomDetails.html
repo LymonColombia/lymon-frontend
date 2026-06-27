@@ -26,10 +26,12 @@
 
           <div class="booking-body">
             <div class="booking-left">
-              <room-booking-calendar
+              <app-calendar
+                variant="inline"
+                [showLegend]="true"
                 [occupiedRanges]="occupiedRanges()"
                 (dateRangeChange)="onDateRangeChange($event)">
-              </room-booking-calendar>
+              </app-calendar>
 
               <div class="guests-selector">
                 <label class="guests-label">Huéspedes</label>
@@ -40,7 +42,7 @@
                   [hasIcon]="true"
                   (valueChange)="onGuestChange($event)"
                 >
-                  <ng-icon icon name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
+                  <ng-icon name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
                 </app-select>
               </div>
             </div>

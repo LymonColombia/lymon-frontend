@@ -15,30 +15,39 @@
     </div>
 
     <div class="nav-center">
-      <div class="mini-search-field">
-        <app-input
-          type="date"
-          id="navCheckIn"
-          name="navCheckIn"
-          size="small"
-          [hasIcon]="true"
-          (valueChange)="onCheckInChange($event)"
-        >
-          <ng-icon icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
-        </app-input>
-      </div>
+      <div class="nav-date-trigger-wrapper">
+        <div class="mini-search-field">
+          <button
+            class="nav-date-trigger"
+            type="button"
+            (click)="toggleCalendar()"
+            [attr.aria-expanded]="isCalendarOpen()"
+            aria-label="Seleccionar fecha de entrada">
+            <ng-icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+            <span [class.is-placeholder]="!checkInDisplay()">{{ checkInDisplay() ?? 'Check-in' }}</span>
+          </button>
+        </div>
 
-      <div class="mini-search-field">
-        <app-input
-          type="date"
-          id="navCheckOut"
-          name="navCheckOut"
-          size="small"
-          [hasIcon]="true"
-          (valueChange)="onCheckOutChange($event)"
-        >
-          <ng-icon icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
-        </app-input>
+        <div class="mini-search-field">
+          <button
+            class="nav-date-trigger"
+            type="button"
+            (click)="toggleCalendar()"
+            [attr.aria-expanded]="isCalendarOpen()"
+            aria-label="Seleccionar fecha de salida">
+            <ng-icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+            <span [class.is-placeholder]="!checkOutDisplay()">{{ checkOutDisplay() ?? 'Check-out' }}</span>
+          </button>
+        </div>
+
+        <div class="nav-cal-dropdown" [class.is-open]="isCalendarOpen()" aria-label="Calendario de fechas">
+          <app-calendar
+            [initialStartDate]="checkIn() ?? null"
+            [initialEndDate]="checkOut() ?? null"
+            (dateRangeChange)="onDateRangeChange($event)"
+            (closeRequested)="closeCalendar()">
+          </app-calendar>
+        </div>
       </div>
 
       <div class="mini-guest-stepper">

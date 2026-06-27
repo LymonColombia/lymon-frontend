@@ -26,7 +26,7 @@ import { RoomHeroComponent } from './components/room-hero/room-hero.component';
 import { RoomGeneralInfoComponent } from './components/room-general-info/room-general-info.component';
 import { RoomAmenitiesComponent } from './components/room-amenities/room-amenities.component';
 import { RoomPoliciesComponent } from './components/room-policies/room-policies.component';
-import { RoomBookingCalendarComponent, BookingDateRange } from './components/room-booking-calendar/room-booking-calendar.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
 import { RoomRatingsComponent } from './components/room-ratings/room-ratings.component';
 import { RoomDetailsNavComponent, RoomDetailsSearchParams } from './components/room-details-nav/room-details-nav.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -53,7 +53,7 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
     RoomGeneralInfoComponent,
     RoomAmenitiesComponent,
     RoomPoliciesComponent,
-    RoomBookingCalendarComponent,
+    CalendarComponent,
     RoomRatingsComponent,
     NgIconComponent,
   ],
@@ -68,7 +68,7 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomDetailsComponent implements OnInit {
-  readonly router = inject(Router);
+  private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitUseCase = inject(GetPublicUnitUseCase);
@@ -95,6 +95,7 @@ export class RoomDetailsComponent implements OnInit {
     if (!ci || !co) return 0;
     const [cy, cm, cd] = ci.split('-').map(Number);
     const [oy, om, od] = co.split('-').map(Number);
+    if ([cy, cm, cd, oy, om, od].some(Number.isNaN)) return 0;
     return Math.round(
       (new Date(oy, om - 1, od).getTime() - new Date(cy, cm - 1, cd).getTime()) / 86_400_000,
     );
@@ -160,7 +161,7 @@ export class RoomDetailsComponent implements OnInit {
     });
   }
 
-  onDateRangeChange(range: BookingDateRange): void {
+  onDateRangeChange(range: DateRange): void {
     this.checkIn.set(range.checkIn);
     this.checkOut.set(range.checkOut);
   }
