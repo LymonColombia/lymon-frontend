@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Signal } from '@angular/core';
+import { map } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBriefcase,
@@ -7,7 +12,6 @@ import {
   bootstrapForkKnife,
   bootstrapGrid,
   bootstrapSafe,
-  bootstrapScissors,
   bootstrapSnow,
   bootstrapSunrise,
   bootstrapThermometerSun,
@@ -69,19 +73,7 @@ const AMENITY_ICON_MAP: Record<string, string> = {
   'Aire Acondicionado': 'bootstrapSnow',
   Calefacción: 'bootstrapThermometerSun',
   Cafetera: 'bootstrapCupHot',
-  'Mini Bar': 'bootstrapCupHot',
-  Minibar: 'bootstrapCupHot',
   'Caja Fuerte': 'bootstrapSafe',
-  Escritorio: 'bootstrapBriefcase',
-  Plancha: 'bootstrapScissors',
-  'Baño Privado': 'bootstrapDroplet',
-  Bañera: 'bootstrapDroplet',
-  Ducha: 'bootstrapDroplet',
-  'Secador de Pelo': 'bootstrapScissors',
-  'Secadora de Cabello': 'bootstrapScissors',
-  Balcón: 'bootstrapSunrise',
-  Terraza: 'bootstrapSunrise',
-  'Vista al Mar': 'bootstrapSunrise',
   Cocina: 'bootstrapForkKnife',
   Nevera: 'bootstrapForkKnife',
 };
@@ -98,7 +90,6 @@ const AMENITY_ICON_MAP: Record<string, string> = {
       bootstrapForkKnife,
       bootstrapGrid,
       bootstrapSafe,
-      bootstrapScissors,
       bootstrapSnow,
       bootstrapSunrise,
       bootstrapThermometerSun,
@@ -111,6 +102,9 @@ const AMENITY_ICON_MAP: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomAmenitiesComponent {
+  private readonly http = inject(HttpClient);
+  private readonly sanitizer = inject(DomSanitizer);
+
   readonly amenities = input<string[]>([]);
 
   readonly groupedAmenities = computed((): AmenityCategory[] => {
@@ -130,6 +124,56 @@ export class RoomAmenitiesComponent {
       amenities,
     }));
   });
+
+  private loadSvg(name: string): Signal<SafeHtml> {
+    return toSignal(
+      this.http
+        .get(`/extra-icons/${name}.svg`, { responseType: 'text' })
+        .pipe(map((svg) => this.sanitizer.bypassSecurityTrustHtml(svg))),
+      { initialValue: '' as unknown as SafeHtml }
+    );
+  }
+
+  private readonly balconySvg = this.loadSvg('balcony');
+  private readonly bathSvg = this.loadSvg('bath');
+  private readonly deskSvg = this.loadSvg('desk');
+  private readonly hairDryerSvg = this.loadSvg('hair-dryer');
+  private readonly ironSvg = this.loadSvg('iron');
+  private readonly miniBarSvg = this.loadSvg('mini-bar');
+  private readonly seaSvg = this.loadSvg('sea');
+  private readonly toiletSvg = this.loadSvg('toilet');
+
+  private readonly CATEGORY_CUSTOM_SVG_MAP: Record<string, () => SafeHtml> = {
+    Baño: () => this.toiletSvg(),
+  };
+
+  protected getCategoryCustomSvg(name: string): SafeHtml | null {
+    return this.CATEGORY_CUSTOM_SVG_MAP[name]?.() ?? null;
+  }
+
+  private readonly CUSTOM_SVG_MAP: Record<string, () => SafeHtml> = {
+    Balcón: () => this.balconySvg(),
+    Terraza: () => this.balconySvg(),
+    Bañera: () => this.bathSvg(),
+    Ducha: () => this.bathSvg(),
+    Jacuzzi: () => this.bathSvg(),
+    Escritorio: () => this.deskSvg(),
+    'Secador de Pelo': () => this.hairDryerSvg(),
+    'Secadora de Cabello': () => this.hairDryerSvg(),
+    Plancha: () => this.ironSvg(),
+    'Mini Bar': () => this.miniBarSvg(),
+    Minibar: () => this.miniBarSvg(),
+    'Vista al Mar': () => this.seaSvg(),
+    'Baño Privado': () => this.toiletSvg(),
+  };
+
+  protected hasCustomSvg(amenity: string): boolean {
+    return amenity in this.CUSTOM_SVG_MAP;
+  }
+
+  protected getCustomSvgIcon(amenity: string): SafeHtml {
+    return (this.CUSTOM_SVG_MAP[amenity] ?? (() => this.toiletSvg()))();
+  }
 
   protected getAmenityIcon(amenity: string): string {
     return AMENITY_ICON_MAP[amenity] ?? 'bootstrapGrid';
