@@ -14,10 +14,7 @@ export interface CrmGuestDto {
   guestId: string;
   fullName: string;
   primaryEmail: string;
-  phones: Array<{
-    number?: string;
-    isPrimary?: boolean;
-  }>;
+  phone: string | null;
   status: string;
   tags: string[];
 }
