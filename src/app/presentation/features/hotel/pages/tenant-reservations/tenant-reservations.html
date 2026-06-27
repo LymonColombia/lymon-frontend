@@ -36,22 +36,11 @@
             }
           </select>
         </div>
-        <div class="filter-group">
-          <label for="searchField">Buscar por</label>
-          <select id="searchField" class="filter-select" [value]="searchField()"
-            (change)="onSearchFieldChange($event)" aria-label="Campo de búsqueda">
-            <option value="all">Todo</option>
-            <option value="guestName">Huésped</option>
-            <option value="guestEmail">Correo</option>
-            <option value="reservationId">ID reserva</option>
-            <option value="propertyUnit">Propiedad / Habitación</option>
-          </select>
-        </div>
         <div class="filter-group search-input-group">
-          <label for="searchTerm">Término de búsqueda</label>
+          <label for="searchTerm">Buscar</label>
           <div class="search-input-wrapper">
             <ng-icon name="bootstrapSearch" class="search-icon"></ng-icon>
-            <input id="searchTerm" type="text" placeholder="Buscar reservas..." [value]="searchTerm()"
+            <input id="searchTerm" type="text" placeholder="Buscar por huésped, correo, ID o propiedad..." [value]="searchTerm()"
               (input)="onSearchChange($event)" class="search-input" aria-label="Buscar reservaciones" />
           </div>
         </div>

@@ -134,41 +134,39 @@ describe('TenantReservations', () => {
       expect(component.filteredReservations().length).toBe(5);
     });
 
-    it('filters by guest name', () => {
+    it('searches across guest name, email, reservation id and property by default', () => {
       component.searchTerm.set('Ana');
-      component.searchField.set('guestName');
       const result = component.filteredReservations();
       expect(result.length).toBe(2);
-      expect(result.every((r) => r.guestName.toLowerCase().includes('ana'))).toBe(true);
+      expect(result.every((r) =>
+        r.guestName.toLowerCase().includes('ana') ||
+        r.guestEmail.toLowerCase().includes('ana')
+      )).toBe(true);
     });
 
-    it('filters by guest email', () => {
+    it('finds reservation by email', () => {
       component.searchTerm.set('luis@mail.com');
-      component.searchField.set('guestEmail');
       const result = component.filteredReservations();
       expect(result.length).toBe(1);
       expect(result[0].guestEmail).toBe('luis@mail.com');
     });
 
-    it('filters by reservation id', () => {
+    it('finds reservation by reservation number', () => {
       component.searchTerm.set('1004');
-      component.searchField.set('reservationId');
       const result = component.filteredReservations();
       expect(result.length).toBe(1);
       expect(result[0].reservationNumber).toBe(1004);
     });
 
-    it('filters by property or unit name', () => {
+    it('finds reservation by property or unit name', () => {
       component.searchTerm.set('vista mar');
-      component.searchField.set('propertyUnit');
       const result = component.filteredReservations();
       expect(result.length).toBe(1);
       expect(result[0].propertyName).toBe('Vista Mar');
     });
 
-    it('filters across all fields when search field is all', () => {
+    it('finds reservation by unit name across all fields', () => {
       component.searchTerm.set('Suite 101');
-      component.searchField.set('all');
       const result = component.filteredReservations();
       expect(result.length).toBe(1);
       expect(result[0].unitName).toBe('Suite 101');

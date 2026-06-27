@@ -36,7 +36,6 @@ export interface ReservationViewModel {
 }
 
 type StatusFilter = 'active' | 'pending' | 'confirmed' | 'checked-in' | 'finished' | 'cancelled' | 'all';
-type SearchField = 'all' | 'guestName' | 'guestEmail' | 'reservationId' | 'propertyUnit';
 
 interface StatusFilterOption {
   value: StatusFilter;
@@ -100,12 +99,10 @@ export class TenantReservations implements OnInit {
   readonly statusFilterOptions = STATUS_FILTER_OPTIONS;
   statusFilter = signal<StatusFilter>('active');
   searchTerm = signal('');
-  searchField = signal<SearchField>('all');
 
   filteredReservations = computed(() => {
     const status = this.statusFilter();
     const term = this.searchTerm().trim().toLowerCase();
-    const field = this.searchField();
 
     return this.reservations().filter((res) => {
       const normalizedStatus = this.normalizeStatus(res.status);
@@ -145,26 +142,14 @@ export class TenantReservations implements OnInit {
       }
 
       const contains = (value: string) => value.toLowerCase().includes(term);
-
-      switch (field) {
-        case 'guestName':
-          return contains(res.guestName);
-        case 'guestEmail':
-          return contains(res.guestEmail);
-        case 'reservationId':
-          return String(res.reservationNumber).includes(term) || res.id.toLowerCase().includes(term);
-        case 'propertyUnit':
-          return contains(res.propertyName) || contains(res.unitName);
-        default:
-          return (
-            contains(res.guestName) ||
-            contains(res.guestEmail) ||
-            String(res.reservationNumber).includes(term) ||
-            res.id.toLowerCase().includes(term) ||
-            contains(res.propertyName) ||
-            contains(res.unitName)
-          );
-      }
+      return (
+        contains(res.guestName) ||
+        contains(res.guestEmail) ||
+        String(res.reservationNumber).includes(term) ||
+        res.id.toLowerCase().includes(term) ||
+        contains(res.propertyName) ||
+        contains(res.unitName)
+      );
     });
   });
 
@@ -309,12 +294,6 @@ export class TenantReservations implements OnInit {
   onSearchChange(event: Event) {
     const value = (event.target as HTMLInputElement | null)?.value ?? '';
     this.searchTerm.set(value);
-    this.filteredCurrentPage.set(1);
-  }
-
-  onSearchFieldChange(event: Event) {
-    const value = (event.target as HTMLSelectElement | null)?.value ?? 'all';
-    this.searchField.set(value as SearchField);
     this.filteredCurrentPage.set(1);
   }
 
