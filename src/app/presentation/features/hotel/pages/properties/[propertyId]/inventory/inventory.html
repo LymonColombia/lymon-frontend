@@ -150,52 +150,52 @@
       }
     </div>
     } @else {
-    <div class="providers-grid">
+    <div class="table-card">
       @if (filteredProviders().length === 0) {
-      <div class="table-card empty-state">No hay proveedores que coincidan con la busqueda.</div>
+      <div class="empty-state">No hay proveedores que coincidan con la busqueda.</div>
       } @else {
-      @for (provider of paginatedProviders(); track provider.id) {
-      <article class="provider-card" aria-label="Proveedor {{ provider.name }}">
-        <div class="provider-head">
-          <div class="provider-title-wrap">
-            <span class="provider-icon" aria-hidden="true">
-              <ng-icon name="bootstrapBuilding" size="16px"></ng-icon>
-            </span>
-            <div class="provider-main">
-              <h3 class="provider-name">{{ provider.name }}</h3>
-              <p class="provider-rif">{{ provider.nit }}</p>
-              <p class="provider-items">
+      <div class="table-wrapper">
+        <table class="inventory-table" aria-label="Listado de proveedores">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>NIT</th>
+              <th>Ubicacion</th>
+              <th>Email</th>
+              <th>Telefono</th>
+              <th>Insumos asociados</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (provider of paginatedProviders(); track provider.id) {
+            <tr class="provider-row" (click)="openProviderDetails(provider.id)">
+              <td>{{ provider.name }}</td>
+              <td>{{ provider.nit }}</td>
+              <td>{{ provider.city }}, {{ provider.country }}</td>
+              <td>{{ provider.contactEmail }}</td>
+              <td>{{ provider.contactPhone }}</td>
+              <td>
                 {{ getSupplierItemCount(provider.id) }}
                 {{ getSupplierItemCount(provider.id) === 1 ? 'insumo asociado' : 'insumos asociados' }}
-              </p>
-            </div>
-          </div>
-
-          <div class="actions-cell">
-            <button type="button" class="icon-action" (click)="openEditProviderModal(provider)"
-              aria-label="Editar proveedor" title="Editar">
-              <ng-icon name="bootstrapPencilSquare" size="15px" aria-hidden="true"></ng-icon>
-            </button>
-            <button type="button" class="icon-action icon-action--danger" (click)="openDeleteProviderModal(provider)"
-              aria-label="Eliminar proveedor" title="Eliminar">
-              <ng-icon name="bootstrapXCircleFill" size="15px" aria-hidden="true"></ng-icon>
-            </button>
-          </div>
-        </div>
-
-        <ul class="provider-meta">
-          <li><span>Ubicacion:</span> {{ provider.city }}, {{ provider.country }}</li>
-          <li><span>Email:</span> {{ provider.contactEmail }}</li>
-          <li><span>Telefono:</span> {{ provider.contactPhone }}</li>
-        </ul>
-
-        <div class="provider-footer">
-          <app-button type="button" variant="outline" size="small" (clicked)="openProviderDetails(provider.id)">
-            Detalles
-          </app-button>
-        </div>
-      </article>
-      }
+              </td>
+              <td>
+                <div class="actions-cell" (click)="$event.stopPropagation()">
+                  <button type="button" class="icon-action" (click)="openEditProviderModal(provider)"
+                    aria-label="Editar proveedor" title="Editar">
+                    <ng-icon name="bootstrapPencilSquare" size="15px" aria-hidden="true"></ng-icon>
+                  </button>
+                  <button type="button" class="icon-action icon-action--danger"
+                    (click)="openDeleteProviderModal(provider)" aria-label="Eliminar proveedor" title="Eliminar">
+                    <ng-icon name="bootstrapXCircleFill" size="15px" aria-hidden="true"></ng-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
       }
     </div>
     }
@@ -329,61 +329,50 @@
   </div>
 </app-modal>
 
-@if (selectedProvider()) {
-<button type="button" class="provider-drawer-backdrop" aria-label="Cerrar panel de detalles"
-  (click)="closeProviderDetails()" (keydown.escape)="closeProviderDetails()"></button>
+<app-modal [open]="isProviderDetailsModalOpen()" title="Detalles del proveedor" size="small"
+  (closed)="closeProviderDetails()">
+  @if (selectedProvider()) {
+  <div class="provider-details-body">
+    <section class="provider-details-section">
+      <h3>Informacion de contacto</h3>
+      <ul class="provider-details-contact-list">
+        <li>
+          <ng-icon name="bootstrapGeoAlt" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.city }}, {{ selectedProvider()!.country }}</span>
+        </li>
+        <li>
+          <ng-icon name="bootstrapEnvelope" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.contactEmail }}</span>
+        </li>
+        <li>
+          <ng-icon name="bootstrapTelephone" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.contactPhone }}</span>
+        </li>
+      </ul>
+    </section>
 
-<dialog class="provider-drawer" aria-modal="true" aria-label="Detalles del proveedor" open>
-  <header class="drawer-header">
-    <div>
-      <h2>{{ selectedProvider()!.name }}</h2>
-      <p>{{ selectedProvider()!.nit }}</p>
-    </div>
+    <section class="provider-details-section">
+      <h3>Insumos asociados</h3>
 
-    <button type="button" class="drawer-close" (click)="closeProviderDetails()" aria-label="Cerrar detalles">
-      <ng-icon name="bootstrapX" size="18px" aria-hidden="true"></ng-icon>
-    </button>
-  </header>
-
-  <section class="drawer-section">
-    <h3>Informacion de contacto</h3>
-    <ul class="drawer-contact-list">
-      <li>
-        <ng-icon name="bootstrapGeoAlt" size="14px" aria-hidden="true"></ng-icon>
-        <span>{{ selectedProvider()!.city }}, {{ selectedProvider()!.country }}</span>
-      </li>
-      <li>
-        <ng-icon name="bootstrapEnvelope" size="14px" aria-hidden="true"></ng-icon>
-        <span>{{ selectedProvider()!.contactEmail }}</span>
-      </li>
-      <li>
-        <ng-icon name="bootstrapTelephone" size="14px" aria-hidden="true"></ng-icon>
-        <span>{{ selectedProvider()!.contactPhone }}</span>
-      </li>
-    </ul>
-  </section>
-
-  <section class="drawer-section">
-    <h3>Insumos asociados</h3>
-
-    @if (selectedProviderSupplies().length === 0) {
-    <p class="drawer-empty">Este proveedor aun no tiene insumos asignados.</p>
-    } @else {
-    <ul class="drawer-supply-list">
-      @for (supply of selectedProviderSupplies(); track supply.id) {
-      <li>
-        <div>
-          <p class="supply-name">{{ supply.name }}</p>
-          <p class="supply-meta">Categoria: {{ supply.categoryName }}</p>
-        </div>
-        <span class="supply-qty">{{ supply.quantity }} {{ supply.unit }}</span>
-      </li>
+      @if (selectedProviderSupplies().length === 0) {
+      <p class="provider-details-empty">Este proveedor aun no tiene insumos asignados.</p>
+      } @else {
+      <ul class="provider-details-supply-list">
+        @for (supply of selectedProviderSupplies(); track supply.id) {
+        <li>
+          <div>
+            <p class="provider-details-supply-name">{{ supply.name }}</p>
+            <p class="provider-details-supply-meta">Categoria: {{ supply.categoryName }}</p>
+          </div>
+          <span class="provider-details-supply-qty">{{ supply.quantity }} {{ supply.unit }}</span>
+        </li>
+        }
+      </ul>
       }
-    </ul>
-    }
-  </section>
-</dialog>
-}
+    </section>
+  </div>
+  }
+</app-modal>
 
 <app-modal [open]="isDeleteProviderModalOpen()" title="Confirmar Eliminación" size="small"
   (closed)="closeDeleteProviderModal()">
@@ -393,19 +382,30 @@
     </div>
     <div class="delete-content">
       <h3>¿Estás seguro?</h3>
+      @if (providerToDeleteItems().length > 0) {
+      <p>
+        El proveedor <strong>{{ providerToDelete()?.name }}</strong> tiene
+        <strong>{{ providerToDeleteItems().length }}</strong>
+        {{ providerToDeleteItems().length === 1 ? 'insumo asociado' : 'insumos asociados' }}.
+        Al eliminarlo, los insumos quedarán sin proveedor asignado. Esta acción no se puede deshacer.
+      </p>
+      } @else {
       <p>
         Estás a punto de eliminar al proveedor
         <strong>{{ providerToDelete()?.name }}</strong>.
         Esta acción no se puede deshacer.
       </p>
+      }
     </div>
   </div>
 
   <div modal-footer class="modal-actions">
-    <app-button type="button" variant="secondary" (clicked)="closeDeleteProviderModal()">
+    <app-button type="button" variant="secondary" (clicked)="closeDeleteProviderModal()"
+      [disabled]="isDeletingProvider()">
       Cancelar
     </app-button>
-    <app-button type="button" variant="danger" (clicked)="confirmDeleteProvider()">
+    <app-button type="button" variant="danger" (clicked)="confirmDeleteProvider()" [loading]="isDeletingProvider()"
+      [disabled]="isDeletingProvider()">
       Eliminar Proveedor
     </app-button>
   </div>
