@@ -1,9 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Signal } from '@angular/core';
-import { map } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBriefcase,
@@ -103,8 +100,6 @@ const AMENITY_ICON_MAP: Record<string, string> = {
 })
 export class RoomAmenitiesComponent {
   private readonly http = inject(HttpClient);
-  private readonly sanitizer = inject(DomSanitizer);
-
   readonly amenities = input<string[]>([]);
 
   readonly groupedAmenities = computed((): AmenityCategory[] => {
@@ -125,13 +120,8 @@ export class RoomAmenitiesComponent {
     }));
   });
 
-  private loadSvg(name: string): Signal<SafeHtml> {
-    return toSignal(
-      this.http
-        .get(`/extra-icons/${name}.svg`, { responseType: 'text' })
-        .pipe(map((svg) => this.sanitizer.bypassSecurityTrustHtml(svg))),
-      { initialValue: '' as unknown as SafeHtml }
-    );
+  private loadSvg(name: string): Signal<string> {
+    return toSignal(this.http.get(`/extra-icons/${name}.svg`, { responseType: 'text' }), { initialValue: '' });
   }
 
   private readonly balconySvg = this.loadSvg('balcony');
@@ -143,15 +133,15 @@ export class RoomAmenitiesComponent {
   private readonly seaSvg = this.loadSvg('sea');
   private readonly toiletSvg = this.loadSvg('toilet');
 
-  private readonly CATEGORY_CUSTOM_SVG_MAP: Record<string, () => SafeHtml> = {
+  private readonly CATEGORY_CUSTOM_SVG_MAP: Record<string, () => string> = {
     Baño: () => this.toiletSvg(),
   };
 
-  protected getCategoryCustomSvg(name: string): SafeHtml | null {
+  protected getCategoryCustomSvg(name: string): string | null {
     return this.CATEGORY_CUSTOM_SVG_MAP[name]?.() ?? null;
   }
 
-  private readonly CUSTOM_SVG_MAP: Record<string, () => SafeHtml> = {
+  private readonly CUSTOM_SVG_MAP: Record<string, () => string> = {
     Balcón: () => this.balconySvg(),
     Terraza: () => this.balconySvg(),
     Bañera: () => this.bathSvg(),
@@ -171,7 +161,7 @@ export class RoomAmenitiesComponent {
     return amenity in this.CUSTOM_SVG_MAP;
   }
 
-  protected getCustomSvgIcon(amenity: string): SafeHtml {
+  protected getCustomSvgIcon(amenity: string): string {
     return (this.CUSTOM_SVG_MAP[amenity] ?? (() => this.toiletSvg()))();
   }
 

@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
 import { Unit } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople } from '@ng-icons/bootstrap-icons';
@@ -34,8 +32,6 @@ interface BedSummary {
 })
 export class RoomGeneralInfoComponent {
   private readonly http = inject(HttpClient);
-  private readonly sanitizer = inject(DomSanitizer);
-
   readonly unit = input.required<Unit>();
 
   readonly maxGuests = computed(() => this.unit().maxGuests ?? 0);
@@ -68,12 +64,7 @@ export class RoomGeneralInfoComponent {
   );
 
   private loadSvg(name: string) {
-    return toSignal(
-      this.http
-        .get(`/extra-icons/${name}.svg`, { responseType: 'text' })
-        .pipe(map((svg) => this.sanitizer.bypassSecurityTrustHtml(svg))),
-      { initialValue: '' as unknown as SafeHtml }
-    );
+    return toSignal(this.http.get(`/extra-icons/${name}.svg`, { responseType: 'text' }), { initialValue: '' });
   }
 
   protected readonly bathIcon = this.loadSvg('bath');
@@ -82,7 +73,7 @@ export class RoomGeneralInfoComponent {
   private readonly kingBedIcon = this.loadSvg('king-bed');
   private readonly sofaBedIcon = this.loadSvg('sofa-bed');
 
-  private readonly BED_ICON_MAP: Record<string, () => SafeHtml> = {
+  private readonly BED_ICON_MAP: Record<string, () => string> = {
     SINGLE: () => this.singleBedIcon(),
     TWIN: () => this.singleBedIcon(),
     BUNK: () => this.singleBedIcon(),
@@ -92,7 +83,7 @@ export class RoomGeneralInfoComponent {
     SOFA_BED: () => this.sofaBedIcon(),
   };
 
-  protected getBedIcon(type: string): SafeHtml {
+  protected getBedIcon(type: string): string {
     return (this.BED_ICON_MAP[type] ?? (() => this.singleBedIcon()))();
   }
 }
