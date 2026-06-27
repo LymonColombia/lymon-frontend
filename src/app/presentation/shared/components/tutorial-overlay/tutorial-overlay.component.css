@@ -1,6 +1,6 @@
 .tutorial-overlay {
   position: fixed;
-  bottom: var(--spacing-xl);
+  top: var(--spacing-xl);
   right: var(--spacing-xl);
   width: 380px;
   max-width: calc(100% - var(--spacing-2xl));
@@ -122,8 +122,8 @@
 
 @media (max-width: 480px) {
   .tutorial-overlay {
+    top: var(--spacing-md);
     right: var(--spacing-md);
-    bottom: var(--spacing-md);
     left: var(--spacing-md);
     width: auto;
     max-width: none;
