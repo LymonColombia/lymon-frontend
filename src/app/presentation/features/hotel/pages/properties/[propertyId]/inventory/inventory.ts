@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, O
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBoxSeam,
@@ -127,13 +127,22 @@ export class InventoryComponent implements OnInit {
   readonly editingProviderId = signal<string | null>(null);
   readonly selectedProviderId = signal<string | null>(null);
   readonly isDeleteProviderModalOpen = signal(false);
+  readonly isProviderDetailsModalOpen = signal(false);
   readonly providerToDelete = signal<ProviderRow | null>(null);
+  readonly providerToDeleteItems = computed(() => {
+    const provider = this.providerToDelete();
+    if (!provider) {
+      return [];
+    }
+    return this.supplierItemsBySupplierId().get(provider.id) ?? [];
+  });
   readonly isDeleteSupplyModalOpen = signal(false);
   readonly supplyToDelete = signal<SupplyRow | null>(null);
   readonly isSavingProvider = signal(false);
   readonly isSavingSupply = signal(false);
   readonly isSavingCategory = signal(false);
   readonly isDeletingSupply = signal(false);
+  readonly isDeletingProvider = signal(false);
   readonly isCategoriesDropdownOpen = signal(false);
   readonly categories = signal<InventoryCategoryResponse[]>([]);
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
@@ -524,6 +533,11 @@ export class InventoryComponent implements OnInit {
     this.selectedItemForSupplier.set(null);
   }
 
+  closeAssignSupplierAndOpenCreateProvider(): void {
+    this.closeAssignSupplierModal();
+    this.openCreateProviderModal();
+  }
+
   closeSupplyModal(): void {
     this.isSupplyModalOpen.set(false);
     if (!this.supplySaved) {
@@ -734,15 +748,36 @@ export class InventoryComponent implements OnInit {
 
   confirmDeleteProvider(): void {
     const provider = this.providerToDelete();
-    if (!provider) return;
+    const propertyId = this.propertyId();
+    if (!provider || !propertyId || this.isDeletingProvider()) return;
 
-    this.supplierRepository.deleteSupplier(provider.id).subscribe({
+    this.isDeletingProvider.set(true);
+
+    const items = this.providerToDeleteItems();
+    const delete$ = this.supplierRepository.deleteSupplier(provider.id);
+
+    const request$ = items.length === 0
+      ? delete$
+      : forkJoin(
+          items.map((item) =>
+            this.associateInventorySupplierUseCase.execute(propertyId, item.id, null).pipe(
+              catchError((err) => {
+                console.error(`Error unassigning supplier from item ${item.id}`, err);
+                return of(void 0);
+              })
+            )
+          )
+        ).pipe(switchMap(() => delete$));
+
+    request$.subscribe({
       next: () => {
-        this.providers.update((items) => items.filter((item) => item.id !== provider.id));
+        this.isDeletingProvider.set(false);
+        this.providers.update((itemsList) => itemsList.filter((item) => item.id !== provider.id));
         this.closeDeleteProviderModal();
+        this.showNotification('Proveedor eliminado con exito', 'success');
 
         if (this.selectedProviderId() === provider.id) {
-          this.selectedProviderId.set(null);
+          this.closeProviderDetails();
         }
         if (this.editingProviderId() === provider.id) {
           this.closeProviderModal();
@@ -750,7 +785,8 @@ export class InventoryComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error deleting supplier', err);
-        this.closeDeleteProviderModal();
+        this.isDeletingProvider.set(false);
+        this.showNotification('Error al eliminar el proveedor. Por favor, intenta de nuevo.', 'error');
       }
     });
   }
@@ -859,10 +895,19 @@ export class InventoryComponent implements OnInit {
 
   openProviderDetails(providerId: string): void {
     this.selectedProviderId.set(providerId);
+    this.isProviderDetailsModalOpen.set(true);
+  }
+
+  onProviderRowKeydown(event: KeyboardEvent, providerId: string): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.openProviderDetails(providerId);
+    }
   }
 
   closeProviderDetails(): void {
     this.selectedProviderId.set(null);
+    this.isProviderDetailsModalOpen.set(false);
   }
 
   getStockState(item: SupplyRow): StockState {
