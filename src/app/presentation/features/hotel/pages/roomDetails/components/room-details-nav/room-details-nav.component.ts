@@ -18,11 +18,11 @@ import {
   bootstrapCalendar2Check,
   bootstrapCart,
   bootstrapChevronDown,
-  bootstrapPeopleFill,
   bootstrapSearch,
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
+import { GuestStepperComponent } from '@/presentation/shared/components/guest-stepper/guest-stepper.component';
 
 export interface RoomDetailsSearchParams {
   checkIn?: string;
@@ -38,7 +38,7 @@ const DATE_TRIGGER_SELECTOR = '.nav-date-trigger-wrapper';
 @Component({
   selector: 'room-details-nav',
   standalone: true,
-  imports: [ButtonComponent, CalendarComponent, NgOptimizedImage, NgIcon, RouterModule],
+  imports: [ButtonComponent, CalendarComponent, GuestStepperComponent, NgOptimizedImage, NgIcon, RouterModule],
   providers: [
     provideIcons({
       bootstrapBoxArrowInRight,
@@ -47,7 +47,6 @@ const DATE_TRIGGER_SELECTOR = '.nav-date-trigger-wrapper';
       bootstrapCalendar2Check,
       bootstrapCart,
       bootstrapChevronDown,
-      bootstrapPeopleFill,
       bootstrapSearch,
     }),
   ],
@@ -146,18 +145,6 @@ export class RoomDetailsNavComponent {
       if (wrapper && !wrapper.contains(target)) {
         this.isCalendarOpen.set(false);
       }
-    }
-  }
-
-  incrementGuests(): void {
-    if (this.guests() < MAX_GUESTS) {
-      this.guests.update((v) => v + 1);
-    }
-  }
-
-  decrementGuests(): void {
-    if (this.guests() > MIN_GUESTS) {
-      this.guests.update((v) => v - 1);
     }
   }
 

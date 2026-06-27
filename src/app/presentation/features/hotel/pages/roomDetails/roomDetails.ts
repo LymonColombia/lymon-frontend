@@ -18,7 +18,6 @@ import { Unit } from '@/domain/entities/staff.model';
 import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 import { CartReservationItem } from '@/domain/entities/cart.model';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
@@ -27,6 +26,7 @@ import { RoomGeneralInfoComponent } from './components/room-general-info/room-ge
 import { RoomAmenitiesComponent } from './components/room-amenities/room-amenities.component';
 import { RoomPoliciesComponent } from './components/room-policies/room-policies.component';
 import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
+import { GuestStepperComponent } from '@/presentation/shared/components/guest-stepper/guest-stepper.component';
 import { RoomRatingsComponent } from './components/room-ratings/room-ratings.component';
 import { RoomDetailsNavComponent, RoomDetailsSearchParams } from './components/room-details-nav/room-details-nav.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -44,7 +44,6 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   standalone: true,
   imports: [
     ButtonComponent,
-    SelectComponent,
     RoomDetailsNavComponent,
     FooterComponent,
     ModalComponent,
@@ -54,6 +53,7 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
     RoomAmenitiesComponent,
     RoomPoliciesComponent,
     CalendarComponent,
+    GuestStepperComponent,
     RoomRatingsComponent,
     NgIconComponent,
   ],
@@ -105,13 +105,7 @@ export class RoomDetailsComponent implements OnInit {
 
   readonly canReserve = computed(() => !!this.checkIn() && !!this.checkOut() && this.nights() > 0);
 
-  readonly guestOptions = computed<SelectOption[]>(() => {
-    const max = this.unit()?.maxGuests ?? 4;
-    return Array.from({ length: max }, (_, i) => ({
-      value: i + 1,
-      label: i + 1 === 1 ? '1 Huésped' : `${i + 1} Huéspedes`,
-    }));
-  });
+  readonly maxGuests = computed(() => this.unit()?.maxGuests ?? 4);
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'Habitaciones', route: '/booking' },
@@ -164,10 +158,6 @@ export class RoomDetailsComponent implements OnInit {
   onDateRangeChange(range: DateRange): void {
     this.checkIn.set(range.checkIn);
     this.checkOut.set(range.checkOut);
-  }
-
-  onGuestChange(value: string | number): void {
-    this.guestsCount.set(Number(value));
   }
 
   onReserveNow(unit: Unit): void {
