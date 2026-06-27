@@ -24,8 +24,10 @@ import {
 function passwordsDifferentValidator(control: AbstractControl): ValidationErrors | null {
   const current = control.get('currentPassword')?.value;
   const next = control.get('newPassword')?.value;
-  if (!current || !next) return null;
-  return current !== next ? null : { samePassword: true };
+  if (current && next) {
+    return current !== next ? null : { samePassword: true };
+  }
+  return null;
 }
 
 @Component({
@@ -101,7 +103,7 @@ export class TenantSettingsComponent implements OnInit {
     const profileValid = this.tenantForm.valid;
     const rawPassword = this.passwordForm.getRawValue();
     const passwordFilled = !!rawPassword.currentPassword && rawPassword.currentPassword.length > 0;
-    const passwordValid = !passwordFilled || this.passwordForm.valid;
+    const passwordValid = passwordFilled ? this.passwordForm.valid : true;
 
     if (!profileValid) {
       this.tenantForm.markAllAsTouched();
@@ -129,7 +131,7 @@ export class TenantSettingsComponent implements OnInit {
 
     profileObs.subscribe({
       next: () => {
-        if (!passwordObs) {
+        if (passwordObs === null) {
           this.isSubmitting.set(false);
           this.successMessage.set('Cambios guardados exitosamente.');
           this.passwordForm.reset();

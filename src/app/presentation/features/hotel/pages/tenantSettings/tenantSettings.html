@@ -167,11 +167,11 @@
       </section>
 
       @if (successMessage()) {
-        <div class="alert alert-success" role="status">{{ successMessage() }}</div>
+        <output class="alert alert-success">{{ successMessage() }}</output>
       }
 
       @if (errorMessage()) {
-        <div class="alert alert-error" role="alert">{{ errorMessage() }}</div>
+        <output class="alert alert-error">{{ errorMessage() }}</output>
       }
 
       <div class="form-actions">
