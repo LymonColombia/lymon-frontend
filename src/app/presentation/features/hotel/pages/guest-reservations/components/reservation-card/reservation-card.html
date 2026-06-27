@@ -63,7 +63,7 @@
     <div class="card-actions">
       @if (status() === 'pending') {
         <app-button variant="primary" size="small" (clicked)="onConfirm()">
-          Confirmar
+          Confirmar información
         </app-button>
       } @else if (status() === 'completed') {
         <app-button variant="secondary" size="small" (clicked)="onRate()">

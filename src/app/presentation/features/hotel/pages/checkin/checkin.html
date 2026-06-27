@@ -3,8 +3,11 @@
 
   <div class="checkin-container">
     <header class="page-heading">
-      <h1>Check-In</h1>
-      <p>Completa tu registro en pocos pasos antes de la llegada.</p>
+      <h1>Confirma tu información</h1>
+      <p>
+        Carga tus datos antes de tu llegada. Así, al llegar al hotel solo deberán verificarlos y no
+        tendrás que registrarte desde cero.
+      </p>
     </header>
 
     <form [formGroup]="checkinForm" class="checkin-grid">
@@ -29,12 +32,12 @@
 
           @if (currentStep() === 2) {
             <div formGroupName="identification" class="form-grid">
-              <label class="field">
+              <div class="field">
                 <span>Tipo de identificación</span>
                 <app-select formControlName="idType" [options]="idTypeOptions" placeholder="Selecciona..." [hasIcon]="true">
                   <ng-icon icon name="bootstrapCardText" size="16px" aria-hidden="true" />
                 </app-select>
-              </label>
+              </div>
 
               <label class="field">
                 <span>Número de identificación</span>
@@ -47,9 +50,12 @@
             <div class="confirm-block">
               <h3>
                 <ng-icon name="bootstrapShieldCheck" size="18px" aria-hidden="true" />
-                Confirmación de términos
+                Confirma tu información
               </h3>
-              <p>Revisa que la información sea correcta. Al confirmar se notificará tu llegada.</p>
+              <p>
+                Revisa que tu información sea correcta. Al confirmar, el hotel la tendrá lista para tu
+                llegada y solo deberá verificarla, sin que tengas que registrarte de nuevo.
+              </p>
 
               <label class="checkbox">
                 <input type="checkbox" formControlName="acceptedTerms" />
@@ -101,7 +107,7 @@
             [loading]="isConfirming()"
             (clicked)="submitCheckin()"
           >
-            {{ isConfirming() ? 'Confirmando...' : 'Finalizar' }}
+            {{ isConfirming() ? 'Confirmando...' : 'Confirmar información' }}
           </app-button>
         }
       </div>
