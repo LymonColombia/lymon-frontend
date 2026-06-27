@@ -169,7 +169,8 @@
           </thead>
           <tbody>
             @for (provider of paginatedProviders(); track provider.id) {
-            <tr class="provider-row" (click)="openProviderDetails(provider.id)">
+            <tr class="provider-row" tabindex="0" (click)="openProviderDetails(provider.id)"
+              (keydown)="onProviderRowKeydown($event, provider.id)">
               <td>{{ provider.name }}</td>
               <td>{{ provider.nit }}</td>
               <td>{{ provider.city }}, {{ provider.country }}</td>
@@ -180,7 +181,7 @@
                 {{ getSupplierItemCount(provider.id) === 1 ? 'insumo asociado' : 'insumos asociados' }}
               </td>
               <td>
-                <div class="actions-cell" (click)="$event.stopPropagation()">
+                <div class="actions-cell" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
                   <button type="button" class="icon-action" (click)="openEditProviderModal(provider)"
                     aria-label="Editar proveedor" title="Editar">
                     <ng-icon name="bootstrapPencilSquare" size="15px" aria-hidden="true"></ng-icon>

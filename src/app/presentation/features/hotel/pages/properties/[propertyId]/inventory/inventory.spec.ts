@@ -135,14 +135,14 @@ describe('InventoryComponent - suppliers', () => {
     fixture.detectChanges();
     const component = fixture.componentInstance;
 
-    expect(component.providers().length).toBe(2);
+    expect(component.providers()).toHaveLength(2);
 
     component.openDeleteProviderModal(component.providers()[0]);
     component.confirmDeleteProvider();
 
     expect(supplierRepositoryMock.deleteSupplier).toHaveBeenCalledTimes(1);
     expect(supplierRepositoryMock.deleteSupplier).toHaveBeenCalledWith('sup-1');
-    expect(component.providers().length).toBe(1);
+    expect(component.providers()).toHaveLength(1);
     expect(component.providers()[0].id).toBe('sup-2');
     expect(component.isDeleteProviderModalOpen()).toBe(false);
     expect(component.isDeletingProvider()).toBe(false);
@@ -190,7 +190,7 @@ describe('InventoryComponent - suppliers', () => {
     expect(inventoryRepositoryMock.associateSupplier).toHaveBeenCalledWith('prop-123', 'item-1', null);
     expect(supplierRepositoryMock.deleteSupplier).toHaveBeenCalledTimes(1);
     expect(supplierRepositoryMock.deleteSupplier).toHaveBeenCalledWith('sup-1');
-    expect(component.providers().length).toBe(0);
+    expect(component.providers()).toHaveLength(0);
     expect(component.isDeleteProviderModalOpen()).toBe(false);
   });
 

@@ -898,6 +898,13 @@ export class InventoryComponent implements OnInit {
     this.isProviderDetailsModalOpen.set(true);
   }
 
+  onProviderRowKeydown(event: KeyboardEvent, providerId: string): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.openProviderDetails(providerId);
+    }
+  }
+
   closeProviderDetails(): void {
     this.selectedProviderId.set(null);
     this.isProviderDetailsModalOpen.set(false);
