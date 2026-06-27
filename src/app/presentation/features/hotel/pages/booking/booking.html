@@ -36,9 +36,7 @@
         @for (room of displayedRooms(); track room.id) {
           <booking-room-card
             [room]="room"
-            [isLiked]="likedRoomIds().has(room.id)"
-            (viewDetails)="goToRoomDetails($event)"
-            (toggleLike)="onToggleLike($event)">
+            (viewDetails)="goToRoomDetails($event)">
           </booking-room-card>
         }
       </div>

@@ -3,11 +3,9 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBriefcase,
   bootstrapCupHot,
-  bootstrapDroplet,
   bootstrapForkKnife,
   bootstrapGrid,
   bootstrapSafe,
-  bootstrapScissors,
   bootstrapSnow,
   bootstrapSunrise,
   bootstrapThermometerSun,
@@ -52,14 +50,16 @@ const AMENITY_CATEGORY_MAP: Record<string, string> = {
   Lavavajillas: 'Cocina',
 };
 
+const DEFAULT_ICON = 'bootstrapGrid';
+
 const CATEGORY_ICON_MAP: Record<string, string> = {
   Conectividad: 'bootstrapWifi',
   Climatización: 'bootstrapThermometerSun',
   Comodidad: 'bootstrapBriefcase',
-  Baño: 'bootstrapDroplet',
+  Baño: 'toilet',
   Exterior: 'bootstrapSunrise',
   Cocina: 'bootstrapForkKnife',
-  Otros: 'bootstrapGrid',
+  Otros: DEFAULT_ICON,
 };
 
 const AMENITY_ICON_MAP: Record<string, string> = {
@@ -69,21 +69,22 @@ const AMENITY_ICON_MAP: Record<string, string> = {
   'Aire Acondicionado': 'bootstrapSnow',
   Calefacción: 'bootstrapThermometerSun',
   Cafetera: 'bootstrapCupHot',
-  'Mini Bar': 'bootstrapCupHot',
-  Minibar: 'bootstrapCupHot',
   'Caja Fuerte': 'bootstrapSafe',
-  Escritorio: 'bootstrapBriefcase',
-  Plancha: 'bootstrapScissors',
-  'Baño Privado': 'bootstrapDroplet',
-  Bañera: 'bootstrapDroplet',
-  Ducha: 'bootstrapDroplet',
-  'Secador de Pelo': 'bootstrapScissors',
-  'Secadora de Cabello': 'bootstrapScissors',
-  Balcón: 'bootstrapSunrise',
-  Terraza: 'bootstrapSunrise',
-  'Vista al Mar': 'bootstrapSunrise',
   Cocina: 'bootstrapForkKnife',
   Nevera: 'bootstrapForkKnife',
+  Balcón: 'balcony',
+  Terraza: 'balcony',
+  Bañera: 'bath',
+  Ducha: 'bath',
+  Jacuzzi: 'bath',
+  Escritorio: 'desk',
+  'Secador de Pelo': 'hair-dryer',
+  'Secadora de Cabello': 'hair-dryer',
+  Plancha: 'iron',
+  'Mini Bar': 'mini-bar',
+  Minibar: 'mini-bar',
+  'Vista al Mar': 'sea',
+  'Baño Privado': 'toilet',
 };
 
 @Component({
@@ -94,11 +95,9 @@ const AMENITY_ICON_MAP: Record<string, string> = {
     provideIcons({
       bootstrapBriefcase,
       bootstrapCupHot,
-      bootstrapDroplet,
       bootstrapForkKnife,
       bootstrapGrid,
       bootstrapSafe,
-      bootstrapScissors,
       bootstrapSnow,
       bootstrapSunrise,
       bootstrapThermometerSun,
@@ -126,12 +125,12 @@ export class RoomAmenitiesComponent {
 
     return Object.entries(groups).map(([name, amenities]) => ({
       name,
-      icon: CATEGORY_ICON_MAP[name] ?? 'bootstrapGrid',
+      icon: CATEGORY_ICON_MAP[name] ?? DEFAULT_ICON,
       amenities,
     }));
   });
 
   protected getAmenityIcon(amenity: string): string {
-    return AMENITY_ICON_MAP[amenity] ?? 'bootstrapGrid';
+    return AMENITY_ICON_MAP[amenity] ?? DEFAULT_ICON;
   }
 }

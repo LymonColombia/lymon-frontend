@@ -1,11 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Unit } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapDroplet,
-  bootstrapMoonStars,
-  bootstrapPeople,
-} from '@ng-icons/bootstrap-icons';
+import { bootstrapPeople } from '@ng-icons/bootstrap-icons';
+
+const SINGLE_BED_ICON = 'single-bed';
+
+const BED_ICON_MAP: Record<string, string> = {
+  SINGLE: SINGLE_BED_ICON,
+  TWIN: SINGLE_BED_ICON,
+  BUNK: SINGLE_BED_ICON,
+  DOUBLE: 'double-bed',
+  KING: 'king-bed',
+  QUEEN: 'king-bed',
+  SOFA_BED: 'sofa-bed',
+};
 
 const BED_LABELS: Record<string, string> = {
   KING: 'King',
@@ -27,12 +35,15 @@ interface BedSummary {
   selector: 'app-room-general-info',
   standalone: true,
   imports: [NgIconComponent],
-  providers: [provideIcons({ bootstrapDroplet, bootstrapMoonStars, bootstrapPeople })],
+  providers: [provideIcons({ bootstrapPeople })],
   templateUrl: './room-general-info.component.html',
   styleUrl: './room-general-info.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomGeneralInfoComponent {
+  protected readonly bathIcon = 'bath';
+  protected readonly singleBedIcon = SINGLE_BED_ICON;
+
   readonly unit = input.required<Unit>();
 
   readonly maxGuests = computed(() => this.unit().maxGuests ?? 0);
@@ -64,18 +75,7 @@ export class RoomGeneralInfoComponent {
     this.bedBreakdown().reduce((sum, b) => sum + b.count, 0)
   );
 
-  // TODO LYMON-1070: replace placeholder with type-specific bed icons
-  private readonly BED_ICON_MAP: Record<string, string> = {
-    KING: 'bootstrapMoonStars',
-    QUEEN: 'bootstrapMoonStars',
-    DOUBLE: 'bootstrapMoonStars',
-    SINGLE: 'bootstrapMoonStars',
-    SOFA_BED: 'bootstrapMoonStars',
-    TWIN: 'bootstrapMoonStars',
-    BUNK: 'bootstrapMoonStars',
-  };
-
   protected getBedIcon(type: string): string {
-    return this.BED_ICON_MAP[type] ?? 'bootstrapMoonStars';
+    return BED_ICON_MAP[type] ?? SINGLE_BED_ICON;
   }
 }

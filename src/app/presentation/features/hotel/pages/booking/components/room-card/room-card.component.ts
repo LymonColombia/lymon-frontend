@@ -11,20 +11,13 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';
 import {
-  bootstrapDoorOpenFill,
   bootstrapGeoAlt,
-  bootstrapHeart,
-  bootstrapHeartFill,
-  bootstrapHouseDoorFill,
   bootstrapPeopleFill,
   bootstrapStar,
   bootstrapStarFill,
 } from '@ng-icons/bootstrap-icons';
 
-export type RoomFeatureIconName =
-  | 'bootstrapHouseDoorFill'
-  | 'bootstrapDoorOpenFill'
-  | 'bootstrapPeopleFill';
+export type RoomFeatureIconName = 'single-bed' | 'bath' | 'bootstrapPeopleFill';
 
 export interface BookingRoomFeature {
   readonly label: string;
@@ -54,14 +47,10 @@ export interface BookingRoomCard {
   imports: [NgIcon],
   providers: [
     provideIcons({
-      bootstrapDoorOpenFill,
-      bootstrapHouseDoorFill,
       bootstrapPeopleFill,
       bootstrapStar,
       bootstrapStarFill,
       bootstrapGeoAlt,
-      bootstrapHeart,
-      bootstrapHeartFill,
     }),
   ],
   templateUrl: './room-card.component.html',
@@ -70,9 +59,7 @@ export interface BookingRoomCard {
 })
 export class RoomCardComponent implements OnDestroy {
   readonly room = input.required<BookingRoomCard>();
-  readonly isLiked = input<boolean>(false);
   readonly viewDetails = output<string>();
-  readonly toggleLike = output<string>();
 
   private readonly amenitiesContainer = viewChild<ElementRef<HTMLElement>>('amenitiesContainer');
   private readonly moreEl = viewChild<ElementRef<HTMLElement>>('moreEl');
@@ -145,7 +132,7 @@ export class RoomCardComponent implements OnDestroy {
 
   protected getStars(): boolean[] {
     const rating = this.room().rating;
-    if (rating === undefined || rating === null) return [];
+    if (rating === undefined) return [];
     return Array.from({ length: 5 }, (_, i) => i < rating);
   }
 
@@ -155,8 +142,4 @@ export class RoomCardComponent implements OnDestroy {
 
   protected readonly formatPrice = formatPrice;
 
-  protected onToggleLike(event: Event): void {
-    event.stopPropagation();
-    this.toggleLike.emit(this.room().id);
-  }
 }
