@@ -86,7 +86,7 @@ export class CrmMapper {
       id: dto.guestId,
       name: dto.fullName,
       email: dto.primaryEmail,
-      phone: CrmMapper.toPrimaryPhone(dto.phones),
+      phone: dto.phone ?? '',
       status: CrmMapper.toGuestStatus(dto.status),
       tags: dto.tags,
     };
@@ -142,12 +142,6 @@ export class CrmMapper {
 
   private static toGuestNoteStatus(value: string): CrmGuestNoteStatus {
     return value.toLowerCase() === 'pinned' ? 'pinned' : 'not_pinned';
-  }
-
-  private static toPrimaryPhone(phones: CrmGuestDto['phones']): string {
-    if (phones.length === 0) return '';
-    const primaryPhone = phones.find((phone) => phone.isPrimary);
-    return primaryPhone?.number ?? phones[0].number ?? '';
   }
 
   private static toBookingStatus(status: string): CrmGuestBookingStatus {
