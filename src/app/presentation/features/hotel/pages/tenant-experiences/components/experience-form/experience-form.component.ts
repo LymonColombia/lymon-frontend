@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy,ChangeDetectorRef,Component,DestroyRef,Input,OnChanges,SimpleChanges,computed,inject,output,signal} from '@angular/core';
+﻿import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Input, OnChanges, SimpleChanges, computed, inject, output, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload } from '@ng-icons/bootstrap-icons';
-import { CreateExperienceDto,Experience,ExperienceAvailabilityType} from '@/domain/entities/experience.model';
+import { CreateExperienceDto, Experience, ExperienceAvailabilityType } from '@/domain/entities/experience.model';
 import {
   DAY_OPTIONS,
   BlackoutRangeFormControls,
@@ -18,7 +18,6 @@ import {
   AddressMapPickerComponent,
   AddressLocationValue,
 } from '@/presentation/shared/components/address-map-picker/address-map-picker.component';
-import { MapPickerComponent, MapPickerLocation } from '@/presentation/features/hotel/components/map-picker/map-picker';
 import {
   MediaGalleryInputComponent,
   MediaGallerySelection,
@@ -37,9 +36,9 @@ const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'i
     SelectComponent,
     HotelTooltipComponent,
     NgIcon,
+    MediaGalleryInputComponent,
     AddressMapPickerComponent,
   ],
-  imports: [ReactiveFormsModule,InputComponent,ButtonComponent,SelectComponent,HotelTooltipComponent,NgIcon,MapPickerComponent,MediaGalleryInputComponent ],
   providers: [provideIcons({ bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload })],
   templateUrl: './experience-form.component.html',
   styleUrl: './experience-form.component.css',
@@ -62,6 +61,7 @@ export class ExperienceFormComponent implements OnChanges {
 
   readonly coverImagePreviewUrl = signal<string | null>(null);
   readonly selectedCoverImageFile = signal<File | null>(null);
+  readonly coverImageError = signal<string | null>(null);
 
   readonly galleryInitialItems = signal<MediaItem[]>([]);
   readonly gallerySelection = signal<MediaGallerySelection>({ kept: [], newFiles: [] });
@@ -88,6 +88,10 @@ export class ExperienceFormComponent implements OnChanges {
     { value: 'TRANSPORTATION', label: 'Transporte' },
      {value: 'TRANSP', label: 'Transpo' }
   ];
+
+  get propertySelectOptions(): SelectOption[] {
+    return [{ value: '', label: 'Sin asociar a ninguna propiedad' }, ...this.propertyOptions];
+  }
   
   readonly availabilityTypeOptions = computed<SelectOption[]>(() =>
     this.isTransportationCategory()
@@ -101,7 +105,7 @@ export class ExperienceFormComponent implements OnChanges {
   readonly dayOptions = DAY_OPTIONS;
 
   readonly form = this.fb.group<ExperienceFormControls>({
-    propertyId: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
+    propertyId: this.fb.control('', { nonNullable: true }),
     unitIds: this.fb.control<string[]>([], { nonNullable: true }),
     name: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
     description: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
@@ -122,7 +126,6 @@ export class ExperienceFormComponent implements OnChanges {
       nonNullable: true,
       validators: [Validators.required, Validators.min(1)],
     }),
-    coverImageUrl: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
     availabilityType: this.fb.control<ExperienceAvailabilityType>('RECURRING', {
       nonNullable: true,
       validators: [Validators.required],
@@ -208,6 +211,12 @@ export class ExperienceFormComponent implements OnChanges {
       this.form.markAllAsTouched();
       return;
     }
+
+    if (!this.hasCoverImage()) {
+      this.coverImageError.set('La imagen de portada es obligatoria');
+      return;
+    }
+
     const gallery = this.gallerySelection();
     this.submitted.emit({
       experience: this.buildPayload(),
@@ -280,8 +289,7 @@ export class ExperienceFormComponent implements OnChanges {
     if (!file) return;
 
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-      this.form.controls.coverImageUrl.setErrors({ invalidContentType: true });
-      this.form.controls.coverImageUrl.markAsTouched();
+      this.coverImageError.set('Formato de imagen no válido');
       if (input) input.value = '';
       return;
     }
@@ -412,7 +420,6 @@ export class ExperienceFormComponent implements OnChanges {
       durationHours: this.isTransportationCategory() ? undefined : raw.durationHours,
       capacity: raw.capacity,
       minimumParticipants: raw.minimumParticipants,
-      coverImageUrl: raw.coverImageUrl,
       availabilityType: raw.availabilityType,
       propertyId: raw.propertyId,
       unitIds: raw.unitIds,
@@ -420,6 +427,7 @@ export class ExperienceFormComponent implements OnChanges {
       endAt: this.resolveEndAt(raw.availabilityType, raw.endAt),
       blackoutRanges: this.resolveBlackoutRanges(raw.availabilityType, raw.blackoutRanges),
       recurrence: this.resolveRecurrence(raw.availabilityType, raw.recurrence),
+      ...(raw.propertyId ? { propertyId: raw.propertyId } : {}),
       ...(location ? { location } : {}),
       allowStandalonePurchase: true,
       allowReservationPurchase: true,
@@ -438,7 +446,6 @@ export class ExperienceFormComponent implements OnChanges {
       durationHours: experience.durationHours,
       capacity: experience.capacity,
       minimumParticipants: experience.minimumParticipants,
-      coverImageUrl: experience.coverImageUrl,
       availabilityType: experience.availabilityType,
       startAt: this.toLocalDateTime(experience.startAt),
       endAt: this.toLocalDateTime(experience.endAt),
@@ -535,13 +542,12 @@ export class ExperienceFormComponent implements OnChanges {
       unitIds: [],
       name: '',
       description: '',
-      category: '',
+      category: 'TRANSPORTATION',
       priceCop: undefined,
       durationHours: undefined,
       capacity: undefined,
       minimumParticipants: undefined,
-      coverImageUrl: '',
-      availabilityType: 'DATE_RANGE',
+      availabilityType: 'RECURRING',
       startAt: '',
       endAt: '',
       recurrence: { daysOfWeek: [], startTime: '', endTime: '' },
@@ -561,7 +567,6 @@ export class ExperienceFormComponent implements OnChanges {
     this.selectedCoverImageFile.set(null);
     this.existingCoverKey.set(null);
     this.galleryInitialItems.set([]);
-    this.initialLocationSignal.set(null);
   }
 
   private toLocalDateTime(value?: string): string {
@@ -584,22 +589,19 @@ export class ExperienceFormComponent implements OnChanges {
     this.revokeCoverImageObjectUrl();
     this.selectedCoverImageFile.set(file);
     this.existingCoverKey.set(null); // a new file supersedes the existing cover key
+    this.coverImageError.set(null);
     this.coverImageObjectUrl = URL.createObjectURL(file);
     this.coverImagePreviewUrl.set(this.coverImageObjectUrl);
-    this.form.controls.coverImageUrl.setValue(this.coverImageObjectUrl);
-    this.form.controls.coverImageUrl.markAsDirty();
-    this.form.controls.coverImageUrl.updateValueAndValidity();
   }
 
   private setCoverImagePreviewFromExperience(experience: Experience): void {
     this.revokeCoverImageObjectUrl();
     this.selectedCoverImageFile.set(null);
-    // Cover is mediaUrls[0] under the key-based model (coverImageUrl kept as a fallback).
-    const coverUrl = experience.mediaUrls?.[0] ?? experience.coverImageUrl ?? '';
+    this.coverImageError.set(null);
+    // Cover is always the first media URL in tenant-experiences.
+    const coverUrl = experience.mediaUrls?.[0] ?? '';
     this.existingCoverKey.set(coverUrl ? keyFromMediaUrl(coverUrl) : null);
     this.coverImagePreviewUrl.set(coverUrl || null);
-    this.form.controls.coverImageUrl.setValue(coverUrl);
-    this.form.controls.coverImageUrl.updateValueAndValidity({ emitEvent: false });
   }
 
   private clearCoverImageSelection(): void {
@@ -607,15 +609,16 @@ export class ExperienceFormComponent implements OnChanges {
     this.selectedCoverImageFile.set(null);
     this.existingCoverKey.set(null);
     this.coverImagePreviewUrl.set(null);
-    this.form.controls.coverImageUrl.setValue('');
-    this.form.controls.coverImageUrl.markAsDirty();
-    this.form.controls.coverImageUrl.markAsTouched();
-    this.form.controls.coverImageUrl.updateValueAndValidity();
+    this.coverImageError.set('La imagen de portada es obligatoria');
   }
 
   private revokeCoverImageObjectUrl(): void {
     if (!this.coverImageObjectUrl) return;
     URL.revokeObjectURL(this.coverImageObjectUrl);
     this.coverImageObjectUrl = null;
+  }
+
+  private hasCoverImage(): boolean {
+    return Boolean(this.coverImagePreviewUrl() || this.selectedCoverImageFile() || this.existingCoverKey());
   }
 }

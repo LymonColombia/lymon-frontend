@@ -31,7 +31,7 @@ export interface ExperienceReservationDraft {
   readonly guests: number;
   readonly total: number;
 }
-export type ExperienceScope = 'PROPERTY' | 'TENANT';
+
 export type ExperienceAvailabilityType = 'DATE_RANGE' | 'RECURRING'| 'ONE_TIME';
 
 export interface ExperienceLocation {
@@ -61,7 +61,6 @@ export interface ExperienceUnitSummary {
 
 export interface BaseExperience {
   id?: string;
-  scope: ExperienceScope;
   name: string;
   description: string;
   category: string;
@@ -69,7 +68,6 @@ export interface BaseExperience {
   durationHours: number;
   capacity: number;
   minimumParticipants: number;
-  coverImageUrl: string;
   location?: ExperienceLocation;
   availabilityType: ExperienceAvailabilityType;
   allowStandalonePurchase?: boolean;
@@ -96,8 +94,9 @@ export type TenantExperience = Experience & { scope: 'TENANT' };
 // Write shape: media travels as keys, never URLs. The cover is mediaKeys[0].
 export type CreateExperienceDto = Omit<
   Experience,
-  'id' | 'propertyName' | 'units' | 'tenantId' | 'coverImageUrl' | 'mediaUrls'
+  'id' | 'propertyName' | 'units' | 'tenantId' | 'mediaUrls'
 > & {
+  durationHours?: number;
   mediaKeys?: string[];
 };
 export type UpdateExperienceDto = Partial<
@@ -110,6 +109,7 @@ export type UpdateExperienceDto = Partial<
     | 'priceCop'
     | 'durationHours'
     | 'capacity'
+    | 'minimumParticipants'
     | 'location'
     | 'availabilityType'
     | 'startAt'
@@ -124,16 +124,24 @@ export type UpdateExperienceDto = Partial<
   mediaKeys?: string[];
 };
 
-export interface ExperiencesResponse {
-  data:
-    | Experience[]
-    | {
-        experiences?: Experience[];
-        items?: Experience[];
-      };
-}
-
 export interface ExperienceResponse {
   message?: string;
   data: Experience;
+}
+
+export interface ExperiencePagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ExperienceListData {
+  experiences: Experience[];
+  pagination: ExperiencePagination;
+}
+
+export interface ExperiencesResponse {
+  message?: string;
+  data: ExperienceListData;
 }

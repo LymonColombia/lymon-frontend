@@ -20,6 +20,7 @@ import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case'
 import { UpdateExperienceUseCase } from '@/domain/use-cases/experience/update-experience.use-case';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
 import { ExperienceFormSubmitPayload } from '../../models/experience-form.model';
+import { EXPERIENCE_MESSAGES, getExperienceSaveErrorMessage } from '@/domain/constants/experience-messages.constants';
 
 @Component({
   selector: 'app-tenant-experience-form-page',
@@ -73,7 +74,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
       .execute()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: (properties) => {
+        next: (properties) => {
         const options = this.transformToSelectOptions(properties);
         this.propertyOptions.set(options);
       },
@@ -114,7 +115,8 @@ export class TenantExperienceFormPageComponent implements OnInit {
     return items.map(item => ({
       value: item.id,
       label: item.name
-    }));
+    }))
+    
   }
 
   onSubmitExperience(payload: ExperienceFormSubmitPayload): void {
@@ -188,47 +190,12 @@ export class TenantExperienceFormPageComponent implements OnInit {
   private handleSaveError(message: string, error: any): void {
     this.isSaving.set(false);
     this.saveErrorTitle.set('No se pudo guardar la experiencia');
-    this.saveErrorMessage.set(this.translateSaveError(error) || message);
+    this.saveErrorMessage.set(getExperienceSaveErrorMessage(error) || message);
     this.saveErrorModalOpen.set(true);
   }
 
   closeSaveErrorModal(): void {
     this.saveErrorModalOpen.set(false);
-  }
-
-  private translateSaveError(error: any): string {
-    const statusCode = Number(error?.error?.statusCode ?? error?.status);
-    const rawMessage = this.normalizeErrorMessage(error?.error?.message ?? error?.message).toLowerCase();
-
-    if (statusCode === 409 || rawMessage.includes('an experience with this name already exists for this property')) {
-      return 'Ya existe una experiencia con este nombre para esta propiedad.';
-    }
-
-    if (
-      statusCode === 400 &&
-      rawMessage.includes('experience start must be at least 24 hours in the future')
-    ) {
-      return 'La experiencia debe iniciar al menos 24 horas en el futuro.';
-    }
-
-    if (statusCode === 400 && rawMessage.includes('availability endat must be after startat')) {
-      return 'La fecha de fin debe ser posterior a la fecha de inicio.';
-    }
-
-    const fallbackMessage = this.normalizeErrorMessage(error?.error?.message ?? error?.message);
-    return fallbackMessage || 'Ocurrió un error al guardar la experiencia. Inténtalo de nuevo.';
-  }
-
-  private normalizeErrorMessage(message: unknown): string {
-    if (Array.isArray(message)) {
-      return message.filter(Boolean).join(' ');
-    }
-
-    if (typeof message === 'string') {
-      return message.trim();
-    }
-
-    return '';
   }
 
   private loadEditValueIfNeeded(): void {
@@ -248,7 +215,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
       .subscribe({
         next: (experience) => {
           if (!experience) {
-            this.errorMessage.set('No se encontro la experiencia solicitada.');
+            this.errorMessage.set(EXPERIENCE_MESSAGES.error.missingExperience);
             this.isLoading.set(false);
             return;
           }
@@ -257,7 +224,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
           this.isLoading.set(false);
         },
         error: () => {
-          this.errorMessage.set('No se pudo cargar la experiencia para editar.');
+          this.errorMessage.set(EXPERIENCE_MESSAGES.error.loadEditExperience);
           this.isLoading.set(false);
         },
       });
@@ -267,13 +234,11 @@ export class TenantExperienceFormPageComponent implements OnInit {
     return {
       name: dto.name,
       description: dto.description,
-      propertyId: dto.propertyId,
       unitIds: dto.unitIds,
       priceCop: dto.priceCop,
       durationHours: dto.durationHours,
       capacity: dto.capacity,
       minimumParticipants: dto.minimumParticipants,
-
       location: dto.location,
       availabilityType: dto.availabilityType,
       startAt: dto.startAt,
@@ -286,3 +251,4 @@ export class TenantExperienceFormPageComponent implements OnInit {
     };
   }
 }
+

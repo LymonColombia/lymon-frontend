@@ -76,6 +76,7 @@
 
     @if (isLoading()) {
       <div class="loading-state">
+        <div class="loading-spinner"></div>
         <p>Cargando experiencias...</p>
       </div>
     } @else if (experiences().length === 0) {
@@ -104,6 +105,16 @@
             (delete)="onDeleteExperience($event)"
           />
         }
+      </div>
+    }
+
+    @if (totalPages() > 1) {
+      <div class="pagination-shell">
+        <booking-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          (pageChange)="onPageChange($event)"
+        />
       </div>
     }
   </div>

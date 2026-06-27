@@ -5,14 +5,14 @@
 
 .experience-gallery {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--spacing-md);
   flex-wrap: wrap;
   margin-top: 0.75rem;
 }
 
 .experience-gallery-thumb {
-  width: 96px;
-  height: 96px;
+  width: 250px;
+  height:250px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -206,7 +206,7 @@
 .info-card-title {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);

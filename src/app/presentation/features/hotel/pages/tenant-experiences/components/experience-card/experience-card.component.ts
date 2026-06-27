@@ -36,7 +36,7 @@ export class ExperienceCardComponent {
   readonly availabilitySummary = computed(() => getAvailabilitySummary(this.experience()));
   readonly locationLabel = computed(() => {
     const location = this.experience().location;
-    return location?.label ||'Punto de recogida acordada con usario';
+    return location?.label ||'Punto acordado con el usuario';
   });
 
   onView(): void {

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signa
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStar } from '@ng-icons/bootstrap-icons';
+import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapImages, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStar } from '@ng-icons/bootstrap-icons';
 import { Experience } from '@/domain/entities/experience.model';
 import {
   HotelPageActionsDirective,
@@ -23,7 +23,7 @@ import { formatDayList, formatCurrencyCop, getCategoryLabel } from '../../models
     NgIcon,
     LocationMap
 ],
-  providers: [provideIcons({ bootstrapStar, bootstrapPencilSquare , bootstrapCash,bootstrapClock,bootstrapPeopleFill,bootstrapCalendar3,bootstrapDashCircle,bootstrapBuilding,bootstrapGeoAlt,bootstrapFlag,bootstrapSignpost})],
+  providers: [provideIcons({ bootstrapStar, bootstrapPencilSquare , bootstrapCash,bootstrapClock,bootstrapPeopleFill,bootstrapCalendar3,bootstrapDashCircle,bootstrapBuilding,bootstrapGeoAlt,bootstrapFlag,bootstrapSignpost, bootstrapImages})],
   templateUrl: './tenant-experience-detail-page.component.html',
   styleUrl: './tenant-experience-detail-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +43,7 @@ export class TenantExperienceDetailPageComponent {
     const item = this.experience();
     const durationHours = item?.durationHours;
     if (durationHours == null) {
-      return 'No especificada';
+      return 'No especificado';
     }
     return `${durationHours}h`;
   });

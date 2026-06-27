@@ -1,9 +1,5 @@
-<app-hotel-page-layout
-  title= "Detalle de Experiencia"
-  iconName="bootstrapStar"
-  backLink="/tenant-experiences"
-  backLabel="Volver a experiencias"
->
+<app-hotel-page-layout title="Detalle de Experiencia" iconName="bootstrapStar" backLink="/tenant-experiences"
+  backLabel="Volver a experiencias">
 
   @if (experience()) {
   <div hotelPageActions>
@@ -24,24 +20,16 @@
     <p>Cargando experiencia...</p>
   </div>
   } @else if (experience(); as item) {
-    <div class="experience-layout">
+  <div class="experience-layout">
 
-      <div class="experience-hero">
-        <img class="experience-hero-image" [src]="coverImageOf(item.mediaUrls)" [alt]="item.name" />
-        <div class="experience-hero-overlay">
-          <span class="experience-hero-category-chip">{{ categoryLabel() }}</span>
-          <h1 class="experience-hero-name">{{ item.name }}</h1>
-          <p class="experience-hero-description">{{ item.description }}</p>
-        </div>
+    <div class="experience-hero">
+      <img class="experience-hero-image" [src]="coverImageOf(item.mediaUrls)" [alt]="item.name" />
+      <div class="experience-hero-overlay">
+        <span class="experience-hero-category-chip">{{ categoryLabel() }}</span>
+        <h1 class="experience-hero-name">{{ item.name }}</h1>
+        <p class="experience-hero-description">{{ item.description }}</p>
       </div>
-
-      @if (galleryUrls().length) {
-        <div class="experience-gallery">
-          @for (url of galleryUrls(); track url) {
-            <img class="experience-gallery-thumb" [src]="url" loading="lazy" [alt]="item.name" />
-          }
-        </div>
-      }
+    </div>
 
     <div class="stats-row">
       <div class="stat-card">
@@ -78,14 +66,14 @@
 
       <div class="stat-card">
         <div class="stat-card-header">
-            <span class="stat-card-label">Participantes mínimos</span>
-            <ng-icon name="bootstrapPeopleFill" size="22px" class="stat-card-icon" />
-          </div>
-          <div class="stat-card-body">
-            <strong class="stat-card-value">{{ item.minimumParticipants }}</strong>
-            <span class="stat-card-sub">participantes mínimos</span>
-          </div>
+          <span class="stat-card-label">Participantes mínimos</span>
+          <ng-icon name="bootstrapPeopleFill" size="22px" class="stat-card-icon" />
         </div>
+        <div class="stat-card-body">
+          <strong class="stat-card-value">{{ item.minimumParticipants }}</strong>
+          <span class="stat-card-sub">participantes mínimos</span>
+        </div>
+      </div>
     </div>
 
     <div class="content-grid">
@@ -223,6 +211,33 @@
         </div>
         }
       </section>
+
+      <section class="info-card info-card-full">
+
+        <h2 class="info-card-title">
+        <ng-icon name="bootstrapImages" size="16px" class="info-card-title-icon" />
+          Galeria
+        </h2>
+
+        @if (galleryUrls().length) {
+        <div class="experience-gallery">
+          @for (url of galleryUrls(); track url) {
+          <img class="experience-gallery-thumb" [src]="url" loading="lazy" [alt]="item.name" />
+          }
+        </div>
+        }
+        @else {
+          <div class="location-empty-state">
+          <p class="location-empty-title">Galeria vacía</p>
+          <p class="location-empty-copy">
+            Esta experiencia no contiene más imagenes.
+          </p>
+        </div>
+
+        }
+
+      </section>
+
     </div>
   </div>
   }

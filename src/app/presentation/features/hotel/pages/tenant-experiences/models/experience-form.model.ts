@@ -49,7 +49,6 @@ export interface ExperienceFormControls {
   durationHours: FormControl<number|undefined>;
   capacity: FormControl<number|undefined>;
   minimumParticipants: FormControl<number|undefined>;
-  coverImageUrl: FormControl<string>;
   availabilityType: FormControl<ExperienceAvailabilityType>;
   startAt: FormControl<string>;
   endAt: FormControl<string>;
@@ -99,9 +98,6 @@ export function getCategoryLabel(category: string): string {
   return EXPERIENCE_CATEGORY_LABELS[normalized] ?? normalized.charAt(0) + normalized.slice(1).toLowerCase();
 }
 
-export function getScopeBadgeLabel(scope: Experience['scope']): string {
-  return scope === 'PROPERTY' ? 'Propiedad' : 'Global';
-}
 
 export function formatDateTime(value?: string): string {
   if (!value) return 'Sin fecha';
