@@ -19,6 +19,7 @@ import { Reservation as DomainReservation } from '@/domain/entities/reservation.
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { ShiftDatePickerComponent } from '../../../../shared/components/shift-date-picker/shift-date-picker.component';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 
 export interface ReservationViewModel {
   id: string;
@@ -37,12 +38,7 @@ export interface ReservationViewModel {
 
 type StatusFilter = 'active' | 'pending' | 'confirmed' | 'checked-in' | 'finished' | 'cancelled' | 'all';
 
-interface StatusFilterOption {
-  value: StatusFilter;
-  label: string;
-}
-
-const STATUS_FILTER_OPTIONS: StatusFilterOption[] = [
+const STATUS_FILTER_OPTIONS: SelectOption[] = [
   { value: 'active', label: 'Activas (pendientes, confirmadas, check-in)' },
   { value: 'pending', label: 'Pendientes' },
   { value: 'confirmed', label: 'Confirmadas' },
@@ -55,7 +51,7 @@ const STATUS_FILTER_OPTIONS: StatusFilterOption[] = [
 @Component({
   selector: 'app-tenant-reservations',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent, ShiftDatePickerComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, HotelPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent, ShiftDatePickerComponent, SelectComponent],
   templateUrl: './tenant-reservations.html',
   styleUrls: ['./tenant-reservations.css'],
   viewProviders: [
@@ -96,7 +92,7 @@ export class TenantReservations implements OnInit {
   guestsMap = signal<Record<string, string>>({});
   guestEmailsMap = signal<Record<string, string>>({});
 
-  readonly statusFilterOptions = STATUS_FILTER_OPTIONS;
+  readonly statusFilterOptions: SelectOption[] = STATUS_FILTER_OPTIONS;
   statusFilter = signal<StatusFilter>('active');
   searchTerm = signal('');
 
@@ -297,9 +293,8 @@ export class TenantReservations implements OnInit {
     this.filteredCurrentPage.set(1);
   }
 
-  onStatusFilterChange(event: Event) {
-    const value = (event.target as HTMLSelectElement | null)?.value ?? 'active';
-    this.statusFilter.set(value as StatusFilter);
+  onStatusFilterChange(value: string | number) {
+    this.statusFilter.set((value as string || 'active') as StatusFilter);
     this.filteredCurrentPage.set(1);
   }
 

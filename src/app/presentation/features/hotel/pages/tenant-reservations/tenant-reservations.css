@@ -140,25 +140,13 @@
   color: var(--color-text-secondary, #64748b);
 }
 
-.filter-select {
-  width: 100%;
-  padding: 0.625rem 2rem 0.625rem 0.875rem;
-  border: 1px solid var(--color-border-light, #e2e8f0);
-  border-radius: var(--radius-md, 0.5rem);
-  background: var(--color-bg-primary, #ffffff);
-  color: var(--color-text-primary, #0f172a);
-  font-size: 0.875rem;
-  appearance: none;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
+.status-filter-group {
+  min-width: 18rem;
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: var(--color-primary, #2563eb);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+.status-filter-select {
+  display: block;
+  width: 100%;
 }
 
 .search-input-group {
@@ -241,7 +229,7 @@
   }
 
   .filter-group,
-  .filter-select,
+  .status-filter-select,
   .search-input-group {
     width: 100%;
     max-width: none;

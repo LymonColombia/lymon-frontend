@@ -27,14 +27,12 @@
         </button>
       </div>
       <div class="filters-row">
-        <div class="filter-group">
+        <div class="filter-group status-filter-group">
           <label for="statusFilter">Estado</label>
-          <select id="statusFilter" class="filter-select" [value]="statusFilter()"
-            (change)="onStatusFilterChange($event)" aria-label="Filtrar por estado">
-            @for (option of statusFilterOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
+          <app-select id="statusFilter" class="status-filter-select" name="statusFilter"
+            [value]="statusFilter()" [options]="statusFilterOptions"
+            (valueChange)="onStatusFilterChange($event)" aria-label="Filtrar por estado">
+          </app-select>
         </div>
         <div class="filter-group search-input-group">
           <label for="searchTerm">Buscar</label>
