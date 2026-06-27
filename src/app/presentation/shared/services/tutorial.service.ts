@@ -286,36 +286,31 @@ export class TutorialService {
     tab?: 'supplies' | 'providers';
     shiftModal?: 'create' | 'assign';
   } {
+    const propertyId = firstProperty?.id;
+    const propertiesRoute = { commands: ['/properties'] };
+
+    if (!propertyId && index >= 1 && index <= 3) {
+      return propertiesRoute;
+    }
+
     switch (index) {
       case 0:
-        return { commands: ['/properties'] };
+        return propertiesRoute;
       case 1:
-        return firstProperty
-          ? {
-            commands: ['/property-units'],
-            extras: { queryParams: { propertyId: firstProperty.id } },
-          }
-          : { commands: ['/properties'] };
+        return {
+          commands: ['/property-units'],
+          extras: { queryParams: { propertyId: propertyId as string } },
+        };
       case 2:
-        return firstProperty
-          ? {
-            commands: ['/properties', firstProperty.id, 'inventory'],
-            tab: 'supplies',
-          }
-          : { commands: ['/properties'] };
+        return this.inventoryRoute(propertyId as string, 'supplies');
       case 3:
-        return firstProperty
-          ? {
-            commands: ['/properties', firstProperty.id, 'inventory'],
-            tab: 'providers',
-          }
-          : { commands: ['/properties'] };
+        return this.inventoryRoute(propertyId as string, 'providers');
       case 4:
         return { commands: ['/register-employee'] };
       case 5:
-        return { commands: ['/staff-shift'], shiftModal: 'create' };
+        return this.shiftRoute('create');
       case 6:
-        return { commands: ['/staff-shift'], shiftModal: 'assign' };
+        return this.shiftRoute('assign');
       case 7:
         return { commands: ['/tenant-reservations'] };
       case 8:
@@ -327,5 +322,24 @@ export class TutorialService {
       default:
         return { commands: ['/dashboard'] };
     }
+  }
+
+  private inventoryRoute(
+    propertyId: string,
+    tab: 'supplies' | 'providers',
+  ): { commands: unknown[]; tab: 'supplies' | 'providers' } {
+    return {
+      commands: ['/properties', propertyId, 'inventory'],
+      tab,
+    };
+  }
+
+  private shiftRoute(
+    shiftModal: 'create' | 'assign',
+  ): { commands: unknown[]; shiftModal: 'create' | 'assign' } {
+    return {
+      commands: ['/staff-shift'],
+      shiftModal,
+    };
   }
 }

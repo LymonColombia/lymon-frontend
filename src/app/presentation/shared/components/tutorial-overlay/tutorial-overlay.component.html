@@ -1,4 +1,4 @@
-<div class="tutorial-overlay" role="dialog" aria-modal="false" aria-labelledby="tutorial-title">
+<dialog class="tutorial-overlay" open aria-modal="false" aria-labelledby="tutorial-title">
   <div class="tutorial-header">
     <div class="tutorial-progress">
       <span class="tutorial-progress-text">Paso {{ currentStep() + 1 }} de {{ totalSteps }}</span>
@@ -67,7 +67,7 @@
       </app-button>
     }
   </div>
-</div>
+</dialog>
 
 <app-modal
   [open]="showAbandonConfirm()"

@@ -23,7 +23,7 @@ export class TutorialHighlightDirective implements OnDestroy {
 
   readonly tutorialHighlight = input.required<number>();
 
-  private cleanupEffect?: EffectRef;
+  private readonly cleanupEffect: EffectRef;
 
   constructor() {
     const isActive: Signal<boolean> = this.tutorialService.isActive;

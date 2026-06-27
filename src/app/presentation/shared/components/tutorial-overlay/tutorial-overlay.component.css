@@ -2,8 +2,12 @@
   position: fixed;
   top: var(--spacing-xl);
   right: var(--spacing-xl);
+  left: auto;
+  bottom: auto;
   width: 380px;
   max-width: calc(100% - var(--spacing-2xl));
+  margin: 0;
+  padding: 0;
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-xl);
