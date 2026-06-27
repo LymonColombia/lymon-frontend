@@ -21,18 +21,39 @@
           <h2 class="list-title">Reservaciones</h2>
           <p class="list-subtitle">Administra las estancias de tus huéspedes.</p>
         </div>
-        <div class="search-and-actions">
-          <div class="search-container">
-            <div class="search-input-wrapper">
-              <ng-icon name="bootstrapSearch" class="search-icon"></ng-icon>
-              <input type="text" placeholder="Buscar por ID, nombre o propiedad..." (input)="onSearchChange($event)"
-                class="search-input" aria-label="Buscar reservaciones" />
-            </div>
+        <button class="btn-create-header" aria-label="Crear Reserva" (click)="openWizard()">
+          <ng-icon name="bootstrapPlusCircle" class="btn-icon"></ng-icon>
+          <span>Crear Reserva</span>
+        </button>
+      </div>
+      <div class="filters-row">
+        <div class="filter-group">
+          <label for="statusFilter">Estado</label>
+          <select id="statusFilter" class="filter-select" [value]="statusFilter()"
+            (change)="onStatusFilterChange($event)" aria-label="Filtrar por estado">
+            @for (option of statusFilterOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="searchField">Buscar por</label>
+          <select id="searchField" class="filter-select" [value]="searchField()"
+            (change)="onSearchFieldChange($event)" aria-label="Campo de búsqueda">
+            <option value="all">Todo</option>
+            <option value="guestName">Huésped</option>
+            <option value="guestEmail">Correo</option>
+            <option value="reservationId">ID reserva</option>
+            <option value="propertyUnit">Propiedad / Habitación</option>
+          </select>
+        </div>
+        <div class="filter-group search-input-group">
+          <label for="searchTerm">Término de búsqueda</label>
+          <div class="search-input-wrapper">
+            <ng-icon name="bootstrapSearch" class="search-icon"></ng-icon>
+            <input id="searchTerm" type="text" placeholder="Buscar reservas..." [value]="searchTerm()"
+              (input)="onSearchChange($event)" class="search-input" aria-label="Buscar reservaciones" />
           </div>
-          <button class="btn-create-header" aria-label="Crear Reserva" (click)="openWizard()">
-            <ng-icon name="bootstrapPlusCircle" class="btn-icon"></ng-icon>
-            <span>Crear Reserva</span>
-          </button>
         </div>
       </div>
     </header>
@@ -42,8 +63,10 @@
       <p class="empty-state">Cargando reservas...</p>
       } @else if (errorMessage()) {
       <p class="empty-state error">{{ errorMessage() }}</p>
-      } @else if (reservations().length === 0) {
-      <p class="empty-state">No hay reservas registradas.</p>
+      } @else if (filteredReservations().length === 0) {
+      <p class="empty-state">
+        {{ searchTerm() || statusFilter() !== 'active' ? 'No se encontraron reservas con los filtros aplicados.' : 'No hay reservas registradas.' }}
+      </p>
       } @else {
       <table class="employees-table">
         <thead>
@@ -56,7 +79,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (res of reservations(); track res.id) {
+          @for (res of pagedReservations(); track res.id) {
           <tr class="employee-row" (click)="openDetails(res)" (keydown.enter)="openDetails(res)" tabindex="0"
             aria-label="Ver detalles de reserva">
             <td>
@@ -98,10 +121,10 @@
       </table>
       <div class="pagination-bar">
         <button class="btn btn-ghost" (click)="prevPage()"
-          [disabled]="currentPage() === 1 || isLoading()">Anterior</button>
-        <span class="page-indicator">Página {{ currentPage() }} de {{ totalPages() }}</span>
+          [disabled]="filteredCurrentPage() === 1 || isLoading()">Anterior</button>
+        <span class="page-indicator">Página {{ filteredCurrentPage() }} de {{ filteredTotalPages() }}</span>
         <button class="btn btn-ghost" (click)="nextPage()"
-          [disabled]="currentPage() >= totalPages() || isLoading()">Siguiente</button>
+          [disabled]="filteredCurrentPage() >= filteredTotalPages() || isLoading()">Siguiente</button>
       </div>
       }
     </div>

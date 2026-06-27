@@ -1,8 +1,8 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlusCircle, bootstrapX, bootstrapCheck, bootstrapPencil } from '@ng-icons/bootstrap-icons';
+import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlusCircle, bootstrapX, bootstrapCheck, bootstrapPencil, bootstrapInfoCircle } from '@ng-icons/bootstrap-icons';
 import { forkJoin } from 'rxjs';
 import { HotelPageLayoutComponent } from '../../components/hotel-page-layout/hotel-page-layout';
 import { CreateReservationWizardComponent } from './components/create-reservation-wizard/create-reservation-wizard';
@@ -35,6 +35,24 @@ export interface ReservationViewModel {
   createdAt: string;
 }
 
+type StatusFilter = 'active' | 'pending' | 'confirmed' | 'checked-in' | 'finished' | 'cancelled' | 'all';
+type SearchField = 'all' | 'guestName' | 'guestEmail' | 'reservationId' | 'propertyUnit';
+
+interface StatusFilterOption {
+  value: StatusFilter;
+  label: string;
+}
+
+const STATUS_FILTER_OPTIONS: StatusFilterOption[] = [
+  { value: 'active', label: 'Activas (pendientes, confirmadas, check-in)' },
+  { value: 'pending', label: 'Pendientes' },
+  { value: 'confirmed', label: 'Confirmadas' },
+  { value: 'checked-in', label: 'En estadía (check-in)' },
+  { value: 'finished', label: 'Finalizadas' },
+  { value: 'cancelled', label: 'Canceladas' },
+  { value: 'all', label: 'Todas' }
+];
+
 @Component({
   selector: 'app-tenant-reservations',
   standalone: true,
@@ -49,7 +67,8 @@ export interface ReservationViewModel {
       bootstrapPlusCircle,
       bootstrapX,
       bootstrapCheck,
-      bootstrapPencil
+      bootstrapPencil,
+      bootstrapInfoCircle
     })
   ]
 })
@@ -67,8 +86,7 @@ export class TenantReservations implements OnInit {
   reservations = signal<ReservationViewModel[]>([]);
 
   readonly PAGE_SIZE = 10;
-  currentPage = signal(1);
-  totalPages = signal(1);
+  filteredCurrentPage = signal(1);
   totalReservations = signal(0);
   activeCheckins = signal(0);
   isLoading = signal(false);
@@ -77,6 +95,87 @@ export class TenantReservations implements OnInit {
   propertiesMap = signal<Record<string, string>>({});
   unitsMap = signal<Record<string, string>>({});
   guestsMap = signal<Record<string, string>>({});
+  guestEmailsMap = signal<Record<string, string>>({});
+
+  readonly statusFilterOptions = STATUS_FILTER_OPTIONS;
+  statusFilter = signal<StatusFilter>('active');
+  searchTerm = signal('');
+  searchField = signal<SearchField>('all');
+
+  filteredReservations = computed(() => {
+    const status = this.statusFilter();
+    const term = this.searchTerm().trim().toLowerCase();
+    const field = this.searchField();
+
+    return this.reservations().filter((res) => {
+      const normalizedStatus = this.normalizeStatus(res.status);
+      let statusMatches: boolean;
+
+      switch (status) {
+        case 'active':
+          statusMatches = ['pendiente', 'confirmada', 'check-in', 'active'].includes(normalizedStatus);
+          break;
+        case 'pending':
+          statusMatches = normalizedStatus === 'pendiente';
+          break;
+        case 'confirmed':
+          statusMatches = normalizedStatus === 'confirmada';
+          break;
+        case 'checked-in':
+          statusMatches = normalizedStatus === 'check-in' || normalizedStatus === 'active';
+          break;
+        case 'finished':
+          statusMatches = normalizedStatus === 'finalizada' || normalizedStatus === 'finished' || normalizedStatus === 'checked-out';
+          break;
+        case 'cancelled':
+          statusMatches = normalizedStatus === 'cancelada' || normalizedStatus === 'cancelled';
+          break;
+        case 'all':
+        default:
+          statusMatches = true;
+          break;
+      }
+
+      if (!statusMatches) {
+        return false;
+      }
+
+      if (!term) {
+        return true;
+      }
+
+      const contains = (value: string) => value.toLowerCase().includes(term);
+
+      switch (field) {
+        case 'guestName':
+          return contains(res.guestName);
+        case 'guestEmail':
+          return contains(res.guestEmail);
+        case 'reservationId':
+          return String(res.reservationNumber).includes(term) || res.id.toLowerCase().includes(term);
+        case 'propertyUnit':
+          return contains(res.propertyName) || contains(res.unitName);
+        default:
+          return (
+            contains(res.guestName) ||
+            contains(res.guestEmail) ||
+            String(res.reservationNumber).includes(term) ||
+            res.id.toLowerCase().includes(term) ||
+            contains(res.propertyName) ||
+            contains(res.unitName)
+          );
+      }
+    });
+  });
+
+  readonly filteredTotalPages = computed(() =>
+    Math.max(1, Math.ceil(this.filteredReservations().length / this.PAGE_SIZE))
+  );
+
+  readonly pagedReservations = computed(() => {
+    const start = (this.filteredCurrentPage() - 1) * this.PAGE_SIZE;
+    return this.filteredReservations().slice(start, start + this.PAGE_SIZE);
+  });
 
   selectedReservation = signal<ReservationViewModel | null>(null);
   isProcessingStatus = signal(false);
@@ -125,6 +224,13 @@ export class TenantReservations implements OnInit {
           }, {})
         );
 
+        this.guestEmailsMap.set(
+          guests.reduce<Record<string, string>>((acc, g) => {
+            acc[g.id] = g.primaryEmail || g.email || '';
+            return acc;
+          }, {})
+        );
+
         const propertyIds = properties.map(p => p.id).filter(Boolean);
         if (propertyIds.length === 0) {
           this.unitsMap.set({});
@@ -161,13 +267,12 @@ export class TenantReservations implements OnInit {
   loadReservations(): void {
     this.errorMessage.set('');
 
-    const page = this.currentPage();
-    this.getReservationsUseCase.execute({ page, limit: this.PAGE_SIZE }).subscribe({
-      next: ({ reservations: data, total }) => {
+    this.getReservationsUseCase.execute({ page: 1, limit: 10000 }).subscribe({
+      next: ({ reservations: data }) => {
         const mapped = data.map((res) => this.mapToViewModel(res));
         this.reservations.set(mapped);
-        this.totalReservations.set(total);
-        this.totalPages.set(Math.max(1, Math.ceil(total / this.PAGE_SIZE)));
+        this.totalReservations.set(mapped.length);
+        this.filteredCurrentPage.set(1);
         this.activeCheckins.set(mapped.filter(r => r.status.toLowerCase() === 'check-in').length);
         this.isLoading.set(false);
       },
@@ -180,16 +285,14 @@ export class TenantReservations implements OnInit {
   }
 
   nextPage(): void {
-    if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update(p => p + 1);
-      this.loadReservations();
+    if (this.filteredCurrentPage() < this.filteredTotalPages()) {
+      this.filteredCurrentPage.update(p => p + 1);
     }
   }
 
   prevPage(): void {
-    if (this.currentPage() > 1) {
-      this.currentPage.update(p => p - 1);
-      this.loadReservations();
+    if (this.filteredCurrentPage() > 1) {
+      this.filteredCurrentPage.update(p => p - 1);
     }
   }
 
@@ -204,7 +307,21 @@ export class TenantReservations implements OnInit {
   }
 
   onSearchChange(event: Event) {
+    const value = (event.target as HTMLInputElement | null)?.value ?? '';
+    this.searchTerm.set(value);
+    this.filteredCurrentPage.set(1);
+  }
 
+  onSearchFieldChange(event: Event) {
+    const value = (event.target as HTMLSelectElement | null)?.value ?? 'all';
+    this.searchField.set(value as SearchField);
+    this.filteredCurrentPage.set(1);
+  }
+
+  onStatusFilterChange(event: Event) {
+    const value = (event.target as HTMLSelectElement | null)?.value ?? 'active';
+    this.statusFilter.set(value as StatusFilter);
+    this.filteredCurrentPage.set(1);
   }
 
   openWizard() {
@@ -217,7 +334,7 @@ export class TenantReservations implements OnInit {
 
   onReservationCreated() {
     this.closeWizard();
-    this.currentPage.set(1);
+    this.filteredCurrentPage.set(1);
     this.loadReferenceDataAndReservations();
   }
 
@@ -444,7 +561,7 @@ export class TenantReservations implements OnInit {
       id: res.id,
       reservationNumber: res.reservationNumber ?? 0,
       guestName,
-      guestEmail: '',
+      guestEmail: this.guestEmailsMap()[res.guestId] || '',
       guestPhone: '',
       propertyName,
       unitName,
@@ -469,6 +586,14 @@ export class TenantReservations implements OnInit {
 
     const normalized = status?.toLowerCase().replaceAll('_', '-');
     return map[normalized ?? ''] || status || 'Pendiente';
+  }
+
+  private normalizeStatus(status: string): string {
+    return status
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replaceAll('_', '-');
   }
 
   private formatDate(value: string): string {
