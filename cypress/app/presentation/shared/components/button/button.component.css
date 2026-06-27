@@ -173,6 +173,10 @@
 
 /* ===== DISABLED STATE ===== */
 
+:host.btn-disabled {
+  cursor: not-allowed;
+}
+
 :host.btn-disabled .btn-inner,
 .btn-inner:disabled {
   opacity: 0.5;
