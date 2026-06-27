@@ -55,6 +55,7 @@ export interface Pagination {
 export interface PublicUnitsParams {
   page: number;
   limit: number;
+  name?: string;
   startDate?: string;
   endDate?: string;
   minGuests?: number;

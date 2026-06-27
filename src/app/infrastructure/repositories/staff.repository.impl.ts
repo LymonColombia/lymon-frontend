@@ -66,6 +66,7 @@ export class StaffRepositoryImpl extends StaffRepository {
       page: String(params.page),
       limit: String(params.limit),
     };
+    if (params.name) queryParams['name'] = params.name;
     if (params.startDate) queryParams['startDate'] = params.startDate;
     if (params.endDate) queryParams['endDate'] = params.endDate;
     if (params.minGuests !== undefined) queryParams['minGuests'] = String(params.minGuests);
