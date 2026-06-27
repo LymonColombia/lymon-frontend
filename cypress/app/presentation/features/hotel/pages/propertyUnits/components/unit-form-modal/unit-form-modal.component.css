@@ -137,6 +137,14 @@ textarea:focus {
   margin-bottom: var(--spacing-sm);
 }
 
+.bed-row .form-group {
+  margin-bottom: 0;
+}
+
+.bed-row app-button {
+  align-self: end;
+}
+
 .amenities-grid {
   display: flex;
   flex-wrap: wrap;
