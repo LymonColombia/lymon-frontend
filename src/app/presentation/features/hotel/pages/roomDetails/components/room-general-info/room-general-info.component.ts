@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { Unit } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapDroplet,
-  bootstrapMoonStars,
-  bootstrapPeople,
-} from '@ng-icons/bootstrap-icons';
+import { bootstrapPeople } from '@ng-icons/bootstrap-icons';
 
 const BED_LABELS: Record<string, string> = {
   KING: 'King',
@@ -27,12 +27,15 @@ interface BedSummary {
   selector: 'app-room-general-info',
   standalone: true,
   imports: [NgIconComponent],
-  providers: [provideIcons({ bootstrapDroplet, bootstrapMoonStars, bootstrapPeople })],
+  providers: [provideIcons({ bootstrapPeople })],
   templateUrl: './room-general-info.component.html',
   styleUrl: './room-general-info.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomGeneralInfoComponent {
+  private readonly http = inject(HttpClient);
+  private readonly sanitizer = inject(DomSanitizer);
+
   readonly unit = input.required<Unit>();
 
   readonly maxGuests = computed(() => this.unit().maxGuests ?? 0);
@@ -64,18 +67,32 @@ export class RoomGeneralInfoComponent {
     this.bedBreakdown().reduce((sum, b) => sum + b.count, 0)
   );
 
-  // TODO LYMON-1070: replace placeholder with type-specific bed icons
-  private readonly BED_ICON_MAP: Record<string, string> = {
-    KING: 'bootstrapMoonStars',
-    QUEEN: 'bootstrapMoonStars',
-    DOUBLE: 'bootstrapMoonStars',
-    SINGLE: 'bootstrapMoonStars',
-    SOFA_BED: 'bootstrapMoonStars',
-    TWIN: 'bootstrapMoonStars',
-    BUNK: 'bootstrapMoonStars',
+  private loadSvg(name: string) {
+    return toSignal(
+      this.http
+        .get(`/extra-icons/${name}.svg`, { responseType: 'text' })
+        .pipe(map((svg) => this.sanitizer.bypassSecurityTrustHtml(svg))),
+      { initialValue: '' as unknown as SafeHtml }
+    );
+  }
+
+  protected readonly bathIcon = this.loadSvg('bath');
+  protected readonly singleBedIcon = this.loadSvg('single-bed');
+  private readonly doubleBedIcon = this.loadSvg('double-bed');
+  private readonly kingBedIcon = this.loadSvg('king-bed');
+  private readonly sofaBedIcon = this.loadSvg('sofa-bed');
+
+  private readonly BED_ICON_MAP: Record<string, () => SafeHtml> = {
+    SINGLE: () => this.singleBedIcon(),
+    TWIN: () => this.singleBedIcon(),
+    BUNK: () => this.singleBedIcon(),
+    DOUBLE: () => this.doubleBedIcon(),
+    KING: () => this.kingBedIcon(),
+    QUEEN: () => this.kingBedIcon(),
+    SOFA_BED: () => this.sofaBedIcon(),
   };
 
-  protected getBedIcon(type: string): string {
-    return this.BED_ICON_MAP[type] ?? 'bootstrapMoonStars';
+  protected getBedIcon(type: string): SafeHtml {
+    return (this.BED_ICON_MAP[type] ?? (() => this.singleBedIcon()))();
   }
 }

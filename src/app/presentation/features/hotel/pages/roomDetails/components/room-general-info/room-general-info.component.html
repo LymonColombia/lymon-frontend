@@ -11,7 +11,7 @@
 
     <div class="beds-card">
       <div class="beds-header">
-        <ng-icon name="bootstrapMoonStars" size="18px" aria-hidden="true"></ng-icon>
+        <span class="beds-header-icon" [innerHTML]="singleBedIcon()" aria-hidden="true"></span>
         <span class="beds-title">
           Camas <span class="beds-total">({{ totalBeds() }} en total)</span>
         </span>
@@ -21,9 +21,11 @@
         <div class="beds-grid">
           @for (bed of bedBreakdown(); track bed.type) {
             <div class="bed-chip">
-              <ng-icon [name]="getBedIcon(bed.type)" size="22px" class="bed-icon" aria-hidden="true"></ng-icon>
-              <span class="bed-count">{{ bed.count }}</span>
-              <span class="bed-label">{{ bed.label }}</span>
+              <span class="bed-icon" [innerHTML]="getBedIcon(bed.type)" aria-hidden="true"></span>
+              <div class="bed-info">
+                <span class="bed-count">{{ bed.count }}</span>
+                <span class="bed-label">{{ bed.label }}</span>
+              </div>
             </div>
           }
         </div>
@@ -33,7 +35,7 @@
     </div>
 
     <div class="stat-card">
-      <ng-icon name="bootstrapDroplet" size="36px" aria-hidden="true"></ng-icon>
+      <span class="stat-icon" [innerHTML]="bathIcon()" aria-hidden="true"></span>
       <span class="stat-number">{{ bathroomsCount() }}</span>
       <span class="stat-label">{{ bathroomLabel() }}</span>
     </div>
