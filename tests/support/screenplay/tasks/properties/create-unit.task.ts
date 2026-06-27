@@ -41,7 +41,7 @@ export const createUnit =
     await page.getByRole('textbox', { name: 'Master Bedroom' }).click();
     await page.getByRole('textbox', { name: 'Master Bedroom' }).fill(data.roomName);
     await page.getByRole('button', { name: 'Select an option' }).click();
-    await page.getByRole('option', { name: 'KING' }).click();
+    await page.getByRole('option', { name: 'King' }).click();
 
     for (const amenity of data.amenities) {
       await page.getByRole('button', { name: amenity }).click();

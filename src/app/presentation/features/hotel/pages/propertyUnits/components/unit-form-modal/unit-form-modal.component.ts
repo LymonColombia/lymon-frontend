@@ -49,7 +49,15 @@ const AMENITY_OPTIONS = [
   'Cocina',
 ];
 
-const BED_TYPES: BedType[] = ['SINGLE', 'DOUBLE', 'QUEEN', 'KING', 'TWIN', 'BUNK'];
+const BED_TYPES: BedType[] = ['SINGLE', 'DOUBLE', 'QUEEN', 'KING', 'SOFA_BED'];
+
+const BED_TYPE_LABELS: Record<BedType, string> = {
+  SINGLE: 'Sencilla',
+  DOUBLE: 'Doble',
+  SOFA_BED: 'Sofá cama',
+  KING: 'King',
+  QUEEN: 'Queen',
+};
 
 @Component({
   selector: 'app-unit-form-modal',
@@ -80,7 +88,7 @@ export class UnitFormModalComponent {
   readonly cancelled = output<void>();
 
   protected readonly AMENITY_OPTIONS = AMENITY_OPTIONS;
-  readonly bedTypeOptions: SelectOption[] = BED_TYPES.map((type) => ({ value: type, label: type }));
+  readonly bedTypeOptions: SelectOption[] = BED_TYPES.map((type) => ({ value: type, label: BED_TYPE_LABELS[type] }));
 
   readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -190,12 +198,12 @@ export class UnitFormModalComponent {
     // Upload new photos first (no unit id needed), keeping the returned keys.
     const newKeys$: Observable<string[]> = selection.newFiles.length
       ? forkJoin(
-          selection.newFiles.map((file) =>
-            this.createImageStorageUseCase
-              .execute({ file, category: 'units' })
-              .pipe(map(({ key }) => key)),
-          ),
-        )
+        selection.newFiles.map((file) =>
+          this.createImageStorageUseCase
+            .execute({ file, category: 'units' })
+            .pipe(map(({ key }) => key)),
+        ),
+      )
       : of([]);
 
     newKeys$

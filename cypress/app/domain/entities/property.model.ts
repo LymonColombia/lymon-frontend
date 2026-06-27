@@ -2,7 +2,7 @@ export type PropertyType = 'HOTEL' | 'CASA' | 'APARTAMENTO' | 'VILLA' | 'HOSTAL'
 
 export type CancellationPolicy = 'FLEXIBLE' | 'STANDARD' | 'STRICT';
 
-export type BedType = 'SINGLE' | 'DOUBLE' | 'QUEEN' | 'KING' | 'TWIN' | 'BUNK';
+export type BedType = 'SINGLE' | 'DOUBLE' | 'QUEEN' | 'KING' | 'SOFA_BED';
 
 export interface LocationCoordinates {
   lat: number;
