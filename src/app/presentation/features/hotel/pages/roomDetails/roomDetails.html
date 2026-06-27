@@ -35,15 +35,12 @@
 
               <div class="guests-selector">
                 <label class="guests-label">Huéspedes</label>
-                <app-select
-                  [options]="guestOptions()"
+                <app-guest-stepper
+                  variant="block"
                   [value]="guestsCount()"
-                  size="small"
-                  [hasIcon]="true"
-                  (valueChange)="onGuestChange($event)"
-                >
-                  <ng-icon name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
-                </app-select>
+                  [max]="maxGuests()"
+                  (valueChange)="guestsCount.set($event)"
+                ></app-guest-stepper>
               </div>
             </div>
 
@@ -101,7 +98,6 @@
 
         <app-room-general-info [unit]="selectedUnit"></app-room-general-info>
         <app-room-amenities [amenities]="selectedUnit.amenities ?? []"></app-room-amenities>
-        <app-room-policies [unit]="selectedUnit"></app-room-policies>
         <div #ratingsSection>
           <app-room-ratings [unitId]="selectedUnit.id"></app-room-ratings>
         </div>

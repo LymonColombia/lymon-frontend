@@ -1,45 +1,41 @@
 <div class="info-section">
-  <h2 class="section-title">Información General</h2>
+  <h2 class="section-title">Información de la Habitación</h2>
 
-  <div class="quick-info-grid">
-    <div class="info-card">
-      <div class="info-icon">
-        <ng-icon name="bootstrapPeople" size="24px" aria-hidden="true"></ng-icon>
-      </div>
-      <div class="info-content">
-        <span class="info-label">Capacidad máxima</span>
-        <span class="info-value">{{ maxGuestsLabel() }}</span>
-      </div>
+  <div class="info-row">
+    <div class="stat-card">
+      <ng-icon name="bootstrapPeople" size="36px" aria-hidden="true"></ng-icon>
+      <span class="stat-number">{{ maxGuests() }}</span>
+      <span class="stat-label">Personas</span>
+      <span class="stat-sublabel">Capacidad máxima</span>
     </div>
 
-    <div class="info-card">
-      <div class="info-icon">
-        <ng-icon name="bootstrapPeopleFill" size="24px" aria-hidden="true"></ng-icon>
+    <div class="beds-card">
+      <div class="beds-header">
+        <ng-icon name="bootstrapMoonStars" size="18px" aria-hidden="true"></ng-icon>
+        <span class="beds-title">
+          Camas <span class="beds-total">({{ totalBeds() }} en total)</span>
+        </span>
       </div>
-      <div class="info-content">
-        <span class="info-label">Huéspedes estándar</span>
-        <span class="info-value">{{ standardGuestsLabel() }}</span>
-      </div>
+
+      @if (bedBreakdown().length > 0) {
+        <div class="beds-grid">
+          @for (bed of bedBreakdown(); track bed.type) {
+            <div class="bed-chip">
+              <ng-icon [name]="getBedIcon(bed.type)" size="22px" class="bed-icon" aria-hidden="true"></ng-icon>
+              <span class="bed-count">{{ bed.count }}</span>
+              <span class="bed-label">{{ bed.label }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="empty-beds">Sin información</p>
+      }
     </div>
 
-    <div class="info-card">
-      <div class="info-icon">
-        <ng-icon name="bootstrapHouseDoor" size="24px" aria-hidden="true"></ng-icon>
-      </div>
-      <div class="info-content">
-        <span class="info-label">Camas</span>
-        <span class="info-value">{{ bedsLabel() }}</span>
-      </div>
-    </div>
-
-    <div class="info-card">
-      <div class="info-icon">
-        <ng-icon name="bootstrapDoorOpen" size="24px" aria-hidden="true"></ng-icon>
-      </div>
-      <div class="info-content">
-        <span class="info-label">Baños</span>
-        <span class="info-value">{{ bathroomsLabel() }}</span>
-      </div>
+    <div class="stat-card">
+      <ng-icon name="bootstrapDroplet" size="36px" aria-hidden="true"></ng-icon>
+      <span class="stat-number">{{ bathroomsCount() }}</span>
+      <span class="stat-label">{{ bathroomLabel() }}</span>
     </div>
   </div>
 </div>

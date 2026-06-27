@@ -50,30 +50,12 @@
         </div>
       </div>
 
-      <div class="mini-guest-stepper">
-        <button
-          type="button"
-          class="stepper-btn"
-          (click)="decrementGuests()"
-          [disabled]="guests() <= MIN_GUESTS"
-          aria-label="Reducir huéspedes"
-        >
-          −
-        </button>
-        <span class="stepper-value">
-          <ng-icon name="bootstrapPeopleFill" size="13px" aria-hidden="true" />
-          <span class="stepper-count">{{ guests() }}</span>
-        </span>
-        <button
-          type="button"
-          class="stepper-btn"
-          (click)="incrementGuests()"
-          [disabled]="guests() >= MAX_GUESTS"
-          aria-label="Aumentar huéspedes"
-        >
-          +
-        </button>
-      </div>
+      <app-guest-stepper
+        [value]="guests()"
+        [min]="MIN_GUESTS"
+        [max]="MAX_GUESTS"
+        (valueChange)="guests.set($event)"
+      ></app-guest-stepper>
 
       <button class="mini-search-btn" type="button" (click)="onSearch()" aria-label="Buscar">
         <ng-icon name="bootstrapSearch" size="14px" aria-hidden="true" />
