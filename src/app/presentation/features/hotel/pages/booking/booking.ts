@@ -51,7 +51,6 @@ export class BookingComponent implements OnInit {
 
   readonly searchQuery = signal('');
   readonly sortBy = signal<BookingSortOption>('rating');
-  readonly likedRoomIds = signal(new Set<string>());
 
   readonly rooms = signal<BookingRoomCard[]>([]);
 
@@ -130,23 +129,7 @@ export class BookingComponent implements OnInit {
     this.sortBy.set(sort);
   }
 
-  onToggleLike(roomId: string): void {
-    this.likedRoomIds.update((ids) => {
-      const next = new Set(ids);
-      if (next.has(roomId)) {
-        next.delete(roomId);
-      } else {
-        next.add(roomId);
-      }
-      return next;
-    });
-  }
-
-  isLiked(roomId: string): boolean {
-    return this.likedRoomIds().has(roomId);
-  }
-
-  readonly guestEmail = this.guestTokenService.getGuestEmail();
+readonly guestEmail = this.guestTokenService.getGuestEmail();
 
   onGuestLogin(): void {
     this.router.navigate(['/guest/login']);
@@ -196,9 +179,9 @@ export class BookingComponent implements OnInit {
       price: unit.pricePerNight ?? 0,
       description: unit.description ?? 'Sin descripción disponible para esta habitación.',
       features: [
-        { icon: 'bootstrapHouseDoorFill', label: this.getBedsSummary(unit) },
+        { icon: 'extraSingleBed', label: this.getBedsSummary(unit) },
         {
-          icon: 'bootstrapDoorOpenFill',
+          icon: 'extraBath',
           label: `${unit.bathroomsCount ?? 0} baño${(unit.bathroomsCount ?? 0) === 1 ? '' : 's'}`,
         },
         {

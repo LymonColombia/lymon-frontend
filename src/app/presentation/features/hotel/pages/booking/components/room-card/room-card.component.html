@@ -17,19 +17,6 @@
       {{ room().badgeLabel }}
     </div>
 
-    <button
-      class="like-btn"
-      type="button"
-      [class.liked]="isLiked()"
-      (click)="onToggleLike($event)"
-      [attr.aria-label]="isLiked() ? 'Quitar de favoritos' : 'Agregar a favoritos'">
-      @if (isLiked()) {
-        <ng-icon name="bootstrapHeartFill" size="14px" aria-hidden="true"></ng-icon>
-      } @else {
-        <ng-icon name="bootstrapHeart" size="14px" aria-hidden="true"></ng-icon>
-      }
-    </button>
-
     <div class="price-overlay">
       <span class="price-amount">${{ formatPrice(room().price) }}</span>
       <span class="price-period">/noche</span>
@@ -64,7 +51,11 @@
     <div class="room-features">
       @for (feature of room().features; track feature.label) {
         <div class="feature">
-          <ng-icon class="feature-icon" [name]="feature.icon" size="14px" aria-hidden="true"></ng-icon>
+          @if (getFeatureSvg(feature.icon); as svg) {
+            <span class="feature-icon feature-svg-icon" [innerHTML]="svg" aria-hidden="true"></span>
+          } @else {
+            <ng-icon class="feature-icon" [name]="feature.icon" size="14px" aria-hidden="true"></ng-icon>
+          }
           <span>{{ feature.label }}</span>
         </div>
       }
