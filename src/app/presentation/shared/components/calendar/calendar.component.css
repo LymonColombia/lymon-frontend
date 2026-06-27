@@ -29,24 +29,24 @@
 }
 
 .mini-cal.variant-inline .cal-nav-btn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
 }
 
 .mini-cal.variant-inline .cal-month-label {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
 }
 
 .mini-cal.variant-inline .cal-weekday {
-  font-size: 10px;
+  font-size: var(--font-size-xs);
 }
 
 .mini-cal.variant-inline .cal-days {
-  gap: 2px;
+  gap: 4px;
 }
 
 .mini-cal.variant-inline .cal-day {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
 }
 
 .mini-cal.variant-inline .cal-day:hover:not(:disabled):not(.is-start):not(.is-end):not(.is-hover-end) {
