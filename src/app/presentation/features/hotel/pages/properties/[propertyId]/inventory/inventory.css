@@ -740,6 +740,10 @@
   font-size: var(--font-size-sm);
 }
 
+.assign-supplier-modal ::ng-deep .modal-body {
+  overflow: visible;
+}
+
 /* Asegurar que el modal no corte el dropdown */
 ::ng-deep .modal-content {
   overflow: visible !important;

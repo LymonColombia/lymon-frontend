@@ -226,10 +226,9 @@
   </section>
 </app-hotel-page-layout>
 
-<app-modal [open]="isAssignSupplierModalOpen()" title="Asignar Proveedor" size="small"
+<app-modal [open]="isAssignSupplierModalOpen()" title="Asignar Proveedor" size="small" class="assign-supplier-modal"
   (closed)="closeAssignSupplierModal()">
-  @if (supplierSelectionOptions().length <= 1) {
-  <div class="empty-supplier-state">
+  @if (supplierSelectionOptions().length <= 1) { <div class="empty-supplier-state">
     <p class="empty-supplier-title">No hay proveedores registrados</p>
     <p class="empty-supplier-text">
       Debes crear un proveedor antes de poder asignarlo al insumo
@@ -239,33 +238,34 @@
       <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
       Crear proveedor
     </app-button>
-  </div>
-  } @else {
-  <form [formGroup]="supplierAssignmentForm" (ngSubmit)="assignSupplier()" class="supply-form assign-supplier-form">
-    <div class="form-group mb-6">
-      <p class="mb-4 text-sm text-gray-500">Selecciona el proveedor para el item: <strong>{{
-          selectedItemForSupplier()?.name }}</strong></p>
-      <label for="assign-supplier" class="mb-2 block font-medium">Seleccionar Proveedor *</label>
-      <div class="select-wrapper">
-        <app-select id="assign-supplier" formControlName="supplierId"
-          [options]="supplierSelectionOptions()"></app-select>
-      </div>
     </div>
-  </form>
-  }
+    } @else {
+    <form [formGroup]="supplierAssignmentForm" (ngSubmit)="assignSupplier()" class="supply-form assign-supplier-form">
+      <div class="form-group mb-6">
+        <p class="mb-4 text-sm text-gray-500">Selecciona el proveedor para el item: <strong>{{
+            selectedItemForSupplier()?.name }}</strong></p>
+        <label for="assign-supplier" class="mb-2 block font-medium">Seleccionar Proveedor *</label>
+        <div class="select-wrapper">
+          <app-select id="assign-supplier" formControlName="supplierId"
+            [options]="supplierSelectionOptions()"></app-select>
+        </div>
+      </div>
+    </form>
+    }
 
-  @if (supplierSelectionOptions().length <= 1) {
-  <div modal-footer class="modal-actions">
-    <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Cancelar</app-button>
-  </div>
-  } @else {
-  <div modal-footer class="modal-footer-custom">
-    <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Cancelar</app-button>
-    <app-button type="button" variant="primary" (clicked)="assignSupplier()" [loading]="isSavingSupplierAssignment()">
-      Asignar
-    </app-button>
-  </div>
-  }
+    @if (supplierSelectionOptions().length <= 1) { <div modal-footer class="modal-actions">
+      <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Cancelar</app-button>
+      </div>
+      } @else {
+      <div modal-footer class="modal-footer-custom">
+        <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Asignar en otro
+          momento</app-button>
+        <app-button type="button" variant="primary" (clicked)="assignSupplier()"
+          [loading]="isSavingSupplierAssignment()">
+          Asignar
+        </app-button>
+      </div>
+      }
 </app-modal>
 
 <app-modal [open]="isSupplyModalOpen()" [title]="modalTitle()" size="medium" (closed)="closeSupplyModal()">
