@@ -17,6 +17,7 @@ export interface CrmGuestDto {
   phone: string | null;
   status: string;
   tags: string[];
+  lifecycleStatus: string;
 }
 
 export interface CrmGuestBookingDto {
@@ -93,4 +94,11 @@ export interface CrmGuestMonthlySpendDto {
   month: number;
   label: string;
   totalSpend: number;
+}
+
+export interface CrmGuestStatsDto {
+  monthlySpending: {
+    items: CrmGuestMonthlySpendDto[];
+  };
+  bookingOrigins: CrmGuestBookingOriginsResponseDto;
 }
