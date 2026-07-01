@@ -17,6 +17,10 @@ export class LyhostPlansComponent {
     return plan.type === 'PLUS';
   }
 
+  isTrialPlan(plan: LyhostPlan): boolean {
+    return plan.type === 'TRIAL';
+  }
+
   allFeatures(plan: LyhostPlan): string[] {
     return plan.detailsSections.flatMap((s) => s.items);
   }
