@@ -1,5 +1,5 @@
 import { CrmMapper } from './crm.mapper';
-import { CrmGuestBookingOriginsResponseDto, CrmGuestMonthlySpendDto, CrmGuestRatingsResponseDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestRatingsResponseDto, CrmGuestStatsDto } from '@/infrastructure/dtos/crm.dto';
 
 describe('CrmMapper.toGuestRatings', () => {
   const buildDto = (overrides?: Partial<CrmGuestRatingsResponseDto>): CrmGuestRatingsResponseDto => ({
@@ -74,29 +74,96 @@ describe('CrmMapper.toGuestRatings', () => {
   });
 });
 
-describe('CrmMapper.toGuestBookingOrigins', () => {
-  const buildDto = (overrides?: Partial<CrmGuestBookingOriginsResponseDto>): CrmGuestBookingOriginsResponseDto => ({
-    total: 5,
-    sources: [
-      { source: 'DIRECT', count: 3, percentage: 60 },
-      { source: 'AIRBNB', count: 2, percentage: 40 },
-    ],
+describe('CrmMapper.toGuestStats', () => {
+  const buildDto = (overrides?: Partial<CrmGuestStatsDto>): CrmGuestStatsDto => ({
+    monthlySpending: {
+      items: [
+        { year: 2026, month: 3, label: 'Mar 2026', totalSpend: 275000 },
+      ],
+    },
+    bookingOrigins: {
+      total: 5,
+      sources: [
+        { source: 'DIRECT', count: 3, percentage: 60 },
+        { source: 'AIRBNB', count: 2, percentage: 40 },
+      ],
+    },
     ...overrides,
   });
 
-  it('mapea el campo total correctamente', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ total: 10 }));
+  it('mapea los cuatro campos de cada item de monthlySpending', () => {
+    const result = CrmMapper.toGuestStats(buildDto());
 
-    expect(result.total).toBe(10);
+    expect(result.monthlySpending).toHaveLength(1);
+    const item = result.monthlySpending[0];
+    expect(item.year).toBe(2026);
+    expect(item.month).toBe(3);
+    expect(item.label).toBe('Mar 2026');
+    expect(item.totalSpend).toBe(275000);
   });
 
-  it('mapea count y percentage de cada origen', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto());
+  it('retorna monthlySpending vacío cuando items es []', () => {
+    const result = CrmMapper.toGuestStats(buildDto({ monthlySpending: { items: [] } }));
 
-    expect(result.sources[0].count).toBe(3);
-    expect(result.sources[0].percentage).toBe(60);
-    expect(result.sources[1].count).toBe(2);
-    expect(result.sources[1].percentage).toBe(40);
+    expect(result.monthlySpending).toHaveLength(0);
+  });
+
+  it('mapea múltiples items de monthlySpending preservando el orden', () => {
+    const dto = buildDto({
+      monthlySpending: {
+        items: [
+          { year: 2026, month: 1, label: 'Ene 2026', totalSpend: 100000 },
+          { year: 2026, month: 2, label: 'Feb 2026', totalSpend: 200000 },
+          { year: 2026, month: 3, label: 'Mar 2026', totalSpend: 300000 },
+        ],
+      },
+    });
+
+    const result = CrmMapper.toGuestStats(dto);
+
+    expect(result.monthlySpending).toHaveLength(3);
+    expect(result.monthlySpending[0]).toEqual({ year: 2026, month: 1, label: 'Ene 2026', totalSpend: 100000 });
+    expect(result.monthlySpending[1]).toEqual({ year: 2026, month: 2, label: 'Feb 2026', totalSpend: 200000 });
+    expect(result.monthlySpending[2]).toEqual({ year: 2026, month: 3, label: 'Mar 2026', totalSpend: 300000 });
+  });
+
+  it('preserva totalSpend igual a 0 sin descartarlo', () => {
+    const result = CrmMapper.toGuestStats(
+      buildDto({ monthlySpending: { items: [{ year: 2026, month: 4, label: 'Abr 2026', totalSpend: 0 }] } }),
+    );
+
+    expect(result.monthlySpending[0].totalSpend).toBe(0);
+  });
+
+  it('preserva el número de mes en sus límites (1 y 12)', () => {
+    const result = CrmMapper.toGuestStats(
+      buildDto({
+        monthlySpending: {
+          items: [
+            { year: 2026, month: 1, label: 'Ene 2026', totalSpend: 100 },
+            { year: 2026, month: 12, label: 'Dic 2026', totalSpend: 200 },
+          ],
+        },
+      }),
+    );
+
+    expect(result.monthlySpending[0].month).toBe(1);
+    expect(result.monthlySpending[1].month).toBe(12);
+  });
+
+  it('mapea el campo total de bookingOrigins correctamente', () => {
+    const result = CrmMapper.toGuestStats(buildDto({ bookingOrigins: { total: 10, sources: [] } }));
+
+    expect(result.bookingOrigins.total).toBe(10);
+  });
+
+  it('mapea count y percentage de cada origen de bookingOrigins', () => {
+    const result = CrmMapper.toGuestStats(buildDto());
+
+    expect(result.bookingOrigins.sources[0].count).toBe(3);
+    expect(result.bookingOrigins.sources[0].percentage).toBe(60);
+    expect(result.bookingOrigins.sources[1].count).toBe(2);
+    expect(result.bookingOrigins.sources[1].percentage).toBe(40);
   });
 
   it.each([
@@ -107,91 +174,52 @@ describe('CrmMapper.toGuestBookingOrigins', () => {
     ['MANUAL', 'MANUAL'],
     ['EXPEDIA', 'MANUAL'],
   ])('normaliza source "%s" a "%s"', (raw, expected) => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ sources: [{ source: raw, count: 1, percentage: 100 }] }));
+    const result = CrmMapper.toGuestStats(
+      buildDto({ bookingOrigins: { total: 1, sources: [{ source: raw, count: 1, percentage: 100 }] } }),
+    );
 
-    expect(result.sources[0].source).toBe(expected);
+    expect(result.bookingOrigins.sources[0].source).toBe(expected);
   });
 
   it('retorna total 0 y sources vacío cuando sources es []', () => {
-    const result = CrmMapper.toGuestBookingOrigins(buildDto({ total: 0, sources: [] }));
+    const result = CrmMapper.toGuestStats(buildDto({ bookingOrigins: { total: 0, sources: [] } }));
 
-    expect(result.total).toBe(0);
-    expect(result.sources).toHaveLength(0);
+    expect(result.bookingOrigins.total).toBe(0);
+    expect(result.bookingOrigins.sources).toHaveLength(0);
   });
 
-  it('mapea múltiples orígenes preservando el orden', () => {
+  it('mapea múltiples orígenes de bookingOrigins preservando el orden', () => {
     const dto = buildDto({
-      total: 10,
-      sources: [
-        { source: 'DIRECT', count: 5, percentage: 50 },
-        { source: 'AIRBNB', count: 3, percentage: 30 },
-        { source: 'BOOKING', count: 2, percentage: 20 },
-      ],
+      bookingOrigins: {
+        total: 10,
+        sources: [
+          { source: 'DIRECT', count: 5, percentage: 50 },
+          { source: 'AIRBNB', count: 3, percentage: 30 },
+          { source: 'BOOKING', count: 2, percentage: 20 },
+        ],
+      },
     });
 
-    const result = CrmMapper.toGuestBookingOrigins(dto);
+    const result = CrmMapper.toGuestStats(dto);
 
-    expect(result.sources).toHaveLength(3);
-    expect(result.sources[0].source).toBe('DIRECT');
-    expect(result.sources[1].source).toBe('AIRBNB');
-    expect(result.sources[2].source).toBe('BOOKING');
-  });
-});
-
-describe('CrmMapper.toGuestMonthlySpending', () => {
-  const buildDto = (overrides?: Partial<CrmGuestMonthlySpendDto>): CrmGuestMonthlySpendDto => ({
-    year: 2026,
-    month: 3,
-    label: 'Mar 2026',
-    totalSpend: 275000,
-    ...overrides,
+    expect(result.bookingOrigins.sources).toHaveLength(3);
+    expect(result.bookingOrigins.sources[0].source).toBe('DIRECT');
+    expect(result.bookingOrigins.sources[1].source).toBe('AIRBNB');
+    expect(result.bookingOrigins.sources[2].source).toBe('BOOKING');
   });
 
-  it('mapea los cuatro campos del DTO al modelo de dominio', () => {
-    const result = CrmMapper.toGuestMonthlySpending([buildDto()]);
+  it('mapea monthlySpending y bookingOrigins juntos en una sola llamada', () => {
+    const result = CrmMapper.toGuestStats(buildDto());
 
-    expect(result).toHaveLength(1);
-    const item = result[0];
-    expect(item.year).toBe(2026);
-    expect(item.month).toBe(3);
-    expect(item.label).toBe('Mar 2026');
-    expect(item.totalSpend).toBe(275000);
-  });
-
-  it('retorna array vacío cuando el input es []', () => {
-    const result = CrmMapper.toGuestMonthlySpending([]);
-
-    expect(result).toHaveLength(0);
-  });
-
-  it('mapea múltiples items preservando el orden', () => {
-    const dtos: CrmGuestMonthlySpendDto[] = [
-      buildDto({ year: 2026, month: 1, label: 'Ene 2026', totalSpend: 100000 }),
-      buildDto({ year: 2026, month: 2, label: 'Feb 2026', totalSpend: 200000 }),
-      buildDto({ year: 2026, month: 3, label: 'Mar 2026', totalSpend: 300000 }),
-    ];
-
-    const result = CrmMapper.toGuestMonthlySpending(dtos);
-
-    expect(result).toHaveLength(3);
-    expect(result[0]).toEqual({ year: 2026, month: 1, label: 'Ene 2026', totalSpend: 100000 });
-    expect(result[1]).toEqual({ year: 2026, month: 2, label: 'Feb 2026', totalSpend: 200000 });
-    expect(result[2]).toEqual({ year: 2026, month: 3, label: 'Mar 2026', totalSpend: 300000 });
-  });
-
-  it('preserva totalSpend igual a 0 sin descartarlo', () => {
-    const result = CrmMapper.toGuestMonthlySpending([buildDto({ totalSpend: 0 })]);
-
-    expect(result[0].totalSpend).toBe(0);
-  });
-
-  it('preserva el número de mes en sus límites (1 y 12)', () => {
-    const january = buildDto({ month: 1, label: 'Ene 2026' });
-    const december = buildDto({ month: 12, label: 'Dic 2026' });
-
-    const result = CrmMapper.toGuestMonthlySpending([january, december]);
-
-    expect(result[0].month).toBe(1);
-    expect(result[1].month).toBe(12);
+    expect(result).toEqual({
+      monthlySpending: [{ year: 2026, month: 3, label: 'Mar 2026', totalSpend: 275000 }],
+      bookingOrigins: {
+        total: 5,
+        sources: [
+          { source: 'DIRECT', count: 3, percentage: 60 },
+          { source: 'AIRBNB', count: 2, percentage: 40 },
+        ],
+      },
+    });
   });
 });

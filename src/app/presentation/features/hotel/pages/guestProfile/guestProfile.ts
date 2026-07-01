@@ -53,8 +53,7 @@ import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-no
 import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
 import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
 import { GetCrmGuestRatingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-ratings.use-case';
-import { GetCrmGuestBookingOriginsUseCase } from '@/domain/use-cases/crm/get-crm-guest-booking-origins.use-case';
-import { GetCrmGuestMonthlySpendingUseCase } from '@/domain/use-cases/crm/get-crm-guest-monthly-spending.use-case';
+import { GetCrmGuestStatsUseCase } from '@/domain/use-cases/crm/get-crm-guest-stats.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/staff.model';
@@ -221,8 +220,7 @@ export class GuestProfileComponent implements OnInit {
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly updateCrmGuestTagsUseCase = inject(UpdateCrmGuestTagsUseCase);
   private readonly getCrmGuestRatingsUseCase = inject(GetCrmGuestRatingsUseCase);
-  private readonly getCrmGuestBookingOriginsUseCase = inject(GetCrmGuestBookingOriginsUseCase);
-  private readonly getCrmGuestMonthlySpendingUseCase = inject(GetCrmGuestMonthlySpendingUseCase);
+  private readonly getCrmGuestStatsUseCase = inject(GetCrmGuestStatsUseCase);
 
   readonly activeTab = signal<GuestProfileTab>('resumen');
 
@@ -1055,33 +1053,23 @@ export class GuestProfileComponent implements OnInit {
     this.loadRatings(guestId, pagination.page + 1);
   }
 
-  loadBookingOrigins(guestId: string): void {
+  loadStats(guestId: string): void {
     this.isBookingOriginsLoading.set(true);
     this.bookingOriginsErrorMessage.set(null);
+    this.isMonthlySpendingLoading.set(true);
+    this.monthlySpendingErrorMessage.set(null);
 
-    this.getCrmGuestBookingOriginsUseCase.execute(guestId).subscribe({
+    this.getCrmGuestStatsUseCase.execute(guestId).subscribe({
       next: (result) => {
-        this.bookingOrigins.set(result.sources);
-        this.bookingOriginsTotal.set(result.total);
+        this.bookingOrigins.set(result.bookingOrigins.sources);
+        this.bookingOriginsTotal.set(result.bookingOrigins.total);
         this.isBookingOriginsLoading.set(false);
+        this.monthlySpending.set(result.monthlySpending);
+        this.isMonthlySpendingLoading.set(false);
       },
       error: () => {
         this.isBookingOriginsLoading.set(false);
         this.bookingOriginsErrorMessage.set('No se pudieron cargar los orígenes. Inténtalo de nuevo.');
-      },
-    });
-  }
-
-  private loadMonthlySpending(guestId: string): void {
-    this.isMonthlySpendingLoading.set(true);
-    this.monthlySpendingErrorMessage.set(null);
-
-    this.getCrmGuestMonthlySpendingUseCase.execute(guestId).subscribe({
-      next: (result) => {
-        this.monthlySpending.set(result);
-        this.isMonthlySpendingLoading.set(false);
-      },
-      error: () => {
         this.isMonthlySpendingLoading.set(false);
         this.monthlySpendingErrorMessage.set('No se pudo cargar la tendencia de gasto. Inténtalo de nuevo.');
       },
@@ -1142,8 +1130,7 @@ export class GuestProfileComponent implements OnInit {
         this.loadNotes(guestId);
         this.loadEmails(guestId);
         this.loadRatings(guestId);
-        this.loadBookingOrigins(guestId);
-        this.loadMonthlySpending(guestId);
+        this.loadStats(guestId);
       },
       error: (error: HttpErrorResponse) => {
         this.isGuestLoading.set(false);

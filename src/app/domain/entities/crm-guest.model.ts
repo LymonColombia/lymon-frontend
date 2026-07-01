@@ -136,13 +136,6 @@ export interface CrmGuestBookingOrigin {
   percentage: number;
 }
 
-export interface GetCrmGuestBookingOriginsResponse {
-  data: {
-    total: number;
-    sources: CrmGuestBookingOrigin[];
-  };
-}
-
 export interface CrmGuestMonthlySpend {
   year: number;
   month: number;
@@ -150,6 +143,14 @@ export interface CrmGuestMonthlySpend {
   totalSpend: number;
 }
 
-export interface GetCrmGuestMonthlySpendingResponse {
-  data: CrmGuestMonthlySpend[];
+export interface CrmGuestStats {
+  monthlySpending: CrmGuestMonthlySpend[];
+  bookingOrigins: {
+    total: number;
+    sources: CrmGuestBookingOrigin[];
+  };
+}
+
+export interface GetCrmGuestStatsResponse {
+  data: CrmGuestStats;
 }
