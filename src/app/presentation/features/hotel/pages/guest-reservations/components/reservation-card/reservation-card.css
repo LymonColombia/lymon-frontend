@@ -196,14 +196,6 @@
   color: var(--color-text-tertiary);
 }
 
-.date-time {
-  font-family: var(--font-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-tight);
-}
-
 .nights-badge {
   display: flex;
   align-items: center;

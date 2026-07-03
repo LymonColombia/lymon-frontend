@@ -174,8 +174,8 @@ export class CreateReservationWizardComponent implements OnInit {
       propertyId: this.reservationForm.propertyId,
       unitId: this.reservationForm.unitId,
       guestId: this.reservationForm.guestId,
-      checkIn: this.toISODate(this.reservationForm.checkIn),
-      checkOut: this.toISODate(this.reservationForm.checkOut),
+      checkIn: this.reservationForm.checkIn,
+      checkOut: this.reservationForm.checkOut,
       guestsCount: Number(this.reservationForm.guestsCount),
       source: this.reservationForm.source,
       notes: this.reservationForm.notes || undefined
@@ -210,14 +210,11 @@ export class CreateReservationWizardComponent implements OnInit {
     if (!checkIn) return 'Debes seleccionar la fecha de entrada.';
     if (!checkOut) return 'Debes seleccionar la fecha de salida.';
 
-    const checkInDate = new Date(checkIn);
-    const checkOutDate = new Date(checkOut);
-
-    if (Number.isNaN(checkInDate.getTime()) || Number.isNaN(checkOutDate.getTime())) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(checkIn) || !/^\d{4}-\d{2}-\d{2}$/.test(checkOut)) {
       return 'Las fechas seleccionadas no son válidas.';
     }
 
-    if (checkOutDate <= checkInDate) {
+    if (checkOut <= checkIn) {
       return 'La fecha de salida debe ser posterior a la fecha de entrada.';
     }
 
@@ -237,15 +234,4 @@ export class CreateReservationWizardComponent implements OnInit {
     return 'Error al crear la reserva. Por favor intenta de nuevo.';
   }
 
-  private toISODate(value: string | Date): string {
-    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      return value;
-    }
-
-    const date = typeof value === 'string' ? new Date(value) : value;
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
 }

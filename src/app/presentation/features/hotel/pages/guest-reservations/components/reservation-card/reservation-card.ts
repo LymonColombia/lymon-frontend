@@ -12,6 +12,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
+import { formatCalendarDate } from '@/presentation/shared/utils/date-formatter.util';
 
 @Component({
   selector: 'app-reservation-card',
@@ -87,24 +88,11 @@ export class ReservationCardComponent {
   }
 
   formatDay(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString('es', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      timeZone: 'UTC',
-    });
+    return formatCalendarDate(dateStr, { weekday: 'short', day: 'numeric', month: 'short' }, 'es');
   }
 
   formatYear(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString('es', { year: 'numeric', timeZone: 'UTC' });
-  }
-
-  formatTime(dateStr: string): string {
-    return new Date(dateStr).toLocaleTimeString('es', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
+    return formatCalendarDate(dateStr, { year: 'numeric' }, 'es');
   }
 
   onConfirm(): void {

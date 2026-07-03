@@ -23,6 +23,7 @@ import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/reservation/g
 import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { formatCalendarDate } from '@/presentation/shared/utils/date-formatter.util';
 import {
   bootstrapCardText,
   bootstrapShieldCheck,
@@ -113,8 +114,8 @@ export class CheckinComponent {
     return {
       guestName: reservation?.guestName || reservation?.guestId || 'Sin nombre',
       room: reservation?.room || reservation?.unitId || 'Sin habitacion',
-      checkIn: this.formatDateTime(reservation?.checkIn),
-      checkOut: this.formatDateTime(reservation?.checkOut),
+      checkIn: this.formatDate(reservation?.checkIn),
+      checkOut: this.formatDate(reservation?.checkOut),
       nights: reservation?.nights ?? 0,
       guests: reservation?.guestsCount ?? 0,
       total: this.formatCurrency(reservation?.totalPrice ?? 0),
@@ -309,23 +310,16 @@ export class CheckinComponent {
     return activeReservation ?? reservations[0];
   }
 
-  private formatDateTime(value: string | undefined): string {
+  private formatDate(value: string | undefined): string {
     if (!value) {
       return '--';
     }
 
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) {
+    if (Number.isNaN(new Date(value).getTime())) {
       return value;
     }
 
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(parsed);
+    return formatCalendarDate(value, { day: '2-digit', month: 'short', year: 'numeric' }, 'es-MX');
   }
 
   private formatCurrency(value: number): string {

@@ -305,6 +305,46 @@ describe('CheckinComponent', () => {
     expect(component.isConfirming()).toBe(false);
     expect(component.confirmError()).toBe('No se pudo confirmar la reservación. Intenta de nuevo.');
   });
+
+  describe('formatDate (via reservationSummary) — regresión LYMON-1092', () => {
+    it('renderiza el dia calendario correcto para checkIn/checkOut de solo fecha cerca de un limite UTC/local', async () => {
+      // "2026-07-01"/"2026-07-05" no tienen componente horario y deben mostrar
+      // siempre el mismo dia calendario sin importar la zona horaria de la maquina de pruebas.
+      mockGetReservationsUseCase.execute.mockReturnValue(
+        of(paginated([{ ...BASE_RESERVATION, checkIn: '2026-07-01', checkOut: '2026-07-05' }])),
+      );
+
+      const { component } = await setup();
+
+      expect(component.reservationSummary().checkIn).toBe('01 jul 2026');
+      expect(component.reservationSummary().checkOut).toBe('05 jul 2026');
+      expect(component.reservationSummary().checkIn).not.toContain('30 jun');
+    });
+
+    it('retorna "--" cuando checkIn es undefined en una reservacion de tenant', async () => {
+      mockGetReservationByIdUseCase.execute.mockReturnValue(
+        of({ ...BASE_RESERVATION, checkIn: undefined, checkOut: undefined }),
+      );
+      resetRouteParams({}, { reservationId: 'res-no-dates' });
+
+      const { component } = await setup();
+
+      expect(component.reservationSummary().checkIn).toBe('--');
+      expect(component.reservationSummary().checkOut).toBe('--');
+    });
+
+    it('retorna el valor crudo cuando la fecha no se puede parsear', async () => {
+      mockGetReservationByIdUseCase.execute.mockReturnValue(
+        of({ ...BASE_RESERVATION, checkIn: 'not-a-date', checkOut: '2026-07-05' }),
+      );
+      resetRouteParams({}, { reservationId: 'res-bad-date' });
+
+      const { component } = await setup();
+
+      expect(component.reservationSummary().checkIn).toBe('not-a-date');
+      expect(component.reservationSummary().checkOut).toBe('05 jul 2026');
+    });
+  });
 });
 
 describe('CheckinComponent - integracion visual (template real)', () => {
