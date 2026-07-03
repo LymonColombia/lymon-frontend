@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   OnInit,
   signal,
@@ -13,6 +14,8 @@ import { HotelPageLayoutComponent } from '@/presentation/features/hotel/componen
 import { ToastService } from '@/presentation/shared/services/toast.service';
 import { ToastComponent } from '@/presentation/shared/components/toast/toast.component';
 import { ShiftDatePickerComponent } from '@/presentation/shared/components/shift-date-picker/shift-date-picker.component';
+import { TutorialService } from '@/presentation/shared/services/tutorial.service';
+import { TutorialHighlightDirective } from '@/presentation/shared/directives/tutorial-highlight.directive';
 import { translateHttpError } from '@/presentation/shared/utils/http-error-translator';
 import { SHIFT_BACKEND_MESSAGES } from '@/domain/constants/shift-messages.constants';
 import { CreateShiftUseCase } from '@/domain/use-cases/shift/create-shift.use-case';
@@ -87,7 +90,7 @@ interface ShiftOption {
 @Component({
   selector: 'app-staff-shift',
   standalone: true,
-  imports: [HotelPageLayoutComponent, FormsModule, NgIconComponent, ToastComponent, ShiftDatePickerComponent],
+  imports: [HotelPageLayoutComponent, FormsModule, NgIconComponent, ToastComponent, ShiftDatePickerComponent, TutorialHighlightDirective],
   providers: [
     provideIcons({
       bootstrapTrash,
@@ -126,6 +129,10 @@ export class StaffShiftComponent implements OnInit {
   private readonly getStaffUseCase = inject(GetStaffUseCase);
   private readonly staffRepository = inject(StaffRepository);
   private readonly toastService = inject(ToastService);
+  private readonly tutorialService = inject(TutorialService);
+
+  private shiftCreated = false;
+  private assignmentCreated = false;
 
   // ── Tab navigation ──────────────────────────────────────────────────────────
   readonly activeTab = signal<PreviewTab>('calendar');
@@ -227,6 +234,29 @@ export class StaffShiftComponent implements OnInit {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   });
+
+  constructor() {
+    effect(() => {
+      if (!this.tutorialService.isActive()) return;
+      const modal = this.tutorialService.requestedShiftModal();
+      if (!modal) return;
+
+      if (modal === 'create' && this.tutorialService.currentStep() === 5) {
+        if (this.isCreateAssignmentModalOpen()) {
+          this.closeCreateAssignmentModal();
+        }
+        this.openCreateShiftModal();
+      } else if (modal === 'assign' && this.tutorialService.currentStep() === 6) {
+        if (this.isCreateModalOpen()) {
+          this.closeCreateShiftModal();
+        }
+        this.showAssignmentsTab();
+        this.openCreateAssignmentModal();
+      }
+
+      this.tutorialService.clearRequestedShiftModal();
+    });
+  }
 
   readonly assignmentDays = computed<AssignmentDay[]>(() => {
     const shifts = this.fixedShifts();
@@ -1066,6 +1096,10 @@ export class StaffShiftComponent implements OnInit {
 
   closeCreateAssignmentModal(): void {
     this.isCreateAssignmentModalOpen.set(false);
+    if (!this.assignmentCreated) {
+      this.tutorialService.resetActionButtonClicked(6);
+    }
+    this.assignmentCreated = false;
     this.resetCreateAssignmentForm();
   }
 
@@ -1289,10 +1323,12 @@ export class StaffShiftComponent implements OnInit {
     this.isAssigning.set(true);
     this.assignStaffToShiftUseCase.execute(shiftId!.toString(), [employeeId]).subscribe({
       next: () => {
+        this.assignmentCreated = true;
         this.toastService.success('Turno asignado correctamente.');
         this.loadFixedShifts();
         this.closeCreateAssignmentModal();
         this.isAssigning.set(false);
+        this.tutorialService.stepCompleted$.next();
       },
       error: (err: unknown) => {
         this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
@@ -1310,6 +1346,10 @@ export class StaffShiftComponent implements OnInit {
 
   closeCreateShiftModal(): void {
     this.isCreateModalOpen.set(false);
+    if (!this.shiftCreated) {
+      this.tutorialService.resetActionButtonClicked(5);
+    }
+    this.shiftCreated = false;
     this.resetCreateShiftForm();
   }
 
@@ -1393,12 +1433,14 @@ export class StaffShiftComponent implements OnInit {
         ...(notes ? { notes } : {}),
       })
       .subscribe({
-        next: () => {
-          this.toastService.success('Turno creado correctamente.');
-          this.loadFixedShifts();
-          this.isCreatingShift.set(false);
-          this.closeCreateShiftModal();
-        },
+      next: () => {
+        this.shiftCreated = true;
+        this.toastService.success('Turno creado correctamente.');
+        this.loadFixedShifts();
+        this.isCreatingShift.set(false);
+        this.closeCreateShiftModal();
+        this.tutorialService.stepCompleted$.next();
+      },
         error: (err: unknown) => {
           this.toastService.error(translateHttpError(err, SHIFT_BACKEND_MESSAGES));
           this.isCreatingShift.set(false);

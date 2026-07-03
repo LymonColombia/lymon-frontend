@@ -1,15 +1,14 @@
 import { Observable } from 'rxjs';
 import {
   CreateCrmGuestNoteRequest,
-  GetCrmGuestBookingOriginsResponse,
   GetCrmGuestBookingsResponse,
   GetCrmGuestEmailsResponse,
-  GetCrmGuestMonthlySpendingResponse,
   GetCrmGuestNotesResponse,
   GetCrmGuestRatingsParams,
   GetCrmGuestRatingsResponse,
   GetCrmGuestsParams,
   GetCrmGuestsResponse,
+  GetCrmGuestStatsResponse,
   SendCrmGuestMessageRequest,
   UpdateCrmGuestNoteRequest,
   UpdateCrmGuestTagsRequest,
@@ -27,6 +26,5 @@ export abstract class CrmRepository {
   abstract sendGuestMessage(guestId: string, data: SendCrmGuestMessageRequest): Observable<void>;
   abstract updateGuestTags(guestId: string, data: UpdateCrmGuestTagsRequest): Observable<void>;
   abstract getGuestRatings(guestId: string, params?: GetCrmGuestRatingsParams): Observable<GetCrmGuestRatingsResponse>;
-  abstract getGuestBookingOrigins(guestId: string): Observable<GetCrmGuestBookingOriginsResponse>;
-  abstract getGuestMonthlySpending(guestId: string): Observable<GetCrmGuestMonthlySpendingResponse>;
+  abstract getGuestStats(guestId: string): Observable<GetCrmGuestStatsResponse>;
 }

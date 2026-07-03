@@ -3,145 +3,50 @@
   subtitle="Administra el perfil y la seguridad de tu establecimiento."
   iconName="bootstrapPersonGear"
 >
-  <div class="settings-stack">
+  @if (isLoadingProfile()) {
+    <div class="loading-state" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Cargando perfil…</p>
+    </div>
+  } @else {
+    <div class="settings-stack">
+      <section class="profile-card" aria-label="Perfil del tenant">
+        <div class="profile-avatar" aria-hidden="true">
+          <span>{{ (tenantName() || 'T').slice(0, 1).toUpperCase() }}</span>
+        </div>
+        <div class="profile-info">
+          <p class="profile-name">{{ tenantName() || 'Sin nombre' }}</p>
+          <p class="profile-email">{{ tenantEmail() || 'Sin correo' }}</p>
+        </div>
+      </section>
+
       <section class="settings-section" aria-labelledby="profile-title">
         <header class="content-header">
           <h1 id="profile-title" class="content-title">Editar perfil</h1>
           <p class="content-subtitle">Actualiza la información pública de tu establecimiento.</p>
         </header>
 
-        @if (profileSuccessMessage()) {
-          <div class="alert alert-success" role="status">{{ profileSuccessMessage() }}</div>
-        }
-
-        @if (profileErrorMessage()) {
-          <div class="alert alert-error" role="alert">{{ profileErrorMessage() }}</div>
-        }
-
         <div class="content-card">
-          @if (isLoadingProfile()) {
-            <div class="loading-state" aria-live="polite">
-              <div class="spinner" aria-hidden="true"></div>
-              <p>Cargando perfil…</p>
+          <form class="form" [formGroup]="tenantForm">
+            <div class="form-group">
+              <label for="tenantName">Nombre del negocio <span class="required">*</span></label>
+              <app-input
+                id="tenantName"
+                name="name"
+                type="text"
+                placeholder="Ej: Hotel Paradise"
+                autocomplete="organization"
+                formControlName="name"
+              />
+              @if (nameControl.invalid && nameControl.touched) {
+                <span class="field-error">
+                  @if (nameControl.hasError('required')) { El nombre es requerido. }
+                  @else if (nameControl.hasError('minlength')) { Mínimo 3 caracteres. }
+                  @else if (nameControl.hasError('maxlength')) { Máximo 100 caracteres. }
+                </span>
+              }
             </div>
-          } @else {
-            <div class="profile-hero" aria-label="Resumen del perfil">
-              <div class="profile-avatar" aria-hidden="true">
-                @if (logoUrlControl.value && logoUrlControl.valid) {
-                  <img [src]="logoUrlControl.value" alt="" />
-                } @else {
-                  <span>{{ (nameControl.value || 'N').slice(0, 1).toUpperCase() }}</span>
-                }
-              </div>
-
-              <div class="profile-meta">
-                <p class="profile-name">{{ nameControl.value || 'Nombre del negocio' }}</p>
-                <p class="profile-hint">Logo y datos básicos del establecimiento</p>
-              </div>
-
-              <app-button variant="outline" size="small" type="button" (clicked)="logoUrlInput.focus()">
-                Cambiar logo
-              </app-button>
-            </div>
-
-            <form class="form" [formGroup]="tenantForm" (ngSubmit)="onSubmitTenant()">
-              <div class="form-group">
-                <label for="tenantName">Nombre del negocio <span class="required">*</span></label>
-                <app-input
-                  id="tenantName"
-                  name="name"
-                  type="text"
-                  placeholder="Ej: Hotel Paradise"
-                  autocomplete="organization"
-                  formControlName="name"
-                />
-                @if (nameControl.invalid && nameControl.touched) {
-                  <span class="field-error">
-                    @if (nameControl.hasError('required')) { El nombre es requerido. }
-                    @else if (nameControl.hasError('minlength')) { Mínimo 3 caracteres. }
-                    @else if (nameControl.hasError('maxlength')) { Máximo 100 caracteres. }
-                  </span>
-                }
-              </div>
-
-              <div class="form-group">
-                <label for="contactPhone">Teléfono de contacto</label>
-                <app-input
-                  id="contactPhone"
-                  name="contactPhone"
-                  type="tel"
-                  placeholder="Ej: +52 55 1234 5678"
-                  autocomplete="tel"
-                  formControlName="contactPhone"
-                />
-                @if (contactPhoneControl.invalid && contactPhoneControl.touched) {
-                  <span class="field-error">
-                    @if (contactPhoneControl.hasError('minlength')) { Mínimo 7 caracteres. }
-                    @else if (contactPhoneControl.hasError('maxlength')) { Máximo 30 caracteres. }
-                  </span>
-                }
-              </div>
-
-              <div class="form-group">
-                <label for="address">Dirección</label>
-                <app-input
-                  id="address"
-                  name="address"
-                  type="text"
-                  placeholder="Ej: Av. Reforma 123, Ciudad de México"
-                  autocomplete="street-address"
-                  formControlName="address"
-                />
-                @if (addressControl.invalid && addressControl.touched) {
-                  <span class="field-error">@if (addressControl.hasError('maxlength')) { Máximo 200 caracteres. }</span>
-                }
-              </div>
-
-              <div class="form-group">
-                <label for="website">Sitio web</label>
-                <app-input
-                  id="website"
-                  name="website"
-                  type="url"
-                  placeholder="Ej: https://www.mihotel.com"
-                  autocomplete="url"
-                  formControlName="website"
-                />
-                @if (websiteControl.invalid && websiteControl.touched) {
-                  <span class="field-error">Ingresa una URL válida.</span>
-                }
-              </div>
-
-              <div class="form-group">
-                <label for="logoUrl">URL del logo</label>
-                <app-input
-                  #logoUrlInput
-                  id="logoUrl"
-                  name="logoUrl"
-                  type="url"
-                  placeholder="Ej: https://storage.ejemplo.com/logo.png"
-                  autocomplete="off"
-                  formControlName="logoUrl"
-                />
-                @if (logoUrlControl.invalid && logoUrlControl.touched) {
-                  <span class="field-error">Ingresa una URL válida.</span>
-                }
-              </div>
-
-              <div class="form-actions">
-                <app-button
-                  variant="primary"
-                  size="medium"
-                  type="submit"
-                  [fullWidth]="true"
-                  [disabled]="isSubmittingProfile()"
-                  [loading]="isSubmittingProfile()"
-                >
-                  Guardar cambios
-                </app-button>
-              </div>
-            </form>
-          }
+          </form>
         </div>
       </section>
 
@@ -151,16 +56,8 @@
           <p class="content-subtitle">Actualiza la contraseña de tu cuenta.</p>
         </header>
 
-        @if (passwordSuccessMessage()) {
-          <div class="alert alert-success" role="status">{{ passwordSuccessMessage() }}</div>
-        }
-
-        @if (passwordErrorMessage()) {
-          <div class="alert alert-error" role="alert">{{ passwordErrorMessage() }}</div>
-        }
-
         <div class="content-card">
-          <form class="form" [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+          <form class="form" [formGroup]="passwordForm">
             <div class="form-group">
               <label for="currentPassword">Contraseña actual</label>
               <div
@@ -265,21 +162,31 @@
                 <span class="field-error">Las contraseñas no coinciden.</span>
               }
             </div>
-
-            <div class="form-actions">
-              <app-button
-                variant="primary"
-                size="medium"
-                type="submit"
-                [fullWidth]="true"
-                [disabled]="isSubmittingPassword()"
-                [loading]="isSubmittingPassword()"
-              >
-                Guardar cambios
-              </app-button>
-            </div>
           </form>
         </div>
       </section>
-  </div>
+
+      @if (successMessage()) {
+        <output class="alert alert-success">{{ successMessage() }}</output>
+      }
+
+      @if (errorMessage()) {
+        <output class="alert alert-error">{{ errorMessage() }}</output>
+      }
+
+      <div class="form-actions">
+        <app-button
+          variant="primary"
+          size="medium"
+          type="button"
+          [fullWidth]="true"
+          [disabled]="isSubmitting()"
+          [loading]="isSubmitting()"
+          (clicked)="onSubmitAll()"
+        >
+          Guardar cambios
+        </app-button>
+      </div>
+    </div>
+  }
 </app-hotel-page-layout>

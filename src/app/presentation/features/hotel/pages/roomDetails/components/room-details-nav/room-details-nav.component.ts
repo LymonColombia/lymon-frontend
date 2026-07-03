@@ -18,11 +18,11 @@ import {
   bootstrapCalendar2Check,
   bootstrapCart,
   bootstrapChevronDown,
-  bootstrapPeopleFill,
   bootstrapSearch,
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
+import { GuestStepperComponent } from '@/presentation/shared/components/guest-stepper/guest-stepper.component';
 
 export interface RoomDetailsSearchParams {
   checkIn?: string;
@@ -32,11 +32,13 @@ export interface RoomDetailsSearchParams {
 
 const MIN_GUESTS = 1;
 const MAX_GUESTS = 10;
+const SHORT_MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+const DATE_TRIGGER_SELECTOR = '.nav-date-trigger-wrapper';
 
 @Component({
   selector: 'room-details-nav',
   standalone: true,
-  imports: [ButtonComponent, InputComponent, NgOptimizedImage, NgIcon, RouterModule],
+  imports: [ButtonComponent, CalendarComponent, GuestStepperComponent, NgOptimizedImage, NgIcon, RouterModule],
   providers: [
     provideIcons({
       bootstrapBoxArrowInRight,
@@ -45,7 +47,6 @@ const MAX_GUESTS = 10;
       bootstrapCalendar2Check,
       bootstrapCart,
       bootstrapChevronDown,
-      bootstrapPeopleFill,
       bootstrapSearch,
     }),
   ],
@@ -57,7 +58,7 @@ const MAX_GUESTS = 10;
   },
 })
 export class RoomDetailsNavComponent {
-  private readonly elementRef = inject(ElementRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly isAuthenticated = input.required<boolean>();
   readonly guestEmail = input<string | null>(null);
@@ -68,6 +69,7 @@ export class RoomDetailsNavComponent {
   readonly search = output<RoomDetailsSearchParams>();
 
   readonly isDropdownOpen = signal(false);
+  readonly isCalendarOpen = signal(false);
 
   readonly checkIn = signal<string | undefined>(undefined);
   readonly checkOut = signal<string | undefined>(undefined);
@@ -75,6 +77,9 @@ export class RoomDetailsNavComponent {
 
   readonly MIN_GUESTS = MIN_GUESTS;
   readonly MAX_GUESTS = MAX_GUESTS;
+
+  readonly checkInDisplay = computed(() => this.formatDate(this.checkIn() ?? null));
+  readonly checkOutDisplay = computed(() => this.formatDate(this.checkOut() ?? null));
 
   readonly initials = computed(() => {
     const email = (this.guestEmail() ?? '').trim();
@@ -104,6 +109,19 @@ export class RoomDetailsNavComponent {
     this.isDropdownOpen.update((v) => !v);
   }
 
+  toggleCalendar(): void {
+    this.isCalendarOpen.update((v) => !v);
+  }
+
+  closeCalendar(): void {
+    this.isCalendarOpen.set(false);
+  }
+
+  onDateRangeChange(range: DateRange): void {
+    this.checkIn.set(range.checkIn ?? undefined);
+    this.checkOut.set(range.checkOut ?? undefined);
+  }
+
   onMyReservations(): void {
     this.isDropdownOpen.set(false);
     this.myReservationsClicked.emit();
@@ -115,36 +133,34 @@ export class RoomDetailsNavComponent {
   }
 
   onDocumentClick(event: MouseEvent): void {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
+    const target = event.target as Element | null;
+    if (!target) return;
+
+    if (this.isDropdownOpen() && !this.elementRef.nativeElement.contains(target)) {
       this.isDropdownOpen.set(false);
     }
-  }
 
-  onCheckInChange(value: string | number | null): void {
-    this.checkIn.set(typeof value === 'string' ? value : undefined);
-  }
-
-  onCheckOutChange(value: string | number | null): void {
-    this.checkOut.set(typeof value === 'string' ? value : undefined);
-  }
-
-  incrementGuests(): void {
-    if (this.guests() < MAX_GUESTS) {
-      this.guests.update((v) => v + 1);
-    }
-  }
-
-  decrementGuests(): void {
-    if (this.guests() > MIN_GUESTS) {
-      this.guests.update((v) => v - 1);
+    if (this.isCalendarOpen()) {
+      const wrapper = this.elementRef.nativeElement.querySelector(DATE_TRIGGER_SELECTOR) as Element | null;
+      if (wrapper && !wrapper.contains(target)) {
+        this.isCalendarOpen.set(false);
+      }
     }
   }
 
   onSearch(): void {
+    this.isCalendarOpen.set(false);
     this.search.emit({
       checkIn: this.checkIn(),
       checkOut: this.checkOut(),
       guests: this.guests(),
     });
+  }
+
+  private formatDate(dateStr: string | null): string | null {
+    if (!dateStr) return null;
+    const parts = dateStr.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+    return `${parts[2]} ${SHORT_MONTH_NAMES[parts[1] - 1]} ${parts[0]}`;
   }
 }

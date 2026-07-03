@@ -17,9 +17,11 @@ import { UpdatePropertyUseCase } from '@/domain/use-cases/property/update-proper
 import { DeletePropertyUseCase } from '@/domain/use-cases/property/delete-property.use-case';
 import { GetPropertyByIdUseCase } from '@/domain/use-cases/property/get-property-by-id.use-case';
 import { Property } from '@/domain/entities/staff.model';
+import { TutorialService } from '@/presentation/shared/services/tutorial.service';
 import { CancellationPolicy, PropertyDetail, PropertyType, UpdatePropertyDto } from '@/domain/entities/property.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
+import { TutorialHighlightDirective } from '@/presentation/shared/directives/tutorial-highlight.directive';
 
 @Component({
   selector: 'app-properties',
@@ -34,6 +36,7 @@ import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons
     PropertyFormComponent,
     PropertyCardComponent,
     NgIcon,
+    TutorialHighlightDirective,
   ],
   providers: [provideIcons({ bootstrapHouseDoorFill, bootstrapPlus })],
   templateUrl: './properties.html',
@@ -48,6 +51,9 @@ export class PropertiesComponent implements OnInit {
   private readonly deletePropertyUseCase = inject(DeletePropertyUseCase);
   private readonly getPropertyByIdUseCase = inject(GetPropertyByIdUseCase);
   private readonly router = inject(Router);
+  private readonly tutorialService = inject(TutorialService);
+
+  private formSaved = false;
 
   readonly isLoading = signal(true);
   readonly isSaving = signal(false);
@@ -119,6 +125,10 @@ export class PropertiesComponent implements OnInit {
     this.editingProperty.set(null);
     this.errorMessage.set(null);
     this.successMessage.set(null);
+    if (!this.formSaved) {
+      this.tutorialService.resetActionButtonClicked(0);
+    }
+    this.formSaved = false;
   }
 
   cancelForm(): void {
@@ -232,11 +242,13 @@ export class PropertiesComponent implements OnInit {
     action$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.isSaving.set(false);
+        this.formSaved = true;
         this.successMessage.set(successMsg);
         this.showForm.set(false);
         this.editingProperty.set(null);
         this.resetFormDefaults();
         this.loadProperties();
+        this.tutorialService.stepCompleted$.next();
       },
       error: (err: HttpErrorResponse) => {
         this.isSaving.set(false);

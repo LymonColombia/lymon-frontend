@@ -190,7 +190,7 @@
 
     <div class="form-actions">
       <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
-      <app-button type="submit" variant="primary" [disabled]="isLoading()" [loading]="isLoading()">
+      <app-button type="submit" variant="primary" [disabled]="isLoading()" [loading]="isLoading()" [tutorialHighlight]="4">
         <ng-icon name="bootstrapPersonFillAdd" size="18px" aria-hidden="true"></ng-icon>
         @if (isLoading()) {
           Registrando...

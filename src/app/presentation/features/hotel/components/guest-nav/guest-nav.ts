@@ -13,6 +13,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBoxArrowRight,
   bootstrapCalendar2Check,
+  bootstrapCart,
   bootstrapChevronDown,
   bootstrapChevronLeft,
 } from '@ng-icons/bootstrap-icons';
@@ -25,6 +26,7 @@ import {
     provideIcons({
       bootstrapBoxArrowRight,
       bootstrapCalendar2Check,
+      bootstrapCart,
       bootstrapChevronDown,
       bootstrapChevronLeft,
     }),

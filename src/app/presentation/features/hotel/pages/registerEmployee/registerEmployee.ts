@@ -17,6 +17,8 @@ import { InputComponent } from '@/presentation/shared/components/input/input.com
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { ToastComponent } from '@/presentation/shared/components/toast/toast.component';
+import { TutorialService } from '@/presentation/shared/services/tutorial.service';
+import { TutorialHighlightDirective } from '@/presentation/shared/directives/tutorial-highlight.directive';
 import {
   bootstrapEye,
   bootstrapEyeSlash,
@@ -38,6 +40,7 @@ import {
     SelectComponent,
     ButtonComponent,
     ToastComponent,
+    TutorialHighlightDirective,
   ],
   providers: [
     provideIcons({
@@ -61,6 +64,9 @@ export class RegisterEmployeeComponent implements OnInit {
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly router = inject(Router);
+  private readonly tutorialService = inject(TutorialService);
+
+  private employeeSaved = false;
 
   readonly isLoading = signal(false);
   readonly rolesLoading = signal(true);
@@ -284,6 +290,11 @@ export class RegisterEmployeeComponent implements OnInit {
   }
 
   onCancel(): void {
+    if (this.tutorialService.isActive()) {
+      this.tutorialService.resetActionButtonClicked(4);
+      this.form.reset();
+      return;
+    }
     this.router.navigate(['/booking']);
   }
 
@@ -325,7 +336,9 @@ export class RegisterEmployeeComponent implements OnInit {
     this.addStaffUseCase.execute(payload).subscribe({
       next: () => {
         this.isLoading.set(false);
+        this.employeeSaved = true;
         this.toastService.success(EMPLOYEE_MESSAGES.success.create);
+        this.tutorialService.stepCompleted$.next();
         this.form.reset();
         while (this.roleAssignments.length > 1) {
           this.roleAssignments.removeAt(1);

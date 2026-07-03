@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { BookingRoomCard, RoomCardComponent } from './components/room-card/room-card.component';
 import { BookingNavComponent } from './components/booking-nav/booking-nav.component';
@@ -14,6 +16,7 @@ import { GuestTokenService } from '@/infrastructure/services/guest-token.service
 import { Unit } from '@/domain/entities/staff.model';
 
 const ITEMS_PER_PAGE = 8;
+const SEARCH_DEBOUNCE_MS = 400;
 
 @Component({
   selector: 'booking-page',
@@ -51,31 +54,42 @@ export class BookingComponent implements OnInit {
 
   readonly searchQuery = signal('');
   readonly sortBy = signal<BookingSortOption>('rating');
-  readonly likedRoomIds = signal(new Set<string>());
 
   readonly rooms = signal<BookingRoomCard[]>([]);
+
+  private readonly searchInput$ = new Subject<string>();
 
   private readonly resultsSection = viewChild<ElementRef<HTMLElement>>('resultsSection');
   private readonly bookingNav = viewChild('bookingNav', { read: ElementRef });
 
   readonly displayedRooms = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
     const sort = this.sortBy();
-
-    let result = this.rooms();
-
-    if (query) result = result.filter((r) => r.title.toLowerCase().includes(query));
+    const result = this.rooms();
 
     if (sort === 'price-asc') return [...result].sort((a, b) => a.price - b.price);
     if (sort === 'price-desc') return [...result].sort((a, b) => b.price - a.price);
     return result;
   });
 
+  constructor() {
+    this.searchInput$
+      .pipe(
+        debounceTime(SEARCH_DEBOUNCE_MS),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.syncQueryParams();
+        this.loadUnits(1);
+      });
+  }
+
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;
     const startDate = params.get('startDate') ?? undefined;
     const endDate = params.get('endDate') ?? undefined;
     const minGuests = params.get('minGuests');
+    this.searchQuery.set(params.get('name') ?? '');
     this.startDate.set(startDate);
     this.endDate.set(endDate);
     const parsed = minGuests === null ? Number.NaN : Number(minGuests);
@@ -89,6 +103,7 @@ export class BookingComponent implements OnInit {
       .execute({
         page,
         limit: ITEMS_PER_PAGE,
+        name: this.searchQuery().trim() || undefined,
         startDate: this.startDate(),
         endDate: this.endDate(),
         minGuests: this.minGuests(),
@@ -124,29 +139,14 @@ export class BookingComponent implements OnInit {
 
   onSearchQueryChange(query: string): void {
     this.searchQuery.set(query);
+    this.searchInput$.next(query.trim());
   }
 
   onSortChange(sort: BookingSortOption): void {
     this.sortBy.set(sort);
   }
 
-  onToggleLike(roomId: string): void {
-    this.likedRoomIds.update((ids) => {
-      const next = new Set(ids);
-      if (next.has(roomId)) {
-        next.delete(roomId);
-      } else {
-        next.add(roomId);
-      }
-      return next;
-    });
-  }
-
-  isLiked(roomId: string): boolean {
-    return this.likedRoomIds().has(roomId);
-  }
-
-  readonly guestEmail = this.guestTokenService.getGuestEmail();
+readonly guestEmail = this.guestTokenService.getGuestEmail();
 
   onGuestLogin(): void {
     this.router.navigate(['/guest/login']);
@@ -175,9 +175,11 @@ export class BookingComponent implements OnInit {
 
   private syncQueryParams(): void {
     const queryParams: Record<string, string> = {};
+    const name = this.searchQuery().trim();
     const startDate = this.startDate();
     const endDate = this.endDate();
     const minGuests = this.minGuests();
+    if (name) queryParams['name'] = name;
     if (startDate) queryParams['startDate'] = startDate;
     if (endDate) queryParams['endDate'] = endDate;
     if (minGuests !== undefined) queryParams['minGuests'] = String(minGuests);
@@ -196,9 +198,9 @@ export class BookingComponent implements OnInit {
       price: unit.pricePerNight ?? 0,
       description: unit.description ?? 'Sin descripción disponible para esta habitación.',
       features: [
-        { icon: 'bootstrapHouseDoorFill', label: this.getBedsSummary(unit) },
+        { icon: 'single-bed', label: this.getBedsSummary(unit) },
         {
-          icon: 'bootstrapDoorOpenFill',
+          icon: 'bath',
           label: `${unit.bathroomsCount ?? 0} baño${(unit.bathroomsCount ?? 0) === 1 ? '' : 's'}`,
         },
         {
@@ -212,6 +214,7 @@ export class BookingComponent implements OnInit {
       featured: (unit.pricePerNight ?? 0) >= 200,
       maxGuests: unit.maxGuests ?? unit.standardGuests,
       rating: unit.rating ?? undefined,
+      images: unit.mediaUrls ?? [],
     };
   }
 

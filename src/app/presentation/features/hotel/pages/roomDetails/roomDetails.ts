@@ -18,7 +18,6 @@ import { Unit } from '@/domain/entities/staff.model';
 import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 import { CartReservationItem } from '@/domain/entities/cart.model';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
 import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
@@ -26,7 +25,8 @@ import { RoomHeroComponent } from './components/room-hero/room-hero.component';
 import { RoomGeneralInfoComponent } from './components/room-general-info/room-general-info.component';
 import { RoomAmenitiesComponent } from './components/room-amenities/room-amenities.component';
 import { RoomPoliciesComponent } from './components/room-policies/room-policies.component';
-import { RoomBookingCalendarComponent, BookingDateRange } from './components/room-booking-calendar/room-booking-calendar.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
+import { GuestStepperComponent } from '@/presentation/shared/components/guest-stepper/guest-stepper.component';
 import { RoomRatingsComponent } from './components/room-ratings/room-ratings.component';
 import { RoomDetailsNavComponent, RoomDetailsSearchParams } from './components/room-details-nav/room-details-nav.component';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -44,7 +44,6 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   standalone: true,
   imports: [
     ButtonComponent,
-    SelectComponent,
     RoomDetailsNavComponent,
     FooterComponent,
     ModalComponent,
@@ -53,7 +52,8 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
     RoomGeneralInfoComponent,
     RoomAmenitiesComponent,
     RoomPoliciesComponent,
-    RoomBookingCalendarComponent,
+    CalendarComponent,
+    GuestStepperComponent,
     RoomRatingsComponent,
     NgIconComponent,
   ],
@@ -68,7 +68,7 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomDetailsComponent implements OnInit {
-  readonly router = inject(Router);
+  private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly getPublicUnitUseCase = inject(GetPublicUnitUseCase);
@@ -95,6 +95,7 @@ export class RoomDetailsComponent implements OnInit {
     if (!ci || !co) return 0;
     const [cy, cm, cd] = ci.split('-').map(Number);
     const [oy, om, od] = co.split('-').map(Number);
+    if ([cy, cm, cd, oy, om, od].some(Number.isNaN)) return 0;
     return Math.round(
       (new Date(oy, om - 1, od).getTime() - new Date(cy, cm - 1, cd).getTime()) / 86_400_000,
     );
@@ -104,13 +105,7 @@ export class RoomDetailsComponent implements OnInit {
 
   readonly canReserve = computed(() => !!this.checkIn() && !!this.checkOut() && this.nights() > 0);
 
-  readonly guestOptions = computed<SelectOption[]>(() => {
-    const max = this.unit()?.maxGuests ?? 4;
-    return Array.from({ length: max }, (_, i) => ({
-      value: i + 1,
-      label: i + 1 === 1 ? '1 Huésped' : `${i + 1} Huéspedes`,
-    }));
-  });
+  readonly maxGuests = computed(() => this.unit()?.maxGuests ?? 4);
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
     { label: 'Habitaciones', route: '/booking' },
@@ -160,13 +155,9 @@ export class RoomDetailsComponent implements OnInit {
     });
   }
 
-  onDateRangeChange(range: BookingDateRange): void {
+  onDateRangeChange(range: DateRange): void {
     this.checkIn.set(range.checkIn);
     this.checkOut.set(range.checkOut);
-  }
-
-  onGuestChange(value: string | number): void {
-    this.guestsCount.set(Number(value));
   }
 
   onReserveNow(unit: Unit): void {
@@ -181,14 +172,26 @@ export class RoomDetailsComponent implements OnInit {
 
     this.errorMessage.set(null);
 
-    this.getCartUseCase.execute().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (cart) => {
+    this.getCartUseCase.execute().pipe(
+      switchMap((cart) => {
         const existing = cart?.reservationItem;
-        if (existing && existing.unitId !== unit.id) {
-          this.replaceConfirmation.set({ unit, existing });
-          return;
+        if (!existing || existing.unitId === unit.id) {
+          return of({ existing: null as CartReservationItem | null, existingUnit: null as Unit | null });
         }
-        this.saveDraft(unit);
+        return this.getPublicUnitUseCase.execute(existing.unitId).pipe(
+          map((existingUnit) => ({ existing, existingUnit })),
+          catchError(() => of({ existing, existingUnit: null })),
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: ({ existing, existingUnit }) => {
+        if (existing) {
+          const enriched = existingUnit ? { ...existing, unitName: existingUnit.name } : existing;
+          this.replaceConfirmation.set({ unit, existing: enriched });
+        } else {
+          this.saveDraft(unit);
+        }
       },
       error: () => this.saveDraft(unit),
     });

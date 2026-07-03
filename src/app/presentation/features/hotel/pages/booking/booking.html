@@ -19,6 +19,7 @@
     <booking-toolbar
       [resultsCount]="totalCount()"
       [sortBy]="sortBy()"
+      [initialQuery]="searchQuery()"
       (searchQueryChange)="onSearchQueryChange($event)"
       (sortChange)="onSortChange($event)">
     </booking-toolbar>
@@ -36,9 +37,7 @@
         @for (room of displayedRooms(); track room.id) {
           <booking-room-card
             [room]="room"
-            [isLiked]="likedRoomIds().has(room.id)"
-            (viewDetails)="goToRoomDetails($event)"
-            (toggleLike)="onToggleLike($event)">
+            (viewDetails)="goToRoomDetails($event)">
           </booking-room-card>
         }
       </div>

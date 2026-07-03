@@ -81,7 +81,7 @@
                   <app-input type="number" formControlName="count" />
                 </div>
                 @if (getBedsOf(bedroomIndex).length > 1) {
-                  <app-button type="button" variant="text" size="small" (clicked)="removeBed(bedroomIndex, bedIndex)">
+                  <app-button type="button" variant="secondary" size="medium" (clicked)="removeBed(bedroomIndex, bedIndex)">
                     Eliminar
                   </app-button>
                 }

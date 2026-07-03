@@ -1,6 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  HostListener,
   computed,
   inject,
   signal,
@@ -21,13 +23,11 @@ import {
   bootstrapChevronRight,
   bootstrapChevronUp,
   bootstrapExclamationTriangle,
-  bootstrapXCircle,
 } from '@ng-icons/bootstrap-icons';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
 import { GetGuestReservationsUseCase } from '@/domain/use-cases/reservation/get-guest-reservations.use-case';
 import {
   GetGuestReservationsParams,
@@ -46,6 +46,8 @@ interface FilterTab {
 }
 
 const ITEMS_PER_PAGE = 6;
+const FILTER_DATE_WRAPPER_SELECTOR = '.filter-date-wrapper';
+const SHORT_MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 const FILTER_TABS: FilterTab[] = [
   { key: 'all', label: 'Todas' },
@@ -71,15 +73,14 @@ const SORT_ORDER_OPTIONS: SelectOption[] = [
   selector: 'app-guest-reservations',
   standalone: true,
   imports: [
-    ReactiveFormsModule,
     ButtonComponent,
     FooterComponent,
-    InputComponent,
     NgIcon,
     GuestNavComponent,
     ReservationCardComponent,
     RateReservationModalComponent,
     SelectComponent,
+    CalendarComponent,
   ],
   providers: [
     provideIcons({
@@ -93,7 +94,6 @@ const SORT_ORDER_OPTIONS: SelectOption[] = [
       bootstrapChevronRight,
       bootstrapChevronUp,
       bootstrapExclamationTriangle,
-      bootstrapXCircle,
     }),
   ],
   templateUrl: './guest-reservations.html',
@@ -103,6 +103,7 @@ const SORT_ORDER_OPTIONS: SelectOption[] = [
 export class GuestReservationsComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly getReservationsUseCase = inject(GetGuestReservationsUseCase);
   private readonly guestTokenService = inject(GuestTokenService);
   private readonly loadTrigger = new Subject<GetGuestReservationsParams>();
@@ -110,8 +111,6 @@ export class GuestReservationsComponent {
   readonly filterTabs = FILTER_TABS;
   readonly sortByOptions = SORT_BY_OPTIONS;
   readonly sortOrderOptions = SORT_ORDER_OPTIONS;
-  readonly fromDateControl = new FormControl('');
-  readonly toDateControl = new FormControl('');
   readonly sortByLabels: Record<string, string> = {
     date: 'Fecha entrada',
     status: 'Estado',
@@ -130,8 +129,23 @@ export class GuestReservationsComponent {
   readonly totalItems = signal(0);
   readonly totalPages = signal(1);
   readonly currentPage = signal(1);
+  readonly isFilterCalendarOpen = signal(false);
 
   readonly guestEmail = this.guestTokenService.getGuestEmail() ?? '';
+
+  readonly fromDateDisplay = computed(() => this.formatDateDisplay(this.fromDate() ?? null));
+  readonly toDateDisplay = computed(() => this.formatDateDisplay(this.toDate() ?? null));
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isFilterCalendarOpen()) return;
+    const target = event.target as Element | null;
+    if (!target) return;
+    const wrapper = this.el.nativeElement.querySelector(FILTER_DATE_WRAPPER_SELECTOR) as Element | null;
+    if (wrapper && !wrapper.contains(target)) {
+      this.isFilterCalendarOpen.set(false);
+    }
+  }
 
   constructor() {
     this.loadTrigger.pipe(
@@ -186,14 +200,8 @@ export class GuestReservationsComponent {
     const page = p.get('page');
 
     if (status && this.isValidFilter(status)) this.activeFilter.set(status);
-    if (fromDate) {
-      this.fromDate.set(fromDate);
-      this.fromDateControl.setValue(fromDate);
-    }
-    if (toDate) {
-      this.toDate.set(toDate);
-      this.toDateControl.setValue(toDate);
-    }
+    if (fromDate) this.fromDate.set(fromDate);
+    if (toDate) this.toDate.set(toDate);
     if (sortBy === 'date' || sortBy === 'status' || sortBy === 'createdAt') this.activeSortBy.set(sortBy);
     if (sortOrder === 'asc' || sortOrder === 'desc') this.activeSortOrder.set(sortOrder);
     if (page && Number(page) > 1) this.currentPage.set(Number(page));
@@ -202,7 +210,7 @@ export class GuestReservationsComponent {
   }
 
   private isValidFilter(value: string): value is FilterKey {
-    return ['all', 'active', 'pending', 'confirmed', 'finished', 'cancelled'].includes(value);
+    return FILTER_TABS.some((tab) => tab.key === value);
   }
 
   private syncQueryParams(page: number): void {
@@ -268,36 +276,40 @@ export class GuestReservationsComponent {
     this.loadReservations(1);
   }
 
-  onFromDateChange(value: string | number | null): void {
-    this.fromDate.set(typeof value === 'string' && value ? value : undefined);
-    this.loadReservations(1);
+  toggleFilterCalendar(): void {
+    this.isFilterCalendarOpen.update((v) => !v);
   }
 
-  onToDateChange(value: string | number | null): void {
-    this.toDate.set(typeof value === 'string' && value ? value : undefined);
+  closeFilterCalendar(): void {
+    this.isFilterCalendarOpen.set(false);
+  }
+
+  onFilterDateRangeChange(range: DateRange): void {
+    this.fromDate.set(range.checkIn ?? undefined);
+    this.toDate.set(range.checkOut ?? undefined);
     this.loadReservations(1);
   }
 
   clearFromDate(): void {
-    this.fromDateControl.reset('');
     this.fromDate.set(undefined);
+    this.toDate.set(undefined);
+    this.isFilterCalendarOpen.set(false);
     this.loadReservations(1);
   }
 
   clearToDate(): void {
-    this.toDateControl.reset('');
     this.toDate.set(undefined);
+    this.isFilterCalendarOpen.set(false);
     this.loadReservations(1);
   }
 
   clearAllFilters(): void {
-    this.fromDateControl.reset('');
-    this.toDateControl.reset('');
     this.fromDate.set(undefined);
     this.toDate.set(undefined);
     this.activeFilter.set('all');
     this.activeSortBy.set('date');
     this.activeSortOrder.set('desc');
+    this.isFilterCalendarOpen.set(false);
     this.loadReservations(1);
   }
 
@@ -351,5 +363,12 @@ export class GuestReservationsComponent {
 
   goToReservationDetails(reservationId: string): void {
     void this.router.navigate(['/guest/reservations', reservationId]);
+  }
+
+  private formatDateDisplay(dateStr: string | null): string | null {
+    if (!dateStr) return null;
+    const parts = dateStr.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+    return `${parts[2]} ${SHORT_MONTH_NAMES[parts[1] - 1]} ${parts[0]}`;
   }
 }

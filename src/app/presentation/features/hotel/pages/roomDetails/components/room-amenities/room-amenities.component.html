@@ -2,11 +2,21 @@
   <h2 class="section-title">Amenidades</h2>
 
   @if (amenities().length > 0) {
-    <div class="amenities-grid">
-      @for (amenity of amenities(); track amenity) {
-        <div class="amenity-item">
-          <ng-icon [name]="getAmenityIcon(amenity)" size="20px" aria-hidden="true"></ng-icon>
-          <span>{{ amenity }}</span>
+    <div class="categories-grid">
+      @for (category of groupedAmenities(); track category.name) {
+        <div class="category-group">
+          <div class="category-header">
+            <ng-icon class="amenity-icon" [name]="category.icon" size="16px" aria-hidden="true"></ng-icon>
+            <span class="category-name">{{ category.name }}</span>
+          </div>
+          <div class="amenities-list">
+            @for (amenity of category.amenities; track amenity) {
+              <div class="amenity-item">
+                <ng-icon class="amenity-icon" [name]="getAmenityIcon(amenity)" size="16px" aria-hidden="true"></ng-icon>
+                <span>{{ amenity }}</span>
+              </div>
+            }
+          </div>
         </div>
       }
     </div>

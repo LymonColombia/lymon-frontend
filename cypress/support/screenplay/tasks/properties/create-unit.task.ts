@@ -22,9 +22,9 @@ export const createUnit =
     cy.get('input[placeholder="150"]').click().clear().type(data.pricePerNight);
     cy.get('textarea[placeholder="Spacious suite with private balcony..."]').click().clear().type(data.description);
     cy.get('input[placeholder="Master Bedroom"]').click().clear().type(data.roomName);
-    // bed type select — resolved via label proximity (default is QUEEN, not "Select an option")
+    // bed type select — resolved via label proximity (default is Queen, not "Select an option")
     cy.contains('label', 'Tipo de Cama').parent().find('.select-trigger').click();
-    cy.contains('[role="option"]', 'KING').click();
+    cy.contains('[role="option"]', 'King').click();
 
     for (const amenity of data.amenities) {
       cy.contains('button', amenity).click();

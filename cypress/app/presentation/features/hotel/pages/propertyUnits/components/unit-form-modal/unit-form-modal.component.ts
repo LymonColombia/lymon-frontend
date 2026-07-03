@@ -40,6 +40,16 @@ const AMENITY_OPTIONS = [
 
 const BED_TYPES: BedType[] = ['SINGLE', 'DOUBLE', 'QUEEN', 'KING', 'TWIN', 'BUNK'];
 
+const BED_TYPE_LABELS: Record<string, string> = {
+  SINGLE: 'Sencilla',
+  DOUBLE: 'Doble',
+  SOFA_BED: 'Sofa cama',
+  KING: 'King',
+  QUEEN: 'Queen',
+  TWIN: 'Twin',
+  BUNK: 'Litera',
+};
+
 @Component({
   selector: 'app-unit-form-modal',
   standalone: true,
@@ -72,7 +82,7 @@ export class UnitFormModalComponent {
       if (unit) this.populateForm(unit);
     });
   }
-  readonly bedTypeOptions: SelectOption[] = BED_TYPES.map((type) => ({ value: type, label: type }));
+  readonly bedTypeOptions: SelectOption[] = BED_TYPES.map((type) => ({ value: type, label: BED_TYPE_LABELS[type] }));
 
   readonly form = this.fb.group({
     name: ['', Validators.required],

@@ -62,37 +62,6 @@
   letter-spacing: -0.02em;
 }
 
-/* ===== STATS ROW ===== */
-
-.stats-row {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
-}
-
-.stat-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-md);
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-full);
-  font-family: var(--font-secondary);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-}
-
-.stat-value {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-}
-
-.stat-pill--pending .stat-value   { color: #92680a; }
-.stat-pill--confirmed .stat-value { color: var(--color-primary-dark); }
-.stat-pill--checked_out .stat-value { color: #5b21b6; }
-
 /* ===== FILTER CONTROLS ===== */
 
 .controls-section {
@@ -231,9 +200,63 @@
   gap: var(--spacing-sm);
 }
 
-.date-field app-input {
-  width: 200px;
-  display: block;
+.filter-date-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-date-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  height: 36px;
+  min-width: 160px;
+  padding: 0 var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.filter-date-trigger:hover,
+.filter-date-trigger:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.filter-date-trigger .is-placeholder {
+  color: var(--color-text-disabled);
+}
+
+.field-icon {
+  color: var(--color-primary-dark);
+  flex-shrink: 0;
+}
+
+.filter-cal-dropdown {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.filter-cal-dropdown.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.filter-cal-inner {
+  overflow: hidden;
+  padding-top: var(--spacing-sm);
 }
 
 .date-clear-btn {
@@ -415,7 +438,7 @@
 }
 
 .state-icon--error {
-  background: rgba(220, 53, 69, 0.08);
+  background: color-mix(in srgb, var(--color-error) 8%, transparent);
   color: var(--color-error);
 }
 
@@ -464,8 +487,8 @@
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: rgba(108, 194, 74, 0.08);
-  border: 2px dashed rgba(108, 194, 74, 0.3);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border: 2px dashed color-mix(in srgb, var(--color-primary) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -579,12 +602,5 @@
     font-size: var(--font-size-2xl);
   }
 
-  .controls-row,
-  .filter-tabs {
-    gap: var(--spacing-xs);
-  }
 
-  .filters-row {
-    width: 100%;
-  }
 }

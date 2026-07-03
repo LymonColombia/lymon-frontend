@@ -1,15 +1,19 @@
-<div class="room-card" [class.featured]="room().featured ?? false">
+<div
+  class="room-card"
+  [class.featured]="room().featured ?? false"
+  (mouseenter)="carousel.play()"
+  (mouseleave)="carousel.stop()">
   <button
     class="room-card-btn"
     type="button"
     (click)="onCardClick()"
     [attr.aria-label]="'Ver detalles de ' + room().title">
   </button>
-  <div class="room-image">
-    <img
-      class="room-image-photo"
-      [src]="room().imageUrl ?? 'images/suite2.avif'"
-      [alt]="'Imagen de ' + room().title" />
+  <app-image-carousel
+    #carousel
+    class="room-image"
+    [images]="room().images ?? []"
+    [alt]="'Imagen de ' + room().title">
 
     <div class="image-gradient" aria-hidden="true"></div>
 
@@ -17,24 +21,11 @@
       {{ room().badgeLabel }}
     </div>
 
-    <button
-      class="like-btn"
-      type="button"
-      [class.liked]="isLiked()"
-      (click)="onToggleLike($event)"
-      [attr.aria-label]="isLiked() ? 'Quitar de favoritos' : 'Agregar a favoritos'">
-      @if (isLiked()) {
-        <ng-icon name="bootstrapHeartFill" size="14px" aria-hidden="true"></ng-icon>
-      } @else {
-        <ng-icon name="bootstrapHeart" size="14px" aria-hidden="true"></ng-icon>
-      }
-    </button>
-
     <div class="price-overlay">
       <span class="price-amount">${{ formatPrice(room().price) }}</span>
       <span class="price-period">/noche</span>
     </div>
-  </div>
+  </app-image-carousel>
 
   <div class="room-content">
     <div class="room-meta">
@@ -64,7 +55,7 @@
     <div class="room-features">
       @for (feature of room().features; track feature.label) {
         <div class="feature">
-          <ng-icon class="feature-icon" [name]="feature.icon" size="14px" aria-hidden="true"></ng-icon>
+          <ng-icon class="feature-icon feature-svg-icon" [name]="feature.icon" size="14px" aria-hidden="true"></ng-icon>
           <span>{{ feature.label }}</span>
         </div>
       }

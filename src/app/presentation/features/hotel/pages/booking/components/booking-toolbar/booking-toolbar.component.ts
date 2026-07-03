@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, linkedSignal, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch, bootstrapX } from '@ng-icons/bootstrap-icons';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
@@ -17,11 +17,12 @@ export type BookingSortOption = 'price-asc' | 'price-desc' | 'rating';
 export class BookingToolbarComponent {
   readonly resultsCount = input.required<number>();
   readonly sortBy = input.required<BookingSortOption>();
+  readonly initialQuery = input('');
 
   readonly searchQueryChange = output<string>();
   readonly sortChange = output<BookingSortOption>();
 
-  readonly internalQuery = signal('');
+  readonly internalQuery = linkedSignal(() => this.initialQuery());
 
   readonly sortOptions: SelectOption[] = [
     { value: 'rating', label: 'Mejor valorados' },

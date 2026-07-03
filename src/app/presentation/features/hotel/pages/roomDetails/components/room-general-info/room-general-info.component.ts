@@ -1,48 +1,81 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Unit } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapDoorOpen,
-  bootstrapHouseDoor,
-  bootstrapPeople,
-  bootstrapPeopleFill,
-} from '@ng-icons/bootstrap-icons';
+import { bootstrapPeople } from '@ng-icons/bootstrap-icons';
+
+const SINGLE_BED_ICON = 'single-bed';
+
+const BED_ICON_MAP: Record<string, string> = {
+  SINGLE: SINGLE_BED_ICON,
+  TWIN: SINGLE_BED_ICON,
+  BUNK: SINGLE_BED_ICON,
+  DOUBLE: 'double-bed',
+  KING: 'king-bed',
+  QUEEN: 'king-bed',
+  SOFA_BED: 'sofa-bed',
+};
+
+const BED_LABELS: Record<string, string> = {
+  KING: 'King',
+  QUEEN: 'Queen',
+  DOUBLE: 'Doble',
+  SINGLE: 'Individual',
+  SOFA_BED: 'Sofá cama',
+  TWIN: 'Gemela',
+  BUNK: 'Litera',
+};
+
+interface BedSummary {
+  type: string;
+  label: string;
+  count: number;
+}
 
 @Component({
   selector: 'app-room-general-info',
   standalone: true,
   imports: [NgIconComponent],
-  providers: [provideIcons({ bootstrapDoorOpen, bootstrapHouseDoor, bootstrapPeople, bootstrapPeopleFill })],
+  providers: [provideIcons({ bootstrapPeople })],
   templateUrl: './room-general-info.component.html',
   styleUrl: './room-general-info.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoomGeneralInfoComponent {
+  protected readonly bathIcon = 'bath';
+  protected readonly singleBedIcon = SINGLE_BED_ICON;
+
   readonly unit = input.required<Unit>();
 
-  readonly maxGuestsLabel = computed(() => {
-    const maxGuests = this.unit().maxGuests ?? 0;
-    return `${maxGuests} Persona${maxGuests === 1 ? '' : 's'}`;
-  });
+  readonly maxGuests = computed(() => this.unit().maxGuests ?? 0);
 
-  readonly standardGuestsLabel = computed(() => {
-    const standardGuests = this.unit().standardGuests ?? 0;
-    return `${standardGuests} Persona${standardGuests === 1 ? '' : 's'}`;
-  });
+  readonly bathroomsCount = computed(() => this.unit().bathroomsCount ?? 0);
 
-  readonly bathroomsLabel = computed(() => {
-    const bathroomsCount = this.unit().bathroomsCount ?? 0;
-    return `${bathroomsCount} baño${bathroomsCount === 1 ? '' : 's'}`;
-  });
+  readonly bathroomLabel = computed(() =>
+    this.bathroomsCount() === 1 ? 'Baño' : 'Baños'
+  );
 
-  readonly bedsLabel = computed(() => {
+  readonly bedBreakdown = computed((): BedSummary[] => {
     const beds = this.unit().bedrooms?.flatMap((bedroom) => bedroom.beds ?? []) ?? [];
+    const grouped: Record<string, number> = {};
 
-    if (beds.length === 0) {
-      return 'Sin información';
+    for (const bed of beds) {
+      grouped[bed.type] = (grouped[bed.type] ?? 0) + bed.count;
     }
 
-    const totalBeds = beds.reduce((sum, bed) => sum + (bed.count ?? 0), 0);
-    return `${totalBeds} cama${totalBeds === 1 ? '' : 's'}`;
+    return Object.entries(grouped)
+      .filter(([, count]) => count > 0)
+      .map(([type, count]) => ({
+        type,
+        label: BED_LABELS[type] ?? type,
+        count,
+      }));
   });
+
+  readonly totalBeds = computed(() =>
+    this.bedBreakdown().reduce((sum, b) => sum + b.count, 0)
+  );
+
+  protected getBedIcon(type: string): string {
+    return BED_ICON_MAP[type] ?? SINGLE_BED_ICON;
+  }
 }

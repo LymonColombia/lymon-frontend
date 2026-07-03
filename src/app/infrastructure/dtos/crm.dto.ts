@@ -14,12 +14,10 @@ export interface CrmGuestDto {
   guestId: string;
   fullName: string;
   primaryEmail: string;
-  phones: Array<{
-    number?: string;
-    isPrimary?: boolean;
-  }>;
+  phone: string | null;
   status: string;
   tags: string[];
+  lifecycleStatus: string;
 }
 
 export interface CrmGuestBookingDto {
@@ -96,4 +94,11 @@ export interface CrmGuestMonthlySpendDto {
   month: number;
   label: string;
   totalSpend: number;
+}
+
+export interface CrmGuestStatsDto {
+  monthlySpending: {
+    items: CrmGuestMonthlySpendDto[];
+  };
+  bookingOrigins: CrmGuestBookingOriginsResponseDto;
 }
