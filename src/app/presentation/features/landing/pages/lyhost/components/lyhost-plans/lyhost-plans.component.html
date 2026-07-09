@@ -7,16 +7,18 @@
         <span>con el plan perfecto</span>
       </h2>
       <p>
-        Herramientas profesionales para propietarios y administradores de alojamientos turísticos.
-        Los huéspedes reservan gratis.
+        Los mejores planes con herramientas profesionales para propietarios y administradores de alojamientos turísticos.
       </p>
     </div>
 
     <div class="plans-grid">
       @for (plan of plans; track plan.type) {
-        <article class="plan-card" [class.plan-highlighted]="isHighlighted(plan)">
+        <article class="plan-card" [class.plan-highlighted]="isHighlighted(plan)" [class.plan-trial]="isTrialPlan(plan)">
           @if (isHighlighted(plan)) {
             <div class="plan-badge">Más popular</div>
+          }
+          @if (isTrialPlan(plan)) {
+            <div class="plan-trial-badge">5 días gratis</div>
           }
 
           <div class="plan-header">
@@ -46,6 +48,12 @@
               </div>
             }
           </div>
+
+          @if (isTrialPlan(plan)) {
+            <p class="plan-trial-pitch">
+              Configura tu primera propiedad, carga tus habitaciones y recibe tu primera reserva — todo en el primer día.
+            </p>
+          }
 
           <app-button variant="secondary" size="medium" [fullWidth]="true">
             {{ isCustomPrice(plan) ? 'Contactar ventas' : 'Empezar prueba gratuita' }}

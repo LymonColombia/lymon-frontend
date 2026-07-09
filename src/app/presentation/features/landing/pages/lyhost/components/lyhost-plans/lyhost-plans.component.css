@@ -113,6 +113,51 @@
   color: var(--color-bg-primary);
 }
 
+.plan-trial {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+  animation: trial-glow 2.8s ease-in-out infinite;
+}
+
+.plan-trial .plan-price {
+  color: var(--color-primary);
+}
+
+.plan-trial-badge {
+  position: absolute;
+  top: calc(var(--spacing-md) * -1);
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+  color: var(--color-primary);
+  font-family: var(--font-secondary);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  padding: 2px var(--spacing-md);
+  white-space: nowrap;
+}
+
+.plan-trial-pitch {
+  flex: 1;
+  margin: 0 0 var(--spacing-3xl);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-tertiary);
+  border-left: 2px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  padding-left: var(--spacing-md);
+}
+
+@keyframes trial-glow {
+  0%, 100% {
+    box-shadow: var(--shadow-sm), 0 0 12px color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+  50% {
+    box-shadow: var(--shadow-sm), 0 0 28px color-mix(in srgb, var(--color-primary) 22%, transparent);
+  }
+}
+
 .plan-badge {
   position: absolute;
   top: calc(var(--spacing-md) * -1);

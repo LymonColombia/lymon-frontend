@@ -12,32 +12,26 @@ export const LYHOST_FEATURES: LyhostFeature[] = [
     icon: 'bootstrapWindow',
   },
   {
-    title: 'Channel Manager',
-    description:
-      'Sincronización en tiempo real con Airbnb, Booking, Vrbo y más. Sin overbookings.',
-    icon: 'bootstrapDiagram3',
-  },
-  {
     title: 'Gestión Centralizada',
     description:
       'Todas tus propiedades, reservas, personal y finanzas en un solo panel de control.',
     icon: 'bootstrapBuildingGear',
   },
   {
-    title: 'CRM de Huéspedes',
+    title: 'Conoce a tus huéspedes',
     description:
-      'Fideliza a tus huéspedes con comunicaciones personalizadas y ofertas exclusivas.',
+      'Historial de cada persona que se queda contigo. Así tendrás comunicaciones personalizadas y cada visita se sentirá como en casa.',
     icon: 'bootstrapPeople',
   },
   {
     title: 'Métricas en Tiempo Real',
-    description: 'Dashboards con ocupación, revenue, ADR, RevPAR y más KPIs esenciales.',
+    description: 'Ocupación, ingresos y huéspedes activos. Todo actualizado al instante desde cualquier dispositivo.',
     icon: 'bootstrapGraphUpArrow',
   },
   {
-    title: 'Multi-Tenant',
+    title: 'Tu hotel con tu identidad',
     description:
-      'Cada cliente con su espacio aislado y seguro. Landing privada con marca propia.',
+      'Cada propiedad tiene su propia página de reservas con tu identidad. Tus huéspedes reservan contigo, no con un intermediario.',
     icon: 'bootstrapWindowStack',
   },
 ];

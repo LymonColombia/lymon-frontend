@@ -10,14 +10,13 @@
 
   <div class="container ecosystem-inner">
     <div class="ecosystem-copy">
-      <div class="section-chip"><span>ECOSISTEMA</span></div>
+      <div class="section-chip"><span>CARACTERÍSTICAS</span></div>
       <h2>
-        Un centro de control<br />
-        <span>para todo</span>
+        Todo tu hotel<br />
+        <span>conectado</span>
       </h2>
       <p>
-        LyHost conecta todas tus plataformas de distribución en un solo punto.
-        Sincronización bidireccional, sin conflictos, sin overbookings.
+        LyHost conecta todos los módulos de tu operación: Reservas, huéspedes, equipo, finanzas y experiencias. Un solo sistema, todo en tiempo real.
       </p>
 
       <div class="ecosystem-list">
@@ -35,7 +34,7 @@
     </div>
 
     <div class="ecosystem-visual">
-      <svg width="340" height="340" viewBox="0 0 340 340" fill="none" class="eco-orbit" aria-label="LyHost ecosystem animation">
+      <svg width="360" height="360" viewBox="0 0 360 360" fill="none" class="eco-orbit" aria-label="LyHost ecosystem animation">
         <defs>
           <linearGradient id="center-grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="var(--color-primary)"></stop>
@@ -83,19 +82,25 @@
 
         <g class="breathing-core">
           <circle [attr.cx]="cx" [attr.cy]="cy" r="34" fill="url(#center-grad)"></circle>
-          <foreignObject [attr.x]="cx - 16" [attr.y]="cy - 16" width="32" height="32" aria-hidden="true">
-            <ng-icon name="bootstrapHouseFill" size="32px" style="color: white; display: flex;"></ng-icon>
-          </foreignObject>
+          <image
+            href="images/LyHost.svg"
+            [attr.x]="cx - 26"
+            [attr.y]="cy - 10"
+            width="52"
+            height="20"
+            style="filter: brightness(0) invert(1);"
+            aria-hidden="true"
+          />
         </g>
 
-        <text [attr.x]="cx" [attr.y]="cy + 52" text-anchor="middle" class="center-label">LyHost</text>
-
-        @for (node of nodes; track node.label) {
+@for (node of nodes; track node.label) {
           <g>
-            <rect [attr.x]="node.x - 33" [attr.y]="node.y - 33" width="66" height="66" rx="15" fill="url(#node-grad)"></rect>
-            <rect [attr.x]="node.x - 32" [attr.y]="node.y - 32" width="64" height="64" rx="14" fill="var(--color-bg-primary)"></rect>
-            <circle [attr.cx]="node.x" [attr.cy]="node.y - 7" r="5" [attr.fill]="node.accent" fill-opacity="0.9"></circle>
-            <text [attr.x]="node.x" [attr.y]="node.y + 13" text-anchor="middle" class="node-title">{{ node.label }}</text>
+            <rect [attr.x]="node.x - 38" [attr.y]="node.y - 38" width="76" height="76" rx="15" fill="url(#node-grad)"></rect>
+            <rect [attr.x]="node.x - 37" [attr.y]="node.y - 37" width="74" height="74" rx="14" fill="var(--color-bg-primary)"></rect>
+            <foreignObject [attr.x]="node.x - 12" [attr.y]="node.y - 22" width="24" height="24" aria-hidden="true">
+              <ng-icon [name]="node.icon" size="24px" [style.color]="node.accent" style="display: flex;"></ng-icon>
+            </foreignObject>
+            <text [attr.x]="node.x" [attr.y]="node.y + 18" text-anchor="middle" class="node-title">{{ node.label }}</text>
           </g>
         }
       </svg>
