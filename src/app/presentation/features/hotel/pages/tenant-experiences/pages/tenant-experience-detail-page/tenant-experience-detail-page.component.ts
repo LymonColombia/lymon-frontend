@@ -2,28 +2,33 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signa
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapImages, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStar } from '@ng-icons/bootstrap-icons';
+import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapGeoAlt, bootstrapImages, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapStar } from '@ng-icons/bootstrap-icons';
 import { Experience } from '@/domain/entities/experience.model';
 import {
   HotelPageActionsDirective,
-  HotelPageLayoutComponent
+  HotelPageLayoutComponent,
 } from '@/presentation/features/hotel/components/hotel-page-layout/hotel-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
-import { LocationMap } from "@/presentation/features/hotel/components/location-map/location-map";
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
-import { formatDayList, formatCurrencyCop, getCategoryLabel } from '../../models/experience-form.model';
+import { formatCurrencyCop, formatDayList, getCategoryLabel } from '../../models/experience-form.model';
+
 @Component({
   selector: 'app-tenant-experience-detail-page',
   standalone: true,
-  imports: [
-    HotelPageLayoutComponent,
-    HotelPageActionsDirective,
-    ButtonComponent,
-    NgIcon,
-    LocationMap
-],
-  providers: [provideIcons({ bootstrapStar, bootstrapPencilSquare , bootstrapCash,bootstrapClock,bootstrapPeopleFill,bootstrapCalendar3,bootstrapDashCircle,bootstrapBuilding,bootstrapGeoAlt,bootstrapFlag,bootstrapSignpost, bootstrapImages})],
+  imports: [HotelPageLayoutComponent, HotelPageActionsDirective, ButtonComponent, NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapStar,
+      bootstrapPencilSquare,
+      bootstrapCash,
+      bootstrapPeopleFill,
+      bootstrapCalendar3,
+      bootstrapBuilding,
+      bootstrapGeoAlt,
+      bootstrapImages,
+    }),
+  ],
   templateUrl: './tenant-experience-detail-page.component.html',
   styleUrl: './tenant-experience-detail-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,46 +43,6 @@ export class TenantExperienceDetailPageComponent {
   readonly errorMessage = signal<string | null>(null);
   readonly experience = signal<Experience | null>(null);
 
-
-  readonly durationLabel = computed(() => {
-    const item = this.experience();
-    const durationHours = item?.durationHours;
-    if (durationHours == null) {
-      return 'No especificado';
-    }
-    return `${durationHours}h`;
-  });
-
-
-  readonly associationPropertyLabel = computed(() => {
-    const item = this.experience();
-    return item?.propertyName ??  'No asociada';
-  });
-  
-  readonly associatedUnitLabels = computed(() => {
-    const item = this.experience();
-    if (!item) return [];
-
-    if (item.units?.length) {
-      return item.units.map((unit) => unit.name);
-    }
-
-    return item.unitIds ?? [];
-  });
-
-  readonly hasAssociation = computed(() => {
-    const item = this.experience();
-    return Boolean(item?.propertyId || item?.unitIds?.length );
-  });
-
-  readonly availabilityTypeLabel = computed(() => {
-    const type = this.experience()?.availabilityType;
-    if (type === 'DATE_RANGE') return 'Rango de fechas';
-    if (type === 'RECURRING') return 'Recurrencia';
-    if (type === 'ONE_TIME') return 'Una sola vez';
-    return 'No especificada';
-  });
-
   readonly categoryLabel = computed(() => {
     const item = this.experience();
     return item ? getCategoryLabel(item.category) : '';
@@ -88,10 +53,20 @@ export class TenantExperienceDetailPageComponent {
     return item ? formatCurrencyCop(item.priceCop) : '';
   });
 
-  // Cover is mediaUrls[0] (placeholder when empty); the rest is the gallery.
+  readonly scopeLabel = computed(() => (this.experience()?.scope === 'PROPERTY' ? 'Propiedad' : 'Global'));
+  readonly propertyLabel = computed(() => this.experience()?.propertyName ?? 'Sin propiedad');
+  readonly availabilitySummary = computed(() => {
+    const item = this.experience();
+    if (!item) {
+      return '';
+    }
+
+    const { recurrence } = item;
+    return `${formatDayList(recurrence.daysOfWeek)} - ${recurrence.startTime} a ${recurrence.endTime}`;
+  });
+
   readonly coverImageOf = coverImageOf;
   readonly galleryUrls = computed(() => this.experience()?.mediaUrls?.slice(1) ?? []);
-
 
   constructor() {
     this.loadExperience();
@@ -103,7 +78,9 @@ export class TenantExperienceDetailPageComponent {
       return;
     }
 
-    this.router.navigate(['/tenant-experiences', item.id, 'edit']);
+    this.router.navigate(['/tenant-experiences'], {
+      queryParams: { modal: 'edit', id: item.id },
+    });
   }
 
   private loadExperience(): void {
@@ -114,7 +91,8 @@ export class TenantExperienceDetailPageComponent {
       return;
     }
 
-    this.getExperienceByIdUseCase.execute(id)
+    this.getExperienceByIdUseCase
+      .execute(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (experience) => {
@@ -126,25 +104,5 @@ export class TenantExperienceDetailPageComponent {
           this.isLoading.set(false);
         },
       });
-  }
-
-  formatDateTime(value?: string): string {
-    if (!value) {
-      return 'Sin fecha';
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return value;
-    }
-
-    return new Intl.DateTimeFormat('es-CO', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    }).format(date);
-  }
-
-  dayLabel(day: number): string {
-    return formatDayList([day]);
   }
 }

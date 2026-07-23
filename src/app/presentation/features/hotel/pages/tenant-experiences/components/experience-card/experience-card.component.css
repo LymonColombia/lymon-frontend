@@ -5,6 +5,7 @@
 .experience-card {
   display: flex;
   flex-direction: column;
+  height: 100%;
   min-height: 340px;
   border-radius: var(--radius-xl);
   border: var(--input-border-width) solid transparent;
@@ -13,9 +14,11 @@
     linear-gradient(var(--color-bg-primary), var(--color-bg-primary)) padding-box,
     var(--color-primary-gradient) border-box;
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
   transition:
     transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .experience-card:hover {
@@ -23,9 +26,14 @@
   box-shadow: var(--shadow-lg);
 }
 
+.experience-card:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-lg), var(--input-focus-ring);
+}
+
 .experience-cover {
   width: 100%;
-  height: 148px;
+  height: 152px;
   object-fit: cover;
   background: var(--color-bg-tertiary);
 }
@@ -36,9 +44,11 @@
   gap: var(--spacing-sm);
   padding: var(--spacing-xl);
   flex: 1;
+  min-height: 0;
 }
 
 .card-top {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -65,12 +75,97 @@
   color: var(--color-text-secondary);
 }
 
+.actions-menu-shell {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.actions-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.actions-menu-trigger:hover,
+.actions-menu-trigger:focus-visible {
+  background: var(--color-primary);
+  color: var(--color-bg-primary);
+  transform: translateY(-1px);
+}
+
+.actions-menu-trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--input-focus-ring);
+}
+
+.actions-menu {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  right: 0;
+  z-index: 5;
+  min-width: 160px;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-lg);
+  border: var(--input-border-width) solid var(--color-border-light);
+  background: var(--color-bg-primary);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 2px;
+}
+
+.actions-menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  text-align: left;
+}
+
+.actions-menu-item:hover,
+.actions-menu-item:focus-visible {
+  background: var(--color-bg-tertiary);
+  outline: none;
+}
+
+.actions-menu-item--danger {
+  color: var(--color-danger);
+}
+
+.actions-menu-item--danger:hover,
+.actions-menu-item--danger:focus-visible {
+  background: rgba(204, 38, 38, 0.08);
+}
+
 .experience-name {
   margin: 0;
   color: var(--color-text-primary);
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
+  min-height: calc(var(--font-size-xl) * var(--line-height-tight) * 2);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .experience-description {
@@ -107,19 +202,13 @@
   font-weight: var(--font-weight-medium);
 }
 
-.actions {
-  display: flex;
-  flex-direction: row;
-  gap: var(--spacing-sm);
-}
-
 @media (max-width: 768px) {
   .experience-card {
-    min-height: 300px;
+    min-height: 356px;
   }
 
   .experience-cover {
-    height: 120px;
+    height: 132px;
   }
 
   .meta-grid {

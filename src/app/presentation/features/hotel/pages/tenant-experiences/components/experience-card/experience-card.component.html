@@ -1,4 +1,10 @@
-<article class="experience-card">
+<article
+  class="experience-card"
+  tabindex="0"
+  [attr.aria-label]="'Ver detalle de ' + experience().name"
+  (click)="onCardActivate()"
+  (keydown)="onCardKeydown($event)"
+>
   <img
     class="experience-cover"
     [src]="imageUrl()"
@@ -9,47 +15,51 @@
   <div class="experience-content">
     <div class="card-top">
       <span class="scope-badge">{{ categoryLabel() }}</span>
+
+      <div class="actions-menu-shell" (click)="$event.stopPropagation()" (keydown)="onCardKeydown($event)">
+        <button
+          type="button"
+          class="actions-menu-trigger"
+          [attr.aria-expanded]="isActionsOpen()"
+          aria-label="Abrir opciones de experiencia"
+          (click)="toggleActions($event)"
+        >
+          <ng-icon name="bootstrapThreeDotsVertical" size="16px"></ng-icon>
+        </button>
+
+        @if (isActionsOpen()) {
+          <div class="actions-menu" role="menu">
+            <button type="button" class="actions-menu-item" role="menuitem" (click)="onEdit()">
+              <ng-icon name="bootstrapPencilSquare" size="14px"></ng-icon>
+              Editar
+            </button>
+            <button type="button" class="actions-menu-item actions-menu-item--danger" role="menuitem" (click)="onDelete()">
+              <ng-icon name="bootstrapTrash" size="14px"></ng-icon>
+              Eliminar
+            </button>
+          </div>
+        }
+      </div>
     </div>
 
     <h3 class="experience-name">{{ experience().name }}</h3>
-     <p class="meta-line">
-        <ng-icon name="bootstrapGeoAltFill" size="14px"></ng-icon>
-        {{ locationLabel() }}
-      </p>
 
     <div class="meta-grid">
-     
+        <p class="meta-line">
+      <ng-icon name="bootstrapGeoAltFill" size="14px"></ng-icon>
+      {{ experience().city }}
+    </p>
+
       <p class="meta-line">
         <ng-icon name="bootstrapTagFill" size="14px"></ng-icon>
         {{ priceLabel() }}
       </p>
-      @if(experience().durationHours){
-      <p class="meta-line">
-        <ng-icon name="bootstrapClockFill" size="14px"></ng-icon>
-        {{ experience().durationHours }} hora{{ experience().durationHours !== 1 ? 's' : '' }}
-      </p>
-      }
       <p class="meta-line">
         <ng-icon name="bootstrapPeopleFill" size="14px"></ng-icon>
-        {{ experience().minimumParticipants}}-{{ experience().capacity }} personas
+        {{ experience().minimumParticipants }}-{{ experience().capacity }} personas
       </p>
     </div>
 
     <p class="availability-summary">{{ availabilitySummary() }}</p>
-
-    <div class="actions">
-      <app-button type="button" variant="primary" size="small" (clicked)="onView()">
-        <ng-icon name="bootstrapEye" size="14px"></ng-icon>
-        Ver detalle
-      </app-button>
-      <app-button type="button" variant="primary" size="small" (clicked)="onEdit()">
-        <ng-icon name="bootstrapPencilSquare" size="14px"></ng-icon>
-        Editar
-      </app-button>
-      <app-button type="button" variant="primary" size="small" (clicked)="onDelete()">
-        <ng-icon name="bootstrapTrash" size="14px"></ng-icon>
-        Eliminar
-      </app-button>
-    </div>
   </div>
 </article>

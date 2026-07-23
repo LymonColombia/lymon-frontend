@@ -60,6 +60,12 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--spacing-xl);
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+}
+
+.experience-grid > app-experience-card {
+  height: 100%;
 }
 
 .alert {
@@ -111,6 +117,27 @@
   padding: var(--spacing-6xl);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+}
+
+.loading-state--modal {
+  padding: var(--spacing-xl) 0;
+}
+
+.experience-modal-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.modal-alert-shell {
+  margin-bottom: 0;
+}
+
+.modal-help-copy {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
 }
 
 .loading-spinner {

@@ -5,7 +5,6 @@
         <th>Experiencia</th>
         <th>Categoria</th>
         <th class="center-td">Precio</th>
-        <th class="center-td">Duracion</th>
         <th class="center-td">Participantes Min.</th>
         <th class="center-td">Participantes Max.</th>
         <th>Disponibilidad</th>
@@ -20,18 +19,12 @@
               <img [src]="coverImageOf(experience.mediaUrls)" [alt]="'Portada de ' + experience.name" />
               <div class="name-meta">
                 <strong>{{ experience.name }}</strong>
-                <span>{{ experience.location?.label || 'Punto acordado con el usuario' }}</span>
+                <span>{{ experience.city }}</span>
               </div>
             </div>
           </td>
           <td>{{ getCategoryLabel(experience.category) }}</td>
           <td>{{ formatCurrencyCop(experience.priceCop) }}</td>
-          @if(experience.durationHours){
-            <td class="center-td">{{ experience.durationHours }}h</td>
-          }@else{
-            <td class="center-td">No especificado</td>
-
-          }
           <td class="center-td">{{ experience.minimumParticipants }}</td>
           <td class="center-td">{{ experience.capacity }}</td>
           <td class="availability-cell">{{ getAvailabilitySummary(experience) }}</td>
