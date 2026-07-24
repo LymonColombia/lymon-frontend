@@ -121,7 +121,7 @@
 }
 
 .breathing-core {
-  transform-origin: 170px 170px;
+  transform-origin: 180px 180px;
   animation: breathing 3.2s ease-in-out infinite;
 }
 
@@ -139,7 +139,7 @@
 
 .node-title {
   fill: var(--color-text-primary);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: var(--font-weight-semibold);
   font-family: var(--font-secondary);
 }

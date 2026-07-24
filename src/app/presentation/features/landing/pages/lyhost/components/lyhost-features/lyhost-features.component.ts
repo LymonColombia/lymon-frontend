@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapWindow,
-  bootstrapDiagram3,
   bootstrapBuildingGear,
   bootstrapPeople,
   bootstrapGraphUpArrow,
@@ -20,7 +19,6 @@ import { LyhostFeature, LYHOST_FEATURES } from '@/domain/entities/lyhost-feature
   viewProviders: [
     provideIcons({
       bootstrapWindow,
-      bootstrapDiagram3,
       bootstrapBuildingGear,
       bootstrapPeople,
       bootstrapGraphUpArrow,

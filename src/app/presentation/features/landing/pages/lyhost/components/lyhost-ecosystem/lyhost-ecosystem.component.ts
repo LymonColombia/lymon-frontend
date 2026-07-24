@@ -7,7 +7,14 @@ import {
   inject,
 } from '@angular/core';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { bootstrapHouseFill } from '@ng-icons/bootstrap-icons';
+import {
+  bootstrapCalendarCheckFill,
+  bootstrapPeopleFill,
+  bootstrapClockFill,
+  bootstrapCashStack,
+  bootstrapStarFill,
+  bootstrapBarChartFill,
+} from '@ng-icons/bootstrap-icons';
 
 const COLOR_PRIMARY = '#2ec094';
 
@@ -17,12 +24,16 @@ const GAP_MS = 1400;
 const CYCLE_MS = (TRIP_MS + GAP_MS) * 2;
 
 const RADIUS = 128;
-const CX = 170;
-const CY = 170;
+const CX = 180;
+const CY = 180;
 
 const NODE_DEFS = [
-  { label: 'Airbnb', baseAngle: 0, accent: '#FF5A5F', cycleOffset: 0 },
-  { label: 'Booking', baseAngle: 180, accent: '#003580', cycleOffset: 0 },
+  { label: 'Reservas', baseAngle: 0, accent: '#2ec094', icon: 'bootstrapCalendarCheckFill', cycleOffset: 0 },
+  { label: 'Huéspedes', baseAngle: 60, accent: '#3b82f6', icon: 'bootstrapPeopleFill', cycleOffset: 600 },
+  { label: 'Turnos', baseAngle: 120, accent: '#f59e0b', icon: 'bootstrapClockFill', cycleOffset: 1200 },
+  { label: 'Finanzas', baseAngle: 180, accent: '#10b981', icon: 'bootstrapCashStack', cycleOffset: 1800 },
+  { label: 'Experiencias', baseAngle: 240, accent: '#8b5cf6', icon: 'bootstrapStarFill', cycleOffset: 2400 },
+  { label: 'Reportes', baseAngle: 300, accent: '#ef4444', icon: 'bootstrapBarChartFill', cycleOffset: 3000 },
 ] as const;
 
 function getPos(angleDeg: number) {
@@ -95,7 +106,16 @@ function computeParticles(nx: number, ny: number, elapsed: number, cycleOffset: 
   selector: 'app-lyhost-ecosystem',
   standalone: true,
   imports: [NgIconComponent],
-  providers: [provideIcons({ bootstrapHouseFill })],
+  providers: [
+    provideIcons({
+      bootstrapCalendarCheckFill,
+      bootstrapPeopleFill,
+      bootstrapClockFill,
+      bootstrapCashStack,
+      bootstrapStarFill,
+      bootstrapBarChartFill,
+    }),
+  ],
   templateUrl: './lyhost-ecosystem.component.html',
   styleUrl: './lyhost-ecosystem.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -110,10 +130,11 @@ export class LyhostEcosystemComponent implements OnInit, OnDestroy {
   private rafId = 0;
 
   readonly checklistItems = [
-    'Sincronización en tiempo real',
-    'Calendario unificado',
-    'Precios dinámicos',
-    'Reportes consolidados',
+    'Reservas y disponibilidad',
+    'Historial de huéspedes',
+    'Turnos y equipo',
+    'Finanzas',
+    'Experiencias para tus visitantes',
   ];
 
   get nodes(): OrbitNode[] {

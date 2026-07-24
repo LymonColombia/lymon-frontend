@@ -20,29 +20,21 @@ export interface LyhostPlan {
 export const LYHOST_PLANS: readonly LyhostPlan[] = [
   {
     type: 'TRIAL',
-    name: 'Trial',
-    subtitle: 'Prueba Lymon antes de suscribirte',
+    name: 'Prueba LyHost',
+    subtitle: '5 días para descubrir todo el potencial.',
     price: '$0',
     isFree: true,
     priceNote: 'Acceso de prueba por tiempo limitado',
     detailsSections: [
       {
-        title: 'CAPACIDAD',
-        items: ['Hasta 1 propiedad', ROOM_LABELS.unlimitedRooms],
-      },
-      {
-        title: 'INTEGRACIONES',
-        items: ['Airbnb', 'Booking.com'],
-      },
-      {
-        title: 'GESTIÓN',
-        items: ['Multicalendario unificado', 'Inbox combinado'],
+        title: 'ACCESO',
+        items: ['Acceso completo a todos los módulos'],
       },
     ],
   },
   {
     type: 'LYMON_ONE',
-    name: 'LymonOne',
+    name: 'LyHost One',
     subtitle: 'Ideal para propietarios independientes',
     price: '$89.900',
     priceSuffix: '/mes',
@@ -53,22 +45,24 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
         items: ['Hasta 5 propiedades', 'Hasta 2 usuarios', ROOM_LABELS.unlimitedRooms],
       },
       {
-        title: 'INTEGRACIONES',
-        items: ['Airbnb', 'Booking.com'],
-      },
-      {
         title: 'GESTIÓN',
-        items: ['Multicalendario unificado', 'Inbox combinado', 'Roles y turnos básicos'],
+        items: [
+          'Gestión básica de inventario',
+          'Registro de auditoría',
+          '2 experiencias activas',
+          'Landing privada personalizada',
+          'Roles y turnos básicos',
+        ],
       },
     ],
   },
   {
     type: 'PLUS',
-    name: 'LymonPlus',
+    name: 'LyHost Plus',
     subtitle: 'Para administradores profesionales',
     price: '$189.900',
     priceSuffix: '/mes',
-    priceNote: 'Incluye todo lo de LymonOne +',
+    priceNote: 'Incluye todo lo de LyHost One +',
     detailsSections: [
       {
         title: 'CAPACIDAD',
@@ -76,7 +70,7 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
       },
       {
         title: 'FUNCIONES PREMIUM',
-        items: ['Landing privada personalizada', 'CRM integrado', 'Turnos con biometría'],
+        items: ['Landing privada personalizada', 'CRM integrado'],
       },
       {
         title: 'GESTIÓN AVANZADA',
@@ -86,23 +80,19 @@ export const LYHOST_PLANS: readonly LyhostPlan[] = [
   },
   {
     type: 'PRIME',
-    name: 'LymonPrime',
+    name: 'LyHost Prime',
     subtitle: 'Solución completa sin límites',
     price: '$349.900',
     priceSuffix: '/mes',
-    priceNote: 'Todo incluido + personalización',
+    priceNote: 'Todo incluido',
     detailsSections: [
       {
         title: 'CAPACIDAD',
         items: ['Propiedades ilimitadas', 'Usuarios ilimitados', ROOM_LABELS.unlimitedRooms],
       },
       {
-        title: 'PREMIUM FEATURES',
-        items: ['Todo lo de LymonPlus', 'API completa', 'White-label disponible'],
-      },
-      {
         title: 'SOPORTE ENTERPRISE',
-        items: ['Account manager dedicado', 'Soporte 24/7', 'Capacitación personalizada'],
+        items: ['Soporte 24/7', 'Capacitación personalizada'],
       },
     ],
   },
