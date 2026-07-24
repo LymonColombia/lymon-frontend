@@ -30,8 +30,11 @@ export class ExperienceRepositoryImpl extends ExperienceRepository {
 
   getExperiences(params?: ExperienceQueryParams): Observable<ExperiencesResponse> {
     let queryParams = new HttpParams();
-    if (params?.scope) {
-      queryParams = queryParams.set('scope', params.scope);
+    if (params?.page != null) {
+      queryParams = queryParams.set('page', String(params.page));
+    }
+    if (params?.limit != null) {
+      queryParams = queryParams.set('limit', String(params.limit));
     }
     if (params?.propertyId) {
       queryParams = queryParams.set('propertyId', params.propertyId);

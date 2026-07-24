@@ -1,25 +1,34 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapClockFill,
   bootstrapGeoAltFill,
   bootstrapPeopleFill,
+  bootstrapThreeDotsVertical,
   bootstrapTagFill,
-  bootstrapEye,
   bootstrapPencilSquare,
-  bootstrapTrash
+  bootstrapTrash,
 } from '@ng-icons/bootstrap-icons';
 
-import { formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,getAvailabilitySummary } from '../../models/experience-form.model';
+import { getAvailabilitySummary } from '../../models/experience-form.model';
 import { Experience } from '@/domain/entities/experience.model';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
+import { formatPrice } from '@/presentation/shared/utils/price-formatter';
+import { getCategoryLabel } from '@/presentation/shared/utils/category-experience-formatter';
 
 @Component({
   selector: 'app-experience-card',
   standalone: true,
-  imports: [ButtonComponent, NgIcon],
-  providers: [provideIcons({ bootstrapGeoAltFill, bootstrapTagFill, bootstrapClockFill, bootstrapPeopleFill,bootstrapEye, bootstrapPencilSquare, bootstrapTrash })],
+  imports: [NgIcon],
+  providers: [
+    provideIcons({
+      bootstrapGeoAltFill,
+      bootstrapTagFill,
+      bootstrapPeopleFill,
+      bootstrapThreeDotsVertical,
+      bootstrapPencilSquare,
+      bootstrapTrash,
+    }),
+  ],
   templateUrl: './experience-card.component.html',
   styleUrl: './experience-card.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,13 +39,17 @@ export class ExperienceCardComponent {
   readonly edit = output<string>();
   readonly delete = output<string>();
 
+  readonly isActionsOpen = signal(false);
   readonly imageUrl = computed(() => coverImageOf(this.experience().mediaUrls));
-  readonly priceLabel = computed(() => formatCurrencyCop(this.experience().priceCop));
+  readonly priceLabel = computed(() => `$${formatPrice(this.experience().priceCop)}`);
   readonly categoryLabel = computed(() => getCategoryLabel(this.experience().category));
-  readonly scopeBadgeLabel = computed(() => getScopeBadgeLabel(this.experience().scope));
   readonly availabilitySummary = computed(() => getAvailabilitySummary(this.experience()));
 
-  onView(): void {
+  onCardActivate(): void {
+    if (this.isActionsOpen()) {
+      return;
+    }
+
     const id = this.experience().id;
     if (id) {
       this.view.emit(id);
@@ -46,6 +59,7 @@ export class ExperienceCardComponent {
   onEdit(): void {
     const id = this.experience().id;
     if (id) {
+      this.isActionsOpen.set(false);
       this.edit.emit(id);
     }
   }
@@ -53,8 +67,19 @@ export class ExperienceCardComponent {
   onDelete(): void {
     const id = this.experience().id;
     if (id) {
+      this.isActionsOpen.set(false);
       this.delete.emit(id);
     }
+  }
+
+  toggleActions(event: MouseEvent): void {
+    event.stopPropagation();
+    this.isActionsOpen.update((value) => !value);
+  }
+
+  closeActions(event?: Event): void {
+    event?.stopPropagation();
+    this.isActionsOpen.set(false);
   }
 
 }

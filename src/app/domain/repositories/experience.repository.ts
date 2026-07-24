@@ -3,12 +3,12 @@ import {
   CreateExperienceDto,
   ExperienceResponse,
   ExperiencesResponse,
-  ExperienceScope,
   UpdateExperienceDto,
 } from '@/domain/entities/experience.model';
 
 export interface ExperienceQueryParams {
-  scope?: ExperienceScope;
+  page?: number;
+  limit?: number;
   propertyId?: string;
 }
 
@@ -18,6 +18,5 @@ export abstract class ExperienceRepository {
   abstract createExperience(data: CreateExperienceDto): Observable<unknown>;
   abstract updateExperience(id: string, data: UpdateExperienceDto): Observable<unknown>;
   abstract deleteExperience(id: string): Observable<unknown>;
-  
 }
 

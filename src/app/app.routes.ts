@@ -43,7 +43,6 @@ import { ExperienceComponent } from '@/presentation/features/hotel/pages/experie
 import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
 
 import { TenantExperiencesPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experiences-page/tenant-experiences-page.component';
-import { TenantExperienceFormPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-form-page/tenant-experience-form-page.component';
 import { TenantExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-detail-page/tenant-experience-detail-page.component';
 
 import { StorageTestComponent } from '@/presentation/features/hotel/pages/storageTest/storageTest';
@@ -120,9 +119,7 @@ export const routes: Routes = [
       { path: 'staff-shift', component: StaffShiftComponent },
       { path: 'storage-test', component: StorageTestComponent },
       { path: 'tenant-experiences', component: TenantExperiencesPageComponent },
-      { path: 'tenant-experiences/new', component: TenantExperienceFormPageComponent },
       { path: 'tenant-experiences/:id', component: TenantExperienceDetailPageComponent },
-      { path: 'tenant-experiences/:id/edit', component: TenantExperienceFormPageComponent },
       { path: 'storage-test', component: StorageTestComponent },
       { path: 'tenant-reservations', component: TenantReservations}
     ],

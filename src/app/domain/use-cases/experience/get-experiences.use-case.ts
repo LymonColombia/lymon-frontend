@@ -2,31 +2,24 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Experience, ExperienceScope } from '@/domain/entities/experience.model';
+import { ExperienceListData } from '@/domain/entities/experience.model';
 import {
   ExperienceQueryParams,
   ExperienceRepository,
 } from '@/domain/repositories/experience.repository';
 
-interface GetExperiencesParams extends ExperienceQueryParams {
-  scope?: ExperienceScope;
-}
+export type GetExperiencesParams = ExperienceQueryParams;
 
 @Injectable({ providedIn: 'root' })
 export class GetExperiencesUseCase {
   private readonly repository = inject(ExperienceRepository);
 
-  execute(params?: GetExperiencesParams): Observable<Experience[]> {
-    return this.repository.getExperiences(params).pipe(
-      map((response) => {
-        const data = response.data;
-        if (Array.isArray(data)) {
-          return data;
-        }
-
-        return data.experiences ?? data.items ?? [];
-      }),
-    );
+  execute(params?: GetExperiencesParams): Observable<ExperienceListData> {
+    return this.repository.getExperiences({
+      page: params?.page ,
+      limit: params?.limit,
+      propertyId: params?.propertyId,
+    }).pipe(map((response) => response.data));
   }
 }
 

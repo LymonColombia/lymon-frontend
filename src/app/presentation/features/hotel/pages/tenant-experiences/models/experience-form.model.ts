@@ -1,6 +1,6 @@
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { CreateExperienceDto, Experience, ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MediaItem } from '@/domain/entities/storage.model';
+import { CreateExperienceDto, Experience, ExperienceScope } from '@/domain/entities/experience.model';
 
 export interface DayOption {
   value: number;
@@ -27,41 +27,22 @@ export const DAY_LABEL_BY_VALUE: Readonly<Record<number, string>> = {
   6: 'Sab',
 };
 
-export interface BlackoutRangeFormControls {
-  startAt: FormControl<string|null>;
-  endAt: FormControl<string|null>;
-}
-
 export interface RecurrenceFormControls {
-  daysOfWeek: FormControl<number[]>;
-  startTime:  FormControl<string>;
-  endTime: FormControl<string>;
-}
-
-export interface LocationFormControls {
-  label: FormControl<string>;
-  address: FormControl<string>;
-  lat: FormControl<number|null>; 
-  lng: FormControl<number|null>;
+  daysOfWeek: FormControl<number[]|undefined>;
+  startTime: FormControl<string|undefined>;
+  endTime: FormControl<string|undefined>;
 }
 
 export interface ExperienceFormControls {
   scope: FormControl<ExperienceScope>;
   propertyId: FormControl<string>;
-  unitIds: FormControl<string[]>;
   name: FormControl<string>;
   description: FormControl<string>;
-  category: FormControl<string>;
-  priceCop: FormControl<number|undefined>;
-  durationHours: FormControl<number|undefined>;
-  capacity: FormControl<number|undefined>;
-  coverImageUrl: FormControl<string>;
-  availabilityType: FormControl<ExperienceAvailabilityType>;
-  startAt: FormControl<string>;
-  endAt: FormControl<string>;
-  blackoutRanges: FormArray<FormGroup<BlackoutRangeFormControls>>;
+  city: FormControl<string>;
+  priceCop: FormControl<number>;
+  capacity: FormControl<number>;
+  minimumParticipants: FormControl<number>;
   recurrence: FormGroup<RecurrenceFormControls>;
-  location: FormGroup<LocationFormControls>;
 }
 
 export interface ExperienceFormSubmitPayload {
@@ -76,8 +57,14 @@ export interface ExperienceFormSubmitPayload {
   newMediaFiles: File[];
 }
 
-export function formatDayList(daysOfWeek: number[]): string {
-  if (daysOfWeek.length === 0) {
+
+export const EXPERIENCE_SCOPE_OPTIONS: ReadonlyArray<{ value: ExperienceScope; label: string }> = [
+  { value: 'PROPERTY', label: 'Propiedad' },
+  { value: 'GLOBAL', label: 'Global' },
+];
+
+export function formatDayList(daysOfWeek: number[] | undefined): string {
+  if (!daysOfWeek || daysOfWeek.length === 0) {
     return 'Sin dias configurados';
   }
 
@@ -87,45 +74,10 @@ export function formatDayList(daysOfWeek: number[]): string {
     .join(', ');
 }
 
-export function formatCurrencyCop(priceCop: number): string {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  }).format(priceCop);
-}
-
-export function getCategoryLabel(category: string): string {
-  const normalized = category.toLowerCase();
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-}
-
-export function getScopeBadgeLabel(scope: Experience['scope']): string {
-  return scope === 'PROPERTY' ? 'Propiedad' : 'Global';
-}
-
-export function formatDateTime(value?: string): string {
-  if (!value) return 'Sin fecha';
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-
-  return new Intl.DateTimeFormat('es-CO', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
-}
 
 export function getAvailabilitySummary(experience: Experience): string {
-  if (experience.availabilityType === 'DATE_RANGE') {
-    return `${formatDateTime(experience.startAt)} - ${formatDateTime(experience.endAt)}`;
+  if (experience.availabilityType === 'RECURRING' && experience.recurrence) {
+    return `${formatDayList(experience.recurrence.daysOfWeek)} - ${experience.recurrence.startTime} a ${experience.recurrence.endTime}`;
   }
-
-  if (experience.availabilityType === 'ONE_TIME') {
-    return formatDateTime(experience.startAt);
-  }
-
-  if (!experience.recurrence) return 'Sin recurrencia';
-
-  return `${formatDayList(experience.recurrence.daysOfWeek)} - ${experience.recurrence.startTime} a ${experience.recurrence.endTime}`;
+  return 'Disponible en cualquier momento';
 }
