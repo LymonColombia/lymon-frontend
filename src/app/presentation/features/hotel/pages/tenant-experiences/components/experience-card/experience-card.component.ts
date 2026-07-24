@@ -72,15 +72,6 @@ export class ExperienceCardComponent {
     }
   }
 
-  onCardKeydown(event: KeyboardEvent): void {
-    if (event.key !== 'Enter' && event.key !== ' ') {
-      return;
-    }
-
-    event.preventDefault();
-    this.onCardActivate();
-  }
-
   toggleActions(event: MouseEvent): void {
     event.stopPropagation();
     this.isActionsOpen.update((value) => !value);

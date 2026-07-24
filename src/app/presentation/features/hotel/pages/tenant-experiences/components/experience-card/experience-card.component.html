@@ -1,10 +1,13 @@
 <article
   class="experience-card"
-  tabindex="0"
-  [attr.aria-label]="'Ver detalle de ' + experience().name"
-  (click)="onCardActivate()"
-  (keydown)="onCardKeydown($event)"
 >
+  <button
+    type="button"
+    class="experience-card-activation"
+    [attr.aria-label]="'Ver detalle de ' + experience().name"
+    (click)="onCardActivate()"
+  ></button>
+
   <img
     class="experience-cover"
     [src]="imageUrl()"
@@ -16,7 +19,11 @@
     <div class="card-top">
       <span class="scope-badge">{{ categoryLabel() }}</span>
 
-      <div class="actions-menu-shell" (click)="$event.stopPropagation()" (keydown)="onCardKeydown($event)">
+      <div
+        class="actions-menu-shell"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
         <button
           type="button"
           class="actions-menu-trigger"
