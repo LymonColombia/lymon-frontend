@@ -11,7 +11,9 @@ import {
 import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
-import { formatCurrencyCop, formatDayList, getCategoryLabel } from '../../models/experience-form.model';
+import { formatDayList} from '../../models/experience-form.model';
+import { formatPrice } from '@/presentation/shared/utils/price-formatter';
+import { getCategoryLabel } from '@/presentation/shared/utils/category-experience-formatter';
 
 @Component({
   selector: 'app-tenant-experience-detail-page',
@@ -50,10 +52,17 @@ export class TenantExperienceDetailPageComponent {
 
   readonly priceLabel = computed(() => {
     const item = this.experience();
-    return item ? formatCurrencyCop(item.priceCop) : '';
+    return item ? `$${formatPrice(item.priceCop)}` : '';
   });
 
-  readonly scopeLabel = computed(() => (this.experience()?.scope === 'PROPERTY' ? 'Propiedad' : 'Global'));
+  readonly scopeLabel = computed(() => {
+    const item = this.experience();
+    if (!item) {
+      return '';
+    }
+
+    return item.scope === 'PROPERTY' ? 'Propiedad' : 'Global';
+  });
   readonly propertyLabel = computed(() => this.experience()?.propertyName ?? 'Sin propiedad');
   readonly availabilitySummary = computed(() => {
     const item = this.experience();

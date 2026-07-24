@@ -24,7 +24,7 @@
             </div>
           </td>
           <td>{{ getCategoryLabel(experience.category) }}</td>
-          <td>{{ formatCurrencyCop(experience.priceCop) }}</td>
+          <td>${{ formatPrice(experience.priceCop) }}</td>
           <td class="center-td">{{ experience.minimumParticipants }}</td>
           <td class="center-td">{{ experience.capacity }}</td>
           <td class="availability-cell">{{ getAvailabilitySummary(experience) }}</td>

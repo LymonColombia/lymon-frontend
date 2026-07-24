@@ -51,8 +51,9 @@ export interface CreateExperienceDto {
 
 }
 
-// Update = Create sin category. Una sola fuente de verdad.
-export type UpdateExperienceDto = Omit<CreateExperienceDto, 'category'>;
+export type UpdateExperienceDto = Omit<CreateExperienceDto, 'category' | 'propertyId'> & {
+  propertyId?: string | null;
+};
 
 export interface ExperienceResponse {
   message?: string;

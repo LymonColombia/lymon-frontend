@@ -56,16 +56,7 @@
           <div class="loading-spinner"></div>
           <p>Cargando ...</p>
         </div>
-        }
-        <!-- @if (experienceModalLoadError()) {
-        <div class="modal-alert-shell">
-          <div class="alert alert-error">{{ experienceModalLoadError() }}</div>
-          <p class="modal-help-copy">Cierra este modal y vuelve a intentar.</p>
-        </div>
-        }
-      -->
-
-        
+        }       
 
         <app-experience-form #experienceForm [hidden]="experienceModalLoading() "
           [initialExperience]="experienceModalMode() === 'edit' ? selectedExperience() : null"

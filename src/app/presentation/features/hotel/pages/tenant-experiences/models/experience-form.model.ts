@@ -57,27 +57,11 @@ export interface ExperienceFormSubmitPayload {
   newMediaFiles: File[];
 }
 
-export const EXPERIENCE_CATEGORY_LABELS: Readonly<Record<string, string>> = {
-  TRANSPORTATION: 'Transporte',
-};
 
 export const EXPERIENCE_SCOPE_OPTIONS: ReadonlyArray<{ value: ExperienceScope; label: string }> = [
   { value: 'PROPERTY', label: 'Propiedad' },
   { value: 'GLOBAL', label: 'Global' },
 ];
-
-export function normalizeExperienceScope(scope: string | null | undefined): ExperienceScope {
-  const normalized = scope?.trim().toUpperCase();
-  return normalized === 'PROPERTY' ? 'PROPERTY' : 'GLOBAL';
-}
-
-export function getExperienceScopeLabel(scope: string | null | undefined): string {
-  return normalizeExperienceScope(scope) === 'PROPERTY' ? 'Propiedad' : 'Global';
-}
-
-export function isPropertyScope(scope: string | null | undefined): boolean {
-  return normalizeExperienceScope(scope) === 'PROPERTY';
-}
 
 export function formatDayList(daysOfWeek: number[] | undefined): string {
   if (!daysOfWeek || daysOfWeek.length === 0) {
@@ -90,18 +74,6 @@ export function formatDayList(daysOfWeek: number[] | undefined): string {
     .join(', ');
 }
 
-export function formatCurrencyCop(priceCop: number): string {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  }).format(priceCop);
-}
-
-export function getCategoryLabel(category: string): string {
-  const normalized = category.trim().toUpperCase();
-  return EXPERIENCE_CATEGORY_LABELS[normalized] ?? normalized.charAt(0) + normalized.slice(1).toLowerCase();
-}
 
 export function getAvailabilitySummary(experience: Experience): string {
   if (experience.availabilityType === 'RECURRING' && experience.recurrence) {

@@ -3,14 +3,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload } from '@ng-icons/bootstrap-icons';
-import { CreateExperienceDto, Experience } from '@/domain/entities/experience.model';
+import { CreateExperienceDto, Experience, ExperienceScope } from '@/domain/entities/experience.model';
 import {
   DAY_OPTIONS,
   EXPERIENCE_SCOPE_OPTIONS,
   ExperienceFormControls,
   ExperienceFormSubmitPayload,
-  isPropertyScope,
-  normalizeExperienceScope,
+  RecurrenceFormControls,
 } from '../../models/experience-form.model';
 import { InputComponent } from '@/presentation/shared/components/input/input.component';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
@@ -59,9 +58,9 @@ export class ExperienceFormComponent implements OnChanges {
     scope: this.fb.control('PROPERTY', { nonNullable: true, validators: [Validators.required] }),
     propertyId: this.fb.control('', { nonNullable: true }),
     name: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-    description: this.fb.control('', { nonNullable: true }),
+    description: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
     city: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
-    priceCop: this.fb.control<number>(0, {
+    priceCop: this.fb.control<number>( 0, {
       nonNullable: true,
       validators: [Validators.required, Validators.min(0.01)],
     }),
@@ -71,9 +70,9 @@ export class ExperienceFormComponent implements OnChanges {
     }),
     minimumParticipants: this.fb.control<number>(1, {
       nonNullable: true,
-      validators: [Validators.min(1)],
+      validators: [Validators.min(1), Validators.required],
     }),
-    recurrence: this.fb.group(
+    recurrence: this.fb.group<RecurrenceFormControls>(
       {
         daysOfWeek: this.fb.control<number[]>([], {
           nonNullable: true,
@@ -82,7 +81,6 @@ export class ExperienceFormComponent implements OnChanges {
         startTime: this.fb.control(ALL_DAY_START_TIME, { nonNullable: true }),
         endTime: this.fb.control(ALL_DAY_END_TIME, { nonNullable: true }),
       },
-      { nonNullable: true }
     ),
   });
 
@@ -188,13 +186,14 @@ export class ExperienceFormComponent implements OnChanges {
     this.galleryInitialItems.set((experience.mediaUrls ?? []).slice(1).map((url) => ({ key: keyFromMediaUrl(url), url })));
   }
 
-  private syncPropertyValidators(scope: string): void {
+  private syncPropertyValidators(scope: ExperienceScope): void {
     const propertyId = this.form.controls.propertyId;
 
-    if (isPropertyScope(scope)) {
+    if (scope === 'PROPERTY') {
       propertyId.setValidators([Validators.required]);
     } else {
       propertyId.clearValidators();
+      propertyId.setValue('', { emitEvent: false });
     }
 
     propertyId.updateValueAndValidity({ emitEvent: false });
@@ -224,8 +223,10 @@ export class ExperienceFormComponent implements OnChanges {
   }
 
   private toFormValue(experience: Experience) {
+    const scope: ExperienceScope = experience.scope ?? (experience.propertyId ? 'PROPERTY' : 'GLOBAL');
+
     return {
-      scope: normalizeExperienceScope(experience.scope ?? (experience.propertyId ? 'PROPERTY' : 'GLOBAL')),
+      scope,
       propertyId: experience.propertyId ?? '',
       name: experience.name,
       description: experience.description ?? '',

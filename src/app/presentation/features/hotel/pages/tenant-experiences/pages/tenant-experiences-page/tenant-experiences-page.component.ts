@@ -80,10 +80,10 @@ export class TenantExperiencesPageComponent implements OnInit {
   readonly experienceModalOpen = signal(false);
   readonly experienceModalMode = signal<ExperienceModalMode>('create');
   readonly experienceModalLoading = signal(false);
-  //readonly experienceModalLoadError = signal<string | null>(null);
   readonly experienceModalSaveError = signal<string | null>(null);
   readonly selectedExperience = signal<Experience | null>(null);
   readonly isSavingExperience = signal(false);
+  private currentModalLoadToken: symbol | null = null;
 
   readonly experienceCountLabel = computed(() => {
     if (this.isLoading()) {
@@ -271,7 +271,6 @@ export class TenantExperiencesPageComponent implements OnInit {
     this.experienceModalMode.set('create');
     this.experienceModalOpen.set(true);
     this.experienceModalLoading.set(false);
-    //this.experienceModalLoadError.set(null);
     this.experienceModalSaveError.set(null);
     this.selectedExperience.set(null);
   }
@@ -280,7 +279,6 @@ export class TenantExperiencesPageComponent implements OnInit {
     this.experienceModalMode.set('edit');
     this.experienceModalOpen.set(true);
     this.experienceModalLoading.set(true);
-    //this.experienceModalLoadError.set(null);
     this.experienceModalSaveError.set(null);
     this.selectedExperience.set(null);
 
@@ -297,8 +295,7 @@ export class TenantExperiencesPageComponent implements OnInit {
           }
 
           if (!experience) {
-            //this.experienceModalLoadError.set('No se encontró la experiencia solicitada.');
-            this.experienceModalLoading.set(false);
+            this.experienceModalLoading.set(true);
             return;
           }
 
@@ -310,7 +307,6 @@ export class TenantExperiencesPageComponent implements OnInit {
             return;
           }
 
-          //this.experienceModalLoadError.set('No se pudo cargar la experiencia para edición.');
           this.experienceModalLoading.set(false);
         },
       });
@@ -321,7 +317,6 @@ export class TenantExperiencesPageComponent implements OnInit {
     this.experienceModalOpen.set(false);
     this.experienceModalMode.set('create');
     this.experienceModalLoading.set(false);
-    //this.experienceModalLoadError.set(null);
     this.experienceModalSaveError.set(null);
     this.selectedExperience.set(null);
     this.isSavingExperience.set(false);
@@ -353,12 +348,12 @@ export class TenantExperiencesPageComponent implements OnInit {
   }
 
   private toUpdateExperienceDto(dto: CreateExperienceDto, mediaKeys: string[]): UpdateExperienceDto {
-    const { category: _category, ...base } = dto;
+    const { category: _category, propertyId: _propertyId, ...base } = dto;
     return {
       ...base,
+      propertyId: dto.scope === 'PROPERTY' ? dto.propertyId : null,
       mediaKeys,
     };
   }
 
-  private currentModalLoadToken: symbol | null = null;
 }

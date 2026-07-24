@@ -9,9 +9,11 @@ import {
   bootstrapTrash,
 } from '@ng-icons/bootstrap-icons';
 
-import { formatCurrencyCop, getCategoryLabel, getAvailabilitySummary } from '../../models/experience-form.model';
+import { getAvailabilitySummary } from '../../models/experience-form.model';
 import { Experience } from '@/domain/entities/experience.model';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
+import { formatPrice } from '@/presentation/shared/utils/price-formatter';
+import { getCategoryLabel } from '@/presentation/shared/utils/category-experience-formatter';
 
 @Component({
   selector: 'app-experience-card',
@@ -39,7 +41,7 @@ export class ExperienceCardComponent {
 
   readonly isActionsOpen = signal(false);
   readonly imageUrl = computed(() => coverImageOf(this.experience().mediaUrls));
-  readonly priceLabel = computed(() => formatCurrencyCop(this.experience().priceCop));
+  readonly priceLabel = computed(() => `$${formatPrice(this.experience().priceCop)}`);
   readonly categoryLabel = computed(() => getCategoryLabel(this.experience().category));
   readonly availabilitySummary = computed(() => getAvailabilitySummary(this.experience()));
 

@@ -13,6 +13,9 @@
 
           </span></label>
         <app-select id="scope" [options]="scopeOptions" formControlName="scope" />
+        @if (form.controls.scope.invalid && form.controls.scope.touched) {
+        <span class="field-error">El alcance es obligatorio</span>
+        }
       </div>
 
       <div class="form-group">
@@ -25,6 +28,9 @@
 
           </span></label>
         <app-select id="propertyId" [options]="propertyOptions" formControlName="propertyId" />
+        @if (form.controls.propertyId.invalid && form.controls.propertyId.touched) {
+        <span class="field-error">La propiedad es obligatoria</span>
+        }
         }
       </div>
     </div>
@@ -32,12 +38,19 @@
     <div class="form-row">
       <div class="form-group">
         <label for="city">Ciudad <span class="required">*</span></label>
+        
         <app-input id="city" formControlName="city" placeholder="Medellín" />
+        @if (form.controls.city.invalid && form.controls.city.touched) {
+        <span class="field-error">El campo es obligatorio</span>
+        }
       </div>
 
       <div class="form-group">
         <label for="name">Nombre <span class="required">*</span></label>
         <app-input id="name" formControlName="name" placeholder="Airport transfer" />
+        @if (form.controls.name.invalid && form.controls.name.touched) {
+        <span class="field-error">El campo es obligatorio</span>
+        }
       </div>
     </div>
 
@@ -74,6 +87,9 @@
     <div class="form-group">
       <label for="description">Descripción</label>
       <textarea id="description" formControlName="description" rows="4"></textarea>
+       @if (form.controls.description.invalid && form.controls.description.touched) {
+        <span class="field-error">El campo es obligatorio</span>
+        }
     </div>
 
     <div class="section-separator">Capacidad y Precio</div>
@@ -82,16 +98,31 @@
       <div class="form-group">
         <label for="priceCop">Precio (COP) <span class="required">*</span></label>
         <app-input type="currency" formControlName="priceCop" placeholder="120000" />
+         @if (form.controls.priceCop.invalid && form.controls.priceCop.touched) {
+        <span class="field-error">
+          {{ form.controls.priceCop.hasError('required') ? 'El precio es obligatorio' : 'El precio debe ser mayor a 0' }}
+        </span>
+        }
       </div>
 
       <div class="form-group">
         <label for="minimumParticipants">Participantes mínimos</label>
         <app-input type="number" formControlName="minimumParticipants" placeholder="1" />
+        @if (form.controls.minimumParticipants.invalid && form.controls.minimumParticipants.touched) {
+        <span class="field-error">
+          {{ form.controls.minimumParticipants.hasError('required') ? 'Campo obligatorio' : 'Los participantes mínimos deben ser un número válido' }}
+        </span>
+        }
       </div>
 
       <div class="form-group">
         <label for="capacity">Capacidad <span class="required">*</span></label>
         <app-input type="number" formControlName="capacity" placeholder="8" />
+         @if (form.controls.capacity.invalid && form.controls.capacity.touched) {
+        <span class="field-error">
+          {{ form.controls.capacity.hasError('required') ? 'Campo obligatorio' : 'La capacidad debe ser mayor a 0' }}
+        </span>
+        }
       </div>
     </div>
 
@@ -121,14 +152,5 @@
       <span class="field-error">Selecciona al menos un día</span>
       }
     </div>
-
-    <!--
-    <div class="form-actions">
-      <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
-      <app-button type="submit" variant="primary" [disabled]="isSaving" [loading]="isSaving">
-        Guardar
-      </app-button>
-    </div>
-    -->
   
 </form>
