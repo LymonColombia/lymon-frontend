@@ -3,7 +3,7 @@ import { firstValueFrom, of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { CreateInventoryCategoryUseCase } from './create-inventory-category.use-case';
 import { InventoryRepository } from '../../repositories/inventory.repository';
-import { CreateInventoryCategoryDto, InventoryCategoryResponse } from '../../../infrastructure/dtos/inventory.dto';
+import { CreateInventoryCategory, InventoryCategory } from '@/domain/entities/inventory.model';
 
 describe('CreateInventoryCategoryUseCase', () => {
   let useCase: CreateInventoryCategoryUseCase;
@@ -29,12 +29,12 @@ describe('CreateInventoryCategoryUseCase', () => {
   });
 
   it('should call repository.createCategory with correct data and return response', async () => {
-    const mockDto: CreateInventoryCategoryDto = {
+    const mockDto: CreateInventoryCategory = {
       name: 'Test Category',
       description: 'Test Description'
     };
 
-    const mockResponse: InventoryCategoryResponse = {
+    const mockResponse: InventoryCategory = {
       id: 'cat-1',
       name: 'Test Category',
       description: 'Test Description',
@@ -51,7 +51,7 @@ describe('CreateInventoryCategoryUseCase', () => {
   });
 
   it('should propagate error from repository', async () => {
-    const mockDto: CreateInventoryCategoryDto = {
+    const mockDto: CreateInventoryCategory = {
       name: 'Test Category',
       description: 'Test Description'
     };

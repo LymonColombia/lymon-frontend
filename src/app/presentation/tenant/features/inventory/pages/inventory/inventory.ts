@@ -27,11 +27,11 @@ import { InputComponent } from '@/presentation/shared/components/input/input';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
-import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
+import { CreateSupplier, UpdateSupplier } from '@/domain/entities/supplier.model';
 import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
 import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/create-inventory-category.use-case';
 import { GetInventoryCategoriesUseCase } from '@/domain/use-cases/inventory/get-inventory-categories.use-case';
-import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse } from '@/infrastructure/dtos/inventory.dto';
+import { CreateInventoryItem, InventoryItem, CreateInventoryCategory, InventoryCategory } from '@/domain/entities/inventory.model';
 import { GetInventoryItemsUseCase } from '@/domain/use-cases/inventory/get-inventory-items.use-case';
 import { AssociateInventorySupplierUseCase } from '@/domain/use-cases/inventory/associate-inventory-supplier.use-case';
 import { DeleteInventoryItemUseCase } from '@/domain/use-cases/inventory/delete-inventory-item.use-case';
@@ -144,7 +144,7 @@ export class InventoryComponent implements OnInit {
   readonly isDeletingSupply = signal(false);
   readonly isDeletingProvider = signal(false);
   readonly isCategoriesDropdownOpen = signal(false);
-  readonly categories = signal<InventoryCategoryResponse[]>([]);
+  readonly categories = signal<InventoryCategory[]>([]);
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
   private notificationTimeout: any;
 
@@ -185,9 +185,9 @@ export class InventoryComponent implements OnInit {
 
   readonly providers = signal<ProviderRow[]>([]);
 
-  readonly rawSupplies = signal<InventoryItemResponse[]>([]);
+  readonly rawSupplies = signal<InventoryItem[]>([]);
   readonly supplierIdByItemId = signal<Map<string, string>>(new Map());
-  readonly supplierItemsBySupplierId = signal<Map<string, InventoryItemResponse[]>>(new Map());
+  readonly supplierItemsBySupplierId = signal<Map<string, InventoryItem[]>>(new Map());
   readonly mappedSupplies = computed(() => this.rawSupplies().map(item => this.mapToSupplyRow(item)));
 
   private readonly unitTranslations: Record<string, string> = {
@@ -392,7 +392,7 @@ export class InventoryComponent implements OnInit {
     });
   }
 
-  private mapToSupplyRow(item: InventoryItemResponse): SupplyRow {
+  private mapToSupplyRow(item: InventoryItem): SupplyRow {
     const category = this.categories().find(c => c.id === item.categoryId);
     const supplierId = this.supplierIdByItemId().get(item.id) ?? item.supplierId ?? null;
     const provider = supplierId ? this.providers().find(p => p.id === supplierId) : null;
@@ -472,14 +472,14 @@ export class InventoryComponent implements OnInit {
         map((items) => ({ supplierId: supplier.id, items })),
         catchError((err) => {
           console.error(`Error loading items for supplier ${supplier.id}`, err);
-          return of({ supplierId: supplier.id, items: [] as InventoryItemResponse[] });
+          return of({ supplierId: supplier.id, items: [] as InventoryItem[] });
         })
       )
     );
 
     forkJoin(requests).subscribe((results) => {
       const itemToSupplier = new Map<string, string>();
-      const supplierToItems = new Map<string, InventoryItemResponse[]>();
+      const supplierToItems = new Map<string, InventoryItem[]>();
 
       results.forEach(({ supplierId, items }) => {
         supplierToItems.set(supplierId, items);
@@ -562,7 +562,7 @@ export class InventoryComponent implements OnInit {
     }
 
     const value = this.categoryForm.getRawValue();
-    const payload: CreateInventoryCategoryDto = {
+    const payload: CreateInventoryCategory = {
       name: value.name.trim(),
       description: value.description.trim(),
     };
@@ -642,7 +642,7 @@ export class InventoryComponent implements OnInit {
       const nextNum = this.rawSupplies().length + 1;
       const generatedSku = `${prefix}-${String(nextNum).padStart(3, '0')}`;
 
-      const payload: CreateInventoryItemDto = {
+      const payload: CreateInventoryItem = {
         sku: generatedSku,
         name: value.name.trim(),
         categoryId: value.categoryId,
@@ -836,7 +836,7 @@ export class InventoryComponent implements OnInit {
     const formValue = this.providerForm.getRawValue();
 
     if (!providerId) {
-      const payload: CreateSupplierDto = {
+      const payload: CreateSupplier = {
         name: formValue.name.trim(),
         nit: formValue.nit.trim(),
         city: formValue.city.trim(),
@@ -866,7 +866,7 @@ export class InventoryComponent implements OnInit {
       return;
     }
 
-    const updatePayload: UpdateSupplierDto = {
+    const updatePayload: UpdateSupplier = {
       supplierId: providerId,
       name: formValue.name.trim(),
       nit: formValue.nit.trim(),

@@ -1,11 +1,11 @@
 import { Observable } from 'rxjs';
-import { CreateInventoryItemDto, InventoryItemResponse, CreateInventoryCategoryDto, InventoryCategoryResponse } from '@/infrastructure/dtos/inventory.dto';
+import { CreateInventoryItem, InventoryItem, CreateInventoryCategory, InventoryCategory } from '@/domain/entities/inventory.model';
 
 export abstract class InventoryRepository {
-  abstract createItem(propertyId: string, data: CreateInventoryItemDto): Observable<InventoryItemResponse>;
-  abstract createCategory(data: CreateInventoryCategoryDto): Observable<InventoryCategoryResponse>;
-  abstract getCategories(): Observable<InventoryCategoryResponse[]>;
-  abstract getItems(propertyId: string): Observable<InventoryItemResponse[]>;
+  abstract createItem(propertyId: string, data: CreateInventoryItem): Observable<InventoryItem>;
+  abstract createCategory(data: CreateInventoryCategory): Observable<InventoryCategory>;
+  abstract getCategories(): Observable<InventoryCategory[]>;
+  abstract getItems(propertyId: string): Observable<InventoryItem[]>;
   abstract associateSupplier(propertyId: string, itemId: string, supplierId: string | null): Observable<void>;
   abstract deleteItem(propertyId: string, itemId: string): Observable<void>;
 }

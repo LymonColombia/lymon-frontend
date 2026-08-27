@@ -2,8 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
-import { CreateSupplierDto, SupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
-import { InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
+import { SupplierDto } from '@/infrastructure/dtos/supplier.dto';
+import { CreateSupplier, UpdateSupplier } from '@/domain/entities/supplier.model';
+import { InventoryItem } from '@/domain/entities/inventory.model';
 import { Supplier } from '@/domain/entities/supplier.model';
 import { environment } from '@env';
 
@@ -13,13 +14,13 @@ const BASE_URL = `${environment.apiUrl}${environment.suppliers.endpoint}`;
 export class SupplierRepositoryImpl extends SupplierRepository {
   private readonly http = inject(HttpClient);
 
-  createSupplier(data: CreateSupplierDto): Observable<Supplier> {
+  createSupplier(data: CreateSupplier): Observable<Supplier> {
     return this.http.post<SupplierDto>(BASE_URL, data).pipe(
       map((dto) => this.mapDtoToSupplier(dto)),
     );
   }
 
-  updateSupplier(data: UpdateSupplierDto): Observable<Supplier> {
+  updateSupplier(data: UpdateSupplier): Observable<Supplier> {
     const { supplierId, ...updateData } = data;
     return this.http.patch<SupplierDto>(`${BASE_URL}/${supplierId}`, updateData).pipe(
       map((dto) => this.mapDtoToSupplier(dto)),
@@ -42,9 +43,9 @@ export class SupplierRepositoryImpl extends SupplierRepository {
       .pipe(map((dto) => this.mapDtoToSupplier(dto)));
   }
 
-  getSupplierItems(id: string): Observable<InventoryItemResponse[]> {
+  getSupplierItems(id: string): Observable<InventoryItem[]> {
     return this.http
-      .get<{ data: InventoryItemResponse[] }>(`${BASE_URL}/${id}/items`)
+      .get<{ data: InventoryItem[] }>(`${BASE_URL}/${id}/items`)
       .pipe(map((res) => res.data));
   }
 

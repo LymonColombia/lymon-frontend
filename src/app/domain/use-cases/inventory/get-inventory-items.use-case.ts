@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { InventoryRepository } from '../../repositories/inventory.repository';
-import { InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
+import { InventoryItem } from '@/domain/entities/inventory.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ import { InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
 export class GetInventoryItemsUseCase {
   private readonly repository = inject(InventoryRepository);
 
-  execute(propertyId: string): Observable<InventoryItemResponse[]> {
+  execute(propertyId: string): Observable<InventoryItem[]> {
     return this.repository.getItems(propertyId);
   }
 }

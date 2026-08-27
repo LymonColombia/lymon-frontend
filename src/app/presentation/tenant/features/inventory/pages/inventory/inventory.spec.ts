@@ -7,7 +7,7 @@ import { InventoryComponent } from './inventory';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { Supplier } from '@/domain/entities/supplier.model';
 import { InventoryRepository } from '@/domain/repositories/inventory.repository';
-import { InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
+import { InventoryItem } from '@/domain/entities/inventory.model';
 import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/create-inventory-category.use-case';
 import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
 import { GetInventoryCategoriesUseCase } from '@/domain/use-cases/inventory/get-inventory-categories.use-case';
@@ -158,7 +158,7 @@ describe('InventoryComponent - suppliers', () => {
       contactEmail: 'a@a.com',
       contactPhone: '123',
     };
-    const items: InventoryItemResponse[] = [
+    const items: InventoryItem[] = [
       {
         id: 'item-1',
         sku: 'SKU-001',

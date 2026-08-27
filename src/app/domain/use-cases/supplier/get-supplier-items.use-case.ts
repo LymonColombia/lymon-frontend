@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SupplierRepository } from '../../repositories/supplier.repository';
-import { InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
+import { InventoryItem } from '@/domain/entities/inventory.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ import { InventoryItemResponse } from '@/infrastructure/dtos/inventory.dto';
 export class GetSupplierItemsUseCase {
   private readonly repository = inject(SupplierRepository);
 
-  execute(supplierId: string): Observable<InventoryItemResponse[]> {
+  execute(supplierId: string): Observable<InventoryItem[]> {
     return this.repository.getSupplierItems(supplierId);
   }
 }

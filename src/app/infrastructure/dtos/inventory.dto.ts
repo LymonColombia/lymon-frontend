@@ -1,50 +1,16 @@
-export interface CreateInventoryItemDto {
-  sku: string;
-  name: string;
-  categoryId: string;
-  unit: string;
-  minStock: number;
-  initialStock: number;
-}
+import { InventoryCategory, InventoryItem } from '@/domain/entities/inventory.model';
 
-export interface InventoryItemResponse {
-  id: string;
-  sku: string;
-  name: string;
-  categoryId: string;
-  unit: string;
-  minStock: number;
-  currentStock: number;
-  lowStock: boolean;
-  supplierId: string | null;
-  propertyId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateInventoryCategoryDto {
-  name: string;
-  description: string;
-}
-
-export interface InventoryCategoryResponse {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
+/** Transport envelopes returned by the inventory endpoints. */
 export interface InventoryCategoryListResponse {
   message: string;
   data: {
-    categories: InventoryCategoryResponse[];
+    categories: InventoryCategory[];
   };
 }
 
 export interface InventoryItemListResponse {
   message: string;
-  data: InventoryItemResponse[];
+  data: InventoryItem[];
   pagination: {
     total: number;
     page: number;
