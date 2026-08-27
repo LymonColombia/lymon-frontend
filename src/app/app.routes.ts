@@ -9,12 +9,12 @@ import { GuestForgotPasswordComponent } from '@/presentation/features/guest-auth
 import { GuestResetPasswordComponent } from '@/presentation/features/guest-auth/pages/reset-password/reset-password';
 import { RecoverPasswordComponent } from '@/presentation/features/auth/pages/recoverPassword/recoverPassword';
 import { ConfirmRecoverPasswordComponent } from '@/presentation/features/auth/pages/confirmRecoverPassword/confirmRecoverPassword';
-import { BookingComponent } from '@/presentation/features/hotel/pages/booking/booking';
+import { BookingComponent } from '@/presentation/public/features/booking/pages/booking/booking';
 import { CheckinComponent } from '@/presentation/features/hotel/pages/checkin/checkin';
 import { PropertiesComponent } from '@/presentation/features/hotel/pages/properties/properties';
 import { RegisterEmployeeComponent } from '@/presentation/features/hotel/pages/registerEmployee/registerEmployee';
 import { StaffManagementComponent } from '@/presentation/features/hotel/pages/staffManagement/staffManagement';
-import { RoomDetailsComponent } from '@/presentation/features/hotel/pages/roomDetails/roomDetails';
+import { RoomDetailsComponent } from '@/presentation/public/features/room-details/pages/room-details/room-details';
 import { CreateIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/create/createIncidentReport';
 import { IncidentReportListComponent } from '@/presentation/features/hotel/pages/incidentReport/list/incidentReportList';
 import { EditIncidentReportComponent } from '@/presentation/features/hotel/pages/incidentReport/edit/editIncidentReport';
@@ -24,7 +24,7 @@ import { PropertyUnitsComponent } from '@/presentation/features/hotel/pages/prop
 import { GuestsCrmComponent } from '@/presentation/features/hotel/pages/guestsCrm/guestsCrm';
 import { PlansComponent } from '@/presentation/features/hotel/pages/plans/plans';
 import { DashboardComponent } from '@/presentation/features/dashboard/dashboard';
-import { LyhostPageComponent } from '@/presentation/features/landing/pages/lyhost/lyhost-page.component';
+import { LyhostPageComponent } from '@/presentation/public/features/landing/pages/lyhost-page/lyhost-page';
 import { StaffShiftComponent } from '@/presentation/features/hotel/pages/staffShift/staffShift';
 import { HotelShellComponent } from '@/presentation/features/hotel/components/hotel-shell/hotel-shell';
 import { adminGuard } from '@/infrastructure/guards/admin.guard';
@@ -39,8 +39,8 @@ import { InventoryComponent } from '@/presentation/features/hotel/pages/properti
 import { PaymentSuccessComponent } from '@/presentation/features/hotel/pages/payment-success/payment-success';
 import { PaymentFailureComponent } from '@/presentation/features/hotel/pages/payment-failure/payment-failure';
 
-import { ExperienceComponent } from '@/presentation/features/hotel/pages/experiences/experiences';
-import { ExperienceDetailPageComponent } from '@/presentation/features/hotel/pages/experiences/experience-detail-state/experience-detail-page';
+import { ExperienceComponent } from '@/presentation/public/features/experiences/pages/experiences/experiences';
+import { ExperienceDetailPageComponent } from '@/presentation/public/features/experiences/pages/experience-detail-page/experience-detail-page';
 
 import { TenantExperiencesPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experiences-page/tenant-experiences-page.component';
 import { TenantExperienceFormPageComponent } from '@/presentation/features/hotel/pages/tenant-experiences/pages/tenant-experience-form-page/tenant-experience-form-page.component';
