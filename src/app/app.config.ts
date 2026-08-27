@@ -3,6 +3,10 @@ import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common
 import { provideRouter } from '@angular/router';
 import { provideNgIconLoader, withCaching } from '@ng-icons/core';
 import { AuthRepository } from '@/domain/repositories/auth.repository';
+import { AuthSessionRepository } from '@/domain/repositories/auth-session.repository';
+import { AuthSessionRepositoryImpl } from '@/infrastructure/repositories/auth-session.repository.impl';
+import { GuestSessionRepository } from '@/domain/repositories/guest-session.repository';
+import { GuestSessionRepositoryImpl } from '@/infrastructure/repositories/guest-session.repository.impl';
 import { AuthRepositoryImpl } from '@/infrastructure/repositories/auth.repository.impl';
 import { UserRepository } from '@/domain/repositories/user.repository';
 import { UserRepositoryImpl } from '@/infrastructure/repositories/user.repository.impl';
@@ -65,6 +69,8 @@ export const appConfig: ApplicationConfig = {
       withCaching()
     ),
     { provide: AuthRepository, useClass: AuthRepositoryImpl },
+    { provide: AuthSessionRepository, useClass: AuthSessionRepositoryImpl },
+    { provide: GuestSessionRepository, useClass: GuestSessionRepositoryImpl },
     { provide: UserRepository, useClass: UserRepositoryImpl },
     { provide: IncidentReportRepository, useClass: IncidentReportRepositoryImpl },
     { provide: TenantRepository, useClass: TenantRepositoryImpl },

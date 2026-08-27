@@ -54,3 +54,9 @@ export interface GuestProfile {
   fullName: string;
   email: string;
 }
+
+export interface GuestSessionTokens {
+  accessToken: string;
+  refreshToken: string;
+  emailVerified?: boolean;
+}
