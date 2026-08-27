@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapGeoAlt, bootstrapGeoAltFill, bootstrapPeopleFill, bootstrapSignpostSplit, bootstrapStar } from '@ng-icons/bootstrap-icons';
 import { LocationMap } from '@/presentation/shared/components/location-map/location-map';

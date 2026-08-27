@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapEnvelope, bootstrapPerson, bootstrapTelephone } from '@ng-icons/bootstrap-icons';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { InputComponent } from '@/presentation/shared/components/input/input';
 
 @Component({
   selector: 'app-checkin-guest-form',

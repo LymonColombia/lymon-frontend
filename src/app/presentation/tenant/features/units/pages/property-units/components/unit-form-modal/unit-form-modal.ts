@@ -13,9 +13,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { InputComponent } from '@/presentation/shared/components/input/input';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 import { FieldLabelComponent } from '@/presentation/tenant/features/units/pages/property-units/components/field-label/field-label';
 import { TooltipComponent } from '@/presentation/tenant/components/tooltip/tooltip';
 import {

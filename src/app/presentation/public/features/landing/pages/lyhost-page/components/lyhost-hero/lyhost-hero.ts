@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 
 @Component({
   selector: 'app-lyhost-hero',

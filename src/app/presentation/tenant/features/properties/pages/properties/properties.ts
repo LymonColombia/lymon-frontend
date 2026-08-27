@@ -7,8 +7,8 @@ import {
   TenantPageLayoutComponent,
   TenantPageMetaDirective,
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { PropertyFormComponent } from './components/property-form/property-form';
 import { PropertyCardComponent } from './components/property-card/property-card';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';

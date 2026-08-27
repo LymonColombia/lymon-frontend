@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapBagCheck, bootstrapBuilding, bootstrapStars, bootstrapX } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { Cart, CartExperienceItem, CartReservationItem } from '@/domain/entities/cart.model';
 
 @Component({

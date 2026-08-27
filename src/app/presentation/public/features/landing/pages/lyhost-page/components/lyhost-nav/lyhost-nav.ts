@@ -3,7 +3,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapList, bootstrapXLg } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 
 interface LyhostNavLink {
   label: string;

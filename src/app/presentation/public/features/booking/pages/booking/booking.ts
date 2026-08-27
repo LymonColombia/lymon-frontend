@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { BookingRoomCard, RoomCardComponent } from './components/room-card/room-card';
 import { CatalogNavComponent } from '@/presentation/public/components/catalog-nav/catalog-nav';
 import { CatalogPaginationComponent } from '@/presentation/public/components/catalog-pagination/catalog-pagination';

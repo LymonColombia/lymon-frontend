@@ -20,8 +20,8 @@ type TypeValue = string | number | null;
   selector: 'app-input',
   standalone: true,
   imports: [],
-  templateUrl: './input.component.html',
-  styleUrl: './input.component.css',
+  templateUrl: './input.html',
+  styleUrl: './input.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {

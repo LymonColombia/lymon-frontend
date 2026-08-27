@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapPeopleFill, bootstrapSearch } from '@ng-icons/bootstrap-icons';
-import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar';
 
 export interface BookingSearchParams {
   startDate?: string;

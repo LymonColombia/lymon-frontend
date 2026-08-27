@@ -37,8 +37,8 @@ import {
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 
 interface MenuItem {
   icon: string;

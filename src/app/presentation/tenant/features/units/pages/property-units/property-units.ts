@@ -14,9 +14,9 @@ import {
   TenantPageLayoutComponent,
   TenantPageMetaDirective,
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitUseCase } from '@/domain/use-cases/property/get-unit.use-case';

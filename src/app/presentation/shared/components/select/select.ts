@@ -28,8 +28,8 @@ export interface SelectOption {
   selector: 'app-select',
   standalone: true,
   imports: [NgIcon],
-  templateUrl: './select.component.html',
-  styleUrl: './select.component.css',
+  templateUrl: './select.html',
+  styleUrl: './select.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     provideIcons({ bootstrapChevronDown }),

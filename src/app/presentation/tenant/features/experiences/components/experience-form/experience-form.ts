@@ -10,9 +10,9 @@ import {
   ExperienceFormControls,
   ExperienceFormSubmitPayload,
 } from '../../models/experience-form.model';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { InputComponent } from '@/presentation/shared/components/input/input';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { TooltipComponent } from '@/presentation/tenant/components/tooltip/tooltip';
 import { MapPickerComponent, MapPickerLocation } from '@/presentation/tenant/features/experiences/components/map-picker/map-picker';
 import {

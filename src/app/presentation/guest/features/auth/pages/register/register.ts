@@ -10,9 +10,9 @@ import { RouterLink } from '@angular/router';
 import { GuestRegisterUseCase } from '@/domain/use-cases/guest/guest-register.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
-import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
+import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle';
 import {
   bootstrapArrowRightCircleFill,
   bootstrapPerson,

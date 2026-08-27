@@ -15,8 +15,8 @@ export type ModalSize = 'small' | 'medium' | 'large';
   standalone: true,
   imports: [NgIcon],
   providers: [provideIcons({ bootstrapXCircleFill })],
-  templateUrl: './modal.component.html',
-  styleUrl: './modal.component.css',
+  templateUrl: './modal.html',
+  styleUrl: './modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class]': 'hostClasses()',

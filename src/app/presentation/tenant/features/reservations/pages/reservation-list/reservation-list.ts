@@ -17,9 +17,9 @@ import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case'
 import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenant-guests.use-case';
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { ShiftDatePickerComponent } from '@/presentation/tenant/components/shift-date-picker/shift-date-picker';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 
 export interface ReservationViewModel {
   id: string;

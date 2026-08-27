@@ -10,13 +10,13 @@ import {
   bootstrapExclamationTriangleFill,
   bootstrapPeopleFill,
 } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { CheckoutPanelComponent } from './components/checkout-panel/checkout-panel';
 import { OrderSummaryComponent } from './components/order-summary/order-summary';
 import { PaymentPanelComponent } from './components/payment-panel/payment-panel';
 import { GuestRecommendationExperienceComponent } from './components/guest-recommendation-experience/guest-recommendation-experience';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { DeleteCartExperienceItemUseCase } from '@/domain/use-cases/cart/delete-cart-experience-item.use-case';
 import { GetCartUseCase } from '@/domain/use-cases/cart/get-cart.use-case';
 import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';

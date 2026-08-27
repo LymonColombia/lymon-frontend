@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal 
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCheckCircleFill, bootstrapXCircle } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { GetPaymentStatusUseCase } from '@/domain/use-cases/payment/get-payment-status.use-case';
 import { PaymentStatus } from '@/domain/entities/payment.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

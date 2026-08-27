@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, Validati
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmRecoverPasswordUseCase } from '@/domain/use-cases/auth/confirm-recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
-import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const newPassword = control.get('newPassword')?.value;

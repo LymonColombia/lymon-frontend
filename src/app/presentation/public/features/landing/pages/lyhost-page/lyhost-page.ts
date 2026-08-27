@@ -8,7 +8,7 @@ import {
   ViewChildren,
   signal,
 } from '@angular/core';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { LyhostNavComponent } from './components/lyhost-nav/lyhost-nav';
 import { LyhostHeroComponent } from './components/lyhost-hero/lyhost-hero';
 import { LyhostPlansComponent } from './components/lyhost-plans/lyhost-plans';

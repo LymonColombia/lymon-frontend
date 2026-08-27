@@ -18,8 +18,8 @@ const GUEST_ROUTES: Record<AuthFormMode, string> = {
   selector: 'app-auth-type-toggle',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
-  templateUrl: './auth-type-toggle.component.html',
-  styleUrl: './auth-type-toggle.component.css',
+  templateUrl: './auth-type-toggle.html',
+  styleUrl: './auth-type-toggle.css',
 })
 export class AuthTypeToggleComponent {
   readonly activeType = input.required<AuthAccountType>();

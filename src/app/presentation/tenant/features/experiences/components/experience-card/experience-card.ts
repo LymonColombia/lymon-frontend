@@ -12,7 +12,7 @@ import {
 
 import { formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,getAvailabilitySummary } from '../../models/experience-form.model';
 import { Experience } from '@/domain/entities/experience.model';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
 
 @Component({

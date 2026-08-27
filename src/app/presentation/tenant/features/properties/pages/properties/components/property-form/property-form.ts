@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { InputComponent } from '@/presentation/shared/components/input/input';
 import {
   AddressMapPickerComponent,
   NominatimResult,

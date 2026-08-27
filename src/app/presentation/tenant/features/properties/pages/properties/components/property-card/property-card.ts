@@ -7,7 +7,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { Property } from '@/domain/entities/staff.model';
 import { PropertyType } from '@/domain/entities/property.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';

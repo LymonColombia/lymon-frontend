@@ -10,9 +10,9 @@ import {
   bootstrapPlusCircle,
   bootstrapStars,
 } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 import { ExperienceCompactCardComponent } from '../experience-compact-card/experience-compact-card';
 import { GetGuestExperiencesUseCase } from '@/domain/use-cases/experience/get-guest-experiences.use-case';
 import { AddCartExperienceItemUseCase } from '@/domain/use-cases/cart/add-cart-experience-item.use-case';

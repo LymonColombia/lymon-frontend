@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapClipboard2Check, bootstrapGeoAlt, bootstrapSearch } from '@ng-icons/bootstrap-icons';
 import { ExperienceCategoryFilter } from '../experience-toolbar/experience-toolbar';

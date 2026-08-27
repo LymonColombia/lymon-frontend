@@ -12,12 +12,12 @@ import { CrmGuest, CrmGuestBooking, CrmGuestSortBy, CrmGuestSortDirection, CrmGu
 import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
 import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { InputComponent } from '@/presentation/shared/components/input/input';
 import {
   SelectComponent,
   SelectOption,
-} from '@/presentation/shared/components/select/select.component';
+} from '@/presentation/shared/components/select/select';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import {

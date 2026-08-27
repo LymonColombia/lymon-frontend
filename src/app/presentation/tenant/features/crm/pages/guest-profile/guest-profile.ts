@@ -62,13 +62,13 @@ import {
   TenantPageLayoutComponent,
   TenantPageIconDirective,
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import {
   SelectComponent,
   SelectOption,
-} from '@/presentation/shared/components/select/select.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
+} from '@/presentation/shared/components/select/select';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { BreadcrumbItem } from '@/presentation/shared/components/breadcrumb/breadcrumb';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import {

@@ -9,8 +9,8 @@ import {
   bootstrapStarFill,
   bootstrapStarHalf,
 } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { PlanType } from '@/domain/entities/auth.model';

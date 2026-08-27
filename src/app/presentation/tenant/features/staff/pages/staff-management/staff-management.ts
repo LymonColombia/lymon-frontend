@@ -13,7 +13,7 @@ import {
   getEmployeeRoleLabel,
 } from '@/domain/constants/employee-messages.constants';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { ToastComponent } from '@/presentation/tenant/components/toast/toast';
 import { ToastService } from '@/presentation/tenant/services/toast.service';
 

@@ -8,7 +8,7 @@ import {
   TenantPageActionsDirective,
   TenantPageLayoutComponent
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
 import { LocationMap } from "@/presentation/shared/components/location-map/location-map";
 import {formatDayList, formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,} from '../../models/experience-form.model';

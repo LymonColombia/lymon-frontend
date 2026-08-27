@@ -12,8 +12,8 @@ import {
   TenantPageLayoutComponent,
   TenantPageMetaDirective,
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { SelectOption } from '@/presentation/shared/components/select/select';
 import { ExperienceFormComponent } from '../../components/experience-form/experience-form';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';

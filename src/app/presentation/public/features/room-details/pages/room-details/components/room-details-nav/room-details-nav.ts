@@ -20,8 +20,8 @@ import {
   bootstrapChevronDown,
   bootstrapSearch,
 } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar';
 import { GuestStepperComponent } from '@/presentation/public/features/room-details/pages/room-details/components/guest-stepper/guest-stepper';
 
 export interface RoomDetailsSearchParams {

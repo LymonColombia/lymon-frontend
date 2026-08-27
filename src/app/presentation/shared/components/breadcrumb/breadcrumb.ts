@@ -10,8 +10,8 @@ export interface BreadcrumbItem {
   selector: 'app-breadcrumb',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './breadcrumb.component.html',
-  styleUrl: './breadcrumb.component.css',
+  templateUrl: './breadcrumb.html',
+  styleUrl: './breadcrumb.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbComponent {

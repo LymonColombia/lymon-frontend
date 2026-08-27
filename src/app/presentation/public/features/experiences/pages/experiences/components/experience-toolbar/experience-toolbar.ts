@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch, bootstrapX } from '@ng-icons/bootstrap-icons';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 
 export type ExperienceSortOption = 'asc' | 'desc' | undefined;
 export type ExperienceCategoryFilter = null | 'TRANSPORTATION' ;

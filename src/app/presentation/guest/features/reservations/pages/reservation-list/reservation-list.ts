@@ -24,10 +24,10 @@ import {
   bootstrapChevronUp,
   bootstrapExclamationTriangle,
 } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
-import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { FooterComponent } from '@/presentation/shared/components/footer/footer';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
+import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar';
 import { GetGuestReservationsUseCase } from '@/domain/use-cases/reservation/get-guest-reservations.use-case';
 import {
   GetGuestReservationsParams,

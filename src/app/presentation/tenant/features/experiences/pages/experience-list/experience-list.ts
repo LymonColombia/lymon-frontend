@@ -8,8 +8,8 @@ import {
   TenantPageLayoutComponent,
   TenantPageMetaDirective,
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { ExperienceCardComponent } from '../../components/experience-card/experience-card';
 import { ExperienceTableComponent } from '../../components/experience-table/experience-table';
 import { GetExperiencesUseCase } from '@/domain/use-cases/experience/get-experiences.use-case';

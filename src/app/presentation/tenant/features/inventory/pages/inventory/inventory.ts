@@ -22,10 +22,10 @@ import {
 } from '@ng-icons/bootstrap-icons';
 
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { InputComponent } from '@/presentation/shared/components/input/input';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { CreateSupplierDto, UpdateSupplierDto } from '@/infrastructure/dtos/supplier.dto';
 import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';

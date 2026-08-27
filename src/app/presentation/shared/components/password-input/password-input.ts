@@ -25,8 +25,8 @@ import { bootstrapEye, bootstrapEyeSlash, bootstrapLock } from '@ng-icons/bootst
       multi: true,
     },
   ],
-  templateUrl: './password-input.component.html',
-  styleUrl: './password-input.component.css',
+  templateUrl: './password-input.html',
+  styleUrl: './password-input.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PasswordInputComponent implements ControlValueAccessor {

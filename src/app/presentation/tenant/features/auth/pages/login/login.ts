@@ -10,8 +10,8 @@ import {
   bootstrapEnvelope,
   bootstrapQuestionCircleFill,
 } from '@ng-icons/bootstrap-icons';
-import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
-import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle.component';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
+import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle';
 
 @Component({
   selector: 'app-login',

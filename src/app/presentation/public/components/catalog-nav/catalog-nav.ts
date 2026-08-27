@@ -20,7 +20,7 @@ import {
   bootstrapCompass,
   bootstrapHouseDoor,
 } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 
 @Component({
   selector: 'catalog-nav',

@@ -30,9 +30,9 @@ import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { PlanType } from '@/domain/entities/auth.model';
 import { LyhostPlan, isFreePlan } from '@/domain/entities/lyhost-plan.model';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
-import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
+import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle';
 import { minLocalPartLength } from '@/presentation/shared/validators/email.validator';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {

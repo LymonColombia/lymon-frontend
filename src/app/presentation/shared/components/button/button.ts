@@ -9,8 +9,8 @@ export type ButtonType = 'button' | 'submit' | 'reset';
   selector: 'app-button',
   standalone: true,
   imports: [],
-  templateUrl: './button.component.html',
-  styleUrl: './button.component.css',
+  templateUrl: './button.html',
+  styleUrl: './button.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'button',

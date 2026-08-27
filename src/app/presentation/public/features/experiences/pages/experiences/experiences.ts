@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { CatalogNavComponent } from '@/presentation/public/components/catalog-nav/catalog-nav';
 import { CatalogPaginationComponent } from '@/presentation/public/components/catalog-pagination/catalog-pagination';
 import { CatalogSkeletonCardComponent } from '@/presentation/public/components/catalog-skeleton-card/catalog-skeleton-card';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { GetGuestExperiencesUseCase } from '@/domain/use-cases/experience/get-guest-experiences.use-case';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';

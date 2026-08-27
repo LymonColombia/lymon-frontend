@@ -10,7 +10,7 @@ import {
   bootstrapHouseDoorFill,
   bootstrapXCircle,
 } from '@ng-icons/bootstrap-icons';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 import { formatCalendarDate } from '@/presentation/shared/utils/date-formatter.util';
 

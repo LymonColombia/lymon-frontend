@@ -10,11 +10,11 @@ import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapChevronLeft } from '@ng-icons/bootstrap-icons';
 
-import { FooterComponent } from '@/presentation/shared/components/footer/footer.component';
+import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import {
   BreadcrumbComponent,
   BreadcrumbItem,
-} from '@/presentation/shared/components/breadcrumb/breadcrumb.component';
+} from '@/presentation/shared/components/breadcrumb/breadcrumb';
 
 @Directive({
   selector: '[tenantPageMeta]',

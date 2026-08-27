@@ -3,8 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapStar, bootstrapStarFill } from '@ng-icons/bootstrap-icons';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal.component';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { CreateUnitRatingUseCase } from '@/domain/use-cases/reservation/create-unit-rating.use-case';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 

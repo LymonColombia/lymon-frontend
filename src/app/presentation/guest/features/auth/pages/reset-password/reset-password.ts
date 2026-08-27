@@ -9,7 +9,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GuestConfirmRecoverPasswordUseCase } from '@/domain/use-cases/guest/guest-confirm-recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
-import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input.component';
+import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('newPassword')?.value;

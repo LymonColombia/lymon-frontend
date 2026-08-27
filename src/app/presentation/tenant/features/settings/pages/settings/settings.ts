@@ -7,8 +7,8 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { InputComponent } from '@/presentation/shared/components/input/input';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { UpdateTenantProfileUseCase } from '@/domain/use-cases/tenant/update-tenant-profile.use-case';

@@ -13,9 +13,9 @@ import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case'
 import { Role, Property, Unit, ScopeType, InviteStaffDto } from '@/domain/entities/staff.model';
 import { EMPLOYEE_MESSAGES, getBackendErrorMessage } from '@/domain/constants/employee-messages.constants';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { InputComponent } from '@/presentation/shared/components/input/input.component';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
-import { ButtonComponent } from '@/presentation/shared/components/button/button.component';
+import { InputComponent } from '@/presentation/shared/components/input/input';
+import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { ToastComponent } from '@/presentation/tenant/components/toast/toast';
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 import { TutorialHighlightDirective } from '@/presentation/tenant/directives/tutorial-highlight.directive';

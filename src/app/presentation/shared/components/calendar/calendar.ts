@@ -47,8 +47,8 @@ const ISO_DATE_PREFIX_LENGTH = 10;
   standalone: true,
   imports: [NgIcon],
   providers: [provideIcons({ bootstrapChevronLeft, bootstrapChevronRight })],
-  templateUrl: './calendar.component.html',
-  styleUrl: './calendar.component.css',
+  templateUrl: './calendar.html',
+  styleUrl: './calendar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalendarComponent {
