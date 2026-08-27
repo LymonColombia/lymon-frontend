@@ -70,7 +70,6 @@ export const tenantRoutes: Routes = [
       { path: 'room-details', component: RoomDetailsComponent },
       { path: 'room-details/:unitId', component: RoomDetailsComponent },
       { path: 'storage-test', component: StorageTestComponent },
-      { path: 'storage-test', component: StorageTestComponent },
       { path: 'change-password', redirectTo: 'settings', pathMatch: 'full' },
       { path: 'tenant-profile', redirectTo: 'settings', pathMatch: 'full' },
     ],
