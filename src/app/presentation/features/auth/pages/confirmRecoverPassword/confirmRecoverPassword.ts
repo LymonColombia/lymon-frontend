@@ -17,7 +17,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   imports: [ReactiveFormsModule, PasswordInputComponent],
   providers: [],
   templateUrl: './confirmRecoverPassword.html',
-  styleUrls: ['../../auth-form.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css'],
 })
 export class ConfirmRecoverPasswordComponent implements OnInit {
   private readonly fb = inject(FormBuilder);

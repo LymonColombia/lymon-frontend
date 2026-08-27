@@ -18,7 +18,7 @@ import { bootstrapArrowRightCircleFill, bootstrapEnvelope, bootstrapQuestionCirc
     }),
   ],
   templateUrl: './recoverPassword.html',
-  styleUrls: ['../../auth-form.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css'],
 })
 export class RecoverPasswordComponent {
   private readonly fb = inject(FormBuilder);

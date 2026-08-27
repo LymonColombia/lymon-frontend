@@ -23,7 +23,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   imports: [ReactiveFormsModule, RouterLink, PasswordInputComponent],
   providers: [],
   templateUrl: './reset-password.html',
-  styleUrls: ['../../../auth/auth-form.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css'],
 })
 export class GuestResetPasswordComponent implements OnInit {
   private readonly fb = inject(FormBuilder);

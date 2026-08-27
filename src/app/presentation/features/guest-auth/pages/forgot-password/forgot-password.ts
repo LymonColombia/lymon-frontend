@@ -16,7 +16,7 @@ import {
   imports: [ReactiveFormsModule, RouterLink, NgIcon],
   providers: [provideIcons({ bootstrapArrowRightCircleFill, bootstrapEnvelope, bootstrapChevronLeft })],
   templateUrl: './forgot-password.html',
-  styleUrls: ['../../../auth/auth-form.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css'],
 })
 export class GuestForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);

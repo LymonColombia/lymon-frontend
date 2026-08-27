@@ -9,7 +9,7 @@ type VerifyStatus = 'loading' | 'success' | 'already-verified' | 'error';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink],
   templateUrl: './verify-email.html',
-  styleUrls: ['../../../auth/auth-form.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css'],
 })
 export class GuestVerifyEmailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

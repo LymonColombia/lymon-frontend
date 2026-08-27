@@ -25,7 +25,7 @@ import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-t
     }),
   ],
   templateUrl: './login.html',
-  styleUrls: ['../../auth-form.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css'],
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);

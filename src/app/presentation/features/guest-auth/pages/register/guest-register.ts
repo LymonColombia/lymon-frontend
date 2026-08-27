@@ -44,7 +44,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
     }),
   ],
   templateUrl: './guest-register.html',
-  styleUrls: ['../../../auth/auth-form.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css'],
 })
 export class GuestRegisterComponent {
   private readonly fb = inject(NonNullableFormBuilder);

@@ -94,7 +94,7 @@ function futureExpiryValidator(control: AbstractControl): ValidationErrors | nul
     }),
   ],
   templateUrl: './register.html',
-  styleUrls: ['../../auth-form.css', './register.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css', './register.css'],
 })
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);

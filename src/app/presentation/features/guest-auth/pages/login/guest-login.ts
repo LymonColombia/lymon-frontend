@@ -17,7 +17,7 @@ import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-t
   imports: [ReactiveFormsModule, RouterLink, NgIcon, PasswordInputComponent, AuthTypeToggleComponent],
   providers: [provideIcons({ bootstrapEnvelope, bootstrapArrowRightCircleFill })],
   templateUrl: './guest-login.html',
-  styleUrls: ['../../../auth/auth-form.css'],
+  styleUrls: ['../../../../shared/styles/auth-form.css'],
 })
 export class GuestLoginComponent {
   private readonly fb = inject(FormBuilder);
