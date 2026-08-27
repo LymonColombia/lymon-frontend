@@ -1,0 +1,957 @@
+<app-tenant-page-layout
+  [title]="guest()?.name ?? 'Perfil del huésped'"
+  subtitle="Consulta y administra la información de este huésped"
+  [breadcrumbItems]="breadcrumbItems()"
+  backLink="/crm/guests"
+  backLabel="Volver a la lista"
+>
+  <div tenantPageIcon class="guest-initials-avatar">{{ guestInitials() }}</div>
+
+  @if (isGuestLoading()) {
+    <p class="page-feedback">Cargando perfil...</p>
+  } @else if (guestErrorMessage()) {
+    <div class="alert alert-error">{{ guestErrorMessage() }}</div>
+  } @else if (notFoundError()) {
+    <div class="alert alert-error">No se encontró el perfil del huésped solicitado.</div>
+  } @else if (guest(); as guest) {
+    <!-- Contact strip -->
+    <section class="profile-contact-strip">
+      <span
+        class="status-pill"
+        [class.status-active]="guest.status === 'active'"
+        [class.status-inactive]="guest.status === 'inactive'"
+      >
+        {{ guest.status === 'active' ? 'Activo' : 'Inactivo' }}
+      </span>
+
+      <div class="contact-item">
+        <span class="contact-icon" aria-hidden="true">
+          <ng-icon name="bootstrapEnvelope" size="18px"></ng-icon>
+        </span>
+        <span class="contact-value">{{ guest.email }}</span>
+      </div>
+
+      <div class="contact-item">
+        <span class="contact-icon" aria-hidden="true">
+          <ng-icon name="bootstrapTelephone" size="18px"></ng-icon>
+        </span>
+        <span class="contact-value">{{ formatPhone(guest.phone) }}</span>
+      </div>
+
+      <div class="contact-tags" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+        <span class="contact-icon" aria-hidden="true">
+          <ng-icon name="bootstrapTags" size="18px"></ng-icon>
+        </span>
+
+        <button class="tag-add-btn" type="button" (click)="openTagPopover($event)">
+          + Añadir etiqueta
+        </button>
+
+        @for (tag of guestTags(); track tag) {
+          <span class="contact-tag-chip">
+            {{ tagLabels[tag] ?? tag }}
+            <button
+              class="tag-chip-remove"
+              type="button"
+              (click)="toggleTag(tag)"
+              [attr.aria-label]="'Eliminar etiqueta ' + (tagLabels[tag] ?? tag)"
+            >
+              <ng-icon name="bootstrapX" size="15px"></ng-icon>
+            </button>
+          </span>
+        }
+
+        @if (isTagPopoverOpen()) {
+          <div class="tag-popover">
+            <div class="tag-search-wrapper">
+              <ng-icon name="bootstrapSearch" size="14px" class="tag-search-icon"></ng-icon>
+              <input
+                class="tag-search-input"
+                type="text"
+                placeholder="Buscar etiqueta..."
+                [value]="tagSearchQuery()"
+                (input)="onTagSearchChange($any($event.target).value)"
+                (click)="$event.stopPropagation()"
+              />
+            </div>
+            <div class="tag-list">
+              @for (tag of filteredAvailableTags(); track tag) {
+                <button class="tag-list-item" type="button" (click)="toggleTag(tag)">
+                  <span class="tag-list-item-label">{{ tagLabels[tag] }}</span>
+                  @if (isTagAssigned(tag)) {
+                    <ng-icon name="bootstrapCheck" size="15px" class="tag-list-check"></ng-icon>
+                  }
+                </button>
+              }
+              @if (filteredAvailableTags().length === 0) {
+                <p class="tag-list-empty">Sin resultados</p>
+              }
+            </div>
+            <div class="tag-counter">
+              {{ guestTags().length }} de {{ availableTags.length }} seleccionadas
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Profile nav -->
+    <nav class="profile-nav-tabs" aria-label="Secciones del perfil del huésped">
+      <div role="tablist" class="profile-nav-tabs-inner">
+        @for (tab of profileNavTabs; track tab.value) {
+          <button
+            type="button"
+            class="profile-nav-tab"
+            [class.profile-nav-tab--active]="activeTab() === tab.value"
+            role="tab"
+            [attr.aria-selected]="activeTab() === tab.value"
+            (click)="setActiveTab(tab.value)"
+          >
+            <span class="profile-nav-tab-icon" aria-hidden="true">
+              <ng-icon [name]="tab.icon" size="16px"></ng-icon>
+            </span>
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+    </nav>
+
+    <!-- Comunicaciones tab -->
+    @if (activeTab() === 'comunicaciones') {
+    <!-- Send message -->
+    <section class="profile-section">
+      <div class="notes-section-header">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapEnvelopeFill" size="18px"></ng-icon>
+          </span>
+          Enviar mensaje
+        </h2>
+        @if (!isMessageFormVisible()) {
+          <app-button variant="primary" size="medium" (clicked)="openMessageForm()">
+            Redactar
+          </app-button>
+        }
+      </div>
+
+      @if (messageSentSuccess()) {
+        <p class="message-feedback message-feedback-success">Mensaje enviado correctamente.</p>
+      }
+
+      @if (messageErrorMessage()) {
+        <p class="message-feedback message-feedback-error">{{ messageErrorMessage() }}</p>
+      }
+
+      @if (isMessageFormVisible()) {
+        <article class="guest-note-card">
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-subject">Asunto</label>
+            <input
+              id="message-subject"
+              class="message-form-input"
+              type="text"
+              placeholder="Asunto del correo..."
+              [value]="messageSubject()"
+              (input)="onMessageSubjectChange(($any($event.target).value ?? '').toString())"
+            />
+          </div>
+
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-template">Plantilla</label>
+            <app-select
+              id="message-template"
+              name="message-template"
+              size="medium"
+              placeholder=""
+              [options]="messageTemplateSelectOptions"
+              [value]="messageTemplateId()"
+              (valueChange)="setMessageTemplateId($event)"
+            ></app-select>
+          </div>
+
+          <div class="message-form-field">
+            <label class="guest-note-label" for="message-body">Mensaje</label>
+            <textarea
+              id="message-body"
+              class="guest-note-textarea"
+              rows="6"
+              placeholder="Escribe el contenido del correo..."
+              [value]="messageBody()"
+              (input)="onMessageBodyChange(($any($event.target).value ?? '').toString())"
+            ></textarea>
+          </div>
+
+          <!-- TODO: re-enable when file upload service (S3/storage) is ready
+          <div class="message-form-field">
+            <span class="guest-note-label">Adjuntos</span>
+            <div
+              class="message-drop-zone"
+              [class.message-drop-zone-dragover]="isDragOver()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave()"
+              (drop)="onFileDrop($event)"
+              (click)="fileInput.click()"
+              role="button"
+              tabindex="0"
+              aria-label="Zona para arrastrar y soltar archivos adjuntos"
+              (keydown.enter)="fileInput.click()"
+              (keydown.space)="fileInput.click()"
+            >
+              <input
+                #fileInput
+                type="file"
+                multiple
+                class="message-drop-zone-input"
+                (change)="onFileInputChange($event)"
+                aria-hidden="true"
+                tabindex="-1"
+              />
+              <span class="message-drop-zone-icon" aria-hidden="true">
+                <ng-icon name="bootstrapPaperclip" size="22px"></ng-icon>
+              </span>
+              <span class="message-drop-zone-text">
+                Arrastra archivos aquí o haz clic para seleccionar
+              </span>
+            </div>
+
+            @if (attachedFiles().length > 0) {
+              <div class="message-attachment-chips">
+                @for (file of attachedFiles(); track $index) {
+                  <div class="message-attachment-chip">
+                    <span class="message-attachment-chip-icon" aria-hidden="true">
+                      <ng-icon name="bootstrapFileEarmark" size="14px"></ng-icon>
+                    </span>
+                    <span class="message-attachment-chip-name">{{ file.name }}</span>
+                    <span class="message-attachment-chip-size">{{ formatFileSize(file.size) }}</span>
+                    <button
+                      type="button"
+                      class="message-attachment-chip-remove"
+                      [attr.aria-label]="'Eliminar ' + file.name"
+                      (click)="removeAttachedFile($index); $event.stopPropagation()"
+                    >
+                      <ng-icon name="bootstrapX" size="12px"></ng-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          -->
+
+          <div class="guest-note-actions">
+            <app-button variant="secondary" size="medium" (clicked)="cancelMessageForm()">
+              Cancelar
+            </app-button>
+            <app-button
+              variant="primary"
+              size="medium"
+              [loading]="isSendingMessage()"
+              [disabled]="isSendingMessage()"
+              (clicked)="sendMessage()"
+            >
+              Enviar
+            </app-button>
+          </div>
+        </article>
+      }
+    </section>
+
+    <!-- Communication history -->
+    <section class="profile-section">
+      <div class="notes-section-header">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapEnvelopeOpen" size="18px"></ng-icon>
+          </span>
+          Historial de comunicaciones
+        </h2>
+      </div>
+
+      @if (isEmailsLoading()) {
+        <p class="page-feedback">Cargando historial...</p>
+      } @else if (emailsErrorMessage()) {
+        <p class="message-feedback message-feedback-error">{{ emailsErrorMessage() }}</p>
+      } @else if (emails().length === 0) {
+        <div class="email-history-empty">
+          <span class="email-history-empty-icon" aria-hidden="true">
+            <ng-icon name="bootstrapEnvelopeOpen" size="28px"></ng-icon>
+          </span>
+          <p class="email-history-empty-text">Sin comunicaciones registradas.</p>
+        </div>
+      } @else {
+        <div class="email-timeline">
+          @for (email of visibleEmails(); track email.id; let last = $last) {
+            <div class="email-timeline-item">
+              <div class="email-timeline-node">
+                <span
+                  class="email-timeline-dot"
+                  [class.email-timeline-dot--sent]="email.status === 'sent'"
+                  [class.email-timeline-dot--failed]="email.status === 'failed'"
+                  [class.email-timeline-dot--pending]="email.status === 'pending'"
+                  aria-hidden="true"
+                ></span>
+                @if (!last || hasMoreEmails()) {
+                  <span class="email-timeline-connector" aria-hidden="true"></span>
+                }
+              </div>
+              <article class="email-timeline-card">
+                <p class="email-timeline-subject">{{ email.subject }}</p>
+                <div class="email-timeline-meta">
+                  <span class="email-timeline-date">{{
+                    formatDateLabel(email.createdAt, true)
+                  }}</span>
+                  <span
+                    class="booking-status"
+                    [class.booking-status-success]="email.status === 'sent'"
+                    [class.booking-status-danger]="email.status === 'failed'"
+                    [class.booking-status-warning]="email.status === 'pending'"
+                    >{{ getEmailStatusLabel(email.status) }}</span
+                  >
+                </div>
+              </article>
+            </div>
+          }
+
+          @if (hasMoreEmails()) {
+            <div class="email-timeline-item">
+              <div class="email-timeline-node">
+                <span class="email-timeline-expand-node" aria-hidden="true"></span>
+              </div>
+              <button
+                type="button"
+                class="email-timeline-expand-btn"
+                (click)="toggleEmailsExpanded()"
+              >
+                @if (isEmailsExpanded()) {
+                  Ver menos
+                } @else {
+                  Ver {{ emails().length - 5 }} más
+                }
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    } <!-- /comunicaciones tab -->
+
+    <!-- Métricas tab -->
+    @if (activeTab() === 'metricas') {
+    <!-- Rich statistics -->
+    <section class="profile-section">
+      <h2 class="profile-section-title">Estadísticas</h2>
+
+      <div class="stats-grid stats-grid--rich">
+        <article class="stat-card">
+          <div class="stat-card-label">
+            <span class="stat-card-icon" aria-hidden="true">
+              <ng-icon name="bootstrapCalendarCheck" size="18px"></ng-icon>
+            </span>
+            <span>Total reservas</span>
+          </div>
+          <p class="stat-card-value">{{ totalBookings() }}</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card-label">
+            <span class="stat-card-icon" aria-hidden="true">
+              <ng-icon name="bootstrapWallet2" size="18px"></ng-icon>
+            </span>
+            <span>Gasto total</span>
+          </div>
+          <p class="stat-card-value">{{ formatCurrency(totalSpend()) }}</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card-label">
+            <span class="stat-card-icon" aria-hidden="true">
+              <ng-icon name="bootstrapMoonStars" size="18px"></ng-icon>
+            </span>
+            <span>Estancia media</span>
+          </div>
+          <p class="stat-card-value">
+            @if (avgStayNights() !== null) {
+              {{ avgStayNights() }} noche{{ avgStayNights() === 1 ? '' : 's' }}
+            } @else {
+              N/A
+            }
+          </p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card-label">
+            <span class="stat-card-icon" aria-hidden="true">
+              <ng-icon name="bootstrapHouseDoor" size="18px"></ng-icon>
+            </span>
+            <span>Propiedad preferida</span>
+          </div>
+          <p class="stat-card-value">{{ preferredProperty() ?? 'N/A' }}</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-card-label">
+            <span class="stat-card-icon" aria-hidden="true">
+              <ng-icon name="bootstrapSun" size="18px"></ng-icon>
+            </span>
+            <span>Temporada favorita</span>
+          </div>
+          <p class="stat-card-value">{{ preferredSeason() ?? 'N/A' }}</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Spending trend (full width) -->
+    <div class="metrics-card metrics-card--full">
+      <div class="metrics-card-header">
+        <div>
+          <h3 class="metrics-card-title">Tendencia de gasto</h3>
+          <p class="metrics-card-subtitle">Gasto mensual del huésped en sus reservas</p>
+        </div>
+      </div>
+      @if (isMonthlySpendingLoading()) {
+        <p class="page-feedback">Cargando tendencia de gasto...</p>
+      } @else if (monthlySpendingErrorMessage()) {
+        <p class="notes-feedback notes-feedback-error">{{ monthlySpendingErrorMessage() }}</p>
+      } @else if (monthlySpending().length === 0) {
+        <p class="notes-feedback">Sin datos de gasto disponibles.</p>
+      } @else {
+        <div class="monthly-spending-chart-wrapper">
+          <canvas #monthlySpendingCanvas></canvas>
+        </div>
+      }
+    </div>
+
+    <!-- Two-column row: booking source + ratings -->
+    <div class="metrics-row">
+
+      <!-- Left: booking source distribution -->
+      <div class="metrics-card">
+        <div class="metrics-card-header">
+          <div>
+            <h3 class="metrics-card-title">Origen de las reservas</h3>
+            <p class="metrics-card-subtitle">Distribución por canal</p>
+          </div>
+        </div>
+        @if (isBookingOriginsLoading()) {
+          <p class="page-feedback">Cargando orígenes...</p>
+        } @else if (bookingOriginsErrorMessage()) {
+          <p class="notes-feedback notes-feedback-error">{{ bookingOriginsErrorMessage() }}</p>
+        } @else if (bookingOrigins().length === 0) {
+          <p class="notes-feedback">Sin datos de origen disponibles.</p>
+        } @else {
+          <div class="booking-origins-chart-wrapper">
+            <canvas #bookingOriginsCanvas></canvas>
+          </div>
+          <div class="booking-origins-footer">
+            <span class="booking-origins-footer-label">Total reservas</span>
+            <span class="booking-origins-footer-value">{{ bookingOriginsTotal() }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Right: guest ratings -->
+      <div class="metrics-card">
+        <div class="ratings-section-header">
+          <div>
+            <h3 class="metrics-card-title">Reseñas dadas</h3>
+            <p class="metrics-card-subtitle">Puntuaciones que este huésped ha publicado</p>
+          </div>
+          @if (ratingsAverageRating() !== null) {
+            <div class="ratings-average-badge">
+              @for (filled of getStarsArray(ratingsAverageRating()!); track $index) {
+                <ng-icon [name]="filled ? 'bootstrapStarFill' : 'bootstrapStar'" size="18px" [class.ratings-star--filled]="filled" [class.ratings-star--empty]="!filled"></ng-icon>
+              }
+              <span class="ratings-average-value">{{ ratingsAverageRating()!.toFixed(1) }}</span>
+            </div>
+          }
+        </div>
+
+        @if (isRatingsLoading()) {
+          <p class="page-feedback">Cargando reseñas...</p>
+        } @else if (ratingsErrorMessage()) {
+          <p class="notes-feedback notes-feedback-error">{{ ratingsErrorMessage() }}</p>
+        } @else if (ratings().length === 0) {
+          <p class="notes-feedback">Este huésped no ha publicado reseñas.</p>
+        } @else {
+          <div class="ratings-list">
+            @for (rating of ratings(); track rating.id; let last = $last) {
+              <div class="rating-row" [class.rating-row--last]="last">
+                <span class="rating-row-date">{{ formatRatingDate(rating.createdAt) }}</span>
+                <div class="rating-row-body">
+                  <div class="rating-row-top">
+                    <span class="rating-row-unit">{{ rating.unitName }}</span>
+                    <div class="rating-row-stars">
+                      @for (filled of getStarsArray(rating.rate); track $index) {
+                        <ng-icon [name]="filled ? 'bootstrapStarFill' : 'bootstrapStar'" size="14px" [class.ratings-star--filled]="filled" [class.ratings-star--empty]="!filled"></ng-icon>
+                      }
+                    </div>
+                  </div>
+                  @if (rating.message) {
+                    <p class="rating-row-message">{{ rating.message }}</p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (hasMoreRatings()) {
+            <div class="ratings-load-more">
+              <app-button variant="secondary" size="medium" [loading]="isLoadingMoreRatings()" (clicked)="loadMoreRatings()">
+                Ver más reseñas
+              </app-button>
+            </div>
+          }
+        }
+      </div>
+
+    </div>
+
+    } <!-- /metricas tab -->
+
+    <!-- Resumen tab -->
+    @if (activeTab() === 'resumen') {
+
+    <!-- KPI strip -->
+    <div class="kpi-strip">
+      <div class="kpi-card">
+        <span class="kpi-card-label">Reservas totales</span>
+        <span class="kpi-card-value">{{ totalBookings() }}</span>
+        <span class="kpi-card-sub">estancias confirmadas</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card-label">Gasto total</span>
+        <span class="kpi-card-value">{{ formatCurrency(totalSpend()) }}</span>
+        <span class="kpi-card-sub">acumulado</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-card-label">Última estancia</span>
+        @if (lastStayBooking(); as b) {
+          <span class="kpi-card-value">{{ formatDateLabel(b.checkOut) }}</span>
+          <span class="kpi-card-sub">{{ b.propertyName || 'Propiedad desconocida' }}</span>
+        } @else {
+          <span class="kpi-card-value">—</span>
+          <span class="kpi-card-sub">Sin estancias previas</span>
+        }
+      </div>
+      <div class="kpi-card kpi-card--accent">
+        <span class="kpi-card-label">Próxima reserva</span>
+        @if (nextBooking(); as b) {
+          <span class="kpi-card-value">{{ formatDateLabel(b.checkIn) }}</span>
+          <span class="kpi-card-sub">{{ b.propertyName || 'Propiedad desconocida' }} · {{ nightsBetween(b.checkIn, b.checkOut) }} noches</span>
+        } @else {
+          <span class="kpi-card-value">—</span>
+          <span class="kpi-card-sub">Sin próximas reservas</span>
+        }
+      </div>
+    </div>
+
+    <!-- Próxima reserva card -->
+    <section class="profile-section next-booking-card">
+      <div class="next-booking-header">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapCalendar3" size="18px"></ng-icon>
+          </span>
+          Próxima reserva
+        </h2>
+      </div>
+      @if (nextBooking(); as booking) {
+        <div class="next-booking-body">
+          <div class="next-booking-section">
+            <span class="next-booking-field-label">Propiedad</span>
+            <span class="next-booking-field-value">{{ booking.propertyName || 'Propiedad desconocida' }}</span>
+            @if (booking.unitName) {
+              <span class="next-booking-field-sub">{{ booking.unitName }}</span>
+            }
+          </div>
+          <div class="next-booking-right">
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Check-in</span>
+              <span class="next-booking-field-value">{{ formatDateLabel(booking.checkIn) }}</span>
+            </div>
+            <span class="next-booking-arrow" aria-hidden="true">→</span>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Check-out</span>
+              <span class="next-booking-field-value">{{ formatDateLabel(booking.checkOut) }}</span>
+            </div>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Duración</span>
+              <span class="next-booking-field-value">{{ nightsBetween(booking.checkIn, booking.checkOut) }} noches</span>
+            </div>
+            <div class="next-booking-section">
+              <span class="next-booking-field-label">Estado</span>
+              <span
+                class="booking-status"
+                [class.booking-status-info]="getBookingStatusTone(booking.status) === 'info'"
+                [class.booking-status-success]="getBookingStatusTone(booking.status) === 'success'"
+                [class.booking-status-warning]="getBookingStatusTone(booking.status) === 'warning'"
+                [class.booking-status-danger]="getBookingStatusTone(booking.status) === 'danger'"
+              >{{ getBookingStatusLabel(booking.status) }}</span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <p class="next-booking-empty">El huésped no tiene próximas reservas.</p>
+      }
+    </section>
+
+    <!-- Pinned notes (only when there are pinned notes) -->
+    @if (pinnedNotes().length > 0) {
+      <section class="profile-section">
+        <h2 class="profile-section-title">
+          <span class="profile-section-title-icon" aria-hidden="true">
+            <ng-icon name="bootstrapPinAngleFill" size="18px"></ng-icon>
+          </span>
+          Notas fijadas
+        </h2>
+
+        <div class="guest-notes-list">
+          @for (note of pinnedNotes(); track getNoteIdentifier(note)) {
+            <ng-container
+              [ngTemplateOutlet]="noteCard"
+              [ngTemplateOutletContext]="{ $implicit: note }"
+            ></ng-container>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Notes history with filter tabs -->
+    <section class="profile-section">
+      <div class="notes-section-header">
+        <h2 class="profile-section-title">Historial de notas</h2>
+        @if (!isNoteFormVisible()) {
+          <app-button variant="primary" size="medium" (clicked)="openNoteForm()">
+            <ng-icon name="bootstrapPlus" size="18px"></ng-icon>
+            Añadir nota
+          </app-button>
+        }
+      </div>
+
+      <div class="note-filter-tabs" role="tablist" aria-label="Filtrar notas por categoría">
+        @for (tab of noteFilterTabs; track tab.value) {
+          <button
+            type="button"
+            class="note-filter-tab"
+            [class.note-filter-tab--active]="activeNoteFilter() === tab.value"
+            role="tab"
+            [attr.aria-selected]="activeNoteFilter() === tab.value"
+            (click)="setNoteFilter(tab.value)"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      @if (noteErrorMessage()) {
+        <p class="notes-feedback notes-feedback-error">{{ noteErrorMessage() }}</p>
+      }
+
+      @if (isNoteFormVisible()) {
+        <article class="guest-note-card">
+          <div class="guest-note-header">
+            <span class="guest-note-icon" aria-hidden="true">
+              <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
+            </span>
+            <h3 class="guest-note-title">Nueva nota</h3>
+          </div>
+
+          <div class="guest-note-field">
+            <label class="guest-note-label" for="note-category">Categoría</label>
+            <app-select
+              id="note-category"
+              name="note-category"
+              size="medium"
+              placeholder=""
+              [options]="guestNoteSelectOptions"
+              [value]="noteCategory()"
+              (valueChange)="setNoteCategory($event)"
+            ></app-select>
+          </div>
+
+          <div class="guest-note-field">
+            <label class="sr-only" for="note-content">Contenido de la nota</label>
+            <textarea
+              id="note-content"
+              class="guest-note-textarea"
+              rows="5"
+              maxlength="280"
+              placeholder="Escribe una nueva nota..."
+              [value]="noteContent()"
+              (input)="onNoteContentChange(($any($event.target).value ?? '').toString())"
+            ></textarea>
+            <p class="guest-note-counter">{{ noteCharCount() }}/280</p>
+          </div>
+
+          <div class="guest-note-actions">
+            <app-button variant="secondary" size="medium" (clicked)="cancelNoteForm()">
+              Cancelar
+            </app-button>
+            <app-button
+              variant="primary"
+              size="medium"
+              [loading]="isSavingNote()"
+              [disabled]="isSavingNote()"
+              (clicked)="saveNote()"
+            >
+              Guardar
+            </app-button>
+          </div>
+        </article>
+      }
+
+      @if (isNotesLoading()) {
+        <p class="notes-feedback">Cargando notas...</p>
+      } @else if (filteredNotes().length === 0) {
+        <p class="notes-feedback">No hay notas en esta categoría.</p>
+      } @else {
+        <div class="guest-notes-list">
+          @for (note of filteredNotes(); track getNoteIdentifier(note)) {
+            <ng-container
+              [ngTemplateOutlet]="noteCard"
+              [ngTemplateOutletContext]="{ $implicit: note }"
+            ></ng-container>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Edit note modal -->
+    <app-modal
+      [open]="isEditNoteModalOpen()"
+      title="Editar nota"
+      size="medium"
+      (closed)="cancelEditNote()"
+    >
+      <div class="guest-note-edit-modal-body">
+        <app-select
+          [options]="guestNoteSelectOptions"
+          [value]="editNoteCategory()"
+          (valueChange)="setEditNoteCategory($event)"
+        ></app-select>
+        <div class="guest-note-edit-textarea-wrapper">
+          <textarea
+            class="guest-note-edit-textarea"
+            rows="5"
+            maxlength="280"
+            placeholder="Escribe la nota aquí..."
+            [value]="editNoteContent()"
+            (input)="onEditNoteContentChange($any($event.target).value)"
+          ></textarea>
+          <span class="guest-note-edit-char-count">{{ editNoteCharCount() }}/280</span>
+        </div>
+        @if (editNoteErrorMessage()) {
+          <p class="guest-note-edit-error">{{ editNoteErrorMessage() }}</p>
+        }
+      </div>
+      <div modal-footer class="guest-note-edit-modal-footer">
+        <app-button variant="secondary" size="medium" (clicked)="cancelEditNote()">
+          Cancelar
+        </app-button>
+        <app-button
+          variant="primary"
+          size="medium"
+          [loading]="isUpdatingNote()"
+          [disabled]="isUpdatingNote()"
+          (clicked)="saveEditedNote()"
+        >
+          Guardar
+        </app-button>
+      </div>
+    </app-modal>
+
+    <!-- Delete note modal -->
+    <app-modal
+      [open]="isDeleteNoteModalOpen()"
+      title="Eliminar nota"
+      size="small"
+      (closed)="cancelDeleteNote()"
+    >
+      <div class="guest-note-delete-modal-body">
+        <div class="guest-note-delete-modal-icon-wrapper" aria-hidden="true">
+          <ng-icon name="bootstrapTrash" size="28px"></ng-icon>
+        </div>
+        <p class="guest-note-delete-modal-heading">¿Eliminar nota?</p>
+        @if (deletingNote(); as note) {
+          <p class="guest-note-delete-modal-preview">{{ truncateNotePreview(note.note) }}</p>
+        }
+        <p class="guest-note-delete-modal-warning">Esta acción no se puede deshacer.</p>
+        @if (deleteNoteErrorMessage()) {
+          <p class="guest-note-delete-modal-error">{{ deleteNoteErrorMessage() }}</p>
+        }
+      </div>
+      <div modal-footer class="guest-note-delete-modal-footer">
+        <app-button
+          variant="secondary"
+          size="medium"
+          [disabled]="isDeletingNote()"
+          (clicked)="cancelDeleteNote()"
+        >
+          Cancelar
+        </app-button>
+        <app-button
+          variant="secondary"
+          size="medium"
+          class="btn-danger-override"
+          [loading]="isDeletingNote()"
+          [disabled]="isDeletingNote()"
+          (clicked)="confirmDeleteNote()"
+        >
+          Eliminar
+        </app-button>
+      </div>
+    </app-modal>
+
+    } <!-- /resumen tab -->
+
+    <!-- Reservas tab -->
+    @if (activeTab() === 'reservas') {
+    <!-- Booking history with source badges -->
+    <section class="profile-section">
+      <h2 class="profile-section-title">Historial de reservas</h2>
+
+      @if (isBookingsLoading()) {
+        <p class="booking-feedback">Cargando historial de reservas...</p>
+      } @else if (bookingsErrorMessage()) {
+        <p class="booking-feedback booking-feedback-error">{{ bookingsErrorMessage() }}</p>
+      } @else if (sortedBookings().length === 0) {
+        <p class="booking-feedback">Este huésped todavía no tiene reservas registradas.</p>
+      } @else {
+        <div class="booking-list">
+          @for (booking of sortedBookings(); track booking.id) {
+            <article class="booking-card">
+              <div class="booking-card-top">
+                <div class="booking-property">
+                  <span class="booking-property-icon" aria-hidden="true">
+                    <ng-icon name="bootstrapHouseDoor" size="18px"></ng-icon>
+                  </span>
+                  <div class="booking-property-text">
+                    <span class="booking-property-name">
+                      {{ booking.propertyName || 'Propiedad no disponible' }}
+                    </span>
+                    <span class="booking-unit-name">
+                      {{ booking.unitName || 'Unidad no disponible' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="booking-card-badges">
+                  <span
+                    class="booking-status"
+                    [class.booking-status-info]="getBookingStatusTone(booking.status) === 'info'"
+                    [class.booking-status-success]="
+                      getBookingStatusTone(booking.status) === 'success'
+                    "
+                    [class.booking-status-warning]="
+                      getBookingStatusTone(booking.status) === 'warning'
+                    "
+                    [class.booking-status-danger]="
+                      getBookingStatusTone(booking.status) === 'danger'
+                    "
+                  >
+                    {{ getBookingStatusLabel(booking.status) }}
+                  </span>
+
+                  <span
+                    class="booking-source-badge"
+                    [class.booking-source-badge--airbnb]="booking.source === 'AIRBNB'"
+                    [class.booking-source-badge--booking]="booking.source === 'BOOKING'"
+                    [class.booking-source-badge--vrbo]="booking.source === 'VRBO'"
+                    [class.booking-source-badge--direct]="booking.source === 'DIRECT'"
+                    [class.booking-source-badge--manual]="booking.source === 'MANUAL'"
+                  >
+                    {{ getSourceLabel(booking.source) }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="booking-card-meta">
+                <span>
+                  {{ formatDateLabel(booking.checkIn) }} – {{ formatDateLabel(booking.checkOut) }}
+                </span>
+                <strong>{{ formatCurrency(booking.totalAmount) }}</strong>
+              </div>
+
+              <div class="booking-card-details">
+                <span>Día de la reservación: {{ formatDateLabel(booking.createdAt, true) }}</span>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+    } <!-- /reservas tab -->
+
+    <!-- Documentos tab -->
+    @if (activeTab() === 'documentos') {
+    <section class="profile-section">
+      <div class="profile-docs-empty">
+        <span class="profile-docs-empty-icon" aria-hidden="true">
+          <ng-icon name="bootstrapFileEarmark" size="32px"></ng-icon>
+        </span>
+        <p class="profile-docs-empty-title">Sin documentos</p>
+        <p class="profile-docs-empty-text">Próximamente podrás adjuntar documentos al perfil del huésped.</p>
+      </div>
+    </section>
+    } <!-- /documentos tab -->
+  }
+</app-tenant-page-layout>
+
+<ng-template #noteCard let-note>
+  <article
+    class="guest-note-history-card"
+    [class.guest-note-history-card-pinned]="note.status === 'pinned'"
+  >
+    <div class="guest-note-history-main">
+      <span class="guest-note-history-icon" aria-hidden="true">
+        <ng-icon name="bootstrapCardText" size="18px"></ng-icon>
+      </span>
+      <div class="guest-note-history-content">
+        <p class="guest-note-history-text">{{ note.note }}</p>
+        <div class="guest-note-history-meta">
+          <span>{{ formatDateLabel(note.createdAt) }}</span>
+          <span aria-hidden="true">•</span>
+          <span
+            class="guest-note-category-chip"
+            [class.guest-note-category-chip-preference]="note.type === 'preference'"
+            [class.guest-note-category-chip-behavior]="note.type === 'behavior'"
+            [class.guest-note-category-chip-incident]="note.type === 'incident'"
+            [class.guest-note-category-chip-general]="note.type === 'general'"
+          >
+            {{ getNoteCategoryLabel(note.type) }}
+          </span>
+          <span aria-hidden="true">•</span>
+          <span>{{ note.createdByName || 'Admin' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="guest-note-history-side">
+      <button
+        type="button"
+        class="guest-note-edit-badge"
+        aria-label="Editar nota"
+        (click)="openEditNoteModal(note)"
+      >
+        <ng-icon name="bootstrapPencil" size="15px"></ng-icon>
+      </button>
+      <button
+        type="button"
+        class="guest-note-delete-badge"
+        aria-label="Eliminar nota"
+        (click)="openDeleteNoteModal(note)"
+      >
+        <ng-icon name="bootstrapTrash" size="15px"></ng-icon>
+      </button>
+      <button
+        type="button"
+        class="guest-note-pin-badge"
+        [class.guest-note-pin-badge-active]="note.status === 'pinned'"
+        [attr.aria-label]="note.status === 'pinned' ? 'Desfijar nota' : 'Fijar nota'"
+        (click)="toggleNotePin(note)"
+      >
+        <ng-icon name="bootstrapPinAngleFill" size="15px"></ng-icon>
+      </button>
+    </div>
+  </article>
+</ng-template>

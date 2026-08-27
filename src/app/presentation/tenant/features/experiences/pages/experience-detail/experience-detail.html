@@ -1,0 +1,212 @@
+<app-tenant-page-layout
+  [title]="experience()?.name ?? 'Detalle de Experiencia'"
+  iconName="bootstrapStars"
+  backLink="/tenant-experiences"
+  backLabel="Volver a experiencias"
+>
+
+  @if (experience()) {
+    <div tenantPageActions>
+      <app-button type="button" variant="primary" (clicked)="onEdit()">
+        <ng-icon name="bootstrapPencilSquare" size="16px" />
+        Editar
+      </app-button>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Cargando experiencia...</p>
+    </div>
+  } @else if (experience(); as item) {
+    <div class="experience-layout">
+
+      <div class="experience-hero">
+        <img class="experience-hero-image" [src]="coverImageOf(item.mediaUrls)" [alt]="item.name" />
+        <div class="experience-hero-overlay">
+          <span class="experience-hero-category-chip">{{ categoryLabel() }}</span>
+          <h1 class="experience-hero-name">{{ item.name }}</h1>
+          <p class="experience-hero-description">{{ item.description }}</p>
+        </div>
+      </div>
+
+      @if (galleryUrls().length) {
+        <div class="experience-gallery">
+          @for (url of galleryUrls(); track url) {
+            <img class="experience-gallery-thumb" [src]="url" loading="lazy" [alt]="item.name" />
+          }
+        </div>
+      }
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Precio</span>
+            <ng-icon name="bootstrapCash" size="22px" class="stat-card-icon" />
+          </div>
+          <div class="stat-card-body">
+            <strong class="stat-card-value">{{ priceLabel() }}</strong>
+            <span class="stat-card-sub">Por persona</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Duración</span>
+            <ng-icon name="bootstrapClock" size="22px" class="stat-card-icon" />
+          </div>
+          <div class="stat-card-body">
+            <strong class="stat-card-value">
+              {{ item.durationHours }}h
+            </strong>
+            <span class="stat-card-sub">
+              hora{{ item.durationHours !== 1 ? 's' : '' }} por sesión
+            </span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Capacidad</span>
+            <ng-icon name="bootstrapPeopleFill" size="22px" class="stat-card-icon" />
+          </div>
+          <div class="stat-card-body">
+            <strong class="stat-card-value">{{ item.capacity }}</strong>
+            <span class="stat-card-sub">personas máximo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+
+        <section class="info-card">
+          <h2 class="info-card-title">
+            <ng-icon name="bootstrapCalendar3" size="16px" class="info-card-title-icon" />
+            Disponibilidad
+          </h2>
+
+          @if (item.availabilityType === 'DATE_RANGE' || item.availabilityType === 'ONE_TIME') {
+            <div class="date-range">
+              <div class="date-range-item">
+                <span class="field-label">Inicio</span>
+                <span class="field-value">{{ formatDateTime(item.startAt) }}</span>
+              </div>
+              <div class="date-range-divider"></div>
+              <div class="date-range-item">
+                <span class="field-label">Fin</span>
+                <span class="field-value">{{ formatDateTime(item.endAt) }}</span>
+              </div>
+            </div>
+            @if (item.blackoutRanges?.length) {
+              <div class="blackout-section">
+                <span class="field-label">Fechas bloqueadas</span>
+                <ul class="blackout-list">
+                  @for (range of item.blackoutRanges; track $index) {
+                    <li class="blackout-list-item">
+                      <ng-icon name="bootstrapDashCircle" size="10px" />
+                      {{ formatDateTime(range.startAt) }} – {{ formatDateTime(range.endAt) }}
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          } @else if (item.recurrence) {
+            <div class="recurrence">
+                <div class="recurrence-days">
+                  @for (day of item.recurrence.daysOfWeek; track day) {
+                  <span class="chip chip--primary">{{ dayLabel(day) }}</span>
+                  }
+                </div>
+              <div class="recurrence-times">
+                <div class="recurrence-time-item">
+                  <span class="field-label">Hora inicio</span>
+                  <span class="field-value">{{ item.recurrence.startTime }}</span>
+                </div>
+                <div class="recurrence-time-item">
+                  <span class="field-label">Hora fin</span>
+                  <span class="field-value">{{ item.recurrence.endTime }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </section>
+
+        <section class="info-card">
+          <h2 class="info-card-title">
+            <ng-icon name="bootstrapBuilding" size="16px" class="info-card-title-icon" />
+            Alcance
+          </h2>
+
+          @if (item.scope === 'PROPERTY') {
+            <div class="field-row">
+              <span class="field-label">Propiedad</span>
+              <span class="field-value">{{ item.propertyName ?? item.propertyId ?? 'No especificada' }}</span>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Habitaciones</span>
+              @if (item.units?.length) {
+                <div class="chips-row">
+                  @for (unit of item.units; track unit.id) {
+                    <span class="chip chip--success">{{ unit.name }}</span>
+                  }
+                </div>
+              } @else {
+                <span class="field-value field-value-empty">No especificadas</span>
+              }
+            </div>
+          } @else {
+            <p class="field-value">Esta experiencia aplica a nivel global para todos los usuarios.</p>
+          }
+
+          <div class="field-row">
+            <span class="field-label">Canales de venta</span>
+            <div class="chips-row">
+              @if (item.allowStandalonePurchase) {
+                <span class="chip chip--success">Venta directa</span>
+              }
+              @if (item.allowReservationPurchase) {
+                <span class="chip chip--success">Con reserva</span>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="info-card info-card-full">
+          <h2 class="info-card-title">
+            <ng-icon name="bootstrapGeoAlt" size="16px" class="info-card-title-icon" />
+            Ubicación
+          </h2>
+
+          <div class="location-layout">
+            <app-location-map
+              class="location-map"
+              [latitude]="item.location.lat"
+              [longitude]="item.location.lng"
+            />
+
+            <div class="location-fields">
+              <div class="location-field-item">
+                <ng-icon name="bootstrapFlag" size="15px" class="location-field-item-icon" />
+                <div class="field-row">
+                  <span class="field-label">Punto de encuentro</span>
+                  <span class="field-value">{{ item.location.label }}</span>
+                </div>
+              </div>
+              <div class="location-field-item">
+                <ng-icon name="bootstrapSignpost" size="15px" class="location-field-item-icon" />
+                <div class="field-row">
+                  <span class="field-label">Dirección</span>
+                  <span class="field-value">{{ item.location.address }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  }
+</app-tenant-page-layout>

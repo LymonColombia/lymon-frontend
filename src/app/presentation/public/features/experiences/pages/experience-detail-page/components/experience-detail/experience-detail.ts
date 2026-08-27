@@ -5,7 +5,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/compo
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select.component';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapGeoAlt, bootstrapGeoAltFill, bootstrapPeopleFill, bootstrapSignpostSplit, bootstrapStar } from '@ng-icons/bootstrap-icons';
-import { LocationMap } from '@/presentation/features/hotel/components/location-map/location-map';
+import { LocationMap } from '@/presentation/shared/components/location-map/location-map';
 import { Cart } from '@/domain/entities/cart.model';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
 import { AddCartExperienceItemUseCase } from '@/domain/use-cases/cart/add-cart-experience-item.use-case';
