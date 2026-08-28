@@ -7,7 +7,7 @@ import {
   bootstrapGraphUpArrow,
   bootstrapWindowStack,
 } from '@ng-icons/bootstrap-icons';
-import { LyhostFeature, LYHOST_FEATURES } from '@/domain/entities/lyhost-feature.model';
+import { PlanFeature, PLAN_FEATURES } from '@/domain/entities/plan-feature.model';
 
 @Component({
   selector: 'app-lyhost-features',
@@ -26,10 +26,10 @@ import { LyhostFeature, LYHOST_FEATURES } from '@/domain/entities/lyhost-feature
     }),
   ],
 })
-export class LyhostFeaturesComponent {
+export class PlanFeaturesComponent {
   readonly hoveredIndex = signal<number | null>(null);
 
-  readonly features: LyhostFeature[] = LYHOST_FEATURES;
+  readonly features: PlanFeature[] = PLAN_FEATURES;
 
   setHoveredIndex(index: number | null): void {
     this.hoveredIndex.set(index);

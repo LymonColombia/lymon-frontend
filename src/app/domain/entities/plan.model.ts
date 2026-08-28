@@ -1,12 +1,12 @@
 import { PlanType } from './auth.model';
 import { ROOM_LABELS } from '@/domain/constants/room.constants';
 
-export interface LyhostPlanDetailSection {
+export interface PlanDetailSection {
   title: string;
   items: string[];
 }
 
-export interface LyhostPlan {
+export interface Plan {
   type: PlanType;
   name: string;
   subtitle: string;
@@ -14,10 +14,10 @@ export interface LyhostPlan {
   priceSuffix?: string;
   priceNote?: string;
   isFree?: boolean;
-  detailsSections: LyhostPlanDetailSection[];
+  detailsSections: PlanDetailSection[];
 }
 
-export const LYHOST_PLANS: readonly LyhostPlan[] = [
+export const PLANS: readonly Plan[] = [
   {
     type: 'TRIAL',
     name: 'Prueba LyHost',
@@ -109,7 +109,7 @@ export function normalizePlanType(value: unknown): PlanType | null {
   return isPlanType(value) ? value : null;
 }
 
-export function isFreePlan(plan: LyhostPlan): boolean {
+export function isFreePlan(plan: Plan): boolean {
   if (plan.isFree === true) return true;
   const price = plan.price?.trim();
   return price === '$0' || price === '0' || price === 'Gratis' || plan.type === 'TRIAL';

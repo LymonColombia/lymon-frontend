@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
-import { LyhostPlan } from '@/domain/entities/lyhost-plan.model';
+import { Plan } from '@/domain/entities/plan.model';
 
 export abstract class PlanRepository {
-  abstract getAvailablePlans(): Observable<LyhostPlan[]>;
+  abstract getAvailablePlans(): Observable<Plan[]>;
 }

@@ -14,7 +14,7 @@ import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { PlanType } from '@/domain/entities/auth.model';
-import { normalizePlanType, LYHOST_PLANS, type LyhostPlan, isPlanType } from '@/domain/entities/lyhost-plan.model';
+import { normalizePlanType, PLANS, type Plan, isPlanType } from '@/domain/entities/plan.model';
 
 @Component({
   selector: 'app-plans',
@@ -30,7 +30,7 @@ export class PlansComponent {
   private readonly userSession = inject(UserSessionService);
   private readonly planOrder: PlanType[] = ['TRIAL', 'LYMON_ONE', 'PLUS', 'PRIME'];
 
-  readonly selectedPlan = signal<LyhostPlan | null>(null);
+  readonly selectedPlan = signal<Plan | null>(null);
   readonly isChangePlanModalOpen = signal(false);
   readonly changePlanStep = signal<1 | 2 | 3 | 4>(1);
   readonly selectedTargetPlanType = signal<PlanType | null>(null);
@@ -55,7 +55,7 @@ export class PlansComponent {
     this.simulatedCurrentPlanType() ?? this.resolvedCurrentPlanType(),
   );
 
-  readonly plans = LYHOST_PLANS;
+  readonly plans = PLANS;
 
   readonly currentPlanLabel = computed(() => {
     const current = this.currentPlanType();
@@ -65,13 +65,13 @@ export class PlansComponent {
     return match?.name ?? current;
   });
 
-  readonly selectedTargetPlan = computed<LyhostPlan | null>(() => {
+  readonly selectedTargetPlan = computed<Plan | null>(() => {
     const targetType = this.selectedTargetPlanType();
     if (!targetType) return null;
     return this.plans.find((plan) => plan.type === targetType) ?? null;
   });
 
-  readonly currentPlan = computed<LyhostPlan | null>(() => {
+  readonly currentPlan = computed<Plan | null>(() => {
     const currentType = this.currentPlanType();
     if (!currentType) return null;
     return this.plans.find((plan) => plan.type === currentType) ?? null;
@@ -115,7 +115,7 @@ export class PlansComponent {
     return this.selectedTargetPlanType() === planType;
   }
 
-  openPlanDetails(plan: LyhostPlan): void {
+  openPlanDetails(plan: Plan): void {
     this.selectedPlan.set(plan);
   }
 

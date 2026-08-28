@@ -29,7 +29,7 @@ import { GetPlansUseCase } from '@/domain/use-cases/plan/get-plans.use-case';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { PlanType } from '@/domain/entities/auth.model';
-import { LyhostPlan, isFreePlan } from '@/domain/entities/lyhost-plan.model';
+import { Plan, isFreePlan } from '@/domain/entities/plan.model';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
 import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle';
@@ -113,7 +113,7 @@ export class RegisterComponent {
   readonly isConfirmModalOpen = signal(false);
   readonly showCvv = signal(false);
 
-  readonly availablePlans = signal<LyhostPlan[]>([]);
+  readonly availablePlans = signal<Plan[]>([]);
   readonly plansLoading = signal(false);
   readonly plansError = signal<string | null>(null);
 
@@ -160,7 +160,7 @@ export class RegisterComponent {
   readonly selectedPlanTypeSignal = signal<PlanType | null>(null);
   readonly cardNumberRaw = signal('');
 
-  readonly selectedPlan = computed<LyhostPlan | null>(() => {
+  readonly selectedPlan = computed<Plan | null>(() => {
     const type = this.selectedPlanTypeSignal();
     if (!type) return null;
     return this.availablePlans().find((p) => p.type === type) ?? null;

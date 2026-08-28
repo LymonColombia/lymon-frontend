@@ -11,8 +11,8 @@ import {
 import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { LyhostNavComponent } from './components/lyhost-nav/lyhost-nav';
 import { LyhostHeroComponent } from './components/lyhost-hero/lyhost-hero';
-import { LyhostPlansComponent } from './components/lyhost-plans/lyhost-plans';
-import { LyhostFeaturesComponent } from './components/lyhost-features/lyhost-features';
+import { PlansComponent } from './components/lyhost-plans/lyhost-plans';
+import { PlanFeaturesComponent } from './components/lyhost-features/lyhost-features';
 import { LyhostEcosystemComponent } from './components/lyhost-ecosystem/lyhost-ecosystem';
 
 @Component({
@@ -21,8 +21,8 @@ import { LyhostEcosystemComponent } from './components/lyhost-ecosystem/lyhost-e
   imports: [
     LyhostNavComponent,
     LyhostHeroComponent,
-    LyhostPlansComponent,
-    LyhostFeaturesComponent,
+    PlansComponent,
+    PlanFeaturesComponent,
     LyhostEcosystemComponent,
     FooterComponent,
   ],

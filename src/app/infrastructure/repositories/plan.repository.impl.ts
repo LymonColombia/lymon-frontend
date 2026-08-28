@@ -4,33 +4,33 @@ import { Observable, of } from 'rxjs';
 import { catchError, delay, map } from 'rxjs/operators';
 import { PlanRepository } from '@/domain/repositories/plan.repository';
 import { PlanType } from '@/domain/entities/auth.model';
-import { LyhostPlan, LYHOST_PLANS } from '@/domain/entities/lyhost-plan.model';
+import { Plan, PLANS } from '@/domain/entities/plan.model';
 import { environment } from '@env';
 
 @Injectable({ providedIn: 'root' })
 export class PlanRepositoryImpl extends PlanRepository {
   private readonly http = inject(HttpClient);
 
-  getAvailablePlans(): Observable<LyhostPlan[]> {
+  getAvailablePlans(): Observable<Plan[]> {
     const endpoint = environment.plans?.endpoint;
 
     if (!endpoint) {
-      return of([...LYHOST_PLANS]).pipe(delay(300));
+      return of([...PLANS]).pipe(delay(300));
     }
 
     return this.http.get<unknown>(`${environment.apiUrl}${endpoint}`).pipe(
       map((res) => this.mapToPlans(res)),
-      catchError(() => of([...LYHOST_PLANS])),
+      catchError(() => of([...PLANS])),
     );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private mapToPlans(raw: any): LyhostPlan[] {
+  private mapToPlans(raw: any): Plan[] {
     const list = Array.isArray(raw) ? raw : raw?.data;
-    if (!Array.isArray(list)) return [...LYHOST_PLANS];
+    if (!Array.isArray(list)) return [...PLANS];
 
     return list
-      .map<LyhostPlan>((item) => ({
+      .map<Plan>((item) => ({
         type: (item?.type ?? item?.planType) as PlanType,
         name: String(item?.name ?? ''),
         subtitle: String(item?.description ?? item?.subtitle ?? ''),

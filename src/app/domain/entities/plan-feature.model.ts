@@ -1,10 +1,10 @@
-export interface LyhostFeature {
+export interface PlanFeature {
   title: string;
   description: string;
   icon: string;
 }
 
-export const LYHOST_FEATURES: LyhostFeature[] = [
+export const PLAN_FEATURES: PlanFeature[] = [
   {
     title: 'Reserva Directa',
     description:

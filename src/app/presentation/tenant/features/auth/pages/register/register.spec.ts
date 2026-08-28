@@ -6,7 +6,7 @@ import { RegisterComponent } from './register';
 import { RegisterUseCase } from '@/domain/use-cases/auth/register.use-case';
 import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
 import { GetPlansUseCase } from '@/domain/use-cases/plan/get-plans.use-case';
-import { LYHOST_PLANS } from '@/domain/entities/lyhost-plan.model';
+import { PLANS } from '@/domain/entities/plan.model';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -55,7 +55,7 @@ async function setup() {
 describe('RegisterComponent – paso 1', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetPlansUseCase.execute.mockReturnValue(of([...LYHOST_PLANS]));
+    mockGetPlansUseCase.execute.mockReturnValue(of([...PLANS]));
   });
 
   afterEach(() => {
@@ -110,7 +110,7 @@ describe('RegisterComponent – paso 1', () => {
 describe('RegisterComponent – paso 2', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetPlansUseCase.execute.mockReturnValue(of([...LYHOST_PLANS]));
+    mockGetPlansUseCase.execute.mockReturnValue(of([...PLANS]));
   });
 
   afterEach(() => {
@@ -128,7 +128,7 @@ describe('RegisterComponent – paso 2', () => {
     await reachStepTwo(component);
     expect(component.plansError()).toBeTruthy();
 
-    mockGetPlansUseCase.execute.mockReturnValue(of([...LYHOST_PLANS]));
+    mockGetPlansUseCase.execute.mockReturnValue(of([...PLANS]));
     component.loadPlans();
     expect(component.plansError()).toBeNull();
     expect(component.availablePlans().length).toBeGreaterThan(0);
@@ -198,7 +198,7 @@ describe('RegisterComponent – paso 2', () => {
 describe('RegisterComponent – paso 3 y registro', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetPlansUseCase.execute.mockReturnValue(of([...LYHOST_PLANS]));
+    mockGetPlansUseCase.execute.mockReturnValue(of([...PLANS]));
     vi.useFakeTimers();
   });
 
