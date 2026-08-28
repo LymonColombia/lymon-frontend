@@ -12,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';
-import { GetUnitCalendarUseCase } from '@/domain/use-cases/reservation/get-unit-calendar.use-case';
+import { GetUnitCalendarUseCase } from '@/domain/use-cases/guest-reservation/get-unit-calendar.use-case';
 import { GetCartUseCase } from '@/domain/use-cases/guest-cart/get-cart.use-case';
 import { Unit } from '@/domain/entities/staff.model';
 import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';

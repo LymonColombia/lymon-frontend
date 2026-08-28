@@ -14,7 +14,7 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button'
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 import { ExperienceCompactCardComponent } from '../experience-compact-card/experience-compact-card';
-import { GetGuestExperiencesUseCase } from '@/domain/use-cases/experience/get-guest-experiences.use-case';
+import { GetGuestExperiencesUseCase } from '@/domain/use-cases/guest-experience/get-guest-experiences.use-case';
 import { AddCartExperienceItemUseCase } from '@/domain/use-cases/guest-cart/add-cart-experience-item.use-case';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
 import { buildAvailableSlots } from '@/presentation/shared/utils/experience-availability.util';

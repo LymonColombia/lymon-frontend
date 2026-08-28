@@ -23,7 +23,7 @@ import {
 import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { GuestNavComponent } from '@/presentation/guest/layout/guest-nav/guest-nav';
-import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/reservation/get-guest-reservation-by-id.use-case';
+import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/guest-reservation/get-guest-reservation-by-id.use-case';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 

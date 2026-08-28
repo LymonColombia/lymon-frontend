@@ -19,7 +19,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { Reservation } from '@/domain/entities/reservation.model';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
 import { GetReservationByIdUseCase } from '@/domain/use-cases/reservation/get-reservation-by-id.use-case';
-import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/reservation/get-guest-reservation-by-id.use-case';
+import { GetGuestReservationByIdUseCase } from '@/domain/use-cases/guest-reservation/get-guest-reservation-by-id.use-case';
 import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
 import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';

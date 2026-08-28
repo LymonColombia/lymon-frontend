@@ -14,7 +14,7 @@ import { CancelReservationUseCase } from '@/domain/use-cases/reservation/cancel-
 import { UpdateReservationUseCase } from '@/domain/use-cases/reservation/update-reservation.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { GetTenantGuestsUseCase } from '@/domain/use-cases/reservation/get-tenant-guests.use-case';
+import { GetTenantGuestsUseCase } from '@/domain/use-cases/tenant-guest/get-tenant-guests.use-case';
 import { Reservation as DomainReservation } from '@/domain/entities/reservation.model';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';

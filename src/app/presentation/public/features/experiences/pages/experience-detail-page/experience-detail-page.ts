@@ -8,7 +8,7 @@ import { HeaderComponent } from "@/presentation/public/features/experiences/page
 import { ButtonComponent } from "@/presentation/shared/components/button/button";
 import { NgIcon, provideIcons } from "@ng-icons/core";
 import { bootstrapChevronLeft } from '@ng-icons/bootstrap-icons';
-import { GetGuestExperienceByIdUseCase } from '@/domain/use-cases/experience/get-guest-experience-by-id.use-case';
+import { GetGuestExperienceByIdUseCase } from '@/domain/use-cases/guest-experience/get-guest-experience-by-id.use-case';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
 
 @Component({
