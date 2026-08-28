@@ -376,7 +376,7 @@ export class RegisterComponent {
       next: () => {
         this.isLoading.set(false);
         this.isProcessingPayment.set(false);
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/admin/dashboard']);
       },
       error: () => {
         this.isLoading.set(false);

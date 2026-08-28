@@ -9,7 +9,6 @@ export const routes: Routes = [
   { path: '', redirectTo: LANDING_PATH, pathMatch: 'full' },
   ...publicRoutes,
   ...guestRoutes,
-  // Must come last: it owns the empty path for the authenticated shell.
   ...tenantRoutes,
   { path: '**', redirectTo: LANDING_PATH },
 ];

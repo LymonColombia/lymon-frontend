@@ -2,7 +2,7 @@
   title="Registrar Novedad Laboral"
   subtitle="Documenta ausencias, reemplazos, eventos y daños."
   iconName="bootstrapFileEarmarkPlus"
-  backLink="/incident-report/list"
+  backLink="/admin/incident-report/list"
   backLabel="Volver al listado"
 >
   <div class="form-container">
@@ -56,7 +56,7 @@
         </div>
 
         <div class="form-actions">
-          <app-button type="button" variant="secondary" routerLink="/incident-report/list">
+          <app-button type="button" variant="secondary" routerLink="/admin/incident-report/list">
             Cancelar
           </app-button>
           <app-button type="submit" variant="primary" [loading]="isLoading()" [disabled]="isLoading()">

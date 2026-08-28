@@ -30,7 +30,11 @@ import { StorageTestComponent } from '@/presentation/tenant/features/storage-tes
 import { CheckinComponent } from '@/presentation/guest/features/checkin/pages/checkin/checkin';
 import { RoomDetailsComponent } from '@/presentation/public/features/room-details/pages/room-details/room-details';
 
-/** Admin back office. Auth pages are blocked once signed in; everything else hangs off the shell. */
+/**
+ * Admin back office. The auth pages stay at the root because the backend emails
+ * `/recover-password/confirm?token=` and cannot be changed from this repo.
+ * Everything behind the session hangs off the /admin shell.
+ */
 export const tenantRoutes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [adminPublicGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [adminPublicGuard] },
@@ -42,10 +46,11 @@ export const tenantRoutes: Routes = [
   },
 
   {
-    path: '',
+    path: 'admin',
     component: TenantShellComponent,
     canActivate: [adminGuard],
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'properties', component: PropertiesComponent },
       { path: 'properties/:propertyId/inventory', component: InventoryComponent },

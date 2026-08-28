@@ -117,16 +117,16 @@ export class SidebarComponent implements OnInit {
   });
 
   readonly menuItems: MenuItem[] = [
-    { icon: 'bootstrapGrid', label: 'Inicio', route: '/dashboard' },
-    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/tenant-reservations' },
-    { icon: 'bootstrapHouseDoor', label: ROOM_LABELS.propertiesAndRooms, route: '/properties' },
-    { icon: 'bootstrapStar', label: 'Experiencias', route: '/tenant-experiences' },
-    { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/register-employee' },
-    { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/employee-management' },
-    { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/staff-shift' },
-    { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/audit-log' },
-    { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/crm/guests' },
-    { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/incident-report/list' },
+    { icon: 'bootstrapGrid', label: 'Inicio', route: '/admin/dashboard' },
+    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/admin/tenant-reservations' },
+    { icon: 'bootstrapHouseDoor', label: ROOM_LABELS.propertiesAndRooms, route: '/admin/properties' },
+    { icon: 'bootstrapStar', label: 'Experiencias', route: '/admin/tenant-experiences' },
+    { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/admin/register-employee' },
+    { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/admin/employee-management' },
+    { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/admin/staff-shift' },
+    { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/admin/audit-log' },
+    { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/admin/crm/guests' },
+    { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/admin/incident-report/list' },
 
   ];
 
@@ -155,12 +155,12 @@ export class SidebarComponent implements OnInit {
 
   goToSettings(): void {
     this.closeProfileMenu();
-    void this.router.navigateByUrl('/settings');
+    void this.router.navigateByUrl('/admin/settings');
   }
 
   goToPlans(): void {
     this.closeProfileMenu();
-    void this.router.navigateByUrl('/plans');
+    void this.router.navigateByUrl('/admin/plans');
   }
 
   goToSessions(): void {

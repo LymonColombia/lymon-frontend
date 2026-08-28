@@ -91,7 +91,7 @@ describe('PropertyUnitsComponent – sin propertyId en URL', () => {
     const spy = vi.spyOn(router2, 'navigate');
     const fixture2 = TestBed.createComponent(PropertyUnitsComponent);
     fixture2.detectChanges();
-    expect(spy).toHaveBeenCalledWith(['/properties']);
+    expect(spy).toHaveBeenCalledWith(['/admin/properties']);
   });
 });
 

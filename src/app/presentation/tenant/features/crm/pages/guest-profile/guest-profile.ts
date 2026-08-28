@@ -422,7 +422,7 @@ export class GuestProfileComponent implements OnInit {
   ];
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
-    { label: 'CRM de Huéspedes', route: '/crm/guests' },
+    { label: 'CRM de Huéspedes', route: '/admin/crm/guests' },
     { label: 'Detalle del huésped' },
   ]);
 

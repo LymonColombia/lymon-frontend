@@ -181,7 +181,7 @@ describe('RegisterComponent – paso 2', () => {
       password: VALID_STEP_ONE.password,
       planType: 'TRIAL',
     });
-    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/admin/dashboard']);
   });
 
   it('vuelve a 3 pasos si se cambia de trial a plan de pago', async () => {
@@ -280,7 +280,7 @@ describe('RegisterComponent – paso 3 y registro', () => {
       email: VALID_STEP_ONE.email,
       password: VALID_STEP_ONE.password,
     });
-    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/admin/dashboard']);
   });
 
   it('auto-login fallido redirige al login con mensaje de cuenta creada', async () => {

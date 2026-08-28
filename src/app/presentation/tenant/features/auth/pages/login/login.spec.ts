@@ -78,7 +78,7 @@ describe('LoginComponent – inicio de sesión exitoso', () => {
     const navigateSpy = vi.spyOn(router, 'navigate');
     component.form.patchValue({ email: 'admin@lymon.com', password: 'Password1' });
     component.onSubmit();
-    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/admin/dashboard']);
   });
 
   it('isLoading vuelve a false tras el éxito', async () => {

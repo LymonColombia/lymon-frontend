@@ -151,7 +151,7 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
       component.navigateToEdit(report);
 
       expect(router.navigate).toHaveBeenCalledWith(
-        ['/incident-report/edit', report.id],
+        ['/admin/incident-report/edit', report.id],
         { state: { report } },
       );
     });

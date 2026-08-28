@@ -196,7 +196,7 @@ export class TutorialService {
         this.toastService.success(
           '¡Tutorial completado! Ya podés usar todas las funcionalidades del sistema.',
         );
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/admin/dashboard']);
       },
       error: (err: unknown) => {
         console.error('Error marking tutorial as completed', err);
@@ -205,7 +205,7 @@ export class TutorialService {
         this.toastService.error(
           'No se pudo guardar el progreso del tutorial. Podés continuar usando el sistema.',
         );
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/admin/dashboard']);
       },
     });
   }
@@ -214,7 +214,7 @@ export class TutorialService {
     this.isActive.set(false);
     this.requestedShiftModal.set(null);
     this.requestedInventoryTab.set(null);
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/admin/dashboard']);
   }
 
   markActionButtonClicked(step: number): void {
@@ -287,7 +287,7 @@ export class TutorialService {
     shiftModal?: 'create' | 'assign';
   } {
     const propertyId = firstProperty?.id;
-    const propertiesRoute = { commands: ['/properties'] };
+    const propertiesRoute = { commands: ['/admin/properties'] };
 
     if (!propertyId && index >= 1 && index <= 3) {
       return propertiesRoute;
@@ -298,7 +298,7 @@ export class TutorialService {
         return propertiesRoute;
       case 1:
         return {
-          commands: ['/property-units'],
+          commands: ['/admin/property-units'],
           extras: { queryParams: { propertyId: propertyId as string } },
         };
       case 2:
@@ -306,21 +306,21 @@ export class TutorialService {
       case 3:
         return this.inventoryRoute(propertyId as string, 'providers');
       case 4:
-        return { commands: ['/register-employee'] };
+        return { commands: ['/admin/register-employee'] };
       case 5:
         return this.shiftRoute('create');
       case 6:
         return this.shiftRoute('assign');
       case 7:
-        return { commands: ['/tenant-reservations'] };
+        return { commands: ['/admin/tenant-reservations'] };
       case 8:
-        return { commands: ['/employee-management'] };
+        return { commands: ['/admin/employee-management'] };
       case 9:
-        return { commands: ['/audit-log'] };
+        return { commands: ['/admin/audit-log'] };
       case 10:
-        return { commands: ['/incident-report/list'] };
+        return { commands: ['/admin/incident-report/list'] };
       default:
-        return { commands: ['/dashboard'] };
+        return { commands: ['/admin/dashboard'] };
     }
   }
 
@@ -329,7 +329,7 @@ export class TutorialService {
     tab: 'supplies' | 'providers',
   ): { commands: unknown[]; tab: 'supplies' | 'providers' } {
     return {
-      commands: ['/properties', propertyId, 'inventory'],
+      commands: ['/admin/properties', propertyId, 'inventory'],
       tab,
     };
   }
@@ -338,7 +338,7 @@ export class TutorialService {
     shiftModal: 'create' | 'assign',
   ): { commands: unknown[]; shiftModal: 'create' | 'assign' } {
     return {
-      commands: ['/staff-shift'],
+      commands: ['/admin/staff-shift'],
       shiftModal,
     };
   }

@@ -266,7 +266,7 @@ export class GuestsCrmComponent implements OnInit {
   navigateToFullProfile(guest: CrmGuest): void {
     const guestId = this.getGuestRouteId(guest);
     if (!guestId) return;
-    void this.router.navigate(['/crm/guests', guestId]);
+    void this.router.navigate(['/admin/crm/guests', guestId]);
   }
 
   private getGuestRouteId(guest: CrmGuest | null): string | null {

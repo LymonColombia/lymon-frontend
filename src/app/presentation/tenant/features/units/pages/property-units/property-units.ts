@@ -80,14 +80,14 @@ export class PropertyUnitsComponent implements OnInit {
   readonly unitToDelete = signal<Unit | null>(null);
 
   readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => [
-    { label: 'Propiedades', route: '/properties' },
+    { label: 'Propiedades', route: '/admin/properties' },
     { label: this.propertyName() },
   ]);
 
   ngOnInit(): void {
     const pid = this.route.snapshot.queryParamMap.get('propertyId');
     if (!pid) {
-      this.router.navigate(['/properties']);
+      this.router.navigate(['/admin/properties']);
       return;
     }
     this.propertyId.set(pid);

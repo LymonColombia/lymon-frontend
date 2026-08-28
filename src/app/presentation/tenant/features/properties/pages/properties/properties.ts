@@ -69,8 +69,8 @@ export class PropertiesComponent implements OnInit {
 
   private static readonly DEFAULT_PROPERTY_TYPE: PropertyType = 'HOTEL';
   private static readonly DEFAULT_CANCELLATION_POLICY: CancellationPolicy = 'STANDARD';
-  private static readonly PROPERTY_UNITS_ROUTE = '/property-units';
-  private static readonly PROPERTY_INVENTORY_ROUTE = '/properties';
+  private static readonly PROPERTY_UNITS_ROUTE = '/admin/property-units';
+  private static readonly PROPERTY_INVENTORY_ROUTE = '/admin/properties';
 
   readonly form = this.fb.group({
     name: ['', Validators.required],

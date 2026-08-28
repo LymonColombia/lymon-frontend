@@ -68,7 +68,7 @@ export class TenantExperienceDetailPageComponent {
       return;
     }
 
-    this.router.navigate(['/tenant-experiences', item.id, 'edit']);
+    this.router.navigate(['/admin/tenant-experiences', item.id, 'edit']);
   }
 
   private loadExperience(): void {

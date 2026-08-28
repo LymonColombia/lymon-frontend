@@ -64,7 +64,7 @@ export class LoginComponent {
         if (response.user.tutorialCompleted === false) {
           this.tutorialService.start();
         } else {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/admin/dashboard']);
         }
       },
       error: (err: HttpErrorResponse) => {
