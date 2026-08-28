@@ -1,5 +1,5 @@
-import { ImageStorage, UploadedImageResult } from '@/domain/entities/storage-img';
-import { ImageStorageRepository } from '@/domain/repositories/storage-img.repository';
+import { ImageStorage, UploadedImageResult } from '@/domain/entities/image-storage.model';
+import { ImageStorageRepository } from '@/domain/repositories/image-storage.repository';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 

@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map, switchMap } from 'rxjs';
-import { ImageStorageRepository } from '@/domain/repositories/storage-img.repository';
+import { ImageStorageRepository } from '@/domain/repositories/image-storage.repository';
 import {
   ImageContentType,
   ImageStorage,
   PresignedUrlResponse,
   UploadedImageResult,
-} from '@/domain/entities/storage-img';
+} from '@/domain/entities/image-storage.model';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.storage.endpoint}`;

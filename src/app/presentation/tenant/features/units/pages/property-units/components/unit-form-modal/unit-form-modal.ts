@@ -25,7 +25,7 @@ import {
 import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
 import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
 import { UpdateUnitMediaKeysUseCase } from '@/domain/use-cases/property/update-unit-media-keys.use-case';
-import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/image-storage.use-case';
+import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/create-image-storage.use-case';
 import { BedDto, BedType, UpdateUnitDto } from '@/domain/entities/property.model';
 import { Unit } from '@/domain/entities/staff.model';
 import { MediaItem, keyFromMediaUrl } from '@/domain/entities/storage.model';

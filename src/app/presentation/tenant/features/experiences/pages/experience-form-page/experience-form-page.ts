@@ -7,7 +7,7 @@ import { of, switchMap, map, forkJoin } from 'rxjs';
 
 import { CreateExperienceDto, Experience, UpdateExperienceDto } from '@/domain/entities/experience.model';
 import { CreateExperienceUseCase } from '@/domain/use-cases/experience/create-experience.use-case';
-import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/image-storage.use-case';
+import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/create-image-storage.use-case';
 import {
   TenantPageLayoutComponent,
   TenantPageMetaDirective,

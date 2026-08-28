@@ -7,7 +7,7 @@ import { TenantExperienceFormPageComponent } from './experience-form-page';
 import { CreateExperienceUseCase } from '@/domain/use-cases/experience/create-experience.use-case';
 import { UpdateExperienceUseCase } from '@/domain/use-cases/experience/update-experience.use-case';
 import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
-import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/image-storage.use-case';
+import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/create-image-storage.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { CreateExperienceDto } from '@/domain/entities/experience.model';
