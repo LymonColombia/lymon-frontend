@@ -16,7 +16,7 @@ import { Notification } from '@/domain/entities/notification.model';
 import { Reservation } from '@/domain/entities/reservation.model';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
-import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident/get-incident-reports.use-case';
+import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident-report/get-incident-reports.use-case';
 import { UserSessionService } from './user-session.service';
 
 const POLL_INTERVAL_MS = 15_000;

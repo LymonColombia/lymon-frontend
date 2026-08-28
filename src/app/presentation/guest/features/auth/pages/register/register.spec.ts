@@ -6,7 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { vi } from 'vitest';
 
 import { GuestRegisterComponent } from './register';
-import { GuestRegisterUseCase } from '@/domain/use-cases/guest/guest-register.use-case';
+import { GuestRegisterUseCase } from '@/domain/use-cases/guest-auth/guest-register.use-case';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 

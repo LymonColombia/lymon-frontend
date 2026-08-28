@@ -9,7 +9,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { CreateIncidentReportUseCase } from '@/domain/use-cases/incident/create-incident-report.use-case';
+import { CreateIncidentReportUseCase } from '@/domain/use-cases/incident-report/create-incident-report.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 
 @Component({

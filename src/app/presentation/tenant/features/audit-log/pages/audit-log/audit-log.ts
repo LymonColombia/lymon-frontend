@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { GetAuditLogsUseCase } from '@/domain/use-cases/audit/get-audit-logs.use-case';
+import { GetAuditLogsUseCase } from '@/domain/use-cases/audit-log/get-audit-logs.use-case';
 import { AuditAction, AuditEntityType, AuditLogEntry } from '@/domain/entities/audit-log.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';

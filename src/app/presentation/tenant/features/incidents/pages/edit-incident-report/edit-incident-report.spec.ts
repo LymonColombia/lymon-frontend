@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
 import { EditIncidentReportComponent } from './edit-incident-report';
-import { UpdateIncidentReportUseCase } from '@/domain/use-cases/update-incident-report.use-case';
+import { UpdateIncidentReportUseCase } from '@/domain/use-cases/incident-report/update-incident-report.use-case';
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
 

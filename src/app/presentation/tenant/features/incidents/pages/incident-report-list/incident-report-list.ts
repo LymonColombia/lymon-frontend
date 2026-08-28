@@ -13,7 +13,7 @@ import {
   TenantPageActionsDirective,
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident/get-incident-reports.use-case';
+import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident-report/get-incident-reports.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { IncidentReport } from '@/domain/entities/incident-report.model';
 

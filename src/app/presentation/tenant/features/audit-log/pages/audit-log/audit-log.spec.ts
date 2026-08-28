@@ -5,7 +5,7 @@ import { of, throwError, Subject } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { AuditLogComponent } from './audit-log';
-import { GetAuditLogsUseCase } from '@/domain/use-cases/audit/get-audit-logs.use-case';
+import { GetAuditLogsUseCase } from '@/domain/use-cases/audit-log/get-audit-logs.use-case';
 
 const mockUseCase = { execute: vi.fn() };
 

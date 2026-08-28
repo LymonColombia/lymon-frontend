@@ -8,7 +8,7 @@ import { bootstrapCalendar, bootstrapGeoAlt, bootstrapGeoAltFill, bootstrapPeopl
 import { LocationMap } from '@/presentation/shared/components/location-map/location-map';
 import { Cart } from '@/domain/entities/cart.model';
 import { GuestExperience } from '@/domain/entities/guest-experience.model';
-import { AddCartExperienceItemUseCase } from '@/domain/use-cases/cart/add-cart-experience-item.use-case';
+import { AddCartExperienceItemUseCase } from '@/domain/use-cases/guest-cart/add-cart-experience-item.use-case';
 import { buildAvailableSlots } from '@/presentation/shared/utils/experience-availability.util';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
 

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { NotificationPollingService } from './notification-polling.service';
 import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
-import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident/get-incident-reports.use-case';
+import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident-report/get-incident-reports.use-case';
 import { UserSessionService } from './user-session.service';
 import { Reservation } from '@/domain/entities/reservation.model';
 import { IncidentReport } from '@/domain/entities/incident-report.model';

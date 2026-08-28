@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
 import { CreateIncidentReportComponent } from './create-incident-report';
-import { CreateIncidentReportUseCase } from '@/domain/use-cases/incident/create-incident-report.use-case';
+import { CreateIncidentReportUseCase } from '@/domain/use-cases/incident-report/create-incident-report.use-case';
 import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 
