@@ -38,7 +38,7 @@ test.describe('Feature: Property Creation', () => {
   test.beforeEach(async ({ page }) => {
     manager = new ManagerFlow(page);
     // Navigate to /properties — session is already loaded from storageState.
-    await page.goto('/properties');
+    await page.goto('/admin/properties');
   });
 
   test.afterEach(async ({ apiClient }) => {

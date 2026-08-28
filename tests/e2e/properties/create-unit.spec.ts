@@ -70,7 +70,7 @@ test.describe('Feature: Unit Creation', () => {
     await apiClient.createProperty(PROPERTY_DATA);
 
     // 2. Navigate
-    await page.goto('/properties');
+    await page.goto('/admin/properties');
     await page.waitForTimeout(5000); // UI settle
   });
 

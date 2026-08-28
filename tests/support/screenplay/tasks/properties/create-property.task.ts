@@ -97,7 +97,7 @@ export const deletePropertyByName =
   (propertyName: string): ActorTask =>
   async (actor: Actor) => {
     const page = actor.browse.page;
-    await page.goto('/properties');
+    await page.goto('/admin/properties');
 
     const card = page.getByRole('article').filter({ hasText: propertyName });
 

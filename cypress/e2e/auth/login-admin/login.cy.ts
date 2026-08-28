@@ -35,7 +35,7 @@ describe('Feature: Manager Authentication', () => {
       });
     });
 
-    cy.url().should('match', /\/dashboard/);
+    cy.url().should('match', /\/admin\/dashboard/);
 
     // Then
     manager.expectManagerDashboard();

@@ -6,7 +6,7 @@ export interface CreateIncidentReportData {
 }
 
 export const openIncidentReportPage = (): CypressTask => () => {
-  cy.visit('/incident-report/list');
+  cy.visit('/admin/incidents');
 };
 
 export const openCreateIncidentReportForm = (): CypressTask => () => {
@@ -27,7 +27,7 @@ export const submitIncidentReportForm = (): CypressTask => () => {
 export const deleteIncidentReportByTitle =
   (title: string): CypressTask =>
   () => {
-    cy.visit('/incident-report/list');
+    cy.visit('/admin/incidents');
     cy.get('body').then(($body) => {
       if ($body.find(`tr:contains("${title}"), li:contains("${title}"), article:contains("${title}")`).length === 0) return;
 

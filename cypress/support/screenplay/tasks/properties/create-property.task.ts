@@ -69,7 +69,7 @@ export const submitPropertyForm = (): CypressTask => () => {
 export const deletePropertyByName =
   (propertyName: string): CypressTask =>
   () => {
-    cy.visit('/properties');
+    cy.visit('/admin/properties');
     cy.get('body').then(($body) => {
       if ($body.find(`article:contains("${propertyName}")`).length === 0) return;
 

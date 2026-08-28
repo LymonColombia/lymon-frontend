@@ -67,7 +67,7 @@ describe('Feature: Unit Creation', () => {
     cy.apiCreateProperty(PROPERTY_DATA);
 
     // 2. Navigate
-    cy.visit('/properties');
+    cy.visit('/admin/properties');
     cy.wait(5000); // UI settle
   });
 
