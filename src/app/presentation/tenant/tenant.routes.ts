@@ -26,9 +26,6 @@ import { TenantSettingsComponent } from '@/presentation/tenant/features/settings
 import { PlansComponent } from '@/presentation/tenant/features/plans/pages/plans/plans';
 import { AuditLogComponent } from '@/presentation/tenant/features/audit-log/pages/audit-log/audit-log';
 import { StorageTestComponent } from '@/presentation/tenant/features/storage-test/pages/storage-test/storage-test';
-// The admin shell also exposes two views owned by other audiences.
-import { CheckinComponent } from '@/presentation/guest/features/checkin/pages/checkin/checkin';
-import { RoomDetailsComponent } from '@/presentation/public/features/room-details/pages/room-details/room-details';
 
 /**
  * Admin back office. The auth pages stay at the root because the backend emails
@@ -72,9 +69,6 @@ export const tenantRoutes: Routes = [
       { path: 'settings', component: TenantSettingsComponent },
       { path: 'plans', component: PlansComponent },
       { path: 'audit-log', component: AuditLogComponent },
-      { path: 'checkin', component: CheckinComponent },
-      { path: 'room-details', component: RoomDetailsComponent },
-      { path: 'room-details/:unitId', component: RoomDetailsComponent },
       { path: 'storage-test', component: StorageTestComponent },
       { path: 'change-password', redirectTo: 'settings', pathMatch: 'full' },
       { path: 'tenant-profile', redirectTo: 'settings', pathMatch: 'full' },
