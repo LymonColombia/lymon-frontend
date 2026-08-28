@@ -118,15 +118,15 @@ export class SidebarComponent implements OnInit {
 
   readonly menuItems: MenuItem[] = [
     { icon: 'bootstrapGrid', label: 'Inicio', route: '/admin/dashboard' },
-    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/admin/tenant-reservations' },
+    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/admin/reservations' },
     { icon: 'bootstrapHouseDoor', label: ROOM_LABELS.propertiesAndRooms, route: '/admin/properties' },
-    { icon: 'bootstrapStar', label: 'Experiencias', route: '/admin/tenant-experiences' },
-    { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/admin/register-employee' },
-    { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/admin/employee-management' },
-    { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/admin/staff-shift' },
+    { icon: 'bootstrapStar', label: 'Experiencias', route: '/admin/experiences' },
+    { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/admin/staff/new' },
+    { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/admin/staff' },
+    { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/admin/shifts' },
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/admin/audit-log' },
     { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/admin/crm/guests' },
-    { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/admin/incident-report/list' },
+    { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/admin/incidents' },
 
   ];
 

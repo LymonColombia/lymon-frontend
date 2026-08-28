@@ -61,7 +61,7 @@ export class CreateIncidentReportComponent {
       .subscribe({
         next: () => {
           this.isLoading.set(false);
-          this.router.navigate(['/admin/incident-report/list']);
+          this.router.navigate(['/admin/incidents']);
         },
         error: (err: HttpErrorResponse) => {
           this.isLoading.set(false);

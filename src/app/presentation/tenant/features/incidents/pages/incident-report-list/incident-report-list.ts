@@ -79,10 +79,10 @@ export class IncidentReportListComponent implements OnInit {
   }
 
   navigateToCreate(): void {
-    this.router.navigate(['/admin/incident-report/create']);
+    this.router.navigate(['/admin/incidents/new']);
   }
 
   navigateToEdit(report: IncidentReport): void {
-    this.router.navigate(['/admin/incident-report/edit', report.id], { state: { report } });
+    this.router.navigate(['/admin/incidents', report.id, 'edit'], { state: { report } });
   }
 }

@@ -78,15 +78,15 @@ export class TenantExperiencesPageComponent {
   }
 
   onCreateExperience(): void {
-    this.router.navigate(['/admin/tenant-experiences/new']);
+    this.router.navigate(['/admin/experiences/new']);
   }
 
   onViewExperience(id: string): void {
-    this.router.navigate(['/admin/tenant-experiences', id]);
+    this.router.navigate(['/admin/experiences', id]);
   }
 
   onEditExperience(id:string): void {
-    this.router.navigate(['/admin/tenant-experiences', id, 'edit']);
+    this.router.navigate(['/admin/experiences', id, 'edit']);
   }
 
   cancelDeleteExperience(): void {

@@ -168,7 +168,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/admin/tenant-experiences']);
+    this.router.navigate(['/admin/experiences']);
   }
 
   private startSaving(): void {
@@ -182,7 +182,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
     this.isSaving.set(false);
     this.successMessage.set(message);
     this.saveErrorModalOpen.set(false);
-    this.router.navigate(['/admin/tenant-experiences']);
+    this.router.navigate(['/admin/experiences']);
   }
 
   private handleSaveError(message: string, error: any): void {

@@ -109,7 +109,7 @@ describe('EditIncidentReportComponent — Editar Novedad Laboral', () => {
         description: 'El vidrio de la ventana principal fue roto.',
         attachmentUrls: ['https://storage.com/photo1.jpg', 'https://storage.com/photo2.jpg'],
       });
-      expect(router.navigate).toHaveBeenCalledWith(['/admin/incident-report/list']);
+      expect(router.navigate).toHaveBeenCalledWith(['/admin/incidents']);
     });
 
     it('debe mostrar error 403 (sin permiso)', () => {

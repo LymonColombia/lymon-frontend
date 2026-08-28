@@ -229,7 +229,7 @@ describe('TenantExperienceFormPageComponent – onSubmitExperience – CREATE', 
     });
 
     expect(component.isSaving()).toBe(false);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/admin/tenant-experiences']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/admin/experiences']);
   });
 });
 

@@ -2,7 +2,7 @@
   title="Editar Novedad"
   subtitle="Modifica el título, descripción o archivos adjuntos."
   iconName="bootstrapPencilSquare"
-  backLink="/admin/incident-report/list"
+  backLink="/admin/incidents"
   backLabel="Volver al listado"
 >
   <div class="form-container">
@@ -10,7 +10,7 @@
     @if (notFound()) {
       <div class="not-found-card">
         <p class="not-found-text">No se encontró la novedad o accediste directamente a esta URL.</p>
-        <app-button variant="primary" size="medium" routerLink="/admin/incident-report/list">
+        <app-button variant="primary" size="medium" routerLink="/admin/incidents">
           Volver al listado
         </app-button>
       </div>
@@ -97,7 +97,7 @@
           </div>
 
           <div class="form-actions">
-            <app-button type="button" variant="secondary" routerLink="/admin/incident-report/list">
+            <app-button type="button" variant="secondary" routerLink="/admin/incidents">
               Cancelar
             </app-button>
             <app-button type="submit" variant="primary" [loading]="isSubmitting()" [disabled]="isSubmitting()">

@@ -101,7 +101,7 @@ export class EditIncidentReportComponent implements OnInit {
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);
-          this.router.navigate(['/admin/incident-report/list']);
+          this.router.navigate(['/admin/incidents']);
         },
         error: (err: HttpErrorResponse) => {
           this.isSubmitting.set(false);

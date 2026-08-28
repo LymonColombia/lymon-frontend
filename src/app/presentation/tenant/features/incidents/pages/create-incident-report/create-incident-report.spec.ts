@@ -74,7 +74,7 @@ describe('CreateIncidentReportComponent — Registrar Novedad Laboral', () => {
         description: 'Una prueba completa de la novedad del incidente',
         propertyId: PROPERTY_ID,
       });
-      expect(router.navigate).toHaveBeenCalledWith(['/admin/incident-report/list']);
+      expect(router.navigate).toHaveBeenCalledWith(['/admin/incidents']);
     });
 
     it('debe mostrar error cuando no existe tenantId', () => {

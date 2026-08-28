@@ -298,7 +298,7 @@ export class TutorialService {
         return propertiesRoute;
       case 1:
         return {
-          commands: ['/admin/property-units'],
+          commands: ['/admin/units'],
           extras: { queryParams: { propertyId: propertyId as string } },
         };
       case 2:
@@ -306,19 +306,19 @@ export class TutorialService {
       case 3:
         return this.inventoryRoute(propertyId as string, 'providers');
       case 4:
-        return { commands: ['/admin/register-employee'] };
+        return { commands: ['/admin/staff/new'] };
       case 5:
         return this.shiftRoute('create');
       case 6:
         return this.shiftRoute('assign');
       case 7:
-        return { commands: ['/admin/tenant-reservations'] };
+        return { commands: ['/admin/reservations'] };
       case 8:
-        return { commands: ['/admin/employee-management'] };
+        return { commands: ['/admin/staff'] };
       case 9:
         return { commands: ['/admin/audit-log'] };
       case 10:
-        return { commands: ['/admin/incident-report/list'] };
+        return { commands: ['/admin/incidents'] };
       default:
         return { commands: ['/admin/dashboard'] };
     }
@@ -338,7 +338,7 @@ export class TutorialService {
     shiftModal: 'create' | 'assign',
   ): { commands: unknown[]; shiftModal: 'create' | 'assign' } {
     return {
-      commands: ['/admin/staff-shift'],
+      commands: ['/admin/shifts'],
       shiftModal,
     };
   }
