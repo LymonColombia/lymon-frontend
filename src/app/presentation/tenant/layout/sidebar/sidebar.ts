@@ -13,7 +13,7 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { ROOM_LABELS } from '@/domain/constants/room.constants';
+import { ROOM_LABELS } from '@/domain/shared/property/room.constants';
 import {
   bootstrapBarChartFill,
   bootstrapCalendar,

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { GetUnitRatingsParams, PropertiesResponse, PublicUnitsParams, UnitRatingsResponse, UnitResponse, UnitsResponse } from '@/domain/entities/property.model';
+import { GetUnitRatingsParams, PropertiesResponse, PublicUnitsParams, UnitRatingsResponse, UnitResponse, UnitsResponse } from '@/domain/shared/property/property.model';
 import { InviteStaffDto, RolesResponse, StaffListResponse } from '@/domain/tenant/staff/staff.model';
 
 export abstract class StaffRepository {

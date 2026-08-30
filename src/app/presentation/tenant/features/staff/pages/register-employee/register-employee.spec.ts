@@ -6,8 +6,8 @@ import { vi } from 'vitest';
 
 import { RegisterEmployeeComponent } from './register-employee';
 import { GetRolesUseCase } from '@/domain/tenant/staff/use-cases/get-roles.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
-import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
 import { AddStaffUseCase } from '@/domain/tenant/staff/use-cases/add-staff.use-case';
 import { Role } from '@/domain/tenant/staff/staff.model';
 

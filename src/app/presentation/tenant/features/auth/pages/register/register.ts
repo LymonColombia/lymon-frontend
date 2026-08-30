@@ -25,11 +25,11 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { RegisterUseCase } from '@/domain/tenant/auth/use-cases/register.use-case';
 import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
-import { GetPlansUseCase } from '@/domain/use-cases/plan/get-plans.use-case';
+import { GetPlansUseCase } from '@/domain/shared/plan/use-cases/get-plans.use-case';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { PlanType } from '@/domain/tenant/auth/auth.model';
-import { Plan, isFreePlan } from '@/domain/entities/plan.model';
+import { Plan, isFreePlan } from '@/domain/shared/plan/plan.model';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
 import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle';

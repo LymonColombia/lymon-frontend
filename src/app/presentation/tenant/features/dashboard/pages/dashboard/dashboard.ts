@@ -21,12 +21,12 @@ import {
   bootstrapCurrencyDollar,
   bootstrapGraphUpArrow,
 } from '@ng-icons/bootstrap-icons';
-import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
-import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
+import { GetReservationsUseCase } from '@/domain/shared/reservation/use-cases/get-reservations.use-case';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
 import { NotificationPollingService } from '@/infrastructure/services/notification-polling.service';
 import { NotificationPanelComponent } from '@/presentation/tenant/features/dashboard/pages/dashboard/components/notification-panel/notification-panel';
-import { Reservation } from '@/domain/entities/reservation.model';
+import { Reservation } from '@/domain/shared/reservation/reservation.model';
 
 const RESERVATIONS_PAGE_LIMIT = 500;
 const MONTH_LABELS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];

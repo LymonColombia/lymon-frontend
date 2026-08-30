@@ -3,13 +3,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Subject, of, throwError } from 'rxjs';
 
-import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
-import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
-import { UpdateUnitMediaKeysUseCase } from '@/domain/use-cases/property/update-unit-media-keys.use-case';
+import { CreateUnitUseCase } from '@/domain/shared/property/use-cases/create-unit.use-case';
+import { UpdateUnitUseCase } from '@/domain/shared/property/use-cases/update-unit.use-case';
+import { UpdateUnitMediaKeysUseCase } from '@/domain/shared/property/use-cases/update-unit-media-keys.use-case';
 import { CreateImageStorageUseCase } from '@/domain/tenant/image-storage/use-cases/create-image-storage.use-case';
-import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
+import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
 import { MediaItem } from '@/domain/tenant/storage/storage.model';
-import { Unit } from '@/domain/entities/property.model';
+import { Unit } from '@/domain/shared/property/property.model';
 import { MediaGallerySelection } from '@/presentation/tenant/components/media-gallery-input/media-gallery-input';
 import { UnitFormModalComponent } from './unit-form-modal';
 

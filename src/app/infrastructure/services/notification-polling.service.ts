@@ -13,9 +13,9 @@ import {
   tap,
 } from 'rxjs';
 import { Notification } from '@/domain/tenant/notification/notification.model';
-import { Reservation } from '@/domain/entities/reservation.model';
+import { Reservation } from '@/domain/shared/reservation/reservation.model';
 import { IncidentReport } from '@/domain/tenant/incident-report/incident-report.model';
-import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
+import { GetReservationsUseCase } from '@/domain/shared/reservation/use-cases/get-reservations.use-case';
 import { GetIncidentReportsUseCase } from '@/domain/tenant/incident-report/use-cases/get-incident-reports.use-case';
 import { UserSessionService } from './user-session.service';
 

@@ -8,8 +8,8 @@ import { CreateExperienceUseCase } from '@/domain/tenant/experience/use-cases/cr
 import { UpdateExperienceUseCase } from '@/domain/tenant/experience/use-cases/update-experience.use-case';
 import { GetExperienceByIdUseCase } from '@/domain/tenant/experience/use-cases/get-experience-by-id.use-case';
 import { CreateImageStorageUseCase } from '@/domain/tenant/image-storage/use-cases/create-image-storage.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
-import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
 import { CreateExperienceDto } from '@/domain/tenant/experience/experience.model';
 import { MediaItem } from '@/domain/tenant/storage/storage.model';
 

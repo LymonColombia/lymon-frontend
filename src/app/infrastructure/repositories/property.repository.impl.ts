@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { PropertyRepository } from '@/domain/repositories/property.repository';
-import { CreatePropertyDto, CreateUnitDto, PropertyDetail, UpdatePropertyDto, UpdateUnitDto, UpdateUnitMediaKeysDto, Unit, UnitResponse } from '@/domain/entities/property.model';
+import { PropertyRepository } from '@/domain/shared/property/property.repository';
+import { CreatePropertyDto, CreateUnitDto, PropertyDetail, UpdatePropertyDto, UpdateUnitDto, UpdateUnitMediaKeysDto, Unit, UnitResponse } from '@/domain/shared/property/property.model';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { environment } from '@env';
 

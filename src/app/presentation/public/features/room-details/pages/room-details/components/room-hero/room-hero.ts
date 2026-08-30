@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { Unit } from '@/domain/entities/property.model';
+import { Unit } from '@/domain/shared/property/property.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapStar, bootstrapStarFill } from '@ng-icons/bootstrap-icons';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';

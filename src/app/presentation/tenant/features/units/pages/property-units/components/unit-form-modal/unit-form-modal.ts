@@ -22,13 +22,13 @@ import {
   MediaGalleryInputComponent,
   MediaGallerySelection,
 } from '@/presentation/tenant/components/media-gallery-input/media-gallery-input';
-import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
-import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
-import { UpdateUnitMediaKeysUseCase } from '@/domain/use-cases/property/update-unit-media-keys.use-case';
+import { CreateUnitUseCase } from '@/domain/shared/property/use-cases/create-unit.use-case';
+import { UpdateUnitUseCase } from '@/domain/shared/property/use-cases/update-unit.use-case';
+import { UpdateUnitMediaKeysUseCase } from '@/domain/shared/property/use-cases/update-unit-media-keys.use-case';
 import { CreateImageStorageUseCase } from '@/domain/tenant/image-storage/use-cases/create-image-storage.use-case';
-import { BedDto, BedType, UpdateUnitDto, Unit } from '@/domain/entities/property.model';
+import { BedDto, BedType, UpdateUnitDto, Unit } from '@/domain/shared/property/property.model';
 import { MediaItem, keyFromMediaUrl } from '@/domain/tenant/storage/storage.model';
-import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
+import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
 
 const AMENITY_OPTIONS = [
   'WiFi',

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
-import { GetUnitRatingsParams, PropertiesResponse, PublicUnitsParams, UnitRatingsResponse, UnitResponse, UnitsResponse } from '@/domain/entities/property.model';
+import { GetUnitRatingsParams, PropertiesResponse, PublicUnitsParams, UnitRatingsResponse, UnitResponse, UnitsResponse } from '@/domain/shared/property/property.model';
 import { InviteStaffDto, RolesResponse, StaffListResponse } from '@/domain/tenant/staff/staff.model';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { environment } from '@env';

@@ -19,7 +19,7 @@ import { GuestRecommendationExperienceComponent } from './components/guest-recom
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { DeleteCartExperienceItemUseCase } from '@/domain/guest/guest-cart/use-cases/delete-cart-experience-item.use-case';
 import { GetCartUseCase } from '@/domain/guest/guest-cart/use-cases/get-cart.use-case';
-import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';
+import { GetPublicUnitUseCase } from '@/domain/shared/property/use-cases/get-public-unit.use-case';
 import { Cart } from '@/domain/guest/guest-cart/cart.model';
 
 @Component({

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { TenantReservations, ReservationViewModel } from './reservation-list';
-import { ReservationRepository } from '@/domain/repositories/reservation.repository';
+import { ReservationRepository } from '@/domain/shared/reservation/reservation.repository';
 import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
 import { TenantGuestRepository } from '@/domain/tenant/tenant-guest/tenant-guest.repository';
 

@@ -14,8 +14,8 @@ import { DeleteCrmGuestNoteUseCase } from '@/domain/tenant/crm/use-cases/delete-
 import { PinCrmGuestNoteUseCase } from '@/domain/tenant/crm/use-cases/pin-crm-guest-note.use-case';
 import { SendCrmGuestMessageUseCase } from '@/domain/tenant/crm/use-cases/send-crm-guest-message.use-case';
 import { UpdateCrmGuestTagsUseCase } from '@/domain/tenant/crm/use-cases/update-crm-guest-tags.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
-import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
 import { CrmGuest, CrmGuestBooking, CrmGuestNote } from '@/domain/tenant/crm/crm-guest.model';
 
 const mockGetCrmGuests = { execute: vi.fn() };

@@ -54,9 +54,9 @@ import { GetCrmGuestEmailsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-
 import { UpdateCrmGuestTagsUseCase } from '@/domain/tenant/crm/use-cases/update-crm-guest-tags.use-case';
 import { GetCrmGuestRatingsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-ratings.use-case';
 import { GetCrmGuestStatsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-stats.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
-import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { Property, Unit } from '@/domain/entities/property.model';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
+import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
+import { Property, Unit } from '@/domain/shared/property/property.model';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   TenantPageLayoutComponent,

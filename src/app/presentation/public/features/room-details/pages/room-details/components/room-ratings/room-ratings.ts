@@ -11,8 +11,8 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapStar, bootstrapStarFill } from '@ng-icons/bootstrap-icons';
-import { GetUnitRatingsUseCase } from '@/domain/use-cases/property/get-unit-ratings.use-case';
-import { UnitRating } from '@/domain/entities/property.model';
+import { GetUnitRatingsUseCase } from '@/domain/shared/property/use-cases/get-unit-ratings.use-case';
+import { UnitRating } from '@/domain/shared/property/property.model';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 
 const RATINGS_PAGE_LIMIT = 10;

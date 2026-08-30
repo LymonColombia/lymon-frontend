@@ -16,11 +16,11 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button'
 import { CheckinGuestFormComponent } from './components/checkin-guest-form/checkin-guest-form';
 import { CheckinSummaryComponent } from './components/checkin-summary/checkin-summary';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { Reservation } from '@/domain/entities/reservation.model';
-import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
-import { GetReservationByIdUseCase } from '@/domain/use-cases/reservation/get-reservation-by-id.use-case';
+import { Reservation } from '@/domain/shared/reservation/reservation.model';
+import { GetReservationsUseCase } from '@/domain/shared/reservation/use-cases/get-reservations.use-case';
+import { GetReservationByIdUseCase } from '@/domain/shared/reservation/use-cases/get-reservation-by-id.use-case';
 import { GetGuestReservationByIdUseCase } from '@/domain/guest/guest-reservation/use-cases/get-guest-reservation-by-id.use-case';
-import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
+import { ConfirmReservationUseCase } from '@/domain/shared/reservation/use-cases/confirm-reservation.use-case';
 import { GuestReservationResponse } from '@/domain/guest/guest-reservation/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { formatCalendarDate } from '@/presentation/shared/utils/date-formatter.util';

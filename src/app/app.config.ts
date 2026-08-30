@@ -18,13 +18,13 @@ import { authInterceptor } from '@/infrastructure/interceptors/auth.interceptor'
 import { guestAuthInterceptor } from '@/infrastructure/interceptors/guest-auth.interceptor';
 import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
 import { StaffRepositoryImpl } from '@/infrastructure/repositories/staff.repository.impl';
-import { PropertyRepository } from '@/domain/repositories/property.repository';
+import { PropertyRepository } from '@/domain/shared/property/property.repository';
 import { PropertyRepositoryImpl } from '@/infrastructure/repositories/property.repository.impl';
 import { GuestAuthRepository } from '@/domain/guest/guest-auth/guest-auth.repository';
 import { GuestAuthRepositoryImpl } from '@/infrastructure/repositories/guest-auth.repository.impl';
 import { AuditLogRepository } from '@/domain/tenant/audit-log/audit-log.repository';
 import { AuditLogRepositoryImpl } from '@/infrastructure/repositories/audit-log.repository.impl';
-import { ReservationRepository } from '@/domain/repositories/reservation.repository';
+import { ReservationRepository } from '@/domain/shared/reservation/reservation.repository';
 import { ReservationRepositoryImpl } from '@/infrastructure/repositories/reservation.repository.impl';
 import { CrmRepository } from '@/domain/tenant/crm/crm.repository';
 import { CrmRepositoryImpl } from '@/infrastructure/repositories/crm.repository.impl';
@@ -50,7 +50,7 @@ import { GuestExperienceRepository } from '@/domain/guest/guest-experience/guest
 import { GuestExperienceRepositoryImpl } from '@/infrastructure/repositories/guest-experience.repository.impl';
 import { PaymentRepository } from '@/domain/guest/payment/payment.repository';
 import { PaymentRepositoryImpl } from '@/infrastructure/repositories/payment.repository.impl';
-import { PlanRepository } from '@/domain/repositories/plan.repository';
+import { PlanRepository } from '@/domain/shared/plan/plan.repository';
 import { PlanRepositoryImpl } from '@/infrastructure/repositories/plan.repository.impl';
 import { routes } from './app.routes';
 

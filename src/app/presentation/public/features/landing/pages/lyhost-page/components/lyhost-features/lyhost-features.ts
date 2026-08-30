@@ -7,7 +7,7 @@ import {
   bootstrapGraphUpArrow,
   bootstrapWindowStack,
 } from '@ng-icons/bootstrap-icons';
-import { PlanFeature, PLAN_FEATURES } from '@/domain/entities/plan-feature.model';
+import { PlanFeature, PLAN_FEATURES } from '@/domain/shared/plan/plan-feature.model';
 
 @Component({
   selector: 'app-lyhost-features',

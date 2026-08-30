@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { firstValueFrom, Subject } from 'rxjs';
 
 import { UserRepository } from '@/domain/tenant/user/user.repository';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
 import { ToastService } from '@/presentation/tenant/services/toast.service';
-import { Property } from '@/domain/entities/property.model';
+import { Property } from '@/domain/shared/property/property.model';
 
 export type TutorialStepType = 'action' | 'info';
 

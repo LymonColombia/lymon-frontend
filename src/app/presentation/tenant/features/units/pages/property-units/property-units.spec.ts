@@ -5,11 +5,11 @@ import { of, throwError, Subject } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { PropertyUnitsComponent } from './property-units';
-import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
-import { GetUnitUseCase } from '@/domain/use-cases/property/get-unit.use-case';
-import { DeleteUnitUseCase } from '@/domain/use-cases/property/delete-unit.use-case';
-import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
+import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
+import { GetUnitUseCase } from '@/domain/shared/property/use-cases/get-unit.use-case';
+import { DeleteUnitUseCase } from '@/domain/shared/property/use-cases/delete-unit.use-case';
+import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
 
 const mockGetUnits = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };

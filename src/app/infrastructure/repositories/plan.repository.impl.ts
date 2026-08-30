@@ -2,9 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, delay, map } from 'rxjs/operators';
-import { PlanRepository } from '@/domain/repositories/plan.repository';
+import { PlanRepository } from '@/domain/shared/plan/plan.repository';
 import { PlanType } from '@/domain/tenant/auth/auth.model';
-import { Plan, PLANS } from '@/domain/entities/plan.model';
+import { Plan, PLANS } from '@/domain/shared/plan/plan.model';
 import { environment } from '@env';
 
 @Injectable({ providedIn: 'root' })

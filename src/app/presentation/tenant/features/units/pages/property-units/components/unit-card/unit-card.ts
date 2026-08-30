@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Unit } from '@/domain/entities/property.model';
+import { Unit } from '@/domain/shared/property/property.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapDropletFill,

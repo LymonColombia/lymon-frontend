@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { NotificationPollingService } from './notification-polling.service';
-import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
+import { GetReservationsUseCase } from '@/domain/shared/reservation/use-cases/get-reservations.use-case';
 import { GetIncidentReportsUseCase } from '@/domain/tenant/incident-report/use-cases/get-incident-reports.use-case';
 import { UserSessionService } from './user-session.service';
-import { Reservation } from '@/domain/entities/reservation.model';
+import { Reservation } from '@/domain/shared/reservation/reservation.model';
 import { IncidentReport } from '@/domain/tenant/incident-report/incident-report.model';
-import type { PaginatedReservations } from '@/domain/repositories/reservation.repository';
+import type { PaginatedReservations } from '@/domain/shared/reservation/reservation.repository';
 
 const mockGetReservationsUseCase = { execute: vi.fn() };
 const mockGetIncidentReportsUseCase = { execute: vi.fn() };

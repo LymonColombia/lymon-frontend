@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { Plan, PLANS } from '@/domain/entities/plan.model';
+import { Plan, PLANS } from '@/domain/shared/plan/plan.model';
 
 @Component({
   selector: 'app-lyhost-plans',

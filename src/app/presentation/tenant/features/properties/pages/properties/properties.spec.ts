@@ -5,9 +5,9 @@ import { of, throwError, Subject } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { PropertiesComponent } from './properties';
-import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
-import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-property.use-case';
-import { CancellationPolicy, PropertyType } from '@/domain/entities/property.model';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
+import { CreatePropertyUseCase } from '@/domain/shared/property/use-cases/create-property.use-case';
+import { CancellationPolicy, PropertyType } from '@/domain/shared/property/property.model';
 
 const mockGetProperties = { execute: vi.fn() };
 const mockCreateProperty = { execute: vi.fn() };

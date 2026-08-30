@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { PropertyType, Property } from '@/domain/entities/property.model';
+import { PropertyType, Property } from '@/domain/shared/property/property.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 
 const PROPERTY_CARD_LABELS: Record<PropertyType, string> = {

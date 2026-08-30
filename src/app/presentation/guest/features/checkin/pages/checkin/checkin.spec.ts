@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { CheckinComponent } from './checkin';
-import { GetReservationsUseCase } from '@/domain/use-cases/reservation/get-reservations.use-case';
-import { GetReservationByIdUseCase } from '@/domain/use-cases/reservation/get-reservation-by-id.use-case';
+import { GetReservationsUseCase } from '@/domain/shared/reservation/use-cases/get-reservations.use-case';
+import { GetReservationByIdUseCase } from '@/domain/shared/reservation/use-cases/get-reservation-by-id.use-case';
 import { GetGuestReservationByIdUseCase } from '@/domain/guest/guest-reservation/use-cases/get-guest-reservation-by-id.use-case';
-import { ConfirmReservationUseCase } from '@/domain/use-cases/reservation/confirm-reservation.use-case';
+import { ConfirmReservationUseCase } from '@/domain/shared/reservation/use-cases/confirm-reservation.use-case';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
-import { Reservation } from '@/domain/entities/reservation.model';
+import { Reservation } from '@/domain/shared/reservation/reservation.model';
 
 const mockGetReservationsUseCase = { execute: vi.fn() };
 const mockGetReservationByIdUseCase = { execute: vi.fn() };

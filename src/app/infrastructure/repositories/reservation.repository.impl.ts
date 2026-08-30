@@ -1,10 +1,10 @@
 import { Observable, map } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ReservationRepository, PaginatedReservations } from '@/domain/repositories/reservation.repository';
-import { Reservation } from '@/domain/entities/reservation.model';
-import { CreateReservationInput } from '@/domain/use-cases/reservation/create-reservation.use-case';
-import { UpdateReservationInput } from '@/domain/use-cases/reservation/update-reservation.use-case';
+import { ReservationRepository, PaginatedReservations } from '@/domain/shared/reservation/reservation.repository';
+import { Reservation } from '@/domain/shared/reservation/reservation.model';
+import { CreateReservationInput } from '@/domain/shared/reservation/use-cases/create-reservation.use-case';
+import { UpdateReservationInput } from '@/domain/shared/reservation/use-cases/update-reservation.use-case';
 import { environment } from '@env';
 
 @Injectable({
