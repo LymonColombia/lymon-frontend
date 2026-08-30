@@ -26,7 +26,8 @@ import { DeleteShiftUseCase } from '@/domain/use-cases/shift/delete-shift.use-ca
 import { AssignStaffToShiftUseCase } from '@/domain/use-cases/shift/assign-staff.use-case';
 import { UnassignStaffFromShiftUseCase } from '@/domain/use-cases/shift/unassign-staff.use-case';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
-import { StaffMember, Property } from '@/domain/entities/staff.model';
+import { Property } from '@/domain/entities/property.model';
+import { StaffMember } from '@/domain/entities/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapTrash,

@@ -16,9 +16,8 @@ import { CreatePropertyUseCase } from '@/domain/use-cases/property/create-proper
 import { UpdatePropertyUseCase } from '@/domain/use-cases/property/update-property.use-case';
 import { DeletePropertyUseCase } from '@/domain/use-cases/property/delete-property.use-case';
 import { GetPropertyByIdUseCase } from '@/domain/use-cases/property/get-property-by-id.use-case';
-import { Property } from '@/domain/entities/staff.model';
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
-import { CancellationPolicy, PropertyDetail, PropertyType, UpdatePropertyDto } from '@/domain/entities/property.model';
+import { CancellationPolicy, PropertyDetail, PropertyType, UpdatePropertyDto, Property } from '@/domain/entities/property.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapHouseDoorFill, bootstrapPlus } from '@ng-icons/bootstrap-icons';
 import { TutorialHighlightDirective } from '@/presentation/tenant/directives/tutorial-highlight.directive';

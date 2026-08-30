@@ -14,7 +14,7 @@ import { of } from 'rxjs';
 import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';
 import { GetUnitCalendarUseCase } from '@/domain/use-cases/guest-reservation/get-unit-calendar.use-case';
 import { GetCartUseCase } from '@/domain/use-cases/guest-cart/get-cart.use-case';
-import { Unit } from '@/domain/entities/staff.model';
+import { Unit } from '@/domain/entities/property.model';
 import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 import { CartReservationItem } from '@/domain/entities/cart.model';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
-import { Property } from '@/domain/entities/staff.model';
+import { Property } from '@/domain/entities/property.model';
 
 @Injectable({ providedIn: 'root' })
 export class GetPropertiesUseCase {

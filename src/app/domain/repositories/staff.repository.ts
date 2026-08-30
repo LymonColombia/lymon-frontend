@@ -1,15 +1,6 @@
 import { Observable } from 'rxjs';
-import {
-  GetUnitRatingsParams,
-  InviteStaffDto,
-  PropertiesResponse,
-  PublicUnitsParams,
-  RolesResponse,
-  StaffListResponse,
-  UnitRatingsResponse,
-  UnitResponse,
-  UnitsResponse,
-} from '@/domain/entities/staff.model';
+import { GetUnitRatingsParams, PropertiesResponse, PublicUnitsParams, UnitRatingsResponse, UnitResponse, UnitsResponse } from '@/domain/entities/property.model';
+import { InviteStaffDto, RolesResponse, StaffListResponse } from '@/domain/entities/staff.model';
 
 export abstract class StaffRepository {
   abstract addStaff(data: InviteStaffDto): Observable<unknown>;

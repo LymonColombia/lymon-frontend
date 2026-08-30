@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
-import { GetUnitRatingsParams, UnitRatingsResponse } from '@/domain/entities/staff.model';
+import { GetUnitRatingsParams, UnitRatingsResponse } from '@/domain/entities/property.model';
 
 @Injectable({ providedIn: 'root' })
 export class GetUnitRatingsUseCase {

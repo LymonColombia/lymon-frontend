@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs';
-import { CreatePropertyDto, CreateUnitDto, PropertyDetail, UpdatePropertyDto, UpdateUnitDto, UpdateUnitMediaKeysDto } from '@/domain/entities/property.model';
-import { Unit } from '@/domain/entities/staff.model';
+import { CreatePropertyDto, CreateUnitDto, PropertyDetail, UpdatePropertyDto, UpdateUnitDto, UpdateUnitMediaKeysDto, Unit } from '@/domain/entities/property.model';
 
 export abstract class PropertyRepository {
   abstract createProperty(data: CreatePropertyDto): Observable<unknown>;

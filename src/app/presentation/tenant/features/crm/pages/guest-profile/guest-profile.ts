@@ -56,7 +56,7 @@ import { GetCrmGuestRatingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-
 import { GetCrmGuestStatsUseCase } from '@/domain/use-cases/crm/get-crm-guest-stats.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { Property, Unit } from '@/domain/entities/staff.model';
+import { Property, Unit } from '@/domain/entities/property.model';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   TenantPageLayoutComponent,

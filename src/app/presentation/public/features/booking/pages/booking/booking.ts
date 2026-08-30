@@ -13,7 +13,7 @@ import { BookingEmptyStateComponent } from './components/booking-empty-state/boo
 import { CatalogSkeletonCardComponent } from '@/presentation/public/components/catalog-skeleton-card/catalog-skeleton-card';
 import { GetPublicUnitsUseCase } from '@/domain/use-cases/property/get-public-units.use-case';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
-import { Unit } from '@/domain/entities/staff.model';
+import { Unit } from '@/domain/entities/property.model';
 
 const ITEMS_PER_PAGE = 8;
 const SEARCH_DEBOUNCE_MS = 400;

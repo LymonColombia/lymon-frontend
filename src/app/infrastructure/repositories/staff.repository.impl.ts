@@ -2,17 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
-import {
-  GetUnitRatingsParams,
-  InviteStaffDto,
-  PropertiesResponse,
-  PublicUnitsParams,
-  RolesResponse,
-  StaffListResponse,
-  UnitRatingsResponse,
-  UnitResponse,
-  UnitsResponse,
-} from '@/domain/entities/staff.model';
+import { GetUnitRatingsParams, PropertiesResponse, PublicUnitsParams, UnitRatingsResponse, UnitResponse, UnitsResponse } from '@/domain/entities/property.model';
+import { InviteStaffDto, RolesResponse, StaffListResponse } from '@/domain/entities/staff.model';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { environment } from '@env';
 

@@ -9,7 +9,7 @@ import { UpdateUnitMediaKeysUseCase } from '@/domain/use-cases/property/update-u
 import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/create-image-storage.use-case';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 import { MediaItem } from '@/domain/entities/storage.model';
-import { Unit } from '@/domain/entities/staff.model';
+import { Unit } from '@/domain/entities/property.model';
 import { MediaGallerySelection } from '@/presentation/tenant/components/media-gallery-input/media-gallery-input';
 import { UnitFormModalComponent } from './unit-form-modal';
 

@@ -3,8 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PropertyRepository } from '@/domain/repositories/property.repository';
-import { CreatePropertyDto, CreateUnitDto, PropertyDetail, UpdatePropertyDto, UpdateUnitDto, UpdateUnitMediaKeysDto } from '@/domain/entities/property.model';
-import { Unit, UnitResponse } from '@/domain/entities/staff.model';
+import { CreatePropertyDto, CreateUnitDto, PropertyDetail, UpdatePropertyDto, UpdateUnitDto, UpdateUnitMediaKeysDto, Unit, UnitResponse } from '@/domain/entities/property.model';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { environment } from '@env';
 

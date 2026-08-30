@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StaffRepository } from '@/domain/repositories/staff.repository';
-import { Pagination, PublicUnitsParams, Unit } from '@/domain/entities/staff.model';
+import { Pagination, PublicUnitsParams, Unit } from '@/domain/entities/property.model';
 
 export interface PublicUnitsPaginatedResult {
   units: Unit[];

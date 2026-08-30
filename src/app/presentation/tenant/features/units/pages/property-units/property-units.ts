@@ -21,7 +21,7 @@ import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case'
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitUseCase } from '@/domain/use-cases/property/get-unit.use-case';
 import { DeleteUnitUseCase } from '@/domain/use-cases/property/delete-unit.use-case';
-import { Unit } from '@/domain/entities/staff.model';
+import { Unit } from '@/domain/entities/property.model';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 import { UnitCardComponent } from './components/unit-card/unit-card';
 import { UnitFormModalComponent } from './components/unit-form-modal/unit-form-modal';

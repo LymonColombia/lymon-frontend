@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { Unit } from '@/domain/entities/staff.model';
+import { Unit } from '@/domain/entities/property.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapCheckLg } from '@ng-icons/bootstrap-icons';
 
