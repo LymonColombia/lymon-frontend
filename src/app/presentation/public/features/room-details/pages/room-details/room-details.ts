@@ -12,11 +12,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';
-import { GetUnitCalendarUseCase } from '@/domain/use-cases/guest-reservation/get-unit-calendar.use-case';
-import { GetCartUseCase } from '@/domain/use-cases/guest-cart/get-cart.use-case';
+import { GetUnitCalendarUseCase } from '@/domain/guest/guest-reservation/use-cases/get-unit-calendar.use-case';
+import { GetCartUseCase } from '@/domain/guest/guest-cart/use-cases/get-cart.use-case';
 import { Unit } from '@/domain/entities/property.model';
-import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
-import { CartReservationItem } from '@/domain/entities/cart.model';
+import { OccupiedDateRange } from '@/domain/guest/guest-reservation/guest-reservation.model';
+import { CartReservationItem } from '@/domain/guest/guest-cart/cart.model';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
@@ -36,7 +36,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 // Known arch violation: direct infra import for auth check — pending GetGuestSessionUseCase
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
-import { SaveReservationDraftUseCase } from '@/domain/use-cases/guest-cart/save-reservation-draft.use-case';
+import { SaveReservationDraftUseCase } from '@/domain/guest/guest-cart/use-cases/save-reservation-draft.use-case';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';
 
 @Component({

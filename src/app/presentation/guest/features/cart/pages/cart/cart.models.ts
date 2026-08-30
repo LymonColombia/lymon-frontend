@@ -3,7 +3,7 @@ export type {
   CartExperienceItem,
   CartReservationDraftRequest,
   CartReservationItem,
-} from '@/domain/entities/cart.model';
+} from '@/domain/guest/guest-cart/cart.model';
 
 export type GuestCartEntryKind = 'reservation' | 'experience';
 

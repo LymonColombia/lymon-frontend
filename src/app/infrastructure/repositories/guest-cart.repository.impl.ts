@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env';
-import { GuestCartRepository } from '@/domain/repositories/guest-cart.repository';
-import { Cart, CartExperienceItemRequest, CartReservationDraftRequest } from '@/domain/entities/cart.model';
+import { GuestCartRepository } from '@/domain/guest/guest-cart/guest-cart.repository';
+import { Cart, CartExperienceItemRequest, CartReservationDraftRequest } from '@/domain/guest/guest-cart/cart.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
 const BASE_URL = `${environment.apiUrl}/guest/cart`;

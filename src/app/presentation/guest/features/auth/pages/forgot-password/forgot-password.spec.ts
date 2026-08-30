@@ -6,7 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { vi } from 'vitest';
 
 import { GuestForgotPasswordComponent } from './forgot-password';
-import { GuestRecoverPasswordUseCase } from '@/domain/use-cases/guest-auth/guest-recover-password.use-case';
+import { GuestRecoverPasswordUseCase } from '@/domain/guest/guest-auth/use-cases/guest-recover-password.use-case';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

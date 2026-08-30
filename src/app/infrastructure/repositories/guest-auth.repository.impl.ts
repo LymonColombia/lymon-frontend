@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { GuestAuthRepository } from '@/domain/repositories/guest-auth.repository';
+import { GuestAuthRepository } from '@/domain/guest/guest-auth/guest-auth.repository';
 import {
   GuestLoginRequest,
   GuestLoginResponse,
@@ -12,7 +12,7 @@ import {
   GuestRecoverPasswordResponse,
   GuestConfirmRecoverPasswordRequest,
   GuestConfirmRecoverPasswordResponse,
-} from '@/domain/entities/guest-auth.model';
+} from '@/domain/guest/guest-auth/guest-auth.model';
 import { GuestAuthMapper } from '@/infrastructure/mappers/guest-auth.mapper';
 import { environment } from '@env';
 

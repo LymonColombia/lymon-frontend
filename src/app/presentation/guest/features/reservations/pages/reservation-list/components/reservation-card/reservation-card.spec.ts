@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ReservationCardComponent } from './reservation-card';
-import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
+import { GuestReservationResponse } from '@/domain/guest/guest-reservation/guest-reservation.model';
 
 const BASE_RESERVATION: GuestReservationResponse = {
   id: 'reservation-abcdefgh12345678',

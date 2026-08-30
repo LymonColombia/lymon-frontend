@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env';
-import { PaymentRepository } from '@/domain/repositories/payment.repository';
-import { GetPaymentSessionStatusResult, PaymentCheckoutResponse } from '@/domain/entities/payment.model';
+import { PaymentRepository } from '@/domain/guest/payment/payment.repository';
+import { GetPaymentSessionStatusResult, PaymentCheckoutResponse } from '@/domain/guest/payment/payment.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 
 @Injectable({ providedIn: 'root' })

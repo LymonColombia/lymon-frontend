@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Cart, CartExperienceItemRequest, CartReservationDraftRequest } from '@/domain/entities/cart.model';
+import { Cart, CartExperienceItemRequest, CartReservationDraftRequest } from '@/domain/guest/guest-cart/cart.model';
 
 export abstract class GuestCartRepository {
   abstract saveReservationDraft(request: CartReservationDraftRequest): Observable<Cart>;

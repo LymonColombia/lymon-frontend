@@ -28,11 +28,11 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button'
 import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
 import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar';
-import { GetGuestReservationsUseCase } from '@/domain/use-cases/guest-reservation/get-guest-reservations.use-case';
+import { GetGuestReservationsUseCase } from '@/domain/guest/guest-reservation/use-cases/get-guest-reservations.use-case';
 import {
   GetGuestReservationsParams,
   GuestReservationResponse,
-} from '@/domain/entities/guest-reservation.model';
+} from '@/domain/guest/guest-reservation/guest-reservation.model';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 import { GuestNavComponent } from '@/presentation/guest/layout/guest-nav/guest-nav';
 import { ReservationCardComponent } from './components/reservation-card/reservation-card';

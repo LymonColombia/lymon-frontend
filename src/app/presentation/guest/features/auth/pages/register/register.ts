@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { GuestRegisterUseCase } from '@/domain/use-cases/guest-auth/guest-register.use-case';
+import { GuestRegisterUseCase } from '@/domain/guest/guest-auth/use-cases/guest-register.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';

@@ -1,4 +1,4 @@
-import { AvailabilityType, ExperienceScope, GuestExperience, GuestExperiencePage } from '@/domain/entities/guest-experience.model';
+import { AvailabilityType, ExperienceScope, GuestExperience, GuestExperiencePage } from '@/domain/guest/guest-experience/guest-experience.model';
 import { GuestExperienceDto, GuestExperiencePageDto } from '@/infrastructure/dtos/guest-experience.dto';
 
 export class GuestExperienceMapper {

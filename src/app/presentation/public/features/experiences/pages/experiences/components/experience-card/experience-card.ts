@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { GuestExperience } from '@/domain/entities/guest-experience.model';
+import { GuestExperience } from '@/domain/guest/guest-experience/guest-experience.model';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
 import {
   bootstrapAward,

@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env';
-import { GuestReservationRepository } from '@/domain/repositories/guest-reservation.repository';
-import { CreateUnitRatingDto, GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
+import { GuestReservationRepository } from '@/domain/guest/guest-reservation/guest-reservation.repository';
+import { CreateUnitRatingDto, GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/guest/guest-reservation/guest-reservation.model';
 import { UnitCalendarDto } from '@/infrastructure/dtos/unit-calendar.dto';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
 

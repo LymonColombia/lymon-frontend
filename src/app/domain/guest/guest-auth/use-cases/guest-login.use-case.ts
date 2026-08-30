@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { GuestAuthRepository } from '@/domain/repositories/guest-auth.repository';
-import { GuestSessionRepository } from '@/domain/repositories/guest-session.repository';
-import { GuestLoginRequest, GuestLoginResponse } from '@/domain/entities/guest-auth.model';
+import { GuestAuthRepository } from '@/domain/guest/guest-auth/guest-auth.repository';
+import { GuestSessionRepository } from '@/domain/guest/guest-session/guest-session.repository';
+import { GuestLoginRequest, GuestLoginResponse } from '@/domain/guest/guest-auth/guest-auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class GuestLoginUseCase {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCheckCircleFill, bootstrapClock } from '@ng-icons/bootstrap-icons';
-import { GuestExperience } from '@/domain/entities/guest-experience.model';
+import { GuestExperience } from '@/domain/guest/guest-experience/guest-experience.model';
 
 @Component({
   selector: 'app-experience-compact-card',

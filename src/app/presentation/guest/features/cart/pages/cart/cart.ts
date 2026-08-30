@@ -17,10 +17,10 @@ import { OrderSummaryComponent } from './components/order-summary/order-summary'
 import { PaymentPanelComponent } from './components/payment-panel/payment-panel';
 import { GuestRecommendationExperienceComponent } from './components/guest-recommendation-experience/guest-recommendation-experience';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
-import { DeleteCartExperienceItemUseCase } from '@/domain/use-cases/guest-cart/delete-cart-experience-item.use-case';
-import { GetCartUseCase } from '@/domain/use-cases/guest-cart/get-cart.use-case';
+import { DeleteCartExperienceItemUseCase } from '@/domain/guest/guest-cart/use-cases/delete-cart-experience-item.use-case';
+import { GetCartUseCase } from '@/domain/guest/guest-cart/use-cases/get-cart.use-case';
 import { GetPublicUnitUseCase } from '@/domain/use-cases/property/get-public-unit.use-case';
-import { Cart } from '@/domain/entities/cart.model';
+import { Cart } from '@/domain/guest/guest-cart/cart.model';
 
 @Component({
   selector: 'app-guest-cart',

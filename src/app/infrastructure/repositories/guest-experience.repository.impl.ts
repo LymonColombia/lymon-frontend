@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env';
-import { GuestExperienceRepository } from '@/domain/repositories/guest-experience.repository';
-import { GuestExperience, GuestExperiencePage, ResponseGetById } from '@/domain/entities/guest-experience.model';
+import { GuestExperienceRepository } from '@/domain/guest/guest-experience/guest-experience.repository';
+import { GuestExperience, GuestExperiencePage, ResponseGetById } from '@/domain/guest/guest-experience/guest-experience.model';
 import { GuestExperienceMapper } from '@/infrastructure/mappers/guest-experience.mapper';
 
 

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
-import { GuestReservationRepository } from '@/domain/repositories/guest-reservation.repository';
+import { GuestReservationResponse } from '@/domain/guest/guest-reservation/guest-reservation.model';
+import { GuestReservationRepository } from '@/domain/guest/guest-reservation/guest-reservation.repository';
 
 @Injectable({ providedIn: 'root' })
 export class GetGuestReservationByIdUseCase {

@@ -1,4 +1,4 @@
-import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
+import { OccupiedDateRange } from '@/domain/guest/guest-reservation/guest-reservation.model';
 
 export interface UnitCalendarDto {
   message: string;

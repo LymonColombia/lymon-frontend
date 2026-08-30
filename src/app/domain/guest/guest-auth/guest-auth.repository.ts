@@ -9,7 +9,7 @@ import {
   GuestRecoverPasswordResponse,
   GuestConfirmRecoverPasswordRequest,
   GuestConfirmRecoverPasswordResponse,
-} from '@/domain/entities/guest-auth.model';
+} from '@/domain/guest/guest-auth/guest-auth.model';
 
 export abstract class GuestAuthRepository {
   abstract login(credentials: GuestLoginRequest): Observable<GuestLoginResponse>;

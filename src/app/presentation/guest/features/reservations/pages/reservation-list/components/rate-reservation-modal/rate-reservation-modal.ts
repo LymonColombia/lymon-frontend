@@ -5,8 +5,8 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapStar, bootstrapStarFill } from '@ng-icons/bootstrap-icons';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { CreateUnitRatingUseCase } from '@/domain/use-cases/guest-reservation/create-unit-rating.use-case';
-import { GuestReservationResponse } from '@/domain/entities/guest-reservation.model';
+import { CreateUnitRatingUseCase } from '@/domain/guest/guest-reservation/use-cases/create-unit-rating.use-case';
+import { GuestReservationResponse } from '@/domain/guest/guest-reservation/guest-reservation.model';
 
 const TOTAL_STARS = 5;
 

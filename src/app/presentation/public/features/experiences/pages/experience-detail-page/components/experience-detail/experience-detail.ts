@@ -6,9 +6,9 @@ import { SelectComponent, SelectOption } from '@/presentation/shared/components/
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapGeoAlt, bootstrapGeoAltFill, bootstrapPeopleFill, bootstrapSignpostSplit, bootstrapStar } from '@ng-icons/bootstrap-icons';
 import { LocationMap } from '@/presentation/shared/components/location-map/location-map';
-import { Cart } from '@/domain/entities/cart.model';
-import { GuestExperience } from '@/domain/entities/guest-experience.model';
-import { AddCartExperienceItemUseCase } from '@/domain/use-cases/guest-cart/add-cart-experience-item.use-case';
+import { Cart } from '@/domain/guest/guest-cart/cart.model';
+import { GuestExperience } from '@/domain/guest/guest-experience/guest-experience.model';
+import { AddCartExperienceItemUseCase } from '@/domain/guest/guest-cart/use-cases/add-cart-experience-item.use-case';
 import { buildAvailableSlots } from '@/presentation/shared/utils/experience-availability.util';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
 

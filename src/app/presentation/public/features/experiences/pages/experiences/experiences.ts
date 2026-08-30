@@ -7,8 +7,8 @@ import { CatalogPaginationComponent } from '@/presentation/public/components/cat
 import { CatalogSkeletonCardComponent } from '@/presentation/public/components/catalog-skeleton-card/catalog-skeleton-card';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer';
 import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
-import { GetGuestExperiencesUseCase } from '@/domain/use-cases/guest-experience/get-guest-experiences.use-case';
-import { GuestExperience } from '@/domain/entities/guest-experience.model';
+import { GetGuestExperiencesUseCase } from '@/domain/guest/guest-experience/use-cases/get-guest-experiences.use-case';
+import { GuestExperience } from '@/domain/guest/guest-experience/guest-experience.model';
 import { ExperienceHeroComponent, ExperienceHeroFilters } from './components/experience-hero/experience-hero';
 import {
   ExperienceToolbarComponent,

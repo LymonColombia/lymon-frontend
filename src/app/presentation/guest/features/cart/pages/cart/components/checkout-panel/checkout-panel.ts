@@ -9,7 +9,7 @@ import {
   bootstrapShieldLock,
   bootstrapStars,
 } from '@ng-icons/bootstrap-icons';
-import { Cart, CartExperienceItem, CartReservationItem } from '@/domain/entities/cart.model';
+import { Cart, CartExperienceItem, CartReservationItem } from '@/domain/guest/guest-cart/cart.model';
 
 type SelectedItem = CartReservationItem | CartExperienceItem | null;
 

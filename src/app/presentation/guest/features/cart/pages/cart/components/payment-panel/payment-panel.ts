@@ -5,10 +5,10 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCheckCircle, bootstrapExclamationTriangle, bootstrapShield, bootstrapStars } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
-import { GetCheckoutPayloadUseCase } from '@/domain/use-cases/payment/get-checkout-payload.use-case';
-import { GetPaymentStatusUseCase } from '@/domain/use-cases/payment/get-payment-status.use-case';
-import { GetPaymentSessionStatusResult, PaymentCheckoutResponse, PaymentStatus } from '@/domain/entities/payment.model';
-import { Cart } from '@/domain/entities/cart.model';
+import { GetCheckoutPayloadUseCase } from '@/domain/guest/payment/use-cases/get-checkout-payload.use-case';
+import { GetPaymentStatusUseCase } from '@/domain/guest/payment/use-cases/get-payment-status.use-case';
+import { GetPaymentSessionStatusResult, PaymentCheckoutResponse, PaymentStatus } from '@/domain/guest/payment/payment.model';
+import { Cart } from '@/domain/guest/guest-cart/cart.model';
 
 interface WompiWidgetResult {
   transaction?: { id: string; status?: string };

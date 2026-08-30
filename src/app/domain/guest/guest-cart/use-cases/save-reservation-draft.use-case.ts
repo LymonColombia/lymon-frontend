@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GuestCartRepository } from '@/domain/repositories/guest-cart.repository';
-import { Cart, CartReservationDraftRequest } from '@/domain/entities/cart.model';
+import { GuestCartRepository } from '@/domain/guest/guest-cart/guest-cart.repository';
+import { Cart, CartReservationDraftRequest } from '@/domain/guest/guest-cart/cart.model';
 
 @Injectable({ providedIn: 'root' })
 export class SaveReservationDraftUseCase {

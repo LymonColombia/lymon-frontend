@@ -4,7 +4,7 @@ import {
   GuestVerifyEmailResponse,
   GuestRecoverPasswordResponse,
   GuestConfirmRecoverPasswordResponse,
-} from '@/domain/entities/guest-auth.model';
+} from '@/domain/guest/guest-auth/guest-auth.model';
 
 export class GuestAuthMapper {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

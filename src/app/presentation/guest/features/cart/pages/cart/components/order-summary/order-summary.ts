@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapBagCheck, bootstrapBuilding, bootstrapStars, bootstrapX } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { Cart, CartExperienceItem, CartReservationItem } from '@/domain/entities/cart.model';
+import { Cart, CartExperienceItem, CartReservationItem } from '@/domain/guest/guest-cart/cart.model';
 
 @Component({
   selector: 'app-order-summary',

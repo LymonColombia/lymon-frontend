@@ -6,7 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { vi } from 'vitest';
 
 import { GuestVerifyEmailComponent } from './verify-email';
-import { GuestVerifyEmailUseCase } from '@/domain/use-cases/guest-auth/guest-verify-email.use-case';
+import { GuestVerifyEmailUseCase } from '@/domain/guest/guest-auth/use-cases/guest-verify-email.use-case';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 

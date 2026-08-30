@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { GuestExperience, GuestExperiencePage } from '@/domain/entities/guest-experience.model';
+import { GuestExperience, GuestExperiencePage } from '@/domain/guest/guest-experience/guest-experience.model';
 
 export abstract class GuestExperienceRepository {
   abstract getExperiences(params: {

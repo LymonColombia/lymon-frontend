@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapChevronLeft, bootstrapChevronRight } from '@ng-icons/bootstrap-icons';
-import { OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
+import { OccupiedDateRange } from '@/domain/guest/guest-reservation/guest-reservation.model';
 
 export interface DateRange {
   checkIn: string | null;

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { GuestLoginUseCase } from '@/domain/use-cases/guest-auth/guest-login.use-case';
+import { GuestLoginUseCase } from '@/domain/guest/guest-auth/use-cases/guest-login.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
