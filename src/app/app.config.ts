@@ -19,13 +19,13 @@ import { guestAuthInterceptor } from '@/infrastructure/guest/interceptors/guest-
 import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
 import { StaffRepositoryImpl } from '@/infrastructure/tenant/staff/staff.repository.impl';
 import { PropertyRepository } from '@/domain/shared/property/property.repository';
-import { PropertyRepositoryImpl } from '@/infrastructure/repositories/property.repository.impl';
+import { PropertyRepositoryImpl } from '@/infrastructure/shared/property/property.repository.impl';
 import { GuestAuthRepository } from '@/domain/guest/guest-auth/guest-auth.repository';
 import { GuestAuthRepositoryImpl } from '@/infrastructure/guest/guest-auth/guest-auth.repository.impl';
 import { AuditLogRepository } from '@/domain/tenant/audit-log/audit-log.repository';
 import { AuditLogRepositoryImpl } from '@/infrastructure/tenant/audit-log/audit-log.repository.impl';
 import { ReservationRepository } from '@/domain/shared/reservation/reservation.repository';
-import { ReservationRepositoryImpl } from '@/infrastructure/repositories/reservation.repository.impl';
+import { ReservationRepositoryImpl } from '@/infrastructure/shared/reservation/reservation.repository.impl';
 import { CrmRepository } from '@/domain/tenant/crm/crm.repository';
 import { CrmRepositoryImpl } from '@/infrastructure/tenant/crm/crm.repository.impl';
 import { GuestReservationRepository } from '@/domain/guest/guest-reservation/guest-reservation.repository';
@@ -51,7 +51,7 @@ import { GuestExperienceRepositoryImpl } from '@/infrastructure/guest/guest-expe
 import { PaymentRepository } from '@/domain/guest/payment/payment.repository';
 import { PaymentRepositoryImpl } from '@/infrastructure/guest/payment/payment.repository.impl';
 import { PlanRepository } from '@/domain/shared/plan/plan.repository';
-import { PlanRepositoryImpl } from '@/infrastructure/repositories/plan.repository.impl';
+import { PlanRepositoryImpl } from '@/infrastructure/shared/plan/plan.repository.impl';
 import { routes } from './app.routes';
 
 const ICON_LOADER_BASE_PATH = '/extra-icons';
