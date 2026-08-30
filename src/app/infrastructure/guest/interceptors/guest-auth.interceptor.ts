@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpInterceptorFn } from '@angular/commo
 import { Router } from '@angular/router';
 import { Observable, catchError, finalize, map, shareReplay, switchMap, throwError } from 'rxjs';
 import { environment } from '@env';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 
 const REFRESH_THRESHOLD_SECONDS = 60;
 const GUEST_AUTH_BASE = `${environment.apiUrl}${environment.guestAuth.endpoint}`;

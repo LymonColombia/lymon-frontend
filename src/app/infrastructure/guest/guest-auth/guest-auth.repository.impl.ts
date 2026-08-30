@@ -13,7 +13,7 @@ import {
   GuestConfirmRecoverPasswordRequest,
   GuestConfirmRecoverPasswordResponse,
 } from '@/domain/guest/guest-auth/guest-auth.model';
-import { GuestAuthMapper } from '@/infrastructure/mappers/guest-auth.mapper';
+import { GuestAuthMapper } from '@/infrastructure/guest/guest-auth/guest-auth.mapper';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.guestAuth.endpoint}`;

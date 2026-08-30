@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { guestGuard } from '@/infrastructure/guards/guest.guard';
-import { guestPublicGuard } from '@/infrastructure/guards/guest-public.guard';
+import { guestGuard } from '@/infrastructure/guest/guards/guest.guard';
+import { guestPublicGuard } from '@/infrastructure/guest/guards/guest-public.guard';
 import { GuestLoginComponent } from '@/presentation/guest/features/auth/pages/login/login';
 import { GuestRegisterComponent } from '@/presentation/guest/features/auth/pages/register/register';
 import { GuestVerifyEmailComponent } from '@/presentation/guest/features/auth/pages/verify-email/verify-email';

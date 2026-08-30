@@ -22,7 +22,7 @@ import { GetReservationByIdUseCase } from '@/domain/shared/reservation/use-cases
 import { GetGuestReservationByIdUseCase } from '@/domain/guest/guest-reservation/use-cases/get-guest-reservation-by-id.use-case';
 import { ConfirmReservationUseCase } from '@/domain/shared/reservation/use-cases/confirm-reservation.use-case';
 import { GuestReservationResponse } from '@/domain/guest/guest-reservation/guest-reservation.model';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 import { formatCalendarDate } from '@/presentation/shared/utils/date-formatter.util';
 import {
   bootstrapCardText,

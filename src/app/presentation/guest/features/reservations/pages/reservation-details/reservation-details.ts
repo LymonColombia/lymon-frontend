@@ -25,7 +25,7 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button'
 import { GuestNavComponent } from '@/presentation/guest/layout/guest-nav/guest-nav';
 import { GetGuestReservationByIdUseCase } from '@/domain/guest/guest-reservation/use-cases/get-guest-reservation-by-id.use-case';
 import { GuestReservationResponse } from '@/domain/guest/guest-reservation/guest-reservation.model';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 
 @Component({
   selector: 'app-guest-reservation-details',

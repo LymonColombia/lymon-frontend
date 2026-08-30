@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '@env';
 import { PaymentRepository } from '@/domain/guest/payment/payment.repository';
 import { GetPaymentSessionStatusResult, PaymentCheckoutResponse } from '@/domain/guest/payment/payment.model';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentRepositoryImpl implements PaymentRepository {

@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 import { environment } from '@env';
 import { GuestExperienceRepository } from '@/domain/guest/guest-experience/guest-experience.repository';
 import { GuestExperience, GuestExperiencePage, ResponseGetById } from '@/domain/guest/guest-experience/guest-experience.model';
-import { GuestExperienceMapper } from '@/infrastructure/mappers/guest-experience.mapper';
+import { GuestExperienceMapper } from '@/infrastructure/guest/guest-experience/guest-experience.mapper';
 
 
 @Injectable({ providedIn: 'root' })

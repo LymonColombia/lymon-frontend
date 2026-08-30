@@ -33,7 +33,7 @@ import {
   GetGuestReservationsParams,
   GuestReservationResponse,
 } from '@/domain/guest/guest-reservation/guest-reservation.model';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 import { GuestNavComponent } from '@/presentation/guest/layout/guest-nav/guest-nav';
 import { ReservationCardComponent } from './components/reservation-card/reservation-card';
 import { RateReservationModalComponent } from './components/rate-reservation-modal/rate-reservation-modal';

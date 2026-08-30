@@ -35,7 +35,7 @@ import {
   bootstrapPeopleFill,
 } from '@ng-icons/bootstrap-icons';
 // Known arch violation: direct infra import for auth check — pending GetGuestSessionUseCase
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 import { SaveReservationDraftUseCase } from '@/domain/guest/guest-cart/use-cases/save-reservation-draft.use-case';
 import { formatPrice } from '@/presentation/shared/utils/price-formatter';
 

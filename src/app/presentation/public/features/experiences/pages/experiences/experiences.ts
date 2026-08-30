@@ -6,7 +6,7 @@ import { CatalogNavComponent } from '@/presentation/public/components/catalog-na
 import { CatalogPaginationComponent } from '@/presentation/public/components/catalog-pagination/catalog-pagination';
 import { CatalogSkeletonCardComponent } from '@/presentation/public/components/catalog-skeleton-card/catalog-skeleton-card';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 import { GetGuestExperiencesUseCase } from '@/domain/guest/guest-experience/use-cases/get-guest-experiences.use-case';
 import { GuestExperience } from '@/domain/guest/guest-experience/guest-experience.model';
 import { ExperienceHeroComponent, ExperienceHeroFilters } from './components/experience-hero/experience-hero';

@@ -1,5 +1,5 @@
 import { AvailabilityType, ExperienceScope, GuestExperience, GuestExperiencePage } from '@/domain/guest/guest-experience/guest-experience.model';
-import { GuestExperienceDto, GuestExperiencePageDto } from '@/infrastructure/dtos/guest-experience.dto';
+import { GuestExperienceDto, GuestExperiencePageDto } from '@/infrastructure/guest/guest-experience/guest-experience.dto';
 
 export class GuestExperienceMapper {
   static toDomain(dto: GuestExperienceDto): GuestExperience {

@@ -7,7 +7,7 @@ import { GetReservationsUseCase } from '@/domain/shared/reservation/use-cases/ge
 import { GetReservationByIdUseCase } from '@/domain/shared/reservation/use-cases/get-reservation-by-id.use-case';
 import { GetGuestReservationByIdUseCase } from '@/domain/guest/guest-reservation/use-cases/get-guest-reservation-by-id.use-case';
 import { ConfirmReservationUseCase } from '@/domain/shared/reservation/use-cases/confirm-reservation.use-case';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 import { Reservation } from '@/domain/shared/reservation/reservation.model';
 
 const mockGetReservationsUseCase = { execute: vi.fn() };

@@ -12,7 +12,7 @@ import { BookingToolbarComponent, BookingSortOption } from './components/booking
 import { BookingEmptyStateComponent } from './components/booking-empty-state/booking-empty-state';
 import { CatalogSkeletonCardComponent } from '@/presentation/public/components/catalog-skeleton-card/catalog-skeleton-card';
 import { GetPublicUnitsUseCase } from '@/domain/shared/property/use-cases/get-public-units.use-case';
-import { GuestTokenService } from '@/infrastructure/services/guest-token.service';
+import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 import { Unit } from '@/domain/shared/property/property.model';
 
 const ITEMS_PER_PAGE = 8;
