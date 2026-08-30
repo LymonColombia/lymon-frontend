@@ -1,14 +1,14 @@
 import { InventoryCategory, InventoryItem } from '@/domain/tenant/inventory/inventory.model';
 
 /** Transport envelopes returned by the inventory endpoints. */
-export interface InventoryCategoryListResponse {
+export interface InventoryCategoryListDto {
   message: string;
   data: {
     categories: InventoryCategory[];
   };
 }
 
-export interface InventoryItemListResponse {
+export interface InventoryItemListDto {
   message: string;
   data: InventoryItem[];
   pagination: {

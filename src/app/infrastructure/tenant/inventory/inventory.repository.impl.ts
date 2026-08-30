@@ -9,7 +9,7 @@ import {
   InventoryCategory,
   InventoryItem,
 } from '@/domain/tenant/inventory/inventory.model';
-import { InventoryCategoryListResponse, InventoryItemListResponse } from '@/infrastructure/tenant/inventory/inventory.dto';
+import { InventoryCategoryListDto, InventoryItemListDto } from '@/infrastructure/tenant/inventory/inventory.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -27,13 +27,13 @@ export class InventoryRepositoryImpl extends InventoryRepository {
   }
 
   getCategories(): Observable<InventoryCategory[]> {
-    return this.http.get<InventoryCategoryListResponse>(`${this.apiUrl}/inventory/categories`).pipe(
+    return this.http.get<InventoryCategoryListDto>(`${this.apiUrl}/inventory/categories`).pipe(
       map(res => res.data.categories)
     );
   }
 
   getItems(propertyId: string): Observable<InventoryItem[]> {
-    return this.http.get<InventoryItemListResponse>(`${this.apiUrl}/properties/${propertyId}/inventory/items`).pipe(
+    return this.http.get<InventoryItemListDto>(`${this.apiUrl}/properties/${propertyId}/inventory/items`).pipe(
       map(res => res.data)
     );
   }

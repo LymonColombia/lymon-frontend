@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 import { environment } from '@env';
 import { GuestReservationRepository } from '@/domain/guest/guest-reservation/guest-reservation.repository';
 import { CreateUnitRatingDto, GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/guest/guest-reservation/guest-reservation.model';
-import { UnitCalendarDto } from '@/infrastructure/guest/guest-reservation/unit-calendar.dto';
+import { UnitCalendarDto } from '@/infrastructure/guest/guest-reservation/guest-reservation.dto';
 import { GuestTokenService } from '@/infrastructure/guest/services/guest-token.service';
 
 const BASE_URL = `${environment.apiUrl}/guest/reservations`;
