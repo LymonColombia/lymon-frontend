@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { AuthSessionRepository } from '@/domain/tenant/auth-session/auth-session.repository';
 import { AuthTokens, AuthUser } from '@/domain/tenant/auth/auth.model';
-import { TokenService } from '@/infrastructure/services/token.service';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 
 /** Adapts the two session services that already own this state to the domain port. */
 @Injectable({ providedIn: 'root' })

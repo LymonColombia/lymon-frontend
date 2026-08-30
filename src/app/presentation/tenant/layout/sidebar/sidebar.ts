@@ -35,8 +35,8 @@ import {
 } from '@ng-icons/bootstrap-icons';
 
 import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
-import { TokenService } from '@/infrastructure/services/token.service';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 

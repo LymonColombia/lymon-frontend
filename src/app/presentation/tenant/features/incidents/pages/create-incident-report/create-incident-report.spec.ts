@@ -9,7 +9,7 @@ import { vi } from 'vitest';
 import { CreateIncidentReportComponent } from './create-incident-report';
 import { CreateIncidentReportUseCase } from '@/domain/tenant/incident-report/use-cases/create-incident-report.use-case';
 import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 

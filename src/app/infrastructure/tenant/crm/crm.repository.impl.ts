@@ -16,8 +16,8 @@ import {
   UpdateCrmGuestTagsRequest,
 } from '@/domain/tenant/crm/crm-guest.model';
 import { CrmRepository } from '@/domain/tenant/crm/crm.repository';
-import { CrmMapper } from '@/infrastructure/mappers/crm.mapper';
-import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto, CrmGuestRatingsResponseDto, CrmGuestStatsDto, PaginatedResponseDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmMapper } from '@/infrastructure/tenant/crm/crm.mapper';
+import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto, CrmGuestRatingsResponseDto, CrmGuestStatsDto, PaginatedResponseDto } from '@/infrastructure/tenant/crm/crm.dto';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.crm.endpoint}`;

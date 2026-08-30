@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from '@/infrastructure/guards/admin.guard';
-import { adminPublicGuard } from '@/infrastructure/guards/admin-public.guard';
+import { adminGuard } from '@/infrastructure/tenant/guards/admin.guard';
+import { adminPublicGuard } from '@/infrastructure/tenant/guards/admin-public.guard';
 import { TenantShellComponent } from '@/presentation/tenant/layout/tenant-shell/tenant-shell';
 import { LoginComponent } from '@/presentation/tenant/features/auth/pages/login/login';
 import { RegisterComponent } from '@/presentation/tenant/features/auth/pages/register/register';

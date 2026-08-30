@@ -7,8 +7,8 @@ import { RegisterUseCase } from '@/domain/tenant/auth/use-cases/register.use-cas
 import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
 import { GetPlansUseCase } from '@/domain/shared/plan/use-cases/get-plans.use-case';
 import { PLANS } from '@/domain/shared/plan/plan.model';
-import { TokenService } from '@/infrastructure/services/token.service';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 const mockRegisterUseCase = { execute: vi.fn() };

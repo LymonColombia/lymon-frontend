@@ -10,7 +10,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { CreateIncidentReportUseCase } from '@/domain/tenant/incident-report/use-cases/create-incident-report.use-case';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 
 @Component({
   selector: 'app-create-incident-report',

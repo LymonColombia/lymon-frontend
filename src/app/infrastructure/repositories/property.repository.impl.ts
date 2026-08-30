@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PropertyRepository } from '@/domain/shared/property/property.repository';
 import { CreatePropertyDto, CreateUnitDto, PropertyDetail, UpdatePropertyDto, UpdateUnitDto, UpdateUnitMediaKeysDto, Unit, UnitResponse } from '@/domain/shared/property/property.model';
-import { TokenService } from '@/infrastructure/services/token.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
 import { environment } from '@env';
 
 @Injectable({ providedIn: 'root' })

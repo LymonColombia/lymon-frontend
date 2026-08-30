@@ -13,7 +13,7 @@ import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-p
 import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
 import { UpdateTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/update-tenant-profile.use-case';
 import { ChangePasswordUseCase } from '@/domain/tenant/user/use-cases/change-password.use-case';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapEye,

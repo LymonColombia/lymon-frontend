@@ -4,7 +4,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StorageRepository } from '@/domain/tenant/storage/storage.repository';
 import { GetPresignedUrlRequest, GetPresignedUrlResponse } from '@/domain/tenant/storage/storage.model';
-import { GetPresignedUrlResponseDto } from '@/infrastructure/dtos/storage.dto';
+import { GetPresignedUrlResponseDto } from '@/infrastructure/tenant/storage/storage.dto';
 import { environment } from '@env';
 
 @Injectable({ providedIn: 'root' })

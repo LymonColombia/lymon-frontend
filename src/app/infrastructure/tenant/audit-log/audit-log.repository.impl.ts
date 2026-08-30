@@ -3,8 +3,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { AuditLogRepository } from '@/domain/tenant/audit-log/audit-log.repository';
 import { AuditLogFilters, AuditLogResponse } from '@/domain/tenant/audit-log/audit-log.model';
-import { AuditLogMapper } from '@/infrastructure/mappers/audit-log.mapper';
-import { TokenService } from '@/infrastructure/services/token.service';
+import { AuditLogMapper } from '@/infrastructure/tenant/audit-log/audit-log.mapper';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.audit.endpoint}`;

@@ -26,8 +26,8 @@ import {
 import { RegisterUseCase } from '@/domain/tenant/auth/use-cases/register.use-case';
 import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
 import { GetPlansUseCase } from '@/domain/shared/plan/use-cases/get-plans.use-case';
-import { TokenService } from '@/infrastructure/services/token.service';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 import { PlanType } from '@/domain/tenant/auth/auth.model';
 import { Plan, isFreePlan } from '@/domain/shared/plan/plan.model';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';

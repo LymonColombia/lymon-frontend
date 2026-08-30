@@ -9,7 +9,7 @@ import {
   InventoryCategory,
   InventoryItem,
 } from '@/domain/tenant/inventory/inventory.model';
-import { InventoryCategoryListResponse, InventoryItemListResponse } from '@/infrastructure/dtos/inventory.dto';
+import { InventoryCategoryListResponse, InventoryItemListResponse } from '@/infrastructure/tenant/inventory/inventory.dto';
 
 @Injectable({
   providedIn: 'root',

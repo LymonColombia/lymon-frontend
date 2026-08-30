@@ -1,5 +1,5 @@
 import { CrmMapper } from './crm.mapper';
-import { CrmGuestRatingsResponseDto, CrmGuestStatsDto } from '@/infrastructure/dtos/crm.dto';
+import { CrmGuestRatingsResponseDto, CrmGuestStatsDto } from '@/infrastructure/tenant/crm/crm.dto';
 
 describe('CrmMapper.toGuestRatings', () => {
   const buildDto = (overrides?: Partial<CrmGuestRatingsResponseDto>): CrmGuestRatingsResponseDto => ({

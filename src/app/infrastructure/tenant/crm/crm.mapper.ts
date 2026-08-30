@@ -18,7 +18,7 @@ import {
   CrmGuestNoteDto,
   CrmGuestRatingsResponseDto,
   CrmGuestStatsDto,
-} from '@/infrastructure/dtos/crm.dto';
+} from '@/infrastructure/tenant/crm/crm.dto';
 
 export class CrmMapper {
   static toGuests(dtos: CrmGuestDto[]): CrmGuest[] {

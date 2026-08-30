@@ -11,8 +11,8 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
-import { TokenService } from '@/infrastructure/services/token.service';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 import { PlanType } from '@/domain/tenant/auth/auth.model';
 import { normalizePlanType, PLANS, type Plan, isPlanType } from '@/domain/shared/plan/plan.model';
 

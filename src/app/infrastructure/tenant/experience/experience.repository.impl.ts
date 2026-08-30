@@ -13,7 +13,7 @@ import {
   ExperienceQueryParams,
   ExperienceRepository,
 } from '@/domain/tenant/experience/experience.repository';
-import { TokenService } from '@/infrastructure/services/token.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
 
 @Injectable({ providedIn: 'root' })
 export class ExperienceRepositoryImpl extends ExperienceRepository {

@@ -15,7 +15,7 @@ import {
   bootstrapCalendarEvent,
   bootstrapExclamationTriangle,
 } from '@ng-icons/bootstrap-icons';
-import { NotificationPollingService } from '@/infrastructure/services/notification-polling.service';
+import { NotificationPollingService } from '@/infrastructure/tenant/services/notification-polling.service';
 import { Notification } from '@/domain/tenant/notification/notification.model';
 
 @Component({

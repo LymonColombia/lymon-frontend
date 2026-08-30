@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { TokenService } from './token.service';
 import { UserSessionService } from './user-session.service';
-import { getJwtPayload, refreshAccessToken } from '@/infrastructure/interceptors/auth.interceptor';
+import { getJwtPayload, refreshAccessToken } from '@/infrastructure/tenant/interceptors/auth.interceptor';
 
 const REFRESH_AHEAD_SECONDS = 120;
 

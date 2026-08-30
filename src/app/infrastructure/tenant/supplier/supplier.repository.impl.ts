@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { SupplierRepository } from '@/domain/tenant/supplier/supplier.repository';
-import { SupplierDto } from '@/infrastructure/dtos/supplier.dto';
+import { SupplierDto } from '@/infrastructure/tenant/supplier/supplier.dto';
 import { CreateSupplier, UpdateSupplier } from '@/domain/tenant/supplier/supplier.model';
 import { InventoryItem } from '@/domain/tenant/inventory/inventory.model';
 import { Supplier } from '@/domain/tenant/supplier/supplier.model';

@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpInterceptorFn } from '@angular/commo
 import { Router } from '@angular/router';
 import { Observable, catchError, finalize, map, shareReplay, switchMap, throwError } from 'rxjs';
 import { environment } from '@env';
-import { TokenService } from '@/infrastructure/services/token.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
 
 const REFRESH_THRESHOLD_SECONDS = 60;
 const AUTH_REFRESH_PATH = `${environment.auth.endpoint}/refresh`;

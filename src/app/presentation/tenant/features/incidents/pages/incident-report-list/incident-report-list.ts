@@ -14,7 +14,7 @@ import {
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { GetIncidentReportsUseCase } from '@/domain/tenant/incident-report/use-cases/get-incident-reports.use-case';
-import { UserSessionService } from '@/infrastructure/services/user-session.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
 import { IncidentReport } from '@/domain/tenant/incident-report/incident-report.model';
 
 @Component({

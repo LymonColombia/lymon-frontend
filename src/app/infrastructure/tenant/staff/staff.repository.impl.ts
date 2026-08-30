@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
 import { GetUnitRatingsParams, PropertiesResponse, PublicUnitsParams, UnitRatingsResponse, UnitResponse, UnitsResponse } from '@/domain/shared/property/property.model';
 import { InviteStaffDto, RolesResponse, StaffListResponse } from '@/domain/tenant/staff/staff.model';
-import { TokenService } from '@/infrastructure/services/token.service';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
 import { environment } from '@env';
 
 const USER_BASE = `${environment.apiUrl}${environment.user.endpoint}`;

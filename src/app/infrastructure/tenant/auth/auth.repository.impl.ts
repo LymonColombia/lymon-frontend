@@ -12,7 +12,7 @@ import {
   ConfirmRecoverPasswordRequest,
   ConfirmRecoverPasswordResponse,
 } from '@/domain/tenant/auth/auth.model';
-import { AuthMapper } from '@/infrastructure/mappers/auth.mapper';
+import { AuthMapper } from '@/infrastructure/tenant/auth/auth.mapper';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.auth.endpoint}`;

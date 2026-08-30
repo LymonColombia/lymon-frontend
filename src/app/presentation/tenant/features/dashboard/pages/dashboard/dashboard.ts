@@ -24,7 +24,7 @@ import {
 import { GetReservationsUseCase } from '@/domain/shared/reservation/use-cases/get-reservations.use-case';
 import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
-import { NotificationPollingService } from '@/infrastructure/services/notification-polling.service';
+import { NotificationPollingService } from '@/infrastructure/tenant/services/notification-polling.service';
 import { NotificationPanelComponent } from '@/presentation/tenant/features/dashboard/pages/dashboard/components/notification-panel/notification-panel';
 import { Reservation } from '@/domain/shared/reservation/reservation.model';
 
