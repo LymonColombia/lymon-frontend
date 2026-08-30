@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SupplierRepository } from '../../repositories/supplier.repository';
+import { SupplierRepository } from '@/domain/repositories/supplier.repository';
 import { InventoryItem } from '@/domain/entities/inventory.model';
 
 @Injectable({

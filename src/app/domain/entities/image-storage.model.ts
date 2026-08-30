@@ -1,4 +1,4 @@
-import { MediaCategory } from './storage.model';
+import { MediaCategory } from '@/domain/entities/storage.model';
 
 export interface ImageStorage {
   file: File;

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { CreateUnitRatingDto, GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '../entities/guest-reservation.model';
+import { CreateUnitRatingDto, GetGuestReservationsParams, GuestReservationRequest, GuestReservationResponse, GuestReservationsPage, OccupiedDateRange } from '@/domain/entities/guest-reservation.model';
 
 export abstract class GuestReservationRepository {
   abstract create(request: GuestReservationRequest): Observable<GuestReservationResponse>;

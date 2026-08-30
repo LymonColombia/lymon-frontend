@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PaymentRepository } from '../../repositories/payment.repository';
-import { GetPaymentSessionStatusResult } from '../../entities/payment.model';
+import { PaymentRepository } from '@/domain/repositories/payment.repository';
+import { GetPaymentSessionStatusResult } from '@/domain/entities/payment.model';
 
 @Injectable({ providedIn: 'root' })
 export class GetPaymentStatusUseCase {

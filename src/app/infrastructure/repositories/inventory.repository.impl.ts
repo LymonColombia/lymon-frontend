@@ -2,14 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env';
-import { InventoryRepository } from '../../domain/repositories/inventory.repository';
+import { InventoryRepository } from '@/domain/repositories/inventory.repository';
 import {
   CreateInventoryCategory,
   CreateInventoryItem,
   InventoryCategory,
   InventoryItem,
-} from '../../domain/entities/inventory.model';
-import { InventoryCategoryListResponse, InventoryItemListResponse } from '../dtos/inventory.dto';
+} from '@/domain/entities/inventory.model';
+import { InventoryCategoryListResponse, InventoryItemListResponse } from '@/infrastructure/dtos/inventory.dto';
 
 @Injectable({
   providedIn: 'root',

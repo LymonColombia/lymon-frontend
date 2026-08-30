@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { CreateInventoryCategoryUseCase } from './create-inventory-category.use-case';
-import { InventoryRepository } from '../../repositories/inventory.repository';
+import { InventoryRepository } from '@/domain/repositories/inventory.repository';
 import { CreateInventoryCategory, InventoryCategory } from '@/domain/entities/inventory.model';
 
 describe('CreateInventoryCategoryUseCase', () => {

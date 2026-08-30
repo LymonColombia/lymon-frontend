@@ -1,4 +1,4 @@
-import { PlanType } from './auth.model';
+import { PlanType } from '@/domain/entities/auth.model';
 import { ROOM_LABELS } from '@/domain/constants/room.constants';
 
 export interface PlanDetailSection {
