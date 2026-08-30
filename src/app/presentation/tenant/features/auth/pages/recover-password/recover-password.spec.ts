@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { of, throwError, Subject } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RecoverPasswordComponent } from './recover-password';
-import { RecoverPasswordUseCase } from '@/domain/use-cases/auth/recover-password.use-case';
+import { RecoverPasswordUseCase } from '@/domain/tenant/auth/use-cases/recover-password.use-case';
 
 const mockUseCase = { execute: vi.fn() };
 

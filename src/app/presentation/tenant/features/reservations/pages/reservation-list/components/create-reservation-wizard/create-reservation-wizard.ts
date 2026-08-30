@@ -13,11 +13,11 @@ import {
   bootstrapArrowRight,
   bootstrapInfoCircle
 } from '@ng-icons/bootstrap-icons';
-import { CreateTenantGuestUseCase } from '@/domain/use-cases/tenant-guest/create-tenant-guest.use-case';
+import { CreateTenantGuestUseCase } from '@/domain/tenant/tenant-guest/use-cases/create-tenant-guest.use-case';
 import { CreateReservationUseCase } from '@/domain/use-cases/reservation/create-reservation.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { GetTenantGuestsUseCase } from '@/domain/use-cases/tenant-guest/get-tenant-guests.use-case';
+import { GetTenantGuestsUseCase } from '@/domain/tenant/tenant-guest/use-cases/get-tenant-guests.use-case';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 
 @Component({

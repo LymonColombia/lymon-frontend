@@ -5,11 +5,11 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
 import { RegisterEmployeeComponent } from './register-employee';
-import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
+import { GetRolesUseCase } from '@/domain/tenant/staff/use-cases/get-roles.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { AddStaffUseCase } from '@/domain/use-cases/staff/add-staff.use-case';
-import { Role } from '@/domain/entities/staff.model';
+import { AddStaffUseCase } from '@/domain/tenant/staff/use-cases/add-staff.use-case';
+import { Role } from '@/domain/tenant/staff/staff.model';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 

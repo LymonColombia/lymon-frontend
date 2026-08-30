@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { StorageRepositoryImpl } from './storage.repository.impl';
 import { environment } from '@env';
-import { GetPresignedUrlRequest, GetPresignedUrlResponse } from '@/domain/entities/storage.model';
+import { GetPresignedUrlRequest, GetPresignedUrlResponse } from '@/domain/tenant/storage/storage.model';
 import { GetPresignedUrlResponseDto } from '@/infrastructure/dtos/storage.dto';
 
 const PRESIGNED_URL_ENDPOINT = `${environment.apiUrl}${environment.storage.endpoint}`;

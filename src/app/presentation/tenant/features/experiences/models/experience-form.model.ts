@@ -1,6 +1,6 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { CreateExperienceDto, Experience, ExperienceAvailabilityType, ExperienceScope } from '@/domain/entities/experience.model';
-import { MediaItem } from '@/domain/entities/storage.model';
+import { CreateExperienceDto, Experience, ExperienceAvailabilityType, ExperienceScope } from '@/domain/tenant/experience/experience.model';
+import { MediaItem } from '@/domain/tenant/storage/storage.model';
 
 export interface DayOption {
   value: number;

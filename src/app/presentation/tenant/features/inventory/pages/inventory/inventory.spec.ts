@@ -4,17 +4,17 @@ import { of, Subject } from 'rxjs';
 import { vi } from 'vitest';
 
 import { InventoryComponent } from './inventory';
-import { SupplierRepository } from '@/domain/repositories/supplier.repository';
-import { Supplier } from '@/domain/entities/supplier.model';
-import { InventoryRepository } from '@/domain/repositories/inventory.repository';
-import { InventoryItem } from '@/domain/entities/inventory.model';
-import { CreateInventoryCategoryUseCase } from '@/domain/use-cases/inventory/create-inventory-category.use-case';
-import { CreateInventoryItemUseCase } from '@/domain/use-cases/inventory/create-inventory-item.use-case';
-import { GetInventoryCategoriesUseCase } from '@/domain/use-cases/inventory/get-inventory-categories.use-case';
-import { GetInventoryItemsUseCase } from '@/domain/use-cases/inventory/get-inventory-items.use-case';
-import { AssociateInventorySupplierUseCase } from '@/domain/use-cases/inventory/associate-inventory-supplier.use-case';
-import { DeleteInventoryItemUseCase } from '@/domain/use-cases/inventory/delete-inventory-item.use-case';
-import { GetSupplierItemsUseCase } from '@/domain/use-cases/supplier/get-supplier-items.use-case';
+import { SupplierRepository } from '@/domain/tenant/supplier/supplier.repository';
+import { Supplier } from '@/domain/tenant/supplier/supplier.model';
+import { InventoryRepository } from '@/domain/tenant/inventory/inventory.repository';
+import { InventoryItem } from '@/domain/tenant/inventory/inventory.model';
+import { CreateInventoryCategoryUseCase } from '@/domain/tenant/inventory/use-cases/create-inventory-category.use-case';
+import { CreateInventoryItemUseCase } from '@/domain/tenant/inventory/use-cases/create-inventory-item.use-case';
+import { GetInventoryCategoriesUseCase } from '@/domain/tenant/inventory/use-cases/get-inventory-categories.use-case';
+import { GetInventoryItemsUseCase } from '@/domain/tenant/inventory/use-cases/get-inventory-items.use-case';
+import { AssociateInventorySupplierUseCase } from '@/domain/tenant/inventory/use-cases/associate-inventory-supplier.use-case';
+import { DeleteInventoryItemUseCase } from '@/domain/tenant/inventory/use-cases/delete-inventory-item.use-case';
+import { GetSupplierItemsUseCase } from '@/domain/tenant/supplier/use-cases/get-supplier-items.use-case';
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 import { ActivatedRoute } from '@angular/router';
 

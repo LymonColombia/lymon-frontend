@@ -17,17 +17,17 @@ import { ShiftDatePickerComponent } from '@/presentation/tenant/components/shift
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 import { TutorialHighlightDirective } from '@/presentation/tenant/directives/tutorial-highlight.directive';
 import { translateHttpError } from '@/presentation/shared/utils/http-error-translator';
-import { SHIFT_BACKEND_MESSAGES } from '@/domain/constants/shift-messages.constants';
-import { CreateShiftUseCase } from '@/domain/use-cases/shift/create-shift.use-case';
-import { GetShiftsUseCase } from '@/domain/use-cases/shift/get-shifts.use-case';
-import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
-import { UpdateShiftUseCase } from '@/domain/use-cases/shift/update-shift.use-case';
-import { DeleteShiftUseCase } from '@/domain/use-cases/shift/delete-shift.use-case';
-import { AssignStaffToShiftUseCase } from '@/domain/use-cases/shift/assign-staff.use-case';
-import { UnassignStaffFromShiftUseCase } from '@/domain/use-cases/shift/unassign-staff.use-case';
-import { StaffRepository } from '@/domain/repositories/staff.repository';
+import { SHIFT_BACKEND_MESSAGES } from '@/domain/tenant/shift/shift-messages.constants';
+import { CreateShiftUseCase } from '@/domain/tenant/shift/use-cases/create-shift.use-case';
+import { GetShiftsUseCase } from '@/domain/tenant/shift/use-cases/get-shifts.use-case';
+import { GetStaffUseCase } from '@/domain/tenant/staff/use-cases/get-staff.use-case';
+import { UpdateShiftUseCase } from '@/domain/tenant/shift/use-cases/update-shift.use-case';
+import { DeleteShiftUseCase } from '@/domain/tenant/shift/use-cases/delete-shift.use-case';
+import { AssignStaffToShiftUseCase } from '@/domain/tenant/shift/use-cases/assign-staff.use-case';
+import { UnassignStaffFromShiftUseCase } from '@/domain/tenant/shift/use-cases/unassign-staff.use-case';
+import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
 import { Property } from '@/domain/entities/property.model';
-import { StaffMember } from '@/domain/entities/staff.model';
+import { StaffMember } from '@/domain/tenant/staff/staff.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapTrash,

@@ -14,8 +14,8 @@ import {
   SendCrmGuestMessageRequest,
   UpdateCrmGuestNoteRequest,
   UpdateCrmGuestTagsRequest,
-} from '@/domain/entities/crm-guest.model';
-import { CrmRepository } from '@/domain/repositories/crm.repository';
+} from '@/domain/tenant/crm/crm-guest.model';
+import { CrmRepository } from '@/domain/tenant/crm/crm.repository';
 import { CrmMapper } from '@/infrastructure/mappers/crm.mapper';
 import { CrmGuestBookingDto, CrmGuestDto, CrmGuestEmailDto, CrmGuestNoteDto, CrmGuestRatingsResponseDto, CrmGuestStatsDto, PaginatedResponseDto } from '@/infrastructure/dtos/crm.dto';
 import { environment } from '@env';

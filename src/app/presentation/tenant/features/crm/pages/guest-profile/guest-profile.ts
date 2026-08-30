@@ -41,19 +41,19 @@ import {
   CreateCrmGuestNoteRequest,
   UpdateCrmGuestNoteRequest,
   SendCrmGuestMessageRequest,
-} from '@/domain/entities/crm-guest.model';
-import { CreateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/create-crm-guest-note.use-case';
-import { UpdateCrmGuestNoteUseCase } from '@/domain/use-cases/crm/update-crm-guest-note.use-case';
-import { DeleteCrmGuestNoteUseCase } from '@/domain/use-cases/crm/delete-crm-guest-note.use-case';
-import { PinCrmGuestNoteUseCase } from '@/domain/use-cases/crm/pin-crm-guest-note.use-case';
-import { SendCrmGuestMessageUseCase } from '@/domain/use-cases/crm/send-crm-guest-message.use-case';
-import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
-import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
-import { GetCrmGuestNotesUseCase } from '@/domain/use-cases/crm/get-crm-guest-notes.use-case';
-import { GetCrmGuestEmailsUseCase } from '@/domain/use-cases/crm/get-crm-guest-emails.use-case';
-import { UpdateCrmGuestTagsUseCase } from '@/domain/use-cases/crm/update-crm-guest-tags.use-case';
-import { GetCrmGuestRatingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-ratings.use-case';
-import { GetCrmGuestStatsUseCase } from '@/domain/use-cases/crm/get-crm-guest-stats.use-case';
+} from '@/domain/tenant/crm/crm-guest.model';
+import { CreateCrmGuestNoteUseCase } from '@/domain/tenant/crm/use-cases/create-crm-guest-note.use-case';
+import { UpdateCrmGuestNoteUseCase } from '@/domain/tenant/crm/use-cases/update-crm-guest-note.use-case';
+import { DeleteCrmGuestNoteUseCase } from '@/domain/tenant/crm/use-cases/delete-crm-guest-note.use-case';
+import { PinCrmGuestNoteUseCase } from '@/domain/tenant/crm/use-cases/pin-crm-guest-note.use-case';
+import { SendCrmGuestMessageUseCase } from '@/domain/tenant/crm/use-cases/send-crm-guest-message.use-case';
+import { GetCrmGuestBookingsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-bookings.use-case';
+import { GetCrmGuestsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guests.use-case';
+import { GetCrmGuestNotesUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-notes.use-case';
+import { GetCrmGuestEmailsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-emails.use-case';
+import { UpdateCrmGuestTagsUseCase } from '@/domain/tenant/crm/use-cases/update-crm-guest-tags.use-case';
+import { GetCrmGuestRatingsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-ratings.use-case';
+import { GetCrmGuestStatsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-stats.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
 import { Property, Unit } from '@/domain/entities/property.model';

@@ -10,7 +10,7 @@ import {
   GetIncidentReportsResponse,
   UpdateIncidentReportRequest,
   UpdateIncidentReportResponse,
-} from '@/domain/entities/incident-report.model';
+} from '@/domain/tenant/incident-report/incident-report.model';
 
 const BASE_URL = `${environment.apiUrl}${environment.incidentReport.endpoint}`;
 

@@ -12,8 +12,8 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapPlusLg, bootstrapXLg, bootstrapPencilSquare } from '@ng-icons/bootstrap-icons';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { UpdateIncidentReportUseCase } from '@/domain/use-cases/incident-report/update-incident-report.use-case';
-import { IncidentReport } from '@/domain/entities/incident-report.model';
+import { UpdateIncidentReportUseCase } from '@/domain/tenant/incident-report/use-cases/update-incident-report.use-case';
+import { IncidentReport } from '@/domain/tenant/incident-report/incident-report.model';
 
 const URL_PATTERN = /^https?:\/\/.+/;
 

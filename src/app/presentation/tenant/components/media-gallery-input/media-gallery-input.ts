@@ -12,7 +12,7 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCloudUpload, bootstrapTrash } from '@ng-icons/bootstrap-icons';
 
-import { MediaItem } from '@/domain/entities/storage.model';
+import { MediaItem } from '@/domain/tenant/storage/storage.model';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 
 const DEFAULT_ALLOWED_IMAGE_TYPES = new Set([

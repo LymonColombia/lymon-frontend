@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { UploadFileUseCase } from '@/domain/use-cases/storage/upload-file.use-case';
-import { UploadedFile } from '@/domain/entities/storage.model';
+import { UploadFileUseCase } from '@/domain/tenant/storage/use-cases/upload-file.use-case';
+import { UploadedFile } from '@/domain/tenant/storage/storage.model';
 
 @Component({
   selector: 'app-storage-test',

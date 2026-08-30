@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
+import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';

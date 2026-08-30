@@ -16,7 +16,7 @@ import {
   bootstrapExclamationTriangle,
 } from '@ng-icons/bootstrap-icons';
 import { NotificationPollingService } from '@/infrastructure/services/notification-polling.service';
-import { Notification } from '@/domain/entities/notification.model';
+import { Notification } from '@/domain/tenant/notification/notification.model';
 
 @Component({
   selector: 'app-notification-panel',

@@ -12,9 +12,9 @@ import { ButtonComponent } from '@/presentation/shared/components/button/button'
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { ExperienceCardComponent } from '../../components/experience-card/experience-card';
 import { ExperienceTableComponent } from '../../components/experience-table/experience-table';
-import { GetExperiencesUseCase } from '@/domain/use-cases/experience/get-experiences.use-case';
-import { DeleteExperienceUseCase } from '@/domain/use-cases/experience/delete-experience.use-case';
-import { Experience } from '@/domain/entities/experience.model';
+import { GetExperiencesUseCase } from '@/domain/tenant/experience/use-cases/get-experiences.use-case';
+import { DeleteExperienceUseCase } from '@/domain/tenant/experience/use-cases/delete-experience.use-case';
+import { Experience } from '@/domain/tenant/experience/experience.model';
 
 type ExperienceViewMode = 'CARDS' | 'TABLE';
 

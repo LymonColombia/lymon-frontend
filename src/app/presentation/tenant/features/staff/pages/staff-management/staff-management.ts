@@ -4,14 +4,14 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople, bootstrapTrash, bootstrapSearch, bootstrapChevronLeft, bootstrapChevronRight, bootstrapX, bootstrapEnvelope, bootstrapShieldCheck, bootstrapCalendar3, bootstrapPersonBadge, bootstrapClipboard } from '@ng-icons/bootstrap-icons';
 import { forkJoin } from 'rxjs';
 
-import { GetStaffUseCase } from '@/domain/use-cases/staff/get-staff.use-case';
-import { DeleteStaffUseCase } from '@/domain/use-cases/staff/delete-staff.use-case';
-import { GetRolesUseCase } from '@/domain/use-cases/staff/get-roles.use-case';
-import { Role, StaffMember } from '@/domain/entities/staff.model';
+import { GetStaffUseCase } from '@/domain/tenant/staff/use-cases/get-staff.use-case';
+import { DeleteStaffUseCase } from '@/domain/tenant/staff/use-cases/delete-staff.use-case';
+import { GetRolesUseCase } from '@/domain/tenant/staff/use-cases/get-roles.use-case';
+import { Role, StaffMember } from '@/domain/tenant/staff/staff.model';
 import {
   EMPLOYEE_MESSAGES,
   getEmployeeRoleLabel,
-} from '@/domain/constants/employee-messages.constants';
+} from '@/domain/tenant/staff/employee-messages.constants';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { ToastComponent } from '@/presentation/tenant/components/toast/toast';

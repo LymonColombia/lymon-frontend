@@ -10,9 +10,9 @@ import {
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { InputComponent } from '@/presentation/shared/components/input/input';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
-import { UpdateTenantProfileUseCase } from '@/domain/use-cases/tenant/update-tenant-profile.use-case';
-import { ChangePasswordUseCase } from '@/domain/use-cases/user/change-password.use-case';
+import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
+import { UpdateTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/update-tenant-profile.use-case';
+import { ChangePasswordUseCase } from '@/domain/tenant/user/use-cases/change-password.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {

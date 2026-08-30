@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ShiftRepository } from '@/domain/repositories/shift.repository';
-import { CreateShiftDto, ShiftResponse, UpdateShiftDto } from '@/domain/entities/shift.model';
+import { ShiftRepository } from '@/domain/tenant/shift/shift.repository';
+import { CreateShiftDto, ShiftResponse, UpdateShiftDto } from '@/domain/tenant/shift/shift.model';
 import { environment } from '@env';
 
 @Injectable({ providedIn: 'root' })

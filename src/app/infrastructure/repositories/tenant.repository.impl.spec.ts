@@ -8,7 +8,7 @@ import {
   TenantProfileResponse,
   UpdateTenantProfileRequest,
   UpdateTenantProfileResponse,
-} from '@/domain/entities/tenant.model';
+} from '@/domain/tenant/tenant/tenant.model';
 
 const BASE_URL = `${environment.apiUrl}${environment.tenant.endpoint}`;
 

@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { CrmGuest, CrmGuestBooking, CrmGuestSortBy, CrmGuestSortDirection, CrmGuestStatus } from '@/domain/entities/crm-guest.model';
-import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
-import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
+import { CrmGuest, CrmGuestBooking, CrmGuestSortBy, CrmGuestSortDirection, CrmGuestStatus } from '@/domain/tenant/crm/crm-guest.model';
+import { GetCrmGuestBookingsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-bookings.use-case';
+import { GetCrmGuestsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guests.use-case';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { InputComponent } from '@/presentation/shared/components/input/input';

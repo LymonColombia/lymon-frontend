@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { AuthTokens } from '@/domain/entities/auth.model';
+import { AuthTokens } from '@/domain/tenant/auth/auth.model';
 
 const ACCESS_TOKEN_KEY = 'lymon_access_token';
 const REFRESH_TOKEN_KEY = 'lymon_refresh_token';

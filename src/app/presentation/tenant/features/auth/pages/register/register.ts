@@ -23,12 +23,12 @@ import {
   bootstrapLock,
   bootstrapQuestionCircleFill,
 } from '@ng-icons/bootstrap-icons';
-import { RegisterUseCase } from '@/domain/use-cases/auth/register.use-case';
-import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
+import { RegisterUseCase } from '@/domain/tenant/auth/use-cases/register.use-case';
+import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
 import { GetPlansUseCase } from '@/domain/use-cases/plan/get-plans.use-case';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
-import { PlanType } from '@/domain/entities/auth.model';
+import { PlanType } from '@/domain/tenant/auth/auth.model';
 import { Plan, isFreePlan } from '@/domain/entities/plan.model';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';

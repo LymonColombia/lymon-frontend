@@ -3,8 +3,8 @@ import { of } from 'rxjs';
 
 import { TenantReservations, ReservationViewModel } from './reservation-list';
 import { ReservationRepository } from '@/domain/repositories/reservation.repository';
-import { StaffRepository } from '@/domain/repositories/staff.repository';
-import { TenantGuestRepository } from '@/domain/repositories/tenant-guest.repository';
+import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
+import { TenantGuestRepository } from '@/domain/tenant/tenant-guest/tenant-guest.repository';
 
 describe('TenantReservations', () => {
   let component: TenantReservations;

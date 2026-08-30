@@ -1,4 +1,4 @@
-import { InventoryCategory, InventoryItem } from '@/domain/entities/inventory.model';
+import { InventoryCategory, InventoryItem } from '@/domain/tenant/inventory/inventory.model';
 
 /** Transport envelopes returned by the inventory endpoints. */
 export interface InventoryCategoryListResponse {

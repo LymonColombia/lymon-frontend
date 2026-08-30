@@ -4,14 +4,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { TenantExperienceFormPageComponent } from './experience-form-page';
-import { CreateExperienceUseCase } from '@/domain/use-cases/experience/create-experience.use-case';
-import { UpdateExperienceUseCase } from '@/domain/use-cases/experience/update-experience.use-case';
-import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
-import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/create-image-storage.use-case';
+import { CreateExperienceUseCase } from '@/domain/tenant/experience/use-cases/create-experience.use-case';
+import { UpdateExperienceUseCase } from '@/domain/tenant/experience/use-cases/update-experience.use-case';
+import { GetExperienceByIdUseCase } from '@/domain/tenant/experience/use-cases/get-experience-by-id.use-case';
+import { CreateImageStorageUseCase } from '@/domain/tenant/image-storage/use-cases/create-image-storage.use-case';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { CreateExperienceDto } from '@/domain/entities/experience.model';
-import { MediaItem } from '@/domain/entities/storage.model';
+import { CreateExperienceDto } from '@/domain/tenant/experience/experience.model';
+import { MediaItem } from '@/domain/tenant/storage/storage.model';
 
 // ─── Shared mocks ─────────────────────────────────────────────────────────────
 const mockCreateExperience = { execute: vi.fn() };

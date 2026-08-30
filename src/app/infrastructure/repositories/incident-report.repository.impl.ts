@@ -1,14 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IncidentReportRepository } from '@/domain/repositories/incident-report.repository';
+import { IncidentReportRepository } from '@/domain/tenant/incident-report/incident-report.repository';
 import {
   CreateIncidentReportRequest,
   CreateIncidentReportResponse,
   GetIncidentReportsResponse,
   UpdateIncidentReportRequest,
   UpdateIncidentReportResponse,
-} from '@/domain/entities/incident-report.model';
+} from '@/domain/tenant/incident-report/incident-report.model';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.incidentReport.endpoint}`;

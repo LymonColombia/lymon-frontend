@@ -25,9 +25,9 @@ import {
 import { CreateUnitUseCase } from '@/domain/use-cases/property/create-unit.use-case';
 import { UpdateUnitUseCase } from '@/domain/use-cases/property/update-unit.use-case';
 import { UpdateUnitMediaKeysUseCase } from '@/domain/use-cases/property/update-unit-media-keys.use-case';
-import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/create-image-storage.use-case';
+import { CreateImageStorageUseCase } from '@/domain/tenant/image-storage/use-cases/create-image-storage.use-case';
 import { BedDto, BedType, UpdateUnitDto, Unit } from '@/domain/entities/property.model';
-import { MediaItem, keyFromMediaUrl } from '@/domain/entities/storage.model';
+import { MediaItem, keyFromMediaUrl } from '@/domain/tenant/storage/storage.model';
 import { ROOM_MESSAGES } from '@/domain/constants/room.constants';
 
 const AMENITY_OPTIONS = [

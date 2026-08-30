@@ -6,9 +6,9 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
 import { TenantProfileComponent } from './tenant-profile';
-import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
-import { UpdateTenantProfileUseCase } from '@/domain/use-cases/tenant/update-tenant-profile.use-case';
-import { TenantProfile } from '@/domain/entities/tenant.model';
+import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
+import { UpdateTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/update-tenant-profile.use-case';
+import { TenantProfile } from '@/domain/tenant/tenant/tenant.model';
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────
 

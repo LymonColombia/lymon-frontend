@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { UserRepository } from '@/domain/repositories/user.repository';
+import { UserRepository } from '@/domain/tenant/user/user.repository';
 import {
   ChangePasswordRequest,
   ChangePasswordResponse,
   CompleteTutorialResponse,
-} from '@/domain/entities/user.model';
+} from '@/domain/tenant/user/user.model';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.user.endpoint}`;

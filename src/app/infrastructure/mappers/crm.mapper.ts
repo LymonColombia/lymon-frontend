@@ -10,7 +10,7 @@ import {
   CrmGuestStats,
   CrmGuestStatus,
   GetCrmGuestRatingsResponse,
-} from '@/domain/entities/crm-guest.model';
+} from '@/domain/tenant/crm/crm-guest.model';
 import {
   CrmGuestBookingDto,
   CrmGuestDto,

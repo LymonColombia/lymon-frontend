@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { AuditLogRepository } from '@/domain/repositories/audit-log.repository';
-import { AuditLogFilters, AuditLogResponse } from '@/domain/entities/audit-log.model';
+import { AuditLogRepository } from '@/domain/tenant/audit-log/audit-log.repository';
+import { AuditLogFilters, AuditLogResponse } from '@/domain/tenant/audit-log/audit-log.model';
 import { AuditLogMapper } from '@/infrastructure/mappers/audit-log.mapper';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { environment } from '@env';

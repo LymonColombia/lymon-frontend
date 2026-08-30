@@ -12,7 +12,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
-import { ChangePasswordUseCase } from '@/domain/use-cases/user/change-password.use-case';
+import { ChangePasswordUseCase } from '@/domain/tenant/user/use-cases/change-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 import { provideIcons } from '@ng-icons/core';
 import { bootstrapPersonLock } from '@ng-icons/bootstrap-icons';

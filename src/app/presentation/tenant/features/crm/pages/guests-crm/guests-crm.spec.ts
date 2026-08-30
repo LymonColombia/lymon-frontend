@@ -4,8 +4,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 import { GuestsCrmComponent } from './guests-crm';
-import { GetCrmGuestsUseCase } from '@/domain/use-cases/crm/get-crm-guests.use-case';
-import { GetCrmGuestBookingsUseCase } from '@/domain/use-cases/crm/get-crm-guest-bookings.use-case';
+import { GetCrmGuestsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guests.use-case';
+import { GetCrmGuestBookingsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-bookings.use-case';
 
 const mockGetGuests = { execute: vi.fn() };
 const mockGetGuestBookings = { execute: vi.fn() };

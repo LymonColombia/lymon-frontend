@@ -5,9 +5,9 @@ import { provideIcons } from '@ng-icons/core';
 import { bootstrapStars } from '@ng-icons/bootstrap-icons';
 import { of, switchMap, map, forkJoin } from 'rxjs';
 
-import { CreateExperienceDto, Experience, UpdateExperienceDto } from '@/domain/entities/experience.model';
-import { CreateExperienceUseCase } from '@/domain/use-cases/experience/create-experience.use-case';
-import { CreateImageStorageUseCase } from '@/domain/use-cases/image-storage/create-image-storage.use-case';
+import { CreateExperienceDto, Experience, UpdateExperienceDto } from '@/domain/tenant/experience/experience.model';
+import { CreateExperienceUseCase } from '@/domain/tenant/experience/use-cases/create-experience.use-case';
+import { CreateImageStorageUseCase } from '@/domain/tenant/image-storage/use-cases/create-image-storage.use-case';
 import {
   TenantPageLayoutComponent,
   TenantPageMetaDirective,
@@ -17,8 +17,8 @@ import { SelectOption } from '@/presentation/shared/components/select/select';
 import { ExperienceFormComponent } from '../../components/experience-form/experience-form';
 import { GetPropertiesUseCase } from '@/domain/use-cases/property/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/use-cases/property/get-units.use-case';
-import { UpdateExperienceUseCase } from '@/domain/use-cases/experience/update-experience.use-case';
-import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
+import { UpdateExperienceUseCase } from '@/domain/tenant/experience/use-cases/update-experience.use-case';
+import { GetExperienceByIdUseCase } from '@/domain/tenant/experience/use-cases/get-experience-by-id.use-case';
 import { ExperienceFormSubmitPayload } from '../../models/experience-form.model';
 
 @Component({

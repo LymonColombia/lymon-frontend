@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { Experience } from '@/domain/entities/experience.model';
+import { Experience } from '@/domain/tenant/experience/experience.model';
 import { provideIcons, NgIcon } from "@ng-icons/core";
 import {  bootstrapTrash ,bootstrapEye, bootstrapPencilSquare} from '@ng-icons/bootstrap-icons';
 import { formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,getAvailabilitySummary } from '../../models/experience-form.model';

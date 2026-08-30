@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, delay, map } from 'rxjs/operators';
 import { PlanRepository } from '@/domain/repositories/plan.repository';
-import { PlanType } from '@/domain/entities/auth.model';
+import { PlanType } from '@/domain/tenant/auth/auth.model';
 import { Plan, PLANS } from '@/domain/entities/plan.model';
 import { environment } from '@env';
 

@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { AuthUser } from '@/domain/entities/auth.model';
+import { AuthUser } from '@/domain/tenant/auth/auth.model';
 
 const USER_KEY = 'lymon_current_user';
 

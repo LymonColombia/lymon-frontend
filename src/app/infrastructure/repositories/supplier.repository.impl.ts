@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { SupplierRepository } from '@/domain/repositories/supplier.repository';
+import { SupplierRepository } from '@/domain/tenant/supplier/supplier.repository';
 import { SupplierDto } from '@/infrastructure/dtos/supplier.dto';
-import { CreateSupplier, UpdateSupplier } from '@/domain/entities/supplier.model';
-import { InventoryItem } from '@/domain/entities/inventory.model';
-import { Supplier } from '@/domain/entities/supplier.model';
+import { CreateSupplier, UpdateSupplier } from '@/domain/tenant/supplier/supplier.model';
+import { InventoryItem } from '@/domain/tenant/inventory/inventory.model';
+import { Supplier } from '@/domain/tenant/supplier/supplier.model';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.suppliers.endpoint}`;

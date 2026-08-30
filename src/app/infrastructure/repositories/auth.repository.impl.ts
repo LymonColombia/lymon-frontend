@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { AuthRepository } from '@/domain/repositories/auth.repository';
+import { AuthRepository } from '@/domain/tenant/auth/auth.repository';
 import {
   LoginRequest,
   LoginResponse,
@@ -11,7 +11,7 @@ import {
   RecoverPasswordResponse,
   ConfirmRecoverPasswordRequest,
   ConfirmRecoverPasswordResponse,
-} from '@/domain/entities/auth.model';
+} from '@/domain/tenant/auth/auth.model';
 import { AuthMapper } from '@/infrastructure/mappers/auth.mapper';
 import { environment } from '@env';
 

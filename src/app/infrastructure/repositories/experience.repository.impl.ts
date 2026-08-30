@@ -8,11 +8,11 @@ import {
   ExperienceResponse,
   ExperiencesResponse,
   UpdateExperienceDto,
-} from '@/domain/entities/experience.model';
+} from '@/domain/tenant/experience/experience.model';
 import {
   ExperienceQueryParams,
   ExperienceRepository,
-} from '@/domain/repositories/experience.repository';
+} from '@/domain/tenant/experience/experience.repository';
 import { TokenService } from '@/infrastructure/services/token.service';
 
 @Injectable({ providedIn: 'root' })

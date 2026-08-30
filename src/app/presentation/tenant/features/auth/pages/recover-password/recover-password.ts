@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { RecoverPasswordUseCase } from '@/domain/use-cases/auth/recover-password.use-case';
+import { RecoverPasswordUseCase } from '@/domain/tenant/auth/use-cases/recover-password.use-case';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapArrowRightCircleFill, bootstrapEnvelope, bootstrapQuestionCircleFill } from '@ng-icons/bootstrap-icons';

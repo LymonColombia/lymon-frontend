@@ -3,13 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapBuilding, bootstrapCalendar3, bootstrapCash, bootstrapClock, bootstrapDashCircle, bootstrapFlag, bootstrapGeoAlt, bootstrapPencilSquare, bootstrapPeopleFill, bootstrapSignpost, bootstrapStars } from '@ng-icons/bootstrap-icons';
-import { Experience } from '@/domain/entities/experience.model';
+import { Experience } from '@/domain/tenant/experience/experience.model';
 import {
   TenantPageActionsDirective,
   TenantPageLayoutComponent
 } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { GetExperienceByIdUseCase } from '@/domain/use-cases/experience/get-experience-by-id.use-case';
+import { GetExperienceByIdUseCase } from '@/domain/tenant/experience/use-cases/get-experience-by-id.use-case';
 import { LocationMap } from "@/presentation/shared/components/location-map/location-map";
 import {formatDayList, formatCurrencyCop,getCategoryLabel,getScopeBadgeLabel,} from '../../models/experience-form.model';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';

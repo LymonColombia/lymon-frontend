@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TenantRepository } from '@/domain/repositories/tenant.repository';
+import { TenantRepository } from '@/domain/tenant/tenant/tenant.repository';
 import {
   TenantProfileResponse,
   UpdateTenantProfileRequest,
   UpdateTenantProfileResponse,
-} from '@/domain/entities/tenant.model';
+} from '@/domain/tenant/tenant/tenant.model';
 import { environment } from '@env';
 
 const BASE_URL = `${environment.apiUrl}${environment.tenant.endpoint}`;

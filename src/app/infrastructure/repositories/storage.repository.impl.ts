@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { StorageRepository } from '@/domain/repositories/storage.repository';
-import { GetPresignedUrlRequest, GetPresignedUrlResponse } from '@/domain/entities/storage.model';
+import { StorageRepository } from '@/domain/tenant/storage/storage.repository';
+import { GetPresignedUrlRequest, GetPresignedUrlResponse } from '@/domain/tenant/storage/storage.model';
 import { GetPresignedUrlResponseDto } from '@/infrastructure/dtos/storage.dto';
 import { environment } from '@env';
 

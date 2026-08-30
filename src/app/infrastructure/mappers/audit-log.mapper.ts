@@ -1,4 +1,4 @@
-import { AuditLogEntry, AuditLogResponse } from '@/domain/entities/audit-log.model';
+import { AuditLogEntry, AuditLogResponse } from '@/domain/tenant/audit-log/audit-log.model';
 
 export class AuditLogMapper {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

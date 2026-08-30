@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } fr
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapTrash, bootstrapFloppy, bootstrapCloudUpload } from '@ng-icons/bootstrap-icons';
-import { CreateExperienceDto,Experience,ExperienceAvailabilityType,ExperienceScope} from '@/domain/entities/experience.model';
+import { CreateExperienceDto,Experience,ExperienceAvailabilityType,ExperienceScope} from '@/domain/tenant/experience/experience.model';
 import {
   DAY_OPTIONS,
   BlackoutRangeFormControls,
@@ -19,7 +19,7 @@ import {
   MediaGalleryInputComponent,
   MediaGallerySelection,
 } from '@/presentation/tenant/components/media-gallery-input/media-gallery-input';
-import { MediaItem, keyFromMediaUrl } from '@/domain/entities/storage.model';
+import { MediaItem, keyFromMediaUrl } from '@/domain/tenant/storage/storage.model';
 
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 

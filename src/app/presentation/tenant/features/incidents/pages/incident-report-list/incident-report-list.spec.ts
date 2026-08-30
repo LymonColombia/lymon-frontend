@@ -5,10 +5,10 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
 import { IncidentReportListComponent } from './incident-report-list';
-import { GetIncidentReportsUseCase } from '@/domain/use-cases/incident-report/get-incident-reports.use-case';
-import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
+import { GetIncidentReportsUseCase } from '@/domain/tenant/incident-report/use-cases/get-incident-reports.use-case';
+import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
-import { IncidentReport } from '@/domain/entities/incident-report.model';
+import { IncidentReport } from '@/domain/tenant/incident-report/incident-report.model';
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────
 

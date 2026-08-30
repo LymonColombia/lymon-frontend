@@ -34,7 +34,7 @@ import {
   bootstrapCalendar2Check
 } from '@ng-icons/bootstrap-icons';
 
-import { GetTenantProfileUseCase } from '@/domain/use-cases/tenant/get-tenant-profile.use-case';
+import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
 import { TokenService } from '@/infrastructure/services/token.service';
 import { UserSessionService } from '@/infrastructure/services/user-session.service';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';

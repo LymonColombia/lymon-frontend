@@ -3,7 +3,7 @@ import {
   RegisterResponse,
   RecoverPasswordResponse,
   ConfirmRecoverPasswordResponse,
-} from '@/domain/entities/auth.model';
+} from '@/domain/tenant/auth/auth.model';
 
 export class AuthMapper {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

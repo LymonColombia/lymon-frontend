@@ -3,7 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { of, throwError, Subject } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoginComponent } from './login';
-import { LoginUseCase } from '@/domain/use-cases/auth/login.use-case';
+import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
 
 const mockUseCase = { execute: vi.fn() };
 
