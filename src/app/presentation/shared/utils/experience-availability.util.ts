@@ -1,4 +1,4 @@
-import { GuestExperience } from '@/domain/entities/guest-experience.model';
+import { GuestExperience } from '@/domain/guest/guest-experience/guest-experience.model';
 
 export interface AvailabilitySlot {
   date: string;

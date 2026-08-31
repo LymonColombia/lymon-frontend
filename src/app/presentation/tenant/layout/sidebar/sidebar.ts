@@ -1,0 +1,238 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  ElementRef,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { ROOM_LABELS } from '@/domain/shared/property/room.constants';
+import {
+  bootstrapBarChartFill,
+  bootstrapCalendar,
+  bootstrapCurrencyDollar,
+  bootstrapEnvelopeAt,
+  bootstrapGrid,
+  bootstrapHouseDoor,
+  bootstrapHouseFill,
+  bootstrapInfoCircle,
+  bootstrapLayoutSidebar,
+  bootstrapPeople,
+  bootstrapPersonAdd,
+  bootstrapPersonGear,
+  bootstrapStar,
+  bootstrapThreeDotsVertical,
+  bootstrapArchive,
+  bootstrapClockHistory,
+  bootstrapCalendar2Check
+} from '@ng-icons/bootstrap-icons';
+
+import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
+import { TokenService } from '@/infrastructure/tenant/services/token.service';
+import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+
+interface MenuItem {
+  icon: string;
+  label: string;
+  route: string;
+}
+
+
+@Component({
+  selector: 'app-sidebar',
+  standalone: true,
+  imports: [RouterModule, NgIconComponent, ModalComponent, ButtonComponent],
+  templateUrl: './sidebar.html',
+  styleUrl: './sidebar.css',
+  providers: [
+    provideIcons({
+      bootstrapBarChartFill,
+      bootstrapCalendar,
+      bootstrapCurrencyDollar,
+      bootstrapEnvelopeAt,
+      bootstrapGrid,
+      bootstrapHouseDoor,
+      bootstrapHouseFill,
+      bootstrapInfoCircle,
+      bootstrapLayoutSidebar,
+      bootstrapPeople,
+      bootstrapPersonAdd,
+      bootstrapPersonGear,
+      bootstrapStar,
+      bootstrapThreeDotsVertical,
+      bootstrapArchive,
+      bootstrapClockHistory,
+      bootstrapCalendar2Check
+    }),
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.sidebar-host--expanded]': 'isExpanded()',
+    '[class.sidebar-host--ready]': 'transitionsReady()',
+    '(document:click)': 'onDocumentClick($event)',
+    '(document:keydown.escape)': 'onEscapeKey()',
+  },
+})
+export class SidebarComponent implements OnInit {
+  @ViewChild('profileMenuContainer', { read: ElementRef })
+  private readonly profileMenuContainer?: ElementRef<HTMLElement>;
+  @ViewChild('profileContainer', { read: ElementRef })
+  private readonly profileContainer?: ElementRef<HTMLElement>;
+
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly getTenantProfileUseCase = inject(GetTenantProfileUseCase);
+  private readonly userSession = inject(UserSessionService);
+  private readonly tokenService = inject(TokenService);
+  private readonly router = inject(Router);
+
+  readonly isExpanded = signal(false);
+  readonly transitionsReady = signal(false);
+  readonly tenantName = signal('');
+  readonly tenantEmail = signal('');
+
+  readonly isProfileMenuOpen = signal(false);
+  readonly isLogoutConfirmOpen = signal(false);
+
+  readonly tenantNameDisplay = computed(() => this.tenantName().trim() || '—');
+  readonly tenantEmailDisplay = computed(() => this.tenantEmail().trim() || '—');
+
+  readonly tenantInitials = computed(() => {
+    const name = this.tenantName().trim();
+    if (!name) return '—';
+
+    const parts = name.split(/\s+/).filter(Boolean);
+    const first = parts[0]?.charAt(0) ?? '';
+    const second = (parts.length > 1 ? parts[1]?.charAt(0) : parts[0]?.charAt(1)) ?? '';
+    const initials = (first + second).toUpperCase();
+    return initials || '—';
+  });
+
+  readonly menuItems: MenuItem[] = [
+    { icon: 'bootstrapGrid', label: 'Inicio', route: '/admin/dashboard' },
+    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/admin/reservations' },
+    { icon: 'bootstrapHouseDoor', label: ROOM_LABELS.propertiesAndRooms, route: '/admin/properties' },
+    { icon: 'bootstrapStar', label: 'Experiencias', route: '/admin/experiences' },
+    { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/admin/staff/new' },
+    { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/admin/staff' },
+    { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/admin/shifts' },
+    { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/admin/audit-log' },
+    { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/admin/crm/guests' },
+    { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/admin/incidents' },
+
+  ];
+
+  onMouseEnter(): void {
+    this.isExpanded.set(true);
+  }
+
+  onMouseLeave(): void {
+    this.isExpanded.set(false);
+    this.closeProfileMenu();
+  }
+
+  toggleExpanded(): void {
+    this.isExpanded.update((v) => !v);
+    this.closeProfileMenu();
+  }
+
+  toggleProfileMenu(): void {
+    if (!this.isExpanded()) return;
+    this.isProfileMenuOpen.set(!this.isProfileMenuOpen());
+  }
+
+  closeProfileMenu(): void {
+    this.isProfileMenuOpen.set(false);
+  }
+
+  goToSettings(): void {
+    this.closeProfileMenu();
+    void this.router.navigateByUrl('/admin/settings');
+  }
+
+  goToPlans(): void {
+    this.closeProfileMenu();
+    void this.router.navigateByUrl('/admin/plans');
+  }
+
+  goToSessions(): void {
+    this.closeProfileMenu();
+    void this.router.navigateByUrl('/sessions');
+  }
+
+  openLogoutConfirm(): void {
+    this.closeProfileMenu();
+    this.isLogoutConfirmOpen.set(true);
+  }
+
+  closeLogoutConfirm(): void {
+    this.isLogoutConfirmOpen.set(false);
+  }
+
+  confirmLogout(): void {
+    this.closeLogoutConfirm();
+    this.closeProfileMenu();
+    this.tokenService.clear();
+    this.userSession.clear();
+    void this.router.navigateByUrl('/login', { replaceUrl: true });
+  }
+
+  onEscapeKey(): void {
+    this.closeProfileMenu();
+    this.isExpanded.set(false);
+  }
+
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isProfileMenuOpen()) return;
+
+    const container = this.profileMenuContainer?.nativeElement;
+    const profileContainer = this.profileContainer?.nativeElement;
+    if (!container || !profileContainer) {
+      this.closeProfileMenu();
+      return;
+    }
+
+    const target = event.target as Node | null;
+    if (target && (container.contains(target) || profileContainer.contains(target))) return;
+
+    this.closeProfileMenu();
+  }
+
+  ngOnInit(): void {
+    requestAnimationFrame(() => {
+      this.transitionsReady.set(true);
+    });
+
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.isExpanded.set(false);
+        this.closeProfileMenu();
+      });
+
+    this.getTenantProfileUseCase
+      .execute()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.tenantName.set(res.data?.name ?? '');
+          this.tenantEmail.set(res.data?.email ?? this.userSession.currentUser()?.email ?? '');
+        },
+        error: () => {
+          this.tenantName.set('');
+          this.tenantEmail.set(this.userSession.currentUser()?.email ?? '');
+        },
+      });
+  }
+}

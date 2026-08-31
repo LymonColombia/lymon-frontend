@@ -8,7 +8,7 @@ export interface CreateIncidentReportData {
 
 /** Navigate to the incident-report list page */
 export const openIncidentReportPage = (): ActorTask => async (actor: Actor) => {
-  await actor.browse.page.goto('/incident-report/list');
+  await actor.browse.page.goto('/admin/incidents');
 };
 
 /** Open the "Nueva Novedad" creation form */
@@ -38,7 +38,7 @@ export const deleteIncidentReportByTitle =
   (title: string): ActorTask =>
   async (actor: Actor) => {
     const page = actor.browse.page;
-    await page.goto('/incident-report/list');
+    await page.goto('/admin/incidents');
 
     const row = page.locator('tr, li, article').filter({ hasText: title });
     if (!(await row.isVisible().catch(() => false))) return;

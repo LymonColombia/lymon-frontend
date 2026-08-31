@@ -16,7 +16,7 @@ test.describe('Feature: Audit Log', () => {
   test.beforeEach(async ({ page }) => {
     manager = new ManagerFlow(page);
     // Session already loaded from storageState — land on dashboard.
-    await page.goto('/dashboard');
+    await page.goto('/admin/dashboard');
   });
 
   // ──────────────────────────────────────────────────────────────────────────

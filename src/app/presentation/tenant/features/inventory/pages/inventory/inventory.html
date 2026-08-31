@@ -1,0 +1,484 @@
+<app-tenant-page-layout title="Gestion de Inventario" subtitle="Administra insumos y proveedores del hotel"
+  iconName="bootstrapBoxSeam" backLink="/admin/properties" backLabel="Volver a propiedades">
+
+  @if (notification()) {
+  <div class="notification-toast" [class]="'notification-toast--' + notification()!.type">
+    <div class="notification-content">
+      <ng-icon [name]="notification()!.type === 'error' ? 'bootstrapExclamationTriangle' : 'bootstrapCheckCircle'"
+        size="18">
+      </ng-icon>
+      <span>{{ notification()!.message }}</span>
+    </div>
+    <div class="notification-timeline"></div>
+  </div>
+  }
+  <section class="inventory-view" aria-label="Gestion de inventario">
+    <div class="inventory-tabs" role="tablist" aria-label="Secciones de inventario">
+      <button type="button" class="tab-btn" role="tab" [class.tab-btn--active]="activeTab() === 'supplies'"
+        [attr.aria-selected]="activeTab() === 'supplies'" (click)="setActiveTab('supplies')">
+        <ng-icon name="bootstrapBoxSeam" size="16px" aria-hidden="true"></ng-icon>
+        Insumos
+      </button>
+
+      <button type="button" class="tab-btn" role="tab" [class.tab-btn--active]="activeTab() === 'providers'"
+        [attr.aria-selected]="activeTab() === 'providers'" (click)="setActiveTab('providers')">
+        <ng-icon name="bootstrapBuilding" size="16px" aria-hidden="true"></ng-icon>
+        Proveedores
+      </button>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-field">
+        <app-input id="inventory-search" [placeholder]="searchPlaceholder()" [hasIcon]="true"
+          (valueChange)="updateSearch($event)">
+          <ng-icon icon name="bootstrapSearch" size="18px" aria-hidden="true"></ng-icon>
+        </app-input>
+      </div>
+
+      @if (activeTab() === 'supplies') {
+      <div class="toolbar-actions">
+        <div class="split-button">
+          <app-button type="button" variant="primary" (clicked)="openCreateCategoryModal()" class="split-button-main">
+            <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+            Nueva Categoria
+          </app-button>
+          <button type="button" class="split-button-side" aria-label="Más opciones"
+            (click)="toggleCategoriesDropdown()">
+            <ng-icon name="bootstrapJustify" size="18px" aria-hidden="true"></ng-icon>
+          </button>
+
+          @if (isCategoriesDropdownOpen()) {
+          <div class="dropdown-menu">
+            <header class="dropdown-header">Categorías Registradas</header>
+            <div class="dropdown-content">
+              @for (category of categories(); track category.id) {
+              <div class="dropdown-item">
+                <span class="dropdown-item-name">{{ category.name }}</span>
+                <span class="dropdown-item-desc">{{ category.description }}</span>
+              </div>
+              } @empty {
+              <div class="dropdown-empty">No hay categorías registradas.</div>
+              }
+            </div>
+          </div>
+          <button type="button" class="dropdown-backdrop" aria-label="Cerrar menú de categorías"
+            (click)="toggleCategoriesDropdown()" (keydown.escape)="toggleCategoriesDropdown()"></button>
+          }
+        </div>
+        <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()" [tutorialHighlight]="2">
+          <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+          Agregar Insumo
+        </app-button>
+      </div>
+      } @else {
+      <app-button type="button" variant="primary" (clicked)="openCreateProviderModal()" [tutorialHighlight]="3">
+        <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+        Agregar Proveedor
+      </app-button>
+      }
+    </div>
+
+    @if (activeTab() === 'supplies') {
+    <div class="table-card">
+      @if (filteredSupplies().length === 0) {
+      <div class="empty-state">No hay insumos que coincidan con la busqueda.</div>
+      } @else {
+      <div class="table-wrapper">
+        <table class="inventory-table" aria-label="Listado de insumos">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Nombre</th>
+              <th>Categoria</th>
+              <th>Cantidad</th>
+              <th>Proveedor</th>
+              <th>Stock minimo</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of paginatedSupplies(); track item.id) {
+            <tr>
+              <td>{{ item.sku }}</td>
+              <td>{{ item.name }}</td>
+              <td>
+                <span class="category-pill"
+                  [class]="'category-pill category-pill--' + getCategoryClass(item.categoryName)">
+                  {{ item.categoryName }}
+                </span>
+              </td>
+              <td>{{ getFormattedUnit(item.unit, item.quantity) }}</td>
+              <td>
+                @if (item.provider === 'Proveedor no asignado') {
+                <button type="button" class="category-pill category-pill--danger provider-assign-btn"
+                  (click)="openAssignSupplierModal(item)">
+                  Sin proveedor
+                </button>
+                } @else {
+                <button type="button" class="category-pill category-pill--success provider-assign-btn"
+                  (click)="openAssignSupplierModal(item)">
+                  {{ item.provider }}
+                </button>
+                }
+              </td>
+              <td>{{ getFormattedUnit(item.unit, item.minimumStock) }}</td>
+              <td>
+                <span class="stock-pill" [class.stock-pill--normal]="getStockState(item) === 'NORMAL'"
+                  [class.stock-pill--low]="getStockState(item) === 'BAJO'"
+                  [class.stock-pill--critical]="getStockState(item) === 'CRITICO'">
+                  {{ getStockLabel(item) }}
+                </span>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button type="button" class="icon-action" (click)="openEditSupplyModal(item)"
+                    aria-label="Editar insumo" title="Editar">
+                    <ng-icon name="bootstrapPencilSquare" size="15px" aria-hidden="true"></ng-icon>
+                  </button>
+                  <button type="button" class="icon-action icon-action--danger" (click)="removeSupply(item.id)"
+                    aria-label="Eliminar insumo" title="Eliminar">
+                    <ng-icon name="bootstrapXCircleFill" size="15px" aria-hidden="true"></ng-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+    } @else {
+    <div class="table-card">
+      @if (filteredProviders().length === 0) {
+      <div class="empty-state">No hay proveedores que coincidan con la busqueda.</div>
+      } @else {
+      <div class="table-wrapper">
+        <table class="inventory-table" aria-label="Listado de proveedores">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>NIT</th>
+              <th>Ubicacion</th>
+              <th>Email</th>
+              <th>Telefono</th>
+              <th>Insumos asociados</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (provider of paginatedProviders(); track provider.id) {
+            <tr class="provider-row" tabindex="0" (click)="openProviderDetails(provider.id)"
+              (keydown)="onProviderRowKeydown($event, provider.id)">
+              <td>{{ provider.name }}</td>
+              <td>{{ provider.nit }}</td>
+              <td>{{ provider.city }}, {{ provider.country }}</td>
+              <td>{{ provider.contactEmail }}</td>
+              <td>{{ provider.contactPhone }}</td>
+              <td>
+                {{ getSupplierItemCount(provider.id) }}
+                {{ getSupplierItemCount(provider.id) === 1 ? 'insumo asociado' : 'insumos asociados' }}
+              </td>
+              <td>
+                <div class="actions-cell" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                  <button type="button" class="icon-action" (click)="openEditProviderModal(provider)"
+                    aria-label="Editar proveedor" title="Editar">
+                    <ng-icon name="bootstrapPencilSquare" size="15px" aria-hidden="true"></ng-icon>
+                  </button>
+                  <button type="button" class="icon-action icon-action--danger"
+                    (click)="openDeleteProviderModal(provider)" aria-label="Eliminar proveedor" title="Eliminar">
+                    <ng-icon name="bootstrapXCircleFill" size="15px" aria-hidden="true"></ng-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+    }
+
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Página {{ currentPage() }} de {{ totalPages() }}
+      </div>
+      <div class="pagination-actions">
+        <app-button type="button" variant="outline" size="small" [disabled]="currentPage() === 1"
+          (clicked)="prevPage()">
+          Anterior
+        </app-button>
+        <div class="pagination-pages">
+          @for (page of [].constructor(totalPages()); track $index) {
+          <button type="button" class="page-num" [class.page-num--active]="currentPage() === ($index + 1)"
+            (click)="setPage($index + 1)">
+            {{ $index + 1 }}
+          </button>
+          }
+        </div>
+        <app-button type="button" variant="outline" size="small" [disabled]="currentPage() === totalPages()"
+          (clicked)="nextPage()">
+          Siguiente
+        </app-button>
+      </div>
+    </div>
+  </section>
+</app-tenant-page-layout>
+
+<app-modal [open]="isAssignSupplierModalOpen()" title="Asignar Proveedor" size="small" class="assign-supplier-modal"
+  (closed)="closeAssignSupplierModal()">
+  @if (supplierSelectionOptions().length <= 1) { <div class="empty-supplier-state">
+    <p class="empty-supplier-title">No hay proveedores registrados</p>
+    <p class="empty-supplier-text">
+      Debes crear un proveedor antes de poder asignarlo al insumo
+      <strong>{{ selectedItemForSupplier()?.name }}</strong>.
+    </p>
+    <app-button type="button" variant="primary" (clicked)="closeAssignSupplierAndOpenCreateProvider()">
+      <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+      Crear proveedor
+    </app-button>
+    </div>
+    } @else {
+    <form [formGroup]="supplierAssignmentForm" (ngSubmit)="assignSupplier()" class="supply-form assign-supplier-form">
+      <div class="form-group mb-6">
+        <p class="mb-4 text-sm text-gray-500">Selecciona el proveedor para el item: <strong>{{
+            selectedItemForSupplier()?.name }}</strong></p>
+        <label for="assign-supplier" class="mb-2 block font-medium">Seleccionar Proveedor *</label>
+        <div class="select-wrapper">
+          <app-select id="assign-supplier" formControlName="supplierId"
+            [options]="supplierSelectionOptions()"></app-select>
+        </div>
+      </div>
+    </form>
+    }
+
+    @if (supplierSelectionOptions().length <= 1) { <div modal-footer class="modal-actions">
+      <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Cancelar</app-button>
+      </div>
+      } @else {
+      <div modal-footer class="modal-footer-custom">
+        <app-button type="button" variant="outline" (clicked)="closeAssignSupplierModal()">Asignar en otro
+          momento</app-button>
+        <app-button type="button" variant="primary" (clicked)="assignSupplier()"
+          [loading]="isSavingSupplierAssignment()">
+          Asignar
+        </app-button>
+      </div>
+      }
+</app-modal>
+
+<app-modal [open]="isSupplyModalOpen()" [title]="modalTitle()" size="medium" (closed)="closeSupplyModal()">
+  <form id="inventory-supply-form" class="supply-form" [formGroup]="supplyForm" (ngSubmit)="saveSupply()">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="supply-name">Nombre *</label>
+        <app-input id="supply-name" formControlName="name" placeholder="Ej. Jabon liquido"></app-input>
+      </div>
+
+      <div class="form-group">
+        <label for="supply-category">Categoria *</label>
+        <app-select id="supply-category" formControlName="categoryId" [options]="categoryOptions()"></app-select>
+      </div>
+
+      <div class="form-group">
+        <label for="supply-quantity">Cantidad *</label>
+        <app-input id="supply-quantity" type="number" formControlName="quantity" placeholder="0"></app-input>
+      </div>
+
+      <div class="form-group">
+        <label for="supply-unit">Unidad *</label>
+        <app-select id="supply-unit" formControlName="unit" [options]="unitOptions"></app-select>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="supply-minimum-stock">Stock minimo *</label>
+        <app-input id="supply-minimum-stock" type="number" formControlName="minimumStock"
+          placeholder="Ej. 20"></app-input>
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeSupplyModal()">Cancelar</app-button>
+    <app-button type="button" variant="primary" (clicked)="saveSupply()">{{ modalSubmitLabel() }}</app-button>
+  </div>
+</app-modal>
+
+<app-modal [open]="isProviderModalOpen()" [title]="providerModalTitle()" size="medium" (closed)="closeProviderModal()">
+  <form id="inventory-provider-form" class="provider-form" [formGroup]="providerForm" (ngSubmit)="saveProvider()">
+    <div class="form-grid">
+      <div class="form-group form-group--full">
+        <label for="provider-name">Nombre *</label>
+        <app-input id="provider-name" formControlName="name" [readonly]="providerNameReadonly()"></app-input>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="provider-nit">NIT *</label>
+        <app-input id="provider-nit" formControlName="nit" placeholder="NIT-123-456-789"
+          [readonly]="providerNameReadonly()"></app-input>
+      </div>
+
+      <div class="form-group">
+        <label for="provider-city">Ciudad *</label>
+        <app-select id="provider-city" formControlName="city" [options]="cityOptions"></app-select>
+      </div>
+
+      <div class="form-group">
+        <label for="provider-country">Pais *</label>
+        <app-select id="provider-country" formControlName="country" [options]="countryOptions"></app-select>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="provider-email">Email *</label>
+        <app-input id="provider-email" type="email" formControlName="contactEmail"></app-input>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="provider-phone">Telefono *</label>
+        <app-input id="provider-phone" formControlName="contactPhone"></app-input>
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeProviderModal()">Cancelar</app-button>
+    <app-button type="button" variant="primary" (clicked)="saveProvider()" [loading]="isSavingProvider()"
+      [disabled]="isSavingProvider()">
+      {{ providerModalSubmitLabel() }}
+    </app-button>
+  </div>
+</app-modal>
+
+<app-modal [open]="isProviderDetailsModalOpen()" title="Detalles del proveedor" size="small"
+  (closed)="closeProviderDetails()">
+  @if (selectedProvider()) {
+  <div class="provider-details-body">
+    <section class="provider-details-section">
+      <h3>Informacion de contacto</h3>
+      <ul class="provider-details-contact-list">
+        <li>
+          <ng-icon name="bootstrapGeoAlt" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.city }}, {{ selectedProvider()!.country }}</span>
+        </li>
+        <li>
+          <ng-icon name="bootstrapEnvelope" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.contactEmail }}</span>
+        </li>
+        <li>
+          <ng-icon name="bootstrapTelephone" size="14px" aria-hidden="true"></ng-icon>
+          <span>{{ selectedProvider()!.contactPhone }}</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="provider-details-section">
+      <h3>Insumos asociados</h3>
+
+      @if (selectedProviderSupplies().length === 0) {
+      <p class="provider-details-empty">Este proveedor aun no tiene insumos asignados.</p>
+      } @else {
+      <ul class="provider-details-supply-list">
+        @for (supply of selectedProviderSupplies(); track supply.id) {
+        <li>
+          <div>
+            <p class="provider-details-supply-name">{{ supply.name }}</p>
+            <p class="provider-details-supply-meta">Categoria: {{ supply.categoryName }}</p>
+          </div>
+          <span class="provider-details-supply-qty">{{ supply.quantity }} {{ supply.unit }}</span>
+        </li>
+        }
+      </ul>
+      }
+    </section>
+  </div>
+  }
+</app-modal>
+
+<app-modal [open]="isDeleteProviderModalOpen()" title="Confirmar Eliminación" size="small"
+  (closed)="closeDeleteProviderModal()">
+  <div class="delete-confirmation">
+    <div class="delete-icon-wrapper">
+      <ng-icon name="bootstrapExclamationTriangle" size="32px"></ng-icon>
+    </div>
+    <div class="delete-content">
+      <h3>¿Estás seguro?</h3>
+      @if (providerToDeleteItems().length > 0) {
+      <p>
+        El proveedor <strong>{{ providerToDelete()?.name }}</strong> tiene
+        <strong>{{ providerToDeleteItems().length }}</strong>
+        {{ providerToDeleteItems().length === 1 ? 'insumo asociado' : 'insumos asociados' }}.
+        Al eliminarlo, los insumos quedarán sin proveedor asignado. Esta acción no se puede deshacer.
+      </p>
+      } @else {
+      <p>
+        Estás a punto de eliminar al proveedor
+        <strong>{{ providerToDelete()?.name }}</strong>.
+        Esta acción no se puede deshacer.
+      </p>
+      }
+    </div>
+  </div>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeDeleteProviderModal()"
+      [disabled]="isDeletingProvider()">
+      Cancelar
+    </app-button>
+    <app-button type="button" variant="danger" (clicked)="confirmDeleteProvider()" [loading]="isDeletingProvider()"
+      [disabled]="isDeletingProvider()">
+      Eliminar Proveedor
+    </app-button>
+  </div>
+</app-modal>
+
+<app-modal [open]="isDeleteSupplyModalOpen()" title="Confirmar Eliminación" size="small"
+  (closed)="closeDeleteSupplyModal()">
+  <div class="delete-confirmation">
+    <div class="delete-icon-wrapper delete-icon-wrapper--danger">
+      <ng-icon name="bootstrapExclamationTriangle" size="32px"></ng-icon>
+    </div>
+    <div class="delete-content">
+      <h3>¿Eliminar insumo?</h3>
+      <p>
+        ¿Estás seguro que deseas eliminar el insumo <strong>{{ supplyToDelete()?.name }}</strong>?
+        Esta acción eliminará permanentemente el registro del inventario.
+      </p>
+    </div>
+  </div>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeDeleteSupplyModal()" [disabled]="isDeletingSupply()">
+      Cancelar
+    </app-button>
+    <app-button type="button" variant="danger" (clicked)="confirmDeleteSupply()" [loading]="isDeletingSupply()">
+      Eliminar Insumo
+    </app-button>
+  </div>
+</app-modal>
+
+<app-modal [open]="isCategoryModalOpen()" title="Nueva Categoria" size="small" (closed)="closeCategoryModal()">
+  <form id="inventory-category-form" class="category-form" [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+    <div class="form-grid">
+      <div class="form-group form-group--full">
+        <label for="category-name">Nombre *</label>
+        <app-input id="category-name" formControlName="name" placeholder="Ej. Amenities"></app-input>
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="category-description">Descripcion *</label>
+        <app-input id="category-description" formControlName="description"
+          placeholder="Breve descripcion de la categoria"></app-input>
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer class="modal-actions">
+    <app-button type="button" variant="secondary" (clicked)="closeCategoryModal()">Cancelar</app-button>
+    <app-button type="button" variant="primary" (clicked)="saveCategory()" [loading]="isSavingCategory()"
+      [disabled]="isSavingCategory()">
+      Guardar Categoria
+    </app-button>
+  </div>
+</app-modal>

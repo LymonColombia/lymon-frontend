@@ -37,7 +37,7 @@ describe('Feature: Property Creation', () => {
   beforeEach(() => {
     cy.injectManagerSession();
     manager = new ManagerFlow();
-    cy.visit('/properties');
+    cy.visit('/admin/properties');
   });
 
   afterEach(() => {

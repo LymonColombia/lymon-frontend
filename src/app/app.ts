@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { TokenRefreshSchedulerService } from '@/infrastructure/services/token-refresh-scheduler.service';
+import { TokenRefreshSchedulerService } from '@/infrastructure/tenant/services/token-refresh-scheduler.service';
 
 @Component({
   selector: 'app-root',

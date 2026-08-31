@@ -36,7 +36,7 @@ test.describe('Feature: Manager Authentication', () => {
       password: process.env.MANAGER_PASSWORD ?? 'SecurePass123!',
     });
 
-    await manager.page.waitForURL(/\/dashboard/);
+    await manager.page.waitForURL(/\/admin\/dashboard/);
 
     // Then
     await manager.expectManagerDashboard();

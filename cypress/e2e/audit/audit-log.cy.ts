@@ -16,7 +16,7 @@ describe('Feature: Audit Log', () => {
     cy.injectManagerSession();
     manager = new ManagerFlow();
     // Session already loaded — land on dashboard
-    cy.visit('/dashboard');
+    cy.visit('/admin/dashboard');
   });
 
   // ──────────────────────────────────────────────────────────────────────────

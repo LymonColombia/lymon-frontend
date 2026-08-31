@@ -19,7 +19,7 @@ export interface CreatePropertyData {
   email: string;
 }
 
-/** Navigate to /properties via the sidebar link */
+/** Navigate to /admin/properties via the sidebar link */
 export const openPropertiesPage = (): ActorTask => async (actor: Actor) => {
   await actor.browse.page.getByRole('link', { name: 'Propiedades y Unidades' }).click();
 };
@@ -92,12 +92,12 @@ export const submitPropertyForm = (): ActorTask => async (actor: Actor) => {
   await actor.browse.page.locator('button').filter({ hasText: 'Crear Propiedad' }).click();
 };
 
-/** Delete a property by exact name from the /properties page */
+/** Delete a property by exact name from the /admin/properties page */
 export const deletePropertyByName =
   (propertyName: string): ActorTask =>
   async (actor: Actor) => {
     const page = actor.browse.page;
-    await page.goto('/properties');
+    await page.goto('/admin/properties');
 
     const card = page.getByRole('article').filter({ hasText: propertyName });
 
