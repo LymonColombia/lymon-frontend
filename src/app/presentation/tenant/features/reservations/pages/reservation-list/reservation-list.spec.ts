@@ -44,7 +44,8 @@ describe('TenantReservations', () => {
           provide: TenantGuestRepository,
           useValue: {
             createGuest: () => of({ guestId: '1', fullName: 'Guest', primaryEmail: 'guest@test.com' }),
-            getGuests: () => of([])
+            getGuests: () => of([]),
+            findByIdNumber: () => of(null)
           }
         }
       ]
