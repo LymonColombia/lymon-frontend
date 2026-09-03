@@ -26,7 +26,7 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { FooterComponent } from '@/presentation/shared/components/footer/footer';
-import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
+import { SelectOption } from '@/presentation/shared/components/select/select';
 import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar';
 import { GetGuestReservationsUseCase } from '@/domain/guest/guest-reservation/use-cases/get-guest-reservations.use-case';
 import {
@@ -79,7 +79,6 @@ const SORT_ORDER_OPTIONS: SelectOption[] = [
     GuestNavComponent,
     ReservationCardComponent,
     RateReservationModalComponent,
-    SelectComponent,
     CalendarComponent,
   ],
   providers: [

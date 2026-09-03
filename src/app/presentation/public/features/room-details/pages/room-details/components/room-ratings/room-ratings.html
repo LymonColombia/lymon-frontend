@@ -44,7 +44,7 @@
       <article class="rating-card">
         <div class="rating-header">
           <div class="rating-guest">
-            <div class="guest-avatar">{{ (rating.guestName ?? '?').charAt(0).toUpperCase() }}</div>
+            <div class="guest-avatar">{{ rating.guestName.charAt(0).toUpperCase() }}</div>
             <div class="guest-info">
               <span class="guest-name">{{ rating.guestName }}</span>
               <span class="rating-date">{{ formatDate(rating.createdAt) }}</span>
