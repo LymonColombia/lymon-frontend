@@ -1,11 +1,13 @@
+export interface CreateTenantGuestIdentity {
+  documentNumber: string;
+}
+
 export interface CreateTenantGuestRequest {
   fullName: string;
   primaryEmail: string;
-  identity: null;
+  identity: CreateTenantGuestIdentity | null;
   firstName: string;
   lastName: string;
-  emails: never[];
-  phones: never[];
   tags: never[];
   preferences: never[];
 }
@@ -22,8 +24,13 @@ export interface TenantGuest {
   name?: string;
   primaryEmail?: string;
   email?: string;
+  idNumber?: string;
 }
 
 export interface GetTenantGuestsResponse {
   data: TenantGuest[];
+}
+
+export interface FindTenantGuestByIdNumberParams {
+  idNumber: string;
 }

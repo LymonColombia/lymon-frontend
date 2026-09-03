@@ -24,4 +24,10 @@ export class TenantGuestRepositoryImpl extends TenantGuestRepository {
         map((res) => res.data || [])
       );
   }
+
+  findByIdNumber(idNumber: string): Observable<TenantGuest | null> {
+    return this.http
+      .get<GetTenantGuestsResponse>(GUESTS_URL, { params: { documentNumber: idNumber } })
+      .pipe(map((res) => (res.data && res.data[0]) || null));
+  }
 }

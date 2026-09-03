@@ -23,13 +23,13 @@
           1
           }
         </div>
-        <span>Verificación</span>
+        <span>Identificación</span>
       </div>
 
       <div class="step-line" [class.completed]="currentStep() > 1"></div>
 
       <div class="step-item" [class.active]="currentStep() === 2" [class.completed]="currentStep() > 2"
-        [class.disabled]="guestIsRegistered() === true">
+        [class.disabled]="guestExists() === true">
         <div class="step-icon">
           @if (currentStep() > 2) {
           <ng-icon name="bootstrapCheck"></ng-icon>
@@ -55,19 +55,44 @@
           <div class="info-icon-wrapper">
             <ng-icon name="bootstrapPersonCheck" class="info-icon"></ng-icon>
           </div>
-          <h3>¿El huésped ya está registrado?</h3>
-          <p>Si el huésped ya ha visitado nuestras propiedades anteriormente, sus datos ya estarán en el sistema.</p>
+          <h3>Identifica al huésped</h3>
+          <p>Ingresa el número de identificación. El sistema revisa si el huésped ya está registrado.</p>
 
-          <div class="action-buttons">
-            <button class="btn btn-secondary" (click)="setGuestRegistered(false)">
-              <ng-icon name="bootstrapPersonPlus"></ng-icon>
-              No, registrar nuevo
-            </button>
-            <button class="btn btn-primary" (click)="setGuestRegistered(true)">
-              <ng-icon name="bootstrapCheck"></ng-icon>
-              Sí, ya está registrado
-            </button>
-          </div>
+          <form class="wizard-form id-lookup-form" (ngSubmit)="lookupGuest()">
+            @if (lookupState() === 'error') {
+            <div class="error-message">
+              <ng-icon name="bootstrapInfoCircle"></ng-icon>
+              {{ lookupErrorMessage() }}
+            </div>
+            }
+            <div class="form-group full-width">
+              <label for="idNumber">Número de Identificación</label>
+              <input type="text" id="idNumber" name="idNumber" [ngModel]="guestIdNumber()"
+                (ngModelChange)="onIdNumberInput($event)" placeholder="Ej. 1020304050"
+                [disabled]="lookupState() === 'loading'" autocomplete="off">
+              @if (idNumberFormatError()) {
+              <span class="field-error">{{ idNumberFormatError() }}</span>
+              }
+            </div>
+
+            <div class="form-group full-width action-buttons">
+              @if (lookupState() === 'error') {
+              <button type="submit" class="btn btn-secondary" [disabled]="lookupState() === 'loading'">
+                <ng-icon name="bootstrapArrowRepeat"></ng-icon>
+                Reintentar
+              </button>
+              } @else {
+              <button type="submit" class="btn btn-primary" [disabled]="lookupState() === 'loading'">
+                @if (lookupState() === 'loading') {
+                Buscando...
+                } @else {
+                <ng-icon name="bootstrapSearch"></ng-icon>
+                Buscar
+                }
+              </button>
+              }
+            </div>
+          </form>
         </div>
       </section>
       }
@@ -86,6 +111,11 @@
             {{ errorMessage() }}
           </div>
           }
+          <div class="form-group full-width">
+            <label for="regIdNumber">Número de Identificación</label>
+            <input type="text" id="regIdNumber" [(ngModel)]="guestForm.idNumber" name="regIdNumber" readonly
+              class="readonly-input">
+          </div>
           <div class="form-group full-width">
             <label for="fullName">Nombre Completo</label>
             <input type="text" id="fullName" [(ngModel)]="guestForm.fullName" name="fullName" placeholder="Ej. Juan Pérez"
@@ -118,9 +148,9 @@
             <label for="guestSelect">Seleccionar Huésped</label>
             <div class="select-wrapper">
               <select id="guestSelect" [(ngModel)]="reservationForm.guestId" name="guestId"
-                [disabled]="guestIsRegistered() === false">
+                [disabled]="guestExists() === false">
                 <option value="" disabled selected>Selecciona un huésped...</option>
-                @if (guestIsRegistered() === false) {
+                @if (guestExists() === false) {
                 <option [value]="reservationForm.guestId" selected>{{ guestForm.fullName }} (Nuevo)</option>
                 }
                 @for (guest of guests(); track guest.id) {

@@ -5,20 +5,24 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { ShiftDatePickerComponent } from '@/presentation/tenant/components/shift-date-picker/shift-date-picker';
 import {
   bootstrapCheck,
-  bootstrapPersonPlus,
   bootstrapPersonCheck,
   bootstrapCalendarPlus,
   bootstrapX,
   bootstrapArrowLeft,
   bootstrapArrowRight,
-  bootstrapInfoCircle
+  bootstrapInfoCircle,
+  bootstrapSearch,
+  bootstrapArrowRepeat
 } from '@ng-icons/bootstrap-icons';
 import { CreateTenantGuestUseCase } from '@/domain/tenant/tenant-guest/use-cases/create-tenant-guest.use-case';
 import { CreateReservationUseCase } from '@/domain/shared/reservation/use-cases/create-reservation.use-case';
 import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
 import { GetTenantGuestsUseCase } from '@/domain/tenant/tenant-guest/use-cases/get-tenant-guests.use-case';
+import { FindTenantGuestByIdNumberUseCase } from '@/domain/tenant/tenant-guest/use-cases/find-tenant-guest-by-id-number.use-case';
 import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
+
+const ID_NUMBER_PATTERN = /^[A-Za-z0-9-]{5,15}$/;
 
 @Component({
   selector: 'app-create-reservation-wizard',
@@ -30,13 +34,14 @@ import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
   viewProviders: [
     provideIcons({
       bootstrapCheck,
-      bootstrapPersonPlus,
       bootstrapPersonCheck,
       bootstrapCalendarPlus,
       bootstrapX,
       bootstrapArrowLeft,
       bootstrapArrowRight,
-      bootstrapInfoCircle
+      bootstrapInfoCircle,
+      bootstrapSearch,
+      bootstrapArrowRepeat
     })
   ]
 })
@@ -46,18 +51,25 @@ export class CreateReservationWizardComponent implements OnInit {
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
   private readonly getTenantGuestsUseCase = inject(GetTenantGuestsUseCase);
+  private readonly findTenantGuestByIdNumberUseCase = inject(FindTenantGuestByIdNumberUseCase);
 
   currentStep = signal(1);
   closeWizard = output<void>();
   reservationCreated = output<void>();
 
-  guestIsRegistered = signal<boolean | null>(null);
+  guestExists = signal<boolean | null>(null);
+
+  guestIdNumber = signal('');
+  idNumberFormatError = signal<string | null>(null);
+  lookupState = signal<'idle' | 'loading' | 'error'>('idle');
+  lookupErrorMessage = signal<string | null>(null);
 
   isSubmitting = signal(false);
   isCreatingGuest = signal(false);
   errorMessage = signal<string | null>(null);
 
   guestForm = {
+    idNumber: '',
     fullName: '',
     primaryEmail: ''
   };
@@ -111,24 +123,68 @@ export class CreateReservationWizardComponent implements OnInit {
   }
 
   nextStep() {
-    if (this.currentStep() === 1 && this.guestIsRegistered() === true) {
-      this.currentStep.set(3);
-    } else {
-      this.currentStep.update(s => Math.min(s + 1, 3));
-    }
+    this.currentStep.update(s => Math.min(s + 1, 3));
   }
 
   prevStep() {
-    if (this.currentStep() === 3 && this.guestIsRegistered() === true) {
+    if (this.currentStep() === 3 && this.guestExists() === true) {
       this.currentStep.set(1);
     } else {
       this.currentStep.update(s => Math.max(s - 1, 1));
     }
+
+    if (this.currentStep() === 1) {
+      this.resetLookup();
+    }
   }
 
-  setGuestRegistered(status: boolean) {
-    this.guestIsRegistered.set(status);
-    this.nextStep();
+  onIdNumberInput(value: string) {
+    this.guestIdNumber.set(value);
+    this.idNumberFormatError.set(null);
+  }
+
+  lookupGuest() {
+    const idNumber = this.guestIdNumber().trim();
+
+    if (!ID_NUMBER_PATTERN.test(idNumber)) {
+      this.idNumberFormatError.set('Ingresa un número de identificación válido (5 a 15 caracteres alfanuméricos).');
+      return;
+    }
+
+    this.idNumberFormatError.set(null);
+    this.lookupState.set('loading');
+    this.lookupErrorMessage.set(null);
+
+    this.findTenantGuestByIdNumberUseCase.execute(idNumber).subscribe({
+      next: (guest) => {
+        this.lookupState.set('idle');
+
+        if (guest) {
+          this.guestExists.set(true);
+          this.reservationForm.guestId = guest.id;
+          this.guestForm.idNumber = idNumber;
+          this.guestForm.fullName = guest.fullName || guest.name || '';
+          this.guestForm.primaryEmail = guest.primaryEmail || guest.email || '';
+          this.currentStep.set(3);
+        } else {
+          this.guestExists.set(false);
+          this.guestForm.idNumber = idNumber;
+          this.currentStep.set(2);
+        }
+      },
+      error: (err) => {
+        this.lookupState.set('error');
+        this.lookupErrorMessage.set(this.extractErrorMessage(err, 'No se pudo verificar el número de identificación. Por favor intenta de nuevo.'));
+        console.error('Error looking up guest by id number:', err);
+      }
+    });
+  }
+
+  private resetLookup() {
+    this.guestExists.set(null);
+    this.lookupState.set('idle');
+    this.lookupErrorMessage.set(null);
+    this.idNumberFormatError.set(null);
   }
 
   registerAndNext() {
@@ -225,13 +281,13 @@ export class CreateReservationWizardComponent implements OnInit {
     return null;
   }
 
-  private extractErrorMessage(err: unknown): string {
+  private extractErrorMessage(err: unknown, fallback = 'Error al crear la reserva. Por favor intenta de nuevo.'): string {
     if (typeof err === 'object' && err !== null) {
       const error = err as { message?: string; error?: { message?: string }; msg?: string };
-      return error.message || error.error?.message || error.msg || 'Error al crear la reserva. Por favor intenta de nuevo.';
+      return error.message || error.error?.message || error.msg || fallback;
     }
 
-    return 'Error al crear la reserva. Por favor intenta de nuevo.';
+    return fallback;
   }
 
 }

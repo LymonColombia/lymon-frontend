@@ -6,6 +6,7 @@ import { CreateTenantGuestResponse } from '@/domain/tenant/tenant-guest/tenant-g
 export interface CreateTenantGuestInput {
   fullName: string;
   primaryEmail: string;
+  idNumber?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -13,14 +14,14 @@ export class CreateTenantGuestUseCase {
   private readonly tenantGuestRepository = inject(TenantGuestRepository);
 
   execute(input: CreateTenantGuestInput): Observable<CreateTenantGuestResponse> {
+    const documentNumber = input.idNumber?.trim();
+
     return this.tenantGuestRepository.createGuest({
       fullName: input.fullName,
       primaryEmail: input.primaryEmail,
-      identity: null,
+      identity: documentNumber ? { documentNumber } : null,
       firstName: '',
       lastName: '',
-      emails: [],
-      phones: [],
       tags: [],
       preferences: [],
     });
