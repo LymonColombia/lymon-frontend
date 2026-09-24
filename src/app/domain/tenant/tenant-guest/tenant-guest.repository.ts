@@ -4,4 +4,5 @@ import { CreateTenantGuestRequest, CreateTenantGuestResponse, TenantGuest } from
 export abstract class TenantGuestRepository {
   abstract createGuest(data: CreateTenantGuestRequest): Observable<CreateTenantGuestResponse>;
   abstract getGuests(): Observable<TenantGuest[]>;
+  abstract findByIdNumber(idNumber: string): Observable<TenantGuest | null>;
 }

@@ -324,6 +324,16 @@
   font-weight: 600;
 }
 
+.field-error {
+  font-size: 0.75rem;
+  color: var(--color-error-text, #b91c1c);
+}
+
+.id-lookup-form {
+  max-width: 320px;
+  margin: 0 auto;
+}
+
 .input-hint {
   font-size: 0.7rem;
   color: var(--color-text-tertiary, #94a3b8);

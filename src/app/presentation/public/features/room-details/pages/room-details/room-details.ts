@@ -24,7 +24,6 @@ import { BreadcrumbComponent, BreadcrumbItem } from '@/presentation/shared/compo
 import { RoomHeroComponent } from './components/room-hero/room-hero';
 import { RoomGeneralInfoComponent } from './components/room-general-info/room-general-info';
 import { RoomAmenitiesComponent } from './components/room-amenities/room-amenities';
-import { RoomPoliciesComponent } from './components/room-policies/room-policies';
 import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar';
 import { GuestStepperComponent } from '@/presentation/public/features/room-details/pages/room-details/components/guest-stepper/guest-stepper';
 import { RoomRatingsComponent } from './components/room-ratings/room-ratings';
@@ -51,7 +50,6 @@ import { formatPrice } from '@/presentation/shared/utils/price-formatter';
     RoomHeroComponent,
     RoomGeneralInfoComponent,
     RoomAmenitiesComponent,
-    RoomPoliciesComponent,
     CalendarComponent,
     GuestStepperComponent,
     RoomRatingsComponent,
