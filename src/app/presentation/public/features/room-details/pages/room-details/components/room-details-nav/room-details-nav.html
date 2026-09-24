@@ -1,0 +1,121 @@
+<nav class="room-details-nav">
+  <div class="nav-inner">
+
+    <div class="brand-group">
+      <a routerLink="/booking" class="brand-link">
+        <img
+          ngSrc="images/LyHost.svg"
+          width="180"
+          height="42"
+          priority
+          alt="LyHost"
+          class="brand-logo"
+        />
+      </a>
+    </div>
+
+    <div class="nav-center">
+      <div class="nav-date-trigger-wrapper">
+        <div class="mini-search-field">
+          <button
+            class="nav-date-trigger"
+            type="button"
+            (click)="toggleCalendar()"
+            [attr.aria-expanded]="isCalendarOpen()"
+            aria-label="Seleccionar fecha de entrada">
+            <ng-icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+            <span [class.is-placeholder]="!checkInDisplay()">{{ checkInDisplay() ?? 'Check-in' }}</span>
+          </button>
+        </div>
+
+        <div class="mini-search-field">
+          <button
+            class="nav-date-trigger"
+            type="button"
+            (click)="toggleCalendar()"
+            [attr.aria-expanded]="isCalendarOpen()"
+            aria-label="Seleccionar fecha de salida">
+            <ng-icon class="field-icon" name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+            <span [class.is-placeholder]="!checkOutDisplay()">{{ checkOutDisplay() ?? 'Check-out' }}</span>
+          </button>
+        </div>
+
+        <div class="nav-cal-dropdown" [class.is-open]="isCalendarOpen()" aria-label="Calendario de fechas">
+          <app-calendar
+            [initialStartDate]="checkIn() ?? null"
+            [initialEndDate]="checkOut() ?? null"
+            (dateRangeChange)="onDateRangeChange($event)"
+            (closeRequested)="closeCalendar()">
+          </app-calendar>
+        </div>
+      </div>
+
+      <app-guest-stepper
+        [value]="guests()"
+        [min]="MIN_GUESTS"
+        [max]="MAX_GUESTS"
+        (valueChange)="guests.set($event)"
+      ></app-guest-stepper>
+
+      <button class="mini-search-btn" type="button" (click)="onSearch()" aria-label="Buscar">
+        <ng-icon name="bootstrapSearch" size="14px" aria-hidden="true" />
+      </button>
+    </div>
+
+    <div class="nav-actions">
+      @if (isAuthenticated()) {
+        <div class="nav-profile-wrapper">
+          <div
+            class="nav-profile"
+            [class.nav-profile--open]="isDropdownOpen()"
+            (click)="toggleDropdown()"
+          >
+            <div class="profile-avatar" aria-hidden="true">{{ initials() }}</div>
+            <div class="profile-info">
+              <span class="profile-name">{{ profileLabel() }}</span>
+              @if (guestEmail()) {
+                <span class="profile-email">{{ guestEmail() }}</span>
+              }
+            </div>
+            <ng-icon
+              name="bootstrapChevronDown"
+              size="13px"
+              class="profile-chevron"
+              [class.profile-chevron--open]="isDropdownOpen()"
+              aria-hidden="true"
+            />
+          </div>
+
+          @if (isDropdownOpen()) {
+            <div class="profile-dropdown" role="menu" aria-label="Profile actions">
+              <button class="profile-dropdown-option" type="button" role="menuitem" (click)="onMyReservations()">
+                <ng-icon name="bootstrapCalendar2Check" size="15px" aria-hidden="true" />
+                Mis reservas
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="profile-dropdown-option profile-dropdown-option--danger" type="button" role="menuitem" (click)="onLogout()">
+                <ng-icon name="bootstrapBoxArrowRight" size="15px" aria-hidden="true" />
+                Cerrar sesión
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <app-button variant="primary" size="medium" (clicked)="loginClicked.emit()">
+          <ng-icon name="bootstrapBoxArrowInRight" size="18px" aria-hidden="true" />
+          Iniciar sesión
+        </app-button>
+      }
+
+      <a
+        class="cart-action"
+        routerLink="/guest/cart"
+        aria-label="Ir al carrito"
+        title="Ir al carrito"
+      >
+        <ng-icon name="bootstrapCart" size="18px" aria-hidden="true" />
+      </a>
+    </div>
+
+  </div>
+</nav>

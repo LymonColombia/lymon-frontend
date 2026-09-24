@@ -1,0 +1,126 @@
+:host {
+  display: block;
+}
+
+.lyhost-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-fixed);
+  border-bottom: 1px solid var(--color-border-light);
+  background: color-mix(in srgb, var(--color-bg-primary) 85%, transparent);
+  backdrop-filter: blur(var(--spacing-xl));
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: calc(var(--spacing-6xl) + var(--spacing-sm));
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
+  height: calc(var(--spacing-4xl) + var(--spacing-xs));
+  width: auto;
+  display: block;
+}
+
+.desktop-links {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4xl);
+}
+
+.desktop-link {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.desktop-link:hover {
+  color: var(--color-text-primary);
+}
+
+.desktop-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.mobile-toggle {
+  display: none;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.mobile-panel {
+  border-top: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-bg-primary);
+  padding: var(--spacing-lg);
+  animation: lyhost-slide-down var(--transition-base);
+}
+
+.mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.mobile-link {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  padding: var(--spacing-sm) 0;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.mobile-actions {
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+@keyframes lyhost-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--spacing-sm) * -1));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 960px) {
+  .desktop-links,
+  .desktop-actions {
+    display: none;
+  }
+
+  .mobile-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

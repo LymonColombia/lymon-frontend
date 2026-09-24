@@ -1,0 +1,35 @@
+<div class="gallery">
+  <app-button class="drop-file">
+    <ng-icon name="bootstrapCloudUpload" size="16px"></ng-icon>
+    <span class="drop-label"> Subir fotos</span>
+    <input
+      #fileInput
+      type="file"
+      multiple
+      accept="image/jpeg,image/png,image/webp,image/gif"
+      class="file-input"
+      [attr.aria-label]="label()"
+      (change)="onFilesSelected($event)"
+    />
+  </app-button>
+
+  @if (keptItems().length || newEntries().length) {
+  <div class="gallery-grid">
+    @for (item of keptItems(); track item.key) {
+    <div class="gallery-thumb">
+      <img [src]="item.url" loading="lazy" alt="Foto" />
+      <button type="button" class="thumb-remove" (click)="removeExisting($index)" aria-label="Quitar foto">
+        <ng-icon name="bootstrapTrash" size="14px"></ng-icon>
+      </button>
+    </div>
+    } @for (entry of newEntries(); track entry.previewUrl) {
+    <div class="gallery-thumb">
+      <img [src]="entry.previewUrl" loading="lazy" alt="Foto nueva" />
+      <button type="button" class="thumb-remove" (click)="removeNew($index)" aria-label="Quitar foto">
+        <ng-icon name="bootstrapTrash" size="14px"></ng-icon>
+      </button>
+    </div>
+    }
+  </div>
+  }
+</div>

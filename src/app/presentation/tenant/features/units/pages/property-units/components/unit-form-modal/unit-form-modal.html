@@ -1,0 +1,154 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="unit-form">
+  @if (errorMessage()) {
+  <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+
+  <div class="form-card">
+    <div class="section-title">Información Básica</div>
+
+    <div class="form-group">
+      <app-field-label label="Nombre de la habitación" forId="unit-name"
+        description="Identificador visible para los huéspedes. Ej: Suite Deluxe, Habitación Doble, Cabaña Río."
+        [required]="true" />
+      <app-input id="unit-name" type="text" formControlName="name" placeholder="Deluxe Ocean View Suite" />
+      @if (form.controls['name'].invalid && form.controls['name'].touched) {
+      <span class="field-error">Campo requerido</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <app-field-label label="Descripción" forId="unit-description"
+        description="Detalle de las características de la habitación que verán los huéspedes al momento de reservar."
+        [required]="true" />
+      <textarea id="unit-description" aria-label="Descripción" formControlName="description" rows="3"
+        placeholder="Habitación con vista al mar..."
+        [class.input-invalid]="form.controls['description'].invalid && form.controls['description'].touched"></textarea>
+      @if (form.controls['description'].invalid && form.controls['description'].touched) {
+      <span class="field-error">Campo requerido</span>
+      }
+    </div>
+
+    <div class="form-row three-col">
+      <div class="form-group">
+        <app-field-label label="Precio por Noche" forId="unit-price"
+          description="Tarifa base por noche para este tipo de habitación, en la moneda configurada en tu propiedad."
+          [required]="true" />
+        <app-input id="unit-price" type="currency" formControlName="pricePerNight" placeholder="150000" />
+        @if (form.controls['pricePerNight'].invalid && form.controls['pricePerNight'].touched) {
+        <span class="field-error">
+          {{ form.controls['pricePerNight'].errors?.['min'] ? 'Debe ser mayor a 0' : 'Campo requerido' }}
+        </span>
+        }
+      </div>
+      <div class="form-group">
+        <app-field-label label="Inventario" forId="unit-inventory"
+          description="Cuántas habitaciones físicas existen con estas mismas características. Ej: si tenés 5 habitaciones dobles idénticas, escribí 5."
+          [required]="true" />
+        <app-input id="unit-inventory" type="number" formControlName="inventoryCount" />
+        @if (form.controls['inventoryCount'].invalid && form.controls['inventoryCount'].touched) {
+        <span class="field-error">
+          {{ form.controls['inventoryCount'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+        </span>
+        }
+      </div>
+      <div class="form-group">
+        <app-field-label label="Máximo de Huéspedes" forId="unit-max-guests"
+          description="Cantidad máxima de personas que pueden alojarse en esta habitación, incluyendo niños."
+          [required]="true" />
+        <app-input id="unit-max-guests" type="number" formControlName="maxGuests" />
+        @if (form.controls['maxGuests'].invalid && form.controls['maxGuests'].touched) {
+        <span class="field-error">
+          {{ form.controls['maxGuests'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+        </span>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <app-field-label label="Cantidad de Baños" forId="unit-bathrooms"
+        description="Número de baños privativos que tiene esta habitación." [required]="true" />
+      <app-input id="unit-bathrooms" type="number" formControlName="bathroomsCount" />
+      @if (form.controls['bathroomsCount'].invalid && form.controls['bathroomsCount'].touched) {
+      <span class="field-error">
+        {{ form.controls['bathroomsCount'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="section-title">Camas</div>
+
+    <div formArrayName="beds" class="beds-list">
+      @for (bed of beds.controls; track $index; let bedIndex = $index) {
+      <div [formGroupName]="bedIndex" class="bed-row">
+        <div class="form-group">
+          <app-field-label label="Tipo de cama" [forId]="'bed-type-' + bedIndex"
+            description="Categoría de la cama. Ej: King, Queen, Doble, Sencilla." [required]="true" />
+          <app-select [id]="'bed-type-' + bedIndex" [options]="bedTypeOptions" formControlName="type" />
+          @if (getBedAt(bedIndex).controls['type'].invalid && getBedAt(bedIndex).controls['type'].touched) {
+          <span class="field-error">Campo requerido</span>
+          }
+        </div>
+        <div class="form-group">
+          <app-field-label label="Cantidad" [forId]="'bed-count-' + bedIndex"
+            description="Cuántas camas de este tipo hay en la habitación." [required]="true" />
+          <app-input [id]="'bed-count-' + bedIndex" type="number" formControlName="count" />
+          @if (getBedAt(bedIndex).controls['count'].invalid && getBedAt(bedIndex).controls['count'].touched) {
+          <span class="field-error">
+            {{ getBedAt(bedIndex).controls['count'].errors?.['min'] ? 'Mínimo 1' : 'Campo requerido' }}
+          </span>
+          }
+        </div>
+        <app-button type="button" variant="secondary" size="medium" [disabled]="beds.length === 1"
+          (clicked)="removeBed(bedIndex)">
+          Eliminar
+        </app-button>
+      </div>
+      }
+    </div>
+
+    @if (beds.invalid && beds.touched) {
+    <span class="field-error">Agrega al menos un tipo de cama</span>
+    }
+
+    <app-button type="button" variant="outline" size="small" (clicked)="addBed()">
+      + Agregar tipo de cama
+    </app-button>
+  </div>
+
+  <div class="form-card">
+    <div class="section-title">
+      <span>Galería de fotos</span>
+      <span class="optional">(Opcional)</span>
+    </div>
+    <app-media-gallery-input [initialItems]="galleryInitialItems()"
+      (selectionChange)="onGallerySelectionChange($event)" />
+  </div>
+
+  <div class="form-card">
+    <div class="section-title">
+      <span>Amenidades</span>
+      <app-tooltip ariaLabel="Ayuda amenidades">
+        <strong>Amenidades</strong>
+        Servicios y comodidades incluidas. Ej: WiFi, TV, Aire acondicionado, Minibar.
+      </app-tooltip>
+      <span class="optional">(Opcional)</span>
+    </div>
+    <div class="amenities-grid">
+      @for (amenity of AMENITY_OPTIONS; track amenity) {
+      <button type="button" class="amenity-chip" [class.selected]="isAmenitySelected(amenity)"
+        (click)="toggleAmenity(amenity)">
+        {{ amenity }}
+      </button>
+      }
+    </div>
+  </div>
+
+  <div class="form-actions" modal-footer>
+    <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
+    <app-button type="submit" variant="primary" [loading]="isSubmitting()" [disabled]="form.invalid || isSubmitting()">
+      {{ isEditMode() ? 'Guardar cambios' : 'Crear Habitación' }}
+    </app-button>
+  </div>
+</form>

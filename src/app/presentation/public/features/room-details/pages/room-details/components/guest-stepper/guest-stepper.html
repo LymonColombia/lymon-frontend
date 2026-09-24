@@ -1,0 +1,29 @@
+<div class="guest-stepper" [class.variant-block]="variant() === 'block'">
+  <button
+    type="button"
+    class="stepper-btn"
+    (click)="decrement()"
+    [disabled]="value() <= min()"
+    aria-label="Reducir huéspedes"
+  >−</button>
+
+  @if (variant() === 'block') {
+    <span class="stepper-value">
+      <ng-icon name="bootstrapPeopleFill" size="16px" aria-hidden="true"></ng-icon>
+      <span class="stepper-count">{{ guestLabel() }}</span>
+    </span>
+  } @else {
+    <span class="stepper-value">
+      <ng-icon name="bootstrapPeopleFill" size="13px" aria-hidden="true"></ng-icon>
+      <span class="stepper-count">{{ value() }}</span>
+    </span>
+  }
+
+  <button
+    type="button"
+    class="stepper-btn"
+    (click)="increment()"
+    [disabled]="value() >= max()"
+    aria-label="Aumentar huéspedes"
+  >+</button>
+</div>

@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: 0;
+  font-size: var(--font-size-sm);
+}
+
+.breadcrumb a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.breadcrumb a:hover {
+  color: var(--color-primary-dark);
+  background-color: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-primary));
+}
+
+.separator {
+  color: var(--color-border-light);
+  user-select: none;
+}
+
+.current {
+  color: var(--color-primary-dark);
+  font-weight: var(--font-weight-semibold);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background-color: color-mix(in srgb, var(--color-success) 12%, var(--color-bg-primary));
+}

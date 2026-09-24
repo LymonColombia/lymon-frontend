@@ -1,0 +1,45 @@
+<booking-nav
+  [isAuthenticated]="guestTokenService.isAuthenticated()"
+  [guestEmail]="guestEmail"
+  (loginClicked)="onGuestLogin()"
+  (logoutClicked)="onGuestLogout()"
+  (myReservationsClicked)="onMyReservations()">
+</booking-nav>
+
+<booking-hero (search)="onHeroSearch($event)"></booking-hero>
+
+<section class="results-section">
+  <div class="results-container">
+    <booking-toolbar
+      [resultsCount]="displayedRooms().length"
+      [sortBy]="sortBy()"
+      (searchQueryChange)="onSearchQueryChange($event)"
+      (sortChange)="onSortChange($event)">
+    </booking-toolbar>
+
+    @if (isRoomsLoading()) {
+      <div class="rooms-loading">Cargando habitaciones...</div>
+    } @else if (displayedRooms().length === 0) {
+      <booking-empty-state></booking-empty-state>
+    } @else {
+      <div class="rooms-grid">
+        @for (room of displayedRooms(); track room.id) {
+          <booking-room-card
+            [room]="room"
+            [isLiked]="likedRoomIds().has(room.id)"
+            (viewDetails)="goToRoomDetails($event)"
+            (toggleLike)="onToggleLike($event)">
+          </booking-room-card>
+        }
+      </div>
+
+      <booking-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChange)="onPageChange($event)">
+      </booking-pagination>
+    }
+  </div>
+</section>
+
+<app-footer></app-footer>

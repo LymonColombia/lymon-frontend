@@ -1,0 +1,34 @@
+<section id="caracteristicas" class="lyhost-features">
+  <div class="container">
+    <div class="features-header">
+      <div class="section-chip">
+        <span>ECOSISTEMA</span>
+      </div>
+      <h2>
+        Tu hotel. Tus reglas.<br />
+        <span>Sin intermediarios.</span>
+      </h2>
+      <p>
+        Gestiona reservas, huéspedes, turnos y finanzas desde un solo lugar. Sin excel, sin caos, sin comisiones.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      @for (feature of features; track feature.title; let i = $index) {
+        <article
+          class="feature-card"
+          [class.feature-card-hover]="hoveredIndex() === i"
+          (mouseenter)="setHoveredIndex(i)"
+          (mouseleave)="setHoveredIndex(null)"
+        >
+          <div class="feature-icon" [class.feature-icon-hover]="hoveredIndex() === i">
+            <ng-icon [name]="feature.icon" size="24" color="var(--color-primary)" />
+          </div>
+
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>

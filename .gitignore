@@ -39,9 +39,19 @@ testem.log
 /typings
 __screenshots__/
 
-# Environment
-/src/environments/environment.ts
-
 # System files
 .DS_Store
 Thumbs.db
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+.env
+
+# Claude
+CLAUDE.md
+/.claude

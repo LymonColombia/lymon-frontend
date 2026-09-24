@@ -1,0 +1,90 @@
+<dialog class="tutorial-overlay" open aria-modal="false" aria-labelledby="tutorial-title">
+  <div class="tutorial-header">
+    <div class="tutorial-progress">
+      <span class="tutorial-progress-text">Paso {{ currentStep() + 1 }} de {{ totalSteps }}</span>
+      <div class="tutorial-progress-bar">
+        <div class="tutorial-progress-fill" [style.width.%]="progress()"></div>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="tutorial-close"
+      aria-label="Salir del tutorial"
+      (click)="onAbandon()"
+    >
+      <ng-icon name="bootstrapX" size="18px"></ng-icon>
+    </button>
+  </div>
+
+  <div class="tutorial-body">
+    <div class="tutorial-icon">
+      <ng-icon [name]="step().icon" size="32px"></ng-icon>
+    </div>
+
+    <h2 id="tutorial-title" class="tutorial-title">{{ step().title }}</h2>
+    <p class="tutorial-description">{{ step().description }}</p>
+  </div>
+
+  <div class="tutorial-footer" [class.tutorial-footer--two]="showBackButton()">
+    @if (showBackButton()) {
+      <app-button
+        type="button"
+        variant="ghost"
+        fullWidth
+        (clicked)="onPrevious()"
+      >
+        Atrás
+      </app-button>
+    }
+
+    @if (isActionStep()) {
+      <app-button
+        type="button"
+        variant="secondary"
+        fullWidth
+        (clicked)="onSkip()"
+      >
+        Saltar
+      </app-button>
+    } @else if (isLastStep()) {
+      <app-button
+        type="button"
+        variant="primary"
+        fullWidth
+        (clicked)="onFinish()"
+      >
+        Finalizar tutorial
+      </app-button>
+    } @else {
+      <app-button
+        type="button"
+        variant="primary"
+        fullWidth
+        (clicked)="onNext()"
+      >
+        Siguiente
+      </app-button>
+    }
+  </div>
+</dialog>
+
+<app-modal
+  [open]="showAbandonConfirm()"
+  title="¿Salir del tutorial?"
+  size="small"
+  (closed)="cancelAbandon()"
+>
+  <p class="tutorial-abandon-text">
+    Podés retomarlo desde el inicio la próxima vez que inicies sesión.
+  </p>
+
+  <div modal-footer class="tutorial-abandon-actions">
+    <app-button type="button" variant="secondary" (clicked)="cancelAbandon()">
+      Cancelar
+    </app-button>
+    <app-button type="button" variant="danger" (clicked)="confirmAbandon()">
+      Salir
+    </app-button>
+  </div>
+</app-modal>

@@ -1,0 +1,125 @@
+:host {
+  display: block;
+}
+
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  height: 100%;
+}
+
+.carousel-frame {
+  position: relative;
+  width: 100%;
+  height: var(--carousel-frame-height);
+  aspect-ratio: var(--carousel-aspect-ratio, 4 / 3);
+  overflow: hidden;
+  border-radius: var(--carousel-radius, var(--radius-lg));
+  background: var(--color-bg-secondary);
+}
+
+.carousel-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform var(--transition-base);
+}
+
+.carousel-slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.carousel-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(24px) brightness(0.85);
+  transform: scale(1.15);
+}
+
+.carousel-img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.carousel-arrow:hover {
+  background: var(--color-bg-primary);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.carousel-arrow--prev {
+  left: var(--spacing-md);
+}
+
+.carousel-arrow--next {
+  right: var(--spacing-md);
+}
+
+.carousel-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.carousel-thumb {
+  width: 64px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.6;
+  background: var(--color-bg-secondary);
+  transition: opacity var(--transition-fast), border-color var(--transition-fast);
+}
+
+.carousel-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-thumb:hover {
+  opacity: 0.85;
+}
+
+.carousel-thumb--active {
+  opacity: 1;
+  border-color: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-track {
+    transition: none;
+  }
+}

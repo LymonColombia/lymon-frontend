@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  font-family: var(--font-primary);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+.results-section {
+  padding: var(--spacing-5xl) var(--spacing-xl);
+}
+
+.results-container {
+  max-width: var(--max-width-xl);
+  margin: 0 auto;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-2xl);
+}
+
+.rooms-loading {
+  text-align: center;
+  padding: var(--spacing-6xl);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+app-footer {
+  display: block;
+  margin-top: var(--spacing-5xl);
+}
+
+@media (max-width: 1024px) {
+  .rooms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .results-section {
+    padding: var(--spacing-3xl) var(--spacing-lg);
+  }
+
+  .rooms-grid {
+    grid-template-columns: 1fr;
+  }
+}

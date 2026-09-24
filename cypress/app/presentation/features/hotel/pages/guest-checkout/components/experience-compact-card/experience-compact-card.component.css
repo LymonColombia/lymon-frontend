@@ -1,0 +1,89 @@
+.exp-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+  padding: 0;
+}
+
+.exp-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary);
+}
+
+.exp-card-image-wrap {
+  position: relative;
+  height: 90px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.exp-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.exp-card-added-badge {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  background: var(--color-primary);
+  color: var(--color-bg-primary);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--spacing-xs);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.exp-card-content {
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exp-card-category {
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.exp-card-name {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+.exp-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.exp-card-price {
+  margin-left: auto;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-dark);
+}

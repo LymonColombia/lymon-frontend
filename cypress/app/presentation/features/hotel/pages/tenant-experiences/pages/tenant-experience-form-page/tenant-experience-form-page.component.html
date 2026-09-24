@@ -1,0 +1,36 @@
+<app-hotel-page-layout
+  [title]="pageTitle()"
+  iconName="bootstrapStars"
+  backLink="/tenant-experiences"
+  backLabel="Volver a experiencias"
+>
+  @if (isEditing()) {
+    <span hotelPageMeta class="edit-chip">Modo edicion</span>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-error">{{ errorMessage() }}</div>
+  }
+  @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Cargando experiencia...</p>
+    </div>
+  } @else {
+    <app-experience-form
+      [initialExperience]="editingExperience()"
+      [isSaving]="isSaving()"
+      [propertyOptions]="propertyOptions()"
+      [unitOptions]="unitOptions()"
+      [unitsLoading]="unitsLoading()"
+      [categoryOptions]="categoryOptions"
+      (submitted)="onSubmitExperience($event)"
+      (cancelled)="onCancel()"
+      (propertyChanged)="onPropertyChanged($event)"
+    />
+  }
+</app-hotel-page-layout>

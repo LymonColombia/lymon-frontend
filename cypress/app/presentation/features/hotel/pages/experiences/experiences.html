@@ -1,0 +1,53 @@
+
+<booking-nav
+  [isAuthenticated]="guestTokenService.isAuthenticated()"
+  [guestEmail]="guestEmail"
+  (loginClicked)="onGuestLogin()"
+  (logoutClicked)="onGuestLogout()"
+  (myReservationsClicked)="onMyReservations()">
+</booking-nav>
+
+<experience-hero
+  [selectedCategory]="selectedCategory()"
+  [selectedOwnerType]="selectedOwnerType()"
+  (filtersApply)="onHeroFiltersApply($event)">
+</experience-hero>
+
+<section class="experiences-section" aria-label="Experiencias">
+  <div class="experiences-container">
+    <experience-toolbar
+      [resultsCount]="filteredExperiences().length"
+      [sortBy]="sortBy()"
+      [selectedCategory]="selectedCategory()"
+      [selectedOwnerType]="selectedOwnerType()"
+      (searchQueryChange)="onSearchQueryChange($event)"
+      (sortChange)="onSortChange($event)"
+      (categoryChange)="onCategoryChange($event)"
+      (ownerTypeChange)="onOwnerTypeChange($event)"
+    ></experience-toolbar>
+
+    @if (isExperienceLoading()) {
+      <div class="loading">Cargando experiencias...</div>
+    } @else if (filteredExperiences().length === 0) {
+      <experience-empty-state
+        title="No encontramos experiencias"
+        message="Intenta ajustar tu busqueda o tus filtros para ver mas opciones."
+      ></experience-empty-state>
+    } @else {
+      <div class="experiences-grid">
+        @for (experience of filteredExperiences(); track experience.id) {
+          <experience-card
+            [experience]="experience"
+            [isLiked]="likedExperiencesIds().has(experience.id)"
+            (viewDetails)="goToExperienceDetails($event)"
+            (toggleLike)="onToggleLike($event)"
+          ></experience-card>
+        }
+      </div>
+    }
+
+  </div>
+</section>
+
+<app-footer></app-footer>
+

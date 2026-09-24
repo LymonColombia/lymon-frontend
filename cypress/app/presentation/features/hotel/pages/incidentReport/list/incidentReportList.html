@@ -1,0 +1,63 @@
+<app-hotel-page-layout
+  title="Novedades Laborales"
+  subtitle="Historial de ausencias, reemplazos, eventos y daños."
+  iconName="bootstrapFileEarmarkText"
+>
+  <span hotelPageMeta class="reports-count">
+    @if (isLoading()) { Cargando... }
+    @else { {{ reports().length }} novedad{{ reports().length !== 1 ? 'es' : '' }} registrada{{ reports().length !== 1 ? 's' : '' }} }
+  </span>
+
+  <div hotelPageActions>
+    <app-button variant="primary" size="medium" (clicked)="navigateToCreate()">
+      <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
+      Nueva Novedad
+    </app-button>
+  </div>
+
+  <div class="list-container">
+
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    }
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando novedades...</p>
+      </div>
+    } @else if (reports().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <ng-icon name="bootstrapFileEarmarkText" size="40px" aria-hidden="true"></ng-icon>
+        </div>
+        <h2 class="empty-title">No hay novedades registradas</h2>
+        <p class="empty-subtitle">Registra la primera novedad laboral de tu propiedad.</p>
+        <app-button variant="primary" size="medium" (clicked)="navigateToCreate()">
+          <ng-icon name="bootstrapFileEarmarkPlus" size="16px" aria-hidden="true"></ng-icon>
+          Registrar Novedad
+        </app-button>
+      </div>
+    } @else {
+      <div class="reports-grid">
+        @for (report of reports(); track report.id) {
+          <div class="report-card">
+            <div class="report-card-header">
+              <span class="report-badge">Novedad</span>
+              <span class="report-date">{{ formatDate(report.createdAt) }}</span>
+            </div>
+            <h3 class="report-title">{{ report.title }}</h3>
+            <p class="report-description">{{ report.description }}</p>
+            <div class="report-card-footer">
+              <app-button variant="secondary" size="small" (clicked)="navigateToEdit(report)">
+                <ng-icon name="bootstrapPencilSquare" size="14px" aria-hidden="true"></ng-icon>
+                Editar
+              </app-button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</app-hotel-page-layout>

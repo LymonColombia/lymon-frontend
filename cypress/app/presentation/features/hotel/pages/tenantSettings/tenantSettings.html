@@ -1,0 +1,285 @@
+<app-hotel-page-layout
+  title="Configuración"
+  subtitle="Administra el perfil y la seguridad de tu establecimiento."
+  iconName="bootstrapPersonGear"
+>
+  <div class="settings-stack">
+      <section class="settings-section" aria-labelledby="profile-title">
+        <header class="content-header">
+          <h1 id="profile-title" class="content-title">Editar perfil</h1>
+          <p class="content-subtitle">Actualiza la información pública de tu establecimiento.</p>
+        </header>
+
+        @if (profileSuccessMessage()) {
+          <div class="alert alert-success" role="status">{{ profileSuccessMessage() }}</div>
+        }
+
+        @if (profileErrorMessage()) {
+          <div class="alert alert-error" role="alert">{{ profileErrorMessage() }}</div>
+        }
+
+        <div class="content-card">
+          @if (isLoadingProfile()) {
+            <div class="loading-state" aria-live="polite">
+              <div class="spinner" aria-hidden="true"></div>
+              <p>Cargando perfil…</p>
+            </div>
+          } @else {
+            <div class="profile-hero" aria-label="Resumen del perfil">
+              <div class="profile-avatar" aria-hidden="true">
+                @if (logoUrlControl.value && logoUrlControl.valid) {
+                  <img [src]="logoUrlControl.value" alt="" />
+                } @else {
+                  <span>{{ (nameControl.value || 'N').slice(0, 1).toUpperCase() }}</span>
+                }
+              </div>
+
+              <div class="profile-meta">
+                <p class="profile-name">{{ nameControl.value || 'Nombre del negocio' }}</p>
+                <p class="profile-hint">Logo y datos básicos del establecimiento</p>
+              </div>
+
+              <app-button variant="outline" size="small" type="button" (clicked)="logoUrlInput.focus()">
+                Cambiar logo
+              </app-button>
+            </div>
+
+            <form class="form" [formGroup]="tenantForm" (ngSubmit)="onSubmitTenant()">
+              <div class="form-group">
+                <label for="tenantName">Nombre del negocio <span class="required">*</span></label>
+                <app-input
+                  id="tenantName"
+                  name="name"
+                  type="text"
+                  placeholder="Ej: Hotel Paradise"
+                  autocomplete="organization"
+                  formControlName="name"
+                />
+                @if (nameControl.invalid && nameControl.touched) {
+                  <span class="field-error">
+                    @if (nameControl.hasError('required')) { El nombre es requerido. }
+                    @else if (nameControl.hasError('minlength')) { Mínimo 3 caracteres. }
+                    @else if (nameControl.hasError('maxlength')) { Máximo 100 caracteres. }
+                  </span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="contactPhone">Teléfono de contacto</label>
+                <app-input
+                  id="contactPhone"
+                  name="contactPhone"
+                  type="tel"
+                  placeholder="Ej: +52 55 1234 5678"
+                  autocomplete="tel"
+                  formControlName="contactPhone"
+                />
+                @if (contactPhoneControl.invalid && contactPhoneControl.touched) {
+                  <span class="field-error">
+                    @if (contactPhoneControl.hasError('minlength')) { Mínimo 7 caracteres. }
+                    @else if (contactPhoneControl.hasError('maxlength')) { Máximo 30 caracteres. }
+                  </span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="address">Dirección</label>
+                <app-input
+                  id="address"
+                  name="address"
+                  type="text"
+                  placeholder="Ej: Av. Reforma 123, Ciudad de México"
+                  autocomplete="street-address"
+                  formControlName="address"
+                />
+                @if (addressControl.invalid && addressControl.touched) {
+                  <span class="field-error">@if (addressControl.hasError('maxlength')) { Máximo 200 caracteres. }</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="website">Sitio web</label>
+                <app-input
+                  id="website"
+                  name="website"
+                  type="url"
+                  placeholder="Ej: https://www.mihotel.com"
+                  autocomplete="url"
+                  formControlName="website"
+                />
+                @if (websiteControl.invalid && websiteControl.touched) {
+                  <span class="field-error">Ingresa una URL válida.</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="logoUrl">URL del logo</label>
+                <app-input
+                  #logoUrlInput
+                  id="logoUrl"
+                  name="logoUrl"
+                  type="url"
+                  placeholder="Ej: https://storage.ejemplo.com/logo.png"
+                  autocomplete="off"
+                  formControlName="logoUrl"
+                />
+                @if (logoUrlControl.invalid && logoUrlControl.touched) {
+                  <span class="field-error">Ingresa una URL válida.</span>
+                }
+              </div>
+
+              <div class="form-actions">
+                <app-button
+                  variant="primary"
+                  size="medium"
+                  type="submit"
+                  [fullWidth]="true"
+                  [disabled]="isSubmittingProfile()"
+                  [loading]="isSubmittingProfile()"
+                >
+                  Guardar cambios
+                </app-button>
+              </div>
+            </form>
+          }
+        </div>
+      </section>
+
+      <section class="settings-section" aria-labelledby="security-title">
+        <header class="content-header">
+          <h2 id="security-title" class="content-title">Contraseña y seguridad</h2>
+          <p class="content-subtitle">Actualiza la contraseña de tu cuenta.</p>
+        </header>
+
+        @if (passwordSuccessMessage()) {
+          <div class="alert alert-success" role="status">{{ passwordSuccessMessage() }}</div>
+        }
+
+        @if (passwordErrorMessage()) {
+          <div class="alert alert-error" role="alert">{{ passwordErrorMessage() }}</div>
+        }
+
+        <div class="content-card">
+          <form class="form" [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+            <div class="form-group">
+              <label for="currentPassword">Contraseña actual</label>
+              <div
+                class="password-wrapper"
+                [class.input-error]="currentPasswordControl.invalid && currentPasswordControl.touched"
+              >
+                <input
+                  [type]="showCurrent() ? 'text' : 'password'"
+                  id="currentPassword"
+                  formControlName="currentPassword"
+                  placeholder="••••••••"
+                  autocomplete="current-password"
+                />
+                <button
+                  type="button"
+                  class="eye-btn"
+                  (click)="showCurrent.set(!showCurrent())"
+                  [attr.aria-label]="showCurrent() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                >
+                  @if (showCurrent()) {
+                    <ng-icon name="bootstrapEyeSlash" size="26px" aria-hidden="true"></ng-icon>
+                  } @else {
+                    <ng-icon name="bootstrapEye" size="26px" aria-hidden="true"></ng-icon>
+                  }
+                </button>
+              </div>
+              @if (currentPasswordControl.invalid && currentPasswordControl.touched) {
+                <span class="field-error">La contraseña actual es requerida.</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="newPassword">Nueva contraseña</label>
+              <div
+                class="password-wrapper"
+                [class.input-error]="(newPasswordControl.invalid && newPasswordControl.touched) || samePassword"
+              >
+                <input
+                  [type]="showNew() ? 'text' : 'password'"
+                  id="newPassword"
+                  formControlName="newPassword"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  class="eye-btn"
+                  (click)="showNew.set(!showNew())"
+                  [attr.aria-label]="showNew() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                >
+                  @if (showNew()) {
+                    <ng-icon name="bootstrapEyeSlash" size="26px" aria-hidden="true"></ng-icon>
+                  } @else {
+                    <ng-icon name="bootstrapEye" size="26px" aria-hidden="true"></ng-icon>
+                  }
+                </button>
+              </div>
+              @if (newPasswordControl.invalid && newPasswordControl.touched) {
+                <span class="field-error">
+                  @if (newPasswordControl.hasError('required')) {
+                    La nueva contraseña es requerida.
+                  } @else {
+                    Mínimo 8 caracteres.
+                  }
+                </span>
+              }
+              @if (samePassword) {
+                <span class="field-error">La nueva contraseña debe ser diferente a la actual.</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="confirmNewPassword">Confirmar nueva contraseña</label>
+              <div
+                class="password-wrapper"
+                [class.input-error]="(confirmNewPasswordControl.invalid && confirmNewPasswordControl.touched) || passwordsMismatch"
+              >
+                <input
+                  [type]="showConfirm() ? 'text' : 'password'"
+                  id="confirmNewPassword"
+                  formControlName="confirmNewPassword"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                />
+                <button
+                  type="button"
+                  class="eye-btn"
+                  (click)="showConfirm.set(!showConfirm())"
+                  [attr.aria-label]="showConfirm() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                >
+                  @if (showConfirm()) {
+                    <ng-icon name="bootstrapEyeSlash" size="26px" aria-hidden="true"></ng-icon>
+                  } @else {
+                    <ng-icon name="bootstrapEye" size="26px" aria-hidden="true"></ng-icon>
+                  }
+                </button>
+              </div>
+              @if (confirmNewPasswordControl.invalid && confirmNewPasswordControl.touched) {
+                <span class="field-error">La confirmación es requerida.</span>
+              }
+              @if (passwordsMismatch) {
+                <span class="field-error">Las contraseñas no coinciden.</span>
+              }
+            </div>
+
+            <div class="form-actions">
+              <app-button
+                variant="primary"
+                size="medium"
+                type="submit"
+                [fullWidth]="true"
+                [disabled]="isSubmittingPassword()"
+                [loading]="isSubmittingPassword()"
+              >
+                Guardar cambios
+              </app-button>
+            </div>
+          </form>
+        </div>
+      </section>
+  </div>
+</app-hotel-page-layout>

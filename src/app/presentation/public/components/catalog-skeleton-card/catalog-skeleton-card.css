@@ -1,0 +1,175 @@
+/* Local tokens derived from global scale — no magic numbers */
+:host {
+  display: block;
+  height: 100%;
+
+  /* stars row: 5 icons × 12px + 4 gaps × 4px = 60px */
+  --skeleton-stars-width: calc(var(--spacing-5xl) + var(--spacing-md));
+  /* rating count "(N)" ≈ 24px */
+  --skeleton-rating-count-width: var(--spacing-2xl);
+  /* chip height = font-size-xs (12px) + 2 × spacing-xs (4px) = 20px */
+  --skeleton-chip-height: calc(var(--font-size-xs) + var(--spacing-xs) * 2);
+  /* chip widths for natural variety */
+  --skeleton-chip-sm: var(--spacing-4xl);        /* 40px */
+  --skeleton-chip-md: var(--spacing-5xl);        /* 48px */
+  --skeleton-chip-lg: var(--spacing-6xl);        /* 64px */
+  /* matches ng-icon size="14px" used in room-card features */
+  --skeleton-icon-size: 14px;
+  /* matches .room-image height in room-card.component.css */
+  --skeleton-image-height: 220px;
+  /* feature label "X camas" ≈ 56px */
+  --skeleton-feature-text-width: calc(var(--spacing-5xl) + var(--spacing-sm));
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* Shared shimmer */
+.skeleton-image,
+.skeleton-stars,
+.skeleton-rating-count,
+.skeleton-title,
+.skeleton-desc-line,
+.skeleton-icon,
+.skeleton-feature-text,
+.skeleton-chip {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 25%,
+    var(--color-border-light) 50%,
+    var(--color-bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Image (mirrors .room-image height: 220px) ── */
+
+.skeleton-image {
+  width: 100%;
+  height: var(--skeleton-image-height);
+  flex-shrink: 0;
+  border-radius: 0;
+}
+
+/* ── Card wrapper (mirrors .room-card) ── */
+
+.skeleton-card {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Content (mirrors .room-content) ── */
+
+.skeleton-content {
+  padding: var(--spacing-lg);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Meta row (mirrors .room-meta) ── */
+
+.skeleton-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+  min-height: var(--spacing-lg);
+}
+
+.skeleton-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.skeleton-stars {
+  width: var(--skeleton-stars-width);
+  height: var(--font-size-xs);
+}
+
+.skeleton-rating-count {
+  width: var(--skeleton-rating-count-width);
+  height: var(--font-size-xs);
+}
+
+/* ── Title (mirrors h3.room-title: font-size-lg, line-height-tight) ── */
+
+.skeleton-title {
+  width: 65%;
+  height: var(--font-size-lg);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* ── Description (mirrors p.room-description: font-size-sm, 2 lines clamped) ── */
+
+.skeleton-description {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.skeleton-desc-line {
+  height: var(--font-size-sm);
+}
+
+.skeleton-desc-line--full    { width: 100%; }
+.skeleton-desc-line--partial { width: 55%; }
+
+/* ── Features (mirrors .room-features: flex, gap-lg, margin-top auto, border-bottom) ── */
+
+.skeleton-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+  margin-top: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.skeleton-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.skeleton-icon {
+  width: var(--skeleton-icon-size);
+  height: var(--skeleton-icon-size);
+  flex-shrink: 0;
+}
+
+.skeleton-feature-text {
+  width: var(--skeleton-feature-text-width);
+  height: var(--font-size-xs);
+}
+
+/* ── Amenities (mirrors .room-amenities-section + .room-amenities) ── */
+
+.skeleton-amenities-section {
+  border-top: 1px solid var(--color-border-light);
+  padding-top: var(--spacing-md);
+}
+
+.skeleton-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.skeleton-chip {
+  height: var(--skeleton-chip-height);
+}
+
+.skeleton-chip--sm { width: var(--skeleton-chip-sm); }
+.skeleton-chip--md { width: var(--skeleton-chip-md); }
+.skeleton-chip--lg { width: var(--skeleton-chip-lg); }

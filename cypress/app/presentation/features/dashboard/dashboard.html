@@ -1,0 +1,148 @@
+<main class="main-content">
+  <section class="dashboard-container">
+    <header class="dashboard-header">
+      <h1>Dashboard</h1>
+      <p class="subtitle">Resumen general de tu hotel</p>
+    </header>
+
+    @if (loadError()) {
+      <div class="feedback-state feedback-state--error" role="status">
+        <p>{{ loadError() }}</p>
+        <button type="button" class="retry-button" (click)="loadReservations()">Reintentar</button>
+      </div>
+    }
+
+    <div class="kpi-grid" [class.is-loading]="isLoading()">
+      <article class="kpi-card">
+        <div class="card-header">
+          <span class="card-title">Habitaciones Ocupadas</span>
+          <div class="icon-container building-icon">
+            <ng-icon name="bootstrapBuilding" size="24px" aria-hidden="true"></ng-icon>
+          </div>
+        </div>
+        <div class="metric-value">{{ occupiedRooms() }}</div>
+        <div class="trend positive">
+          <span class="trend-value">Activas</span> del tenant
+        </div>
+      </article>
+
+      <article class="kpi-card">
+        <div class="card-header">
+          <span class="card-title">Huéspedes Activos</span>
+          <div class="icon-container users-icon">
+            <ng-icon name="bootstrapPeople" size="24px" aria-hidden="true"></ng-icon>
+          </div>
+        </div>
+        <div class="metric-value">{{ activeGuests() }}</div>
+        <div class="trend positive">
+          <span class="trend-value">En propiedad</span>
+        </div>
+      </article>
+
+      <article class="kpi-card">
+        <div class="card-header">
+          <span class="card-title">Ingresos del Mes</span>
+          <div class="icon-container money-icon">
+            <ng-icon name="bootstrapCurrencyDollar" size="24px" aria-hidden="true"></ng-icon>
+          </div>
+        </div>
+        <div class="metric-value">{{ monthlyRevenue() | currency }}</div>
+        <div class="trend positive">
+          <span class="trend-value">Este mes</span>
+        </div>
+      </article>
+
+      <article class="kpi-card">
+        <div class="card-header">
+          <span class="card-title">Tasa de Ocupación</span>
+          <div class="icon-container chart-icon">
+            <ng-icon name="bootstrapGraphUpArrow" size="24px" aria-hidden="true"></ng-icon>
+          </div>
+        </div>
+        <div class="metric-value">{{ occupancyRate() }}%</div>
+        <div class="trend">
+          <span class="trend-value">Estimado</span> (Base 120)
+        </div>
+      </article>
+    </div>
+
+    <div class="charts-grid" [class.is-loading]="isLoading()">
+      <article class="chart-card">
+        <h3>Reservaciones Finalizadas</h3>
+        <div class="chart-container bar-chart">
+          @for (stat of reservationStats(); track stat.monthLabel) {
+            <div class="bar-group" [title]="stat.count + ' reservaciones'">
+              <div class="bar" [style.height.%]="stat.countHeight"></div>
+              <span class="label">{{ stat.monthLabel }}</span>
+            </div>
+          }
+        </div>
+      </article>
+
+      <article class="chart-card">
+        <div class="chart-head">
+          <h3>Ingresos Mensuales ($)</h3>
+          <div class="revenue-chip" [class.revenue-chip--negative]="revenueSummary().trend === 'down'">
+            @if (revenueSummary().trend === 'up') {
+              <span>Sube</span>
+            } @else if (revenueSummary().trend === 'down') {
+              <span>Baja</span>
+            } @else {
+              <span>Estable</span>
+            }
+            <strong>{{ revenueSummary().delta | currency:'USD':'symbol':'1.0-0' }}</strong>
+          </div>
+        </div>
+
+        <div class="chart-container revenue-list" role="img" aria-label="Comparativa de ingresos de los ultimos 6 meses">
+          @for (stat of reservationStats(); track stat.monthLabel) {
+            <div class="revenue-row" [title]="stat.monthLabel + ': ' + (stat.revenue | currency)">
+              <span class="revenue-row-month">{{ stat.monthLabel }}</span>
+              <div class="revenue-row-track">
+                <div class="revenue-row-fill" [style.width.%]="stat.revenueHeight"></div>
+              </div>
+              <strong class="revenue-row-value">{{ stat.revenue | currency:'USD':'symbol':'1.0-0' }}</strong>
+            </div>
+          }
+        </div>
+      </article>
+    </div>
+
+    <article class="table-card" [class.is-loading]="isLoading()">
+      <h3>Reservaciones Recientes</h3>
+      <div class="table-container">
+        <table class="reservations-table">
+          <thead>
+            <tr>
+              <th>Huésped</th>
+              <th>Habitación</th>
+              <th>Check-in</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (recentReservations().length === 0 && !isLoading()) {
+              <tr>
+                <td colspan="4" class="empty-cell">No hay reservaciones recientes.</td>
+              </tr>
+            }
+
+            @for (reservation of recentReservations(); track reservation.id) {
+              <tr>
+                <td class="guest-name">{{ reservation.guestId }}</td>
+                <td>{{ reservation.unitId }}</td>
+                <td>{{ reservation.checkIn | date: 'yyyy-MM-dd' }}</td>
+                <td>
+                  <span [class]="'status-badge ' + getStatusClass(reservation.status)">
+                    {{ getStatusLabel(reservation.status) }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+</main>
+

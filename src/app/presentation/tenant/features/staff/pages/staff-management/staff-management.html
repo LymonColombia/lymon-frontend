@@ -1,0 +1,321 @@
+<app-tenant-page-layout
+  title="Gestión de Empleados"
+  subtitle="Visualiza todos los usuarios registrados por tu tenant"
+  iconName="bootstrapPeople"
+>
+  <app-toast />
+  <section class="summary-grid" aria-label="Resumen de empleados">
+    <article class="summary-card">
+      <p class="summary-label">Total de usuarios</p>
+      <p class="summary-value">{{ totalEmployees() }}</p>
+      <p class="summary-hint">Registros creados por el tenant</p>
+    </article>
+
+    <article class="summary-card">
+      <p class="summary-label">Usuarios activos</p>
+      <p class="summary-value">{{ activeEmployees() }}</p>
+      <p class="summary-hint">Con acceso vigente al sistema</p>
+    </article>
+  </section>
+
+  <section class="list-card" aria-label="Listado de empleados registrados">
+    <header class="list-header">
+      <div class="header-content">
+        <div>
+          <h2 class="list-title">Usuarios registrados</h2>
+          <p class="list-subtitle">Maneja el registro de tus empleados.</p>
+        </div>
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <ng-icon name="bootstrapSearch" class="search-icon"></ng-icon>
+            <input
+              type="text"
+              placeholder="Buscar por nombre, correo o rol..."
+              (input)="onSearchChange($event)"
+              class="search-input"
+              aria-label="Buscar empleados"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="alphabet-filter">
+        <span class="alphabet-label">Nombre</span>
+        <div class="alphabet-list">
+          <button
+            type="button"
+            class="alphabet-btn"
+            [class.alphabet-btn--active]="selectedLetter() === null"
+            (click)="selectLetter(null)"
+          >
+            Todos
+          </button>
+          @for (letter of alphabet; track letter) {
+            <button
+              type="button"
+              class="alphabet-btn"
+              [class.alphabet-btn--active]="selectedLetter() === letter"
+              (click)="selectLetter(letter)"
+            >
+              {{ letter }}
+            </button>
+          }
+        </div>
+      </div>
+    </header>
+
+    @if (errorMessage()) {
+      <div class="alert alert-error">{{ errorMessage() }}</div>
+    } @else if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>{{ messages.state.loading }}</p>
+      </div>
+    } @else if (filteredEmployees().length === 0) {
+      <div class="empty-state">
+        <p class="empty-title">{{ messages.state.emptyTitle }}</p>
+        <p class="empty-subtitle">{{ messages.state.emptySubtitle }}</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="employees-table">
+          <thead>
+            <tr>
+              <th class="col-name">Nombre</th>
+              <th class="col-email">Correo</th>
+              <th class="col-role">Rol</th>
+              <th class="col-status">Estado</th>
+              <th class="col-date">Fecha de registro</th>
+              <th class="col-actions">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (employee of filteredEmployees(); track employee.id) {
+              <tr
+                class="employee-row"
+                (click)="openDetails(employee)"
+                (keydown.enter)="openDetails(employee)"
+                tabindex="0"
+                aria-label="Ver detalles de empleado"
+              >
+                <td>
+                  <div class="name-cell">
+                    <span class="avatar">{{ employee.fullName.charAt(0) }}</span>
+                    <span>{{ employee.fullName }}</span>
+                  </div>
+                </td>
+                <td>{{ employee.email }}</td>
+                <td>
+                  <span class="role-pill" [class.role-pill--admin]="employee.role === 'ADMIN'">
+                    {{ roleLabel(employee.role) }}
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="status-pill"
+                    [class.status-pill--active]="employee.status === 'ACTIVO'"
+                    [class.status-pill--inactive]="employee.status === 'INACTIVO'"
+                  >
+                    {{ employee.status }}
+                  </span>
+                </td>
+                <td>{{ formatDate(employee.createdAt) }}</td>
+                <td
+                  class="actions-cell"
+                  (click)="$event.stopPropagation()"
+                  (keydown.enter)="$event.stopPropagation()"
+                >
+                  <app-button
+                    variant="text"
+                    size="small"
+                    (clicked)="openConfirmDelete(employee)"
+                    [disabled]="isDeleting() === employee.id"
+                  >
+                    <ng-icon
+                      name="bootstrapTrash"
+                      size="18px"
+                      class="delete-icon"
+                      [class.spinning]="isDeleting() === employee.id"
+                    ></ng-icon>
+                  </app-button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalPages() > 1) {
+        <div class="pagination">
+          <div class="pagination-info">
+            Mostrando <strong>{{ showingFrom() }}</strong> a <strong>{{ showingTo() }}</strong> de
+            <strong>{{ totalEmployees() }}</strong> empleados
+          </div>
+          <div class="pagination-controls">
+            <button
+              class="page-btn"
+              [disabled]="currentPage() === 1"
+              (click)="goToPage(currentPage() - 1)"
+              title="Anterior"
+            >
+              <ng-icon name="bootstrapChevronLeft" size="16"></ng-icon>
+            </button>
+
+            @if (pageNumbers()[0] > 1) {
+              <button class="page-btn" (click)="goToPage(1)">1</button>
+              @if (pageNumbers()[0] > 2) {
+                <span class="page-ellipsis">…</span>
+              }
+            }
+
+            @for (p of pageNumbers(); track p) {
+              <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">
+                {{ p }}
+              </button>
+            }
+
+            @if (pageNumbers()[pageNumbers().length - 1] < totalPages()) {
+              @if (pageNumbers()[pageNumbers().length - 1] < totalPages() - 1) {
+                <span class="page-ellipsis">…</span>
+              }
+              <button class="page-btn" (click)="goToPage(totalPages())">
+                {{ totalPages() }}
+              </button>
+            }
+
+            <button
+              class="page-btn"
+              [disabled]="currentPage() === totalPages()"
+              (click)="goToPage(currentPage() + 1)"
+              title="Siguiente"
+            >
+              <ng-icon name="bootstrapChevronRight" size="16"></ng-icon>
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </section>
+
+  @if (isConfirmDeleteModalOpen()) {
+    <button type="button" class="modal-backdrop modal-backdrop--confirm" (click)="closeConfirmDelete()" aria-label="Cerrar confirmación"></button>
+    <dialog class="modal-card modal-card--confirm" open aria-modal="true">
+      <header class="modal-header">
+        <div class="confirm-icon-wrapper confirm-icon-wrapper--danger">
+          <ng-icon name="bootstrapTrash" size="24"></ng-icon>
+        </div>
+        <h2 id="delete-modal-title">{{ messages.confirmation.deleteTitle }}</h2>
+      </header>
+
+      <div class="modal-body">
+        <p>{{ messages.confirmation.deleteMessage(employeeToDelete()?.fullName ?? '') }}</p>
+        <p class="confirm-detail">{{ messages.confirmation.deleteWarning }}</p>
+      </div>
+
+      <footer class="modal-actions">
+        <button type="button" class="btn-ghost" (click)="closeConfirmDelete()" [disabled]="isDeleting() !== null">
+          {{ messages.confirmation.deleteCancel }}
+        </button>
+        <button type="button" class="btn-primary btn-primary--danger" (click)="confirmDeleteStaff()" [disabled]="isDeleting() !== null">
+          {{ isDeleting() !== null ? messages.confirmation.deleteLoading : messages.confirmation.deleteConfirm }}
+        </button>
+      </footer>
+    </dialog>
+  }
+
+  @if (isDetailsModalOpen()) {
+    <button type="button" class="modal-backdrop" (click)="closeDetails()" aria-label="Cerrar detalles"></button>
+    <dialog class="modal-card details-card" open aria-modal="true">
+      <header class="details-header">
+        <div class="user-main-info">
+          <div class="details-avatar">
+            {{ selectedEmployee()?.fullName?.charAt(0) }}
+          </div>
+          <div>
+            <h3>{{ selectedEmployee()?.fullName }}</h3>
+            <span class="status-pill" [class.status-pill--active]="selectedEmployee()?.status === 'ACTIVO'">
+              {{ selectedEmployee()?.status }}
+            </span>
+          </div>
+        </div>
+        <button class="close-btn" (click)="closeDetails()">
+          <ng-icon name="bootstrapX" size="24"></ng-icon>
+        </button>
+      </header>
+
+      <div class="modal-body details-body">
+        <div class="info-grid">
+          <button
+            type="button"
+            class="info-item info-item--clickable"
+            (click)="copyToClipboard(selectedEmployee()?.email ?? '')"
+            (keydown.enter)="copyToClipboard(selectedEmployee()?.email ?? '')"
+            aria-label="Copiar correo electrónico"
+          >
+            <div class="info-icon">
+              <ng-icon name="bootstrapEnvelope" size="18"></ng-icon>
+            </div>
+            <div class="info-content">
+              <span class="info-label">Correo electrónico</span>
+              <div id="detail-email" class="info-text-with-action">
+                <p>{{ selectedEmployee()?.email }}</p>
+                <ng-icon name="bootstrapClipboard" size="14" class="copy-hint-icon" title="Copiar"></ng-icon>
+              </div>
+            </div>
+          </button>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <ng-icon name="bootstrapShieldCheck" size="18"></ng-icon>
+            </div>
+            <div class="info-content">
+              <span class="info-label">Rol asignado</span>
+              <p id="detail-role">{{ roleLabel(selectedEmployee()?.role ?? '') }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <ng-icon name="bootstrapCalendar3" size="18"></ng-icon>
+            </div>
+            <div class="info-content">
+              <span class="info-label">Miembro desde</span>
+              <p id="detail-date">{{ formatDate(selectedEmployee()?.createdAt ?? '') }}</p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="info-item info-item--clickable"
+            (click)="copyToClipboard(selectedEmployee()?.document ?? '')"
+            (keydown.enter)="copyToClipboard(selectedEmployee()?.document ?? '')"
+            aria-label="Copiar número de documento"
+          >
+            <div class="info-icon">
+              <ng-icon name="bootstrapPersonBadge" size="18"></ng-icon>
+            </div>
+            <div class="info-content">
+              <span class="info-label">Número de documento</span>
+              <div id="detail-document" class="info-text-with-action">
+                <p>{{ selectedEmployee()?.document }}</p>
+                <ng-icon name="bootstrapClipboard" size="14" class="copy-hint-icon" title="Copiar"></ng-icon>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <footer class="modal-actions details-footer">
+        <app-button (clicked)="closeDetails()">
+          Entendido
+        </app-button>
+      </footer>
+    </dialog>
+  }
+
+  @if (copyNotification().show) {
+    <div class="toast-notification">
+      {{ copyNotification().message }}
+    </div>
+  }
+</app-tenant-page-layout>

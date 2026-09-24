@@ -1,0 +1,323 @@
+<app-hotel-page-layout title="Planes" subtitle="Consulta los planes disponibles.">
+  <div hotelPageMeta>
+    <span class="current-plan">Tu plan actual: <strong>{{ currentPlanLabel() }}</strong></span>
+  </div>
+
+  <section class="plans-grid" aria-label="Planes disponibles">
+    @for (plan of plans; track plan.type) {
+      <article class="plan-card" [class.plan-card-current]="isCurrent(plan.type)">
+        @if (isCurrent(plan.type)) {
+          <span class="plan-badge" aria-label="Plan actual">Plan actual</span>
+        }
+
+        <div class="plan-header">
+          <div class="plan-icon" aria-hidden="true">
+            @if (plan.type === 'PRIME') {
+              <ng-icon name="bootstrapStarFill" size="26px" aria-hidden="true"></ng-icon>
+            } @else if (plan.type === 'PLUS') {
+              <ng-icon name="bootstrapStarFill" size="26px" aria-hidden="true"></ng-icon>
+            } @else if (plan.type === 'LYMON_ONE') {
+              <ng-icon name="bootstrapStarHalf" size="26px" aria-hidden="true"></ng-icon>
+            } @else {
+              <ng-icon name="bootstrapStar" size="26px" aria-hidden="true"></ng-icon>
+            }
+          </div>
+
+          <div class="plan-title">
+            <h2 class="plan-name">{{ plan.name }}</h2>
+            <p class="plan-subtitle">{{ plan.subtitle }}</p>
+          </div>
+        </div>
+
+        <div class="plan-price-row" aria-label="Precio">
+          <span class="plan-price">{{ plan.price }}</span>
+          @if (plan.priceSuffix) {
+            <span class="plan-price-suffix">{{ plan.priceSuffix }}</span>
+          }
+        </div>
+
+        @if (plan.priceNote) {
+          <p class="plan-price-note">{{ plan.priceNote }}</p>
+        }
+
+        <div class="plan-sections" aria-label="Detalle del plan">
+          @for (section of plan.detailsSections; track section.title) {
+            <div class="plan-section">
+              <h3 class="plan-section-title">{{ section.title }}</h3>
+              <ul class="plan-highlights">
+                @for (item of section.items; track item) {
+                  <li class="plan-highlight">{{ item }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+
+        <div class="plan-card-actions">
+          <app-button
+            variant="outline"
+            size="small"
+            type="button"
+            [fullWidth]="true"
+            (clicked)="openPlanDetails(plan)"
+          >
+            Ver detalles del plan
+          </app-button>
+        </div>
+      </article>
+    }
+  </section>
+
+  <div class="page-actions" aria-label="Acciones del plan">
+    <app-button variant="outline" size="medium" type="button" (clicked)="onChangePlan()">
+      Cambiar de plan
+    </app-button>
+    <app-button variant="primary" size="medium" type="button" (clicked)="onUpdatePlan()">
+      Actualizar plan
+    </app-button>
+  </div>
+
+  @if (selectedPlan(); as plan) {
+    <app-modal
+      [open]="true"
+      size="large"
+      [title]="plan.name"
+      (closed)="closePlanDetails()"
+    >
+      <div class="plan-details">
+        <div class="plan-details-header">
+          <p class="plan-details-subtitle">{{ plan.subtitle }}</p>
+          <div class="plan-details-price" aria-label="Precio">
+            <span class="plan-details-price-value">{{ plan.price }}</span>
+            @if (plan.priceSuffix) {
+              <span class="plan-details-price-suffix">{{ plan.priceSuffix }}</span>
+            }
+          </div>
+
+          @if (plan.priceNote) {
+            <p class="plan-details-note">{{ plan.priceNote }}</p>
+          }
+        </div>
+
+        <div class="plan-details-grid" aria-label="Detalle del plan">
+          @for (section of plan.detailsSections; track section.title) {
+            <section class="plan-details-section" [attr.aria-label]="section.title">
+              <h3 class="plan-details-section-title">{{ section.title }}</h3>
+              <ul class="plan-details-list">
+                @for (item of section.items; track item) {
+                  <li class="plan-details-item">{{ item }}</li>
+                }
+              </ul>
+            </section>
+          }
+        </div>
+      </div>
+
+      <div modal-footer>
+        <app-button variant="secondary" size="medium" type="button" (clicked)="closePlanDetails()">
+          Cerrar
+        </app-button>
+      </div>
+    </app-modal>
+  }
+
+  @if (isChangePlanModalOpen()) {
+    <app-modal [open]="true" size="large" title="Cambio de plan" (closed)="closeChangePlanModal()">
+      <div class="change-plan-wizard">
+        <div class="wizard-steps" aria-label="Progreso del cambio de plan">
+          <span class="wizard-step" [class.wizard-step--active]="changePlanStep() >= 1">1. Elegir plan</span>
+          <span class="wizard-step" [class.wizard-step--active]="changePlanStep() >= 2">2. Confirmación</span>
+          <span class="wizard-step" [class.wizard-step--active]="changePlanStep() >= 3">3. Pago</span>
+          <span class="wizard-step" [class.wizard-step--active]="changePlanStep() >= 4">4. Resultado</span>
+        </div>
+
+        @if (changePlanStep() === 1) {
+          <section class="wizard-section" aria-label="Seleccionar plan objetivo">
+            <h3>Selecciona el plan al que deseas cambiar</h3>
+            <p class="wizard-hint">El plan actual no se puede volver a seleccionar en este paso.</p>
+
+            <div class="wizard-plan-grid">
+              @for (plan of plans; track plan.type) {
+                <button
+                  type="button"
+                  class="wizard-plan-option"
+                  [class.wizard-plan-option--selected]="isTargetPlan(plan.type)"
+                  [class.wizard-plan-option--disabled]="isCurrent(plan.type)"
+                  [disabled]="isCurrent(plan.type)"
+                  (click)="chooseTargetPlan(plan.type)"
+                >
+                  <span class="wizard-plan-name">{{ plan.name }}</span>
+                  <span class="wizard-plan-price">{{ plan.price }} {{ plan.priceSuffix ?? '' }}</span>
+                  @if (isCurrent(plan.type)) {
+                    <span class="wizard-plan-chip">Plan actual</span>
+                  }
+                </button>
+              }
+            </div>
+          </section>
+        }
+
+        @if (changePlanStep() === 2) {
+          <section class="wizard-section" aria-label="Confirmar impacto del cambio">
+            <h3>
+              @if (planChangeDirection() === 'upgrade') {
+                Vas a subir de plan
+              } @else if (planChangeDirection() === 'downgrade') {
+                Vas a bajar de plan
+              } @else {
+                Cambio de plan
+              }
+            </h3>
+
+            <p class="wizard-hint">
+              @if (selectedTargetPlan(); as target) {
+                Cambiarás de <strong>{{ currentPlanLabel() }}</strong> a <strong>{{ target.name }}</strong>.
+              }
+            </p>
+
+            <div class="impact-grid">
+              @if (planChangeDirection() === 'downgrade') {
+                <article class="impact-card impact-card--positive">
+                  <h4>Qué ofrece este plan</h4>
+                  @if (selectedTargetPlan(); as target) {
+                    <ul>
+                      @for (section of target.detailsSections; track section.title) {
+                        @for (item of section.items; track item) {
+                          <li>{{ item }}</li>
+                        }
+                      }
+                    </ul>
+                  }
+                </article>
+              } @else {
+                <article class="impact-card impact-card--positive">
+                  <h4>Beneficios que podrás ganar</h4>
+                  @if (gainedBenefits().length === 0) {
+                    <p class="impact-empty">No hay beneficios nuevos en este cambio.</p>
+                  } @else {
+                    <ul>
+                      @for (item of gainedBenefits(); track item) {
+                        <li>{{ item }}</li>
+                      }
+                    </ul>
+                  }
+                </article>
+              }
+
+              @if (planChangeDirection() === 'upgrade') {
+                <article class="impact-card impact-card--current">
+                  <h4>Qué ofrece tu plan actual</h4>
+                  @if (currentPlan(); as current) {
+                    <ul>
+                      @for (section of current.detailsSections; track section.title) {
+                        @for (item of section.items; track item) {
+                          <li>{{ item }}</li>
+                        }
+                      }
+                    </ul>
+                  }
+                </article>
+              }
+
+              @if (planChangeDirection() === 'downgrade') {
+                <article class="impact-card impact-card--warning">
+                  <h4>Beneficios que podrías perder</h4>
+                  @if (lostBenefits().length === 0) {
+                    <p class="impact-empty">No perderás beneficios con este cambio.</p>
+                  } @else {
+                    <ul>
+                      @for (item of lostBenefits(); track item) {
+                        <li>{{ item }}</li>
+                      }
+                    </ul>
+                  }
+                </article>
+              }
+            </div>
+
+            <p class="wizard-confirm">¿Estás seguro de continuar con este cambio de plan?</p>
+          </section>
+        }
+
+        @if (changePlanStep() === 3) {
+          <section class="wizard-section" aria-label="Pasarela de pago simulada">
+            <h3>Resumen y pasarela de pago</h3>
+            <p class="wizard-hint">Esta es una simulación visual del proceso de pago.</p>
+
+            @if (selectedTargetPlan(); as target) {
+              <div class="payment-summary">
+                <p><span>Plan seleccionado:</span> <strong>{{ target.name }}</strong></p>
+                <p><span>Monto:</span> <strong>{{ target.price }} {{ target.priceSuffix ?? '' }}</strong></p>
+                <p><span>Método:</span> Tarjeta terminada en **** 4242</p>
+              </div>
+            }
+
+            <div class="payment-gateway">
+              <div class="payment-gateway-bar"></div>
+              <div class="payment-gateway-lines">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <p>Pasarela segura - Confirmación manual</p>
+            </div>
+          </section>
+        }
+
+        @if (changePlanStep() === 4) {
+          <section class="wizard-section wizard-section--success" aria-label="Cambio exitoso">
+            <h3>Cambio de plan exitoso</h3>
+            @if (selectedTargetPlan(); as target) {
+              <p>
+                Tu suscripción fue actualizada correctamente al plan <strong>{{ target.name }}</strong>.
+              </p>
+            }
+            <p>El cambio ya se refleja en tu plan actual: <strong>{{ currentPlanLabel() }}</strong>.</p>
+          </section>
+        }
+      </div>
+
+      <div modal-footer class="wizard-footer">
+        @if (changePlanStep() === 1) {
+          <app-button variant="secondary" size="medium" type="button" (clicked)="closeChangePlanModal()">
+            Cancelar
+          </app-button>
+          <app-button variant="primary" size="medium" type="button" (clicked)="proceedFromStepOne()">
+            Continuar
+          </app-button>
+        }
+
+        @if (changePlanStep() === 2) {
+          <app-button variant="secondary" size="medium" type="button" (clicked)="goToStep(1)">
+            Volver
+          </app-button>
+          <app-button variant="primary" size="medium" type="button" (clicked)="proceedFromStepTwo()">
+            Sí, continuar
+          </app-button>
+        }
+
+        @if (changePlanStep() === 3) {
+          <app-button variant="secondary" size="medium" type="button" (clicked)="goToStep(2)">
+            Volver
+          </app-button>
+          <app-button
+            variant="primary"
+            size="medium"
+            type="button"
+            [loading]="isProcessingPayment()"
+            [disabled]="isProcessingPayment()"
+            (clicked)="simulatePaymentConfirmation()"
+          >
+            Confirmar pago
+          </app-button>
+        }
+
+        @if (changePlanStep() === 4) {
+          <app-button variant="primary" size="medium" type="button" (clicked)="closeChangePlanModal()">
+            Finalizar
+          </app-button>
+        }
+      </div>
+    </app-modal>
+  }
+</app-hotel-page-layout>

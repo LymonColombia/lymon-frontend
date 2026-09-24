@@ -1,0 +1,23 @@
+<aside class="summary-panel" aria-label="Resumen de reserva">
+  <h2>Resumen:</h2>
+
+  @if (isLoading()) {
+    <p class="summary-message">Cargando reservacion...</p>
+  } @else if (error()) {
+    <p class="summary-message summary-message--error">{{ error() }}</p>
+  }
+
+  <div class="summary-items">
+    <p><span>Huesped:</span> {{ summary().guestName }}</p>
+    <p><span>Habitacion:</span> {{ summary().room }}</p>
+    <p><span>Entrada:</span> {{ summary().checkIn }}</p>
+    <p><span>Salida:</span> {{ summary().checkOut }}</p>
+    <p><span>Noches:</span> {{ summary().nights }}</p>
+    <p><span>Huespedes:</span> {{ summary().guests }}</p>
+  </div>
+
+  <footer class="summary-total">
+    <span>Total:</span>
+    <strong>{{ summary().total }}</strong>
+  </footer>
+</aside>

@@ -1,0 +1,210 @@
+<app-hotel-page-layout
+  title="Check-In"
+  subtitle="Completa tu registro en pocos pasos antes de la llegada."
+  [iconName]="'bootstrapPerson'"
+>
+  <section class="checkin-shell">
+
+    <div class="checkin-grid">
+      <section class="wizard-panel" aria-label="Formulario de check-in">
+        <header class="panel-head">
+          <h2>Seccion {{ currentStep() }}</h2>
+          <p>{{ currentStepLabel() }}</p>
+        </header>
+
+        <div class="wizard-content">
+
+        @if (currentStep() === 1) {
+          <div class="form-grid">
+            <label class="field">
+              <span>Nombre(s)</span>
+              <div class="input-with-icon">
+                <ng-icon name="bootstrapPerson" size="18px" class="input-icon" aria-hidden="true"></ng-icon>
+                <input type="text" placeholder="Ingresa tu nombre" />
+              </div>
+            </label>
+
+            <label class="field">
+              <span>Apellido(s)</span>
+              <input type="text" placeholder="Ingresa tus apellidos" />
+            </label>
+
+            <label class="field">
+              <span>Correo</span>
+              <div class="input-with-icon">
+                <ng-icon name="bootstrapEnvelope" size="18px" class="input-icon" aria-hidden="true"></ng-icon>
+                <input type="email" placeholder="correo@ejemplo.com" />
+              </div>
+            </label>
+
+            <label class="field">
+              <span>Telefono</span>
+              <div class="input-with-icon">
+                <ng-icon name="bootstrapTelephone" size="18px" class="input-icon" aria-hidden="true"></ng-icon>
+                <input type="tel" placeholder="+52 123 456 7890" />
+              </div>
+            </label>
+          </div>
+        }
+
+        @if (currentStep() === 2) {
+          <div class="form-grid">
+            <label class="field">
+              <span>Tipo de identificacion</span>
+              <div class="input-with-icon">
+                <ng-icon name="bootstrapCardText" size="18px" class="input-icon" aria-hidden="true"></ng-icon>
+                <select>
+                  <option>Selecciona...</option>
+                  <option>INE / IFE</option>
+                  <option>Pasaporte</option>
+                  <option>Licencia</option>
+                </select>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>Numero de identificacion</span>
+              <input type="text" placeholder="ID-000000" />
+            </label>
+
+            <label class="field field--full">
+              <span>Direccion</span>
+              <input type="text" placeholder="Calle, numero y colonia" />
+            </label>
+
+            <div class="field field--full">
+              <span>Copia del documento de identidad</span>
+
+              <label class="file-upload" for="identityFileInput">
+                <ng-icon name="bootstrapCardText" size="18px" aria-hidden="true"></ng-icon>
+                <div class="file-upload-text">
+                  <strong>Subir archivo</strong>
+                  <small>{{ selectedIdentityFileName() }}</small>
+                </div>
+              </label>
+
+              <input
+                id="identityFileInput"
+                class="file-upload-input"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                (change)="onIdentityFileSelected($event)"
+              />
+            </div>
+          </div>
+        }
+
+        @if (currentStep() === 3) {
+          <div class="form-grid">
+            <label class="field">
+              <span>Nombre del contacto</span>
+              <input type="text" placeholder="Nombre completo" />
+            </label>
+
+            <label class="field">
+              <span>Relacion</span>
+              <select>
+                <option>Selecciona...</option>
+                <option>Familiar</option>
+                <option>Amistad</option>
+                <option>Pareja</option>
+              </select>
+            </label>
+
+            <label class="field field--full">
+              <span>Telefono de emergencia</span>
+              <div class="input-with-icon">
+                <ng-icon name="bootstrapTelephone" size="18px" class="input-icon" aria-hidden="true"></ng-icon>
+                <input type="tel" placeholder="+52 999 000 1234" />
+              </div>
+            </label>
+          </div>
+        }
+
+        @if (currentStep() === 4) {
+          <div class="signature-block">
+            <h3>
+              <ng-icon name="bootstrapShieldCheck" size="18px" aria-hidden="true"></ng-icon>
+              Confirmacion de terminos
+            </h3>
+            <p>
+              Revisa y confirma que la informacion es correcta. En el siguiente paso se enviara el
+              check-in digital.
+            </p>
+
+            <label class="checkbox">
+              <input type="checkbox" />
+              <span>Acepto los terminos y condiciones de hospedaje.</span>
+            </label>
+
+            <label class="field field--full">
+              <span>Firma digital</span>
+              <div class="signature-pad">
+                <canvas
+                  #signatureCanvas
+                  class="signature-canvas"
+                  (pointerdown)="startDrawing($event)"
+                  (pointermove)="draw($event)"
+                  (pointerup)="stopDrawing()"
+                  (pointerleave)="stopDrawing()"
+                  (pointercancel)="stopDrawing()"
+                ></canvas>
+              </div>
+
+              <button type="button" class="btn-clear-signature" (click)="clearSignature()">
+                Limpiar firma
+              </button>
+            </label>
+          </div>
+        }
+        </div>
+      </section>
+
+      <aside class="summary-panel" aria-label="Resumen de reserva">
+        <h2>Resumen:</h2>
+
+        @if (isLoadingSummary()) {
+          <p class="summary-message">Cargando reservacion...</p>
+        } @else if (summaryError()) {
+          <p class="summary-message summary-message--error">{{ summaryError() }}</p>
+        }
+
+        <div class="summary-items">
+          <p><span>Huesped:</span> {{ reservationSummary().guestName }}</p>
+          <p><span>Habitacion:</span> {{ reservationSummary().room }}</p>
+          <p><span>Entrada:</span> {{ reservationSummary().checkIn }}</p>
+          <p><span>Salida:</span> {{ reservationSummary().checkOut }}</p>
+          <p><span>Noches:</span> {{ reservationSummary().nights }}</p>
+          <p><span>Huespedes:</span> {{ reservationSummary().guests }}</p>
+        </div>
+
+        <footer class="summary-total">
+          <span>Total:</span>
+          <strong>{{ reservationSummary().total }}</strong>
+        </footer>
+      </aside>
+    </div>
+
+    <footer class="progress-footer" aria-label="Progreso del formulario">
+      <div class="progress-left">
+        <div class="progress-track" role="progressbar" aria-valuemin="0" [attr.aria-valuemax]="totalSteps" [attr.aria-valuenow]="currentStep()">
+          <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+        </div>
+
+        <div class="step-indicator">Paso {{ currentStep() }}/{{ totalSteps }}</div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" [disabled]="isFirstStep()" (click)="goToPreviousStep()">
+          Volver
+        </button>
+
+        @if (!isLastStep()) {
+          <button type="button" class="btn btn-primary" (click)="goToNextStep()">Siguiente</button>
+        } @else {
+          <button type="button" class="btn btn-primary" (click)="submitCheckin()">Finalizar</button>
+        }
+      </div>
+    </footer>
+  </section>
+</app-hotel-page-layout>

@@ -1,0 +1,149 @@
+<div class="guest-cart-page">
+  <nav class="cart-nav">
+    <div class="cart-nav-inner">
+      <button class="nav-back-btn" type="button" aria-label="Volver a booking" (click)="goBack()">
+        <ng-icon name="bootstrapChevronLeft" size="18px" aria-hidden="true"></ng-icon>
+        Volver
+      </button>
+      <div class="nav-divider"></div>
+      <span class="nav-title">
+        <ng-icon name="bootstrapBag" size="16px" aria-hidden="true"></ng-icon>
+        Carrito
+      </span>
+    </div>
+  </nav>
+
+  <main class="guest-cart-container">
+    @if (isLoading()) {
+      <section class="state-card">
+        <div class="state-spinner"></div>
+        <p class="state-title">Cargando carrito...</p>
+      </section>
+
+    } @else if (errorMessage()) {
+      <section class="state-card state-card--error">
+        <ng-icon name="bootstrapBag" size="28px" aria-hidden="true"></ng-icon>
+        <p class="state-title">No pudimos cargar tu carrito</p>
+        <p class="state-text">{{ errorMessage() }}</p>
+        <app-button variant="primary" size="medium" (clicked)="goToBooking()">Volver a booking</app-button>
+      </section>
+
+    } @else if (isEmpty()) {
+      <section class="empty-card">
+        <h1 class="empty-title">Tu carrito está vacío</h1>
+        <p class="empty-text">Agrega una habitación o una experiencia para continuar con tu compra.</p>
+        <app-button variant="primary" size="medium" (clicked)="goToBooking()">Explorar alojamientos</app-button>
+      </section>
+
+    } @else if (isPaymentSuccess()) {
+      <section class="success-card">
+        <div class="success-icon-wrap">
+          <ng-icon name="bootstrapCheckCircleFill" size="48px" aria-hidden="true"></ng-icon>
+        </div>
+        <h1 class="success-title">¡Reserva creada!</h1>
+        <p class="success-subtitle">
+          Tu reserva en <strong>{{ displayCart()?.reservationItem?.unitName ?? 'la habitación' }}</strong> ha sido creada exitosamente.
+        </p>
+        <div class="success-summary">
+          @if (displayCart()?.reservationItem; as item) {
+            <div class="success-row">
+              <ng-icon name="bootstrapCalendar" size="14px" aria-hidden="true"></ng-icon>
+              <span>{{ formatDate(item.checkIn) }} → {{ formatDate(item.checkOut) }}</span>
+            </div>
+            <div class="success-row">
+              <ng-icon name="bootstrapPeopleFill" size="14px" aria-hidden="true"></ng-icon>
+              <span>{{ item.guestsCount }} huésped{{ item.guestsCount !== 1 ? 'es' : '' }}</span>
+            </div>
+          }
+        </div>
+        <div class="success-actions">
+          <app-button variant="primary" size="medium" (clicked)="goToReservations()">
+            Ver Mis Reservas
+          </app-button>
+          <app-button variant="secondary" size="medium" (clicked)="goToBooking()">
+            Ver Más Habitaciones
+          </app-button>
+        </div>
+      </section>
+
+    } @else {
+      <section class="cart-grid">
+        <app-order-summary
+          [cart]="displayCart()"
+          [selectedItemKey]="selectedItemKey()"
+          (selectItem)="onSelectItem($event)"
+          (removeExperience)="onRemoveExperience($event)"
+          (proceedToCheckout)="scrollToPayment()"
+        ></app-order-summary>
+
+        <app-checkout-panel
+          [cart]="displayCart()"
+          [selectedItemKey]="selectedItemKey()"
+          [isSubmitting]="false"
+        ></app-checkout-panel>
+
+        @if (displayCart()?.reservationItem; as reservationItem) {
+          <div id="recommendations-section" class="recommendations-slot">
+            <app-guest-recommendation-experience
+              [propertyId]="reservationItem.propertyId"
+              [addedExperienceIds]="addedExperienceIds()"
+              (added)="loadCart()"
+              (experiencesAvailable)="hasSuggestedExperiences.set($event)"
+            ></app-guest-recommendation-experience>
+          </div>
+        }
+
+        <div id="payment-panel-section" class="payment-panel-slot">
+          <app-payment-panel
+            [cart]="cart()"
+            [hasSuggestedExperiences]="hasSuggestedExperiences()"
+            (paymentSucceeded)="onPaymentSucceeded()"
+            (cartRefreshNeeded)="loadCart()"
+            (viewExperiencesRequested)="scrollToRecommendations()"
+          ></app-payment-panel>
+        </div>
+      </section>
+    }
+  </main>
+  
+<app-modal
+  [open]="experienceToDelete() !== null"
+  title="Confirmar eliminación"
+  size="small"
+  [closeOnBackdrop]="!isDeletingExperience()"
+  [closeOnEscape]="!isDeletingExperience()"
+  (closed)="closeDeleteExperienceModal()"
+>
+  <div class="delete-experience-modal-body">
+    <p class="delete-experience-modal-title">
+      ¿Eliminar "{{ experienceToDelete()?.experienceName ?? 'esta experiencia' }}" del carrito?
+    </p>
+    @if (deleteExperienceErrorMessage()) {
+      <p class="delete-experience-modal-error">
+        {{ deleteExperienceErrorMessage() }}
+      </p>
+    }
+  </div>
+
+  <div modal-footer class="delete-experience-modal-footer">
+    <app-button
+      variant="secondary"
+      size="medium"
+      [disabled]="isDeletingExperience()"
+      (clicked)="closeDeleteExperienceModal()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      variant="danger"
+      size="medium"
+      [loading]="isDeletingExperience()"
+      (clicked)="confirmDeleteExperience()"
+    >
+      Eliminar
+    </app-button>
+  </div>
+</app-modal>
+
+  <app-footer></app-footer>
+</div>

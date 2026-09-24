@@ -1,0 +1,116 @@
+<div class="checkin-page">
+  <app-guest-nav [guestEmail]="guestEmail" (explore)="goExplore()" (logout)="onLogout()" />
+
+  <div class="checkin-container">
+    <header class="page-heading">
+      <h1>Confirma tu información</h1>
+      <p>
+        Carga tus datos antes de tu llegada. Así, al llegar al hotel solo deberán verificarlos y no
+        tendrás que registrarte desde cero.
+      </p>
+    </header>
+
+    <form [formGroup]="checkinForm" class="checkin-grid">
+      <section class="wizard-panel" aria-label="Formulario de check-in">
+        <header class="panel-head">
+          <h2>Sección {{ currentStep() }}</h2>
+          <p>{{ currentStepLabel() }}</p>
+        </header>
+
+        <div class="wizard-content">
+          @if (currentStep() === 1) {
+            <div formArrayName="guests" class="guests-list">
+              @for (guestGroup of guests.controls; track $index) {
+                <app-checkin-guest-form
+                  [guestForm]="guestGroup"
+                  [guestIndex]="$index"
+                  [isPrimaryGuest]="$index === 0"
+                />
+              }
+            </div>
+          }
+
+          @if (currentStep() === 2) {
+            <div formGroupName="identification" class="form-grid">
+              <div class="field">
+                <span>Tipo de identificación</span>
+                <app-select formControlName="idType" [options]="idTypeOptions" placeholder="Selecciona..." [hasIcon]="true">
+                  <ng-icon icon name="bootstrapCardText" size="16px" aria-hidden="true" />
+                </app-select>
+              </div>
+
+              <label class="field">
+                <span>Número de identificación</span>
+                <app-input type="text" formControlName="idNumber" placeholder="Ingresa tu número de documento" />
+              </label>
+            </div>
+          }
+
+          @if (currentStep() === 3) {
+            <div class="confirm-block">
+              <h3>
+                <ng-icon name="bootstrapShieldCheck" size="18px" aria-hidden="true" />
+                Confirma tu información
+              </h3>
+              <p>
+                Revisa que tu información sea correcta. Al confirmar, el hotel la tendrá lista para tu
+                llegada y solo deberá verificarla, sin que tengas que registrarte de nuevo.
+              </p>
+
+              <label class="checkbox">
+                <input type="checkbox" formControlName="acceptedTerms" />
+                <span>Acepto los términos y condiciones de hospedaje.</span>
+              </label>
+
+              @if (confirmError()) {
+                <p class="confirm-error">{{ confirmError() }}</p>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+      <app-checkin-summary
+        [isLoading]="isLoadingSummary()"
+        [error]="summaryError()"
+        [summary]="reservationSummary()"
+      />
+    </form>
+
+    <footer class="progress-footer" aria-label="Progreso del formulario">
+      <div class="progress-left">
+        <div
+          class="progress-track"
+          role="progressbar"
+          aria-valuemin="0"
+          [attr.aria-valuemax]="totalSteps"
+          [attr.aria-valuenow]="currentStep()"
+        >
+          <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+        </div>
+
+        <div class="step-indicator">Paso {{ currentStep() }}/{{ totalSteps }}</div>
+      </div>
+
+      <div class="actions">
+        <app-button variant="secondary" size="medium" [disabled]="isFirstStep()" (clicked)="goToPreviousStep()">
+          Volver
+        </app-button>
+
+        @if (!isLastStep()) {
+          <app-button variant="primary" size="medium" (clicked)="goToNextStep()">Siguiente</app-button>
+        } @else {
+          <app-button
+            variant="primary"
+            size="medium"
+            [disabled]="isConfirming()"
+            [loading]="isConfirming()"
+            (clicked)="submitCheckin()"
+          >
+            {{ isConfirming() ? 'Confirmando...' : 'Confirmar información' }}
+          </app-button>
+        }
+      </div>
+    </footer>
+  </div>
+</div>

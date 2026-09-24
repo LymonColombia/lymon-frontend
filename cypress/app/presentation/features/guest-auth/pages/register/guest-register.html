@@ -1,0 +1,192 @@
+<div class="auth-container">
+  <div class="auth-background">
+    <div class="logo-background">LYMON</div>
+  </div>
+
+  <div class="auth-content">
+    @if (registeredEmail()) {
+      <!-- Success: Check your email screen -->
+      <div class="auth-card" style="text-align: center">
+        <div class="logo-small">
+          <a routerLink="/lyhost"><img src="/images/LyHost.svg" alt="LyHost" width="140px" /></a>
+        </div>
+
+        <div style="font-size: 48px; margin: 16px 0">📬</div>
+        <h1 class="auth-title">Revisa tu correo</h1>
+        <p class="auth-subtitle" style="margin-bottom: 16px">
+          Enviamos un enlace de verificación a
+          <strong>{{ registeredEmail() }}</strong
+          >. Por favor verifica tu cuenta antes de iniciar sesión.
+        </p>
+
+        <a routerLink="/guest/login" class="btn-primary" style="display: inline-flex">
+          Ir a Iniciar Sesión
+        </a>
+      </div>
+    } @else {
+      <!-- Register form -->
+      <div class="auth-card">
+        <div class="logo-small">
+          <a routerLink="/lyhost"><img src="/images/LyHost.svg" alt="LyHost" width="140px" /></a>
+        </div>
+
+        <h1 class="auth-title">Crear cuenta</h1>
+        <p class="auth-subtitle">Regístrate como huésped</p>
+
+        @if (errorMessage()) {
+          <div class="error-banner">{{ errorMessage() }}</div>
+        }
+
+        <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="fullName">Nombre Completo <span style="color: #e53e3e">*</span></label>
+            <div
+              class="input-wrapper"
+              [class.input-error]="fullNameControl.invalid && fullNameControl.touched"
+            >
+              <ng-icon
+                class="input-icon"
+                name="bootstrapPerson"
+                size="20px"
+                aria-hidden="true"
+              ></ng-icon>
+              <input
+                type="text"
+                id="fullName"
+                formControlName="fullName"
+                placeholder="Juan Pérez"
+                autocomplete="name"
+              />
+            </div>
+            @if (fullNameControl.invalid && fullNameControl.touched) {
+              <span class="field-error">
+                @if (fullNameControl.hasError('required')) {
+                  El nombre completo es requerido.
+                } @else if (fullNameControl.hasError('minlength')) {
+                  Mínimo 2 caracteres.
+                } @else {
+                  Máximo 100 caracteres.
+                }
+              </span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="email">Correo Electrónico <span style="color: #e53e3e">*</span></label>
+            <div
+              class="input-wrapper"
+              [class.input-error]="emailControl.invalid && emailControl.touched"
+            >
+              <ng-icon
+                class="input-icon"
+                name="bootstrapEnvelope"
+                size="20px"
+                aria-hidden="true"
+              ></ng-icon>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                placeholder="ejemplo@email.com"
+                autocomplete="email"
+              />
+            </div>
+            @if (emailControl.invalid && emailControl.touched) {
+              <span class="field-error">
+                @if (emailControl.hasError('required')) {
+                  El correo es requerido.
+                } @else {
+                  Ingresa un correo válido.
+                }
+              </span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password">Contraseña <span style="color: #e53e3e">*</span></label>
+            <div
+              class="input-wrapper"
+              [class.input-error]="passwordControl.invalid && passwordControl.touched"
+            >
+              <ng-icon class="input-icon" name="bootstrapLock" size="20px" aria-hidden="true"></ng-icon>
+              <input
+                type="password"
+                id="password"
+                formControlName="password"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              />
+            </div>
+            @if (passwordControl.invalid && passwordControl.touched) {
+              <span class="field-error">
+                @if (passwordControl.hasError('required')) {
+                  La contraseña es requerida.
+                } @else {
+                  Mínimo 8 caracteres.
+                }
+              </span>
+            }
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+            <div class="form-group">
+              <label for="firstName">Nombre</label>
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="firstName"
+                  formControlName="firstName"
+                  placeholder="Juan"
+                  autocomplete="given-name"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="lastName">Apellido</label>
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="lastName"
+                  formControlName="lastName"
+                  placeholder="Pérez"
+                  autocomplete="family-name"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" [disabled]="isLoading()">
+            @if (isLoading()) {
+              <span>Creando cuenta…</span>
+            } @else {
+              <span>Crear Cuenta</span>
+              <ng-icon
+                name="bootstrapArrowRightCircleFill"
+                size="20px"
+                style="color: white"
+                aria-hidden="true"
+              ></ng-icon>
+            }
+          </button>
+
+          <p
+            style="
+              text-align: center;
+              margin-top: 16px;
+              font-family: 'Syne', sans-serif;
+              font-size: 14px;
+              color: #666;
+            "
+          >
+            ¿Ya tienes cuenta?
+            <a
+              routerLink="/guest/login"
+              style="color: #009a44; text-decoration: none; font-weight: 600"
+              >Inicia Sesión</a
+            >
+          </p>
+        </form>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<span [class]="tooltipClasses()">
+  <button class="tooltip-trigger" type="button" [attr.aria-label]="ariaLabel()">
+    <ng-icon [name]="iconName()" />
+  </button>
+
+  <span class="tooltip-panel" role="tooltip">
+    <ng-content />
+  </span>
+</span>

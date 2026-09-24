@@ -1,35 +1,76 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { ApplicationConfig, inject, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { AuthRepository } from '@/domain/repositories/auth.repository';
-import { AuthRepositoryImpl } from '@/infrastructure/repositories/auth.repository.impl';
-import { UserRepository } from '@/domain/repositories/user.repository';
-import { UserRepositoryImpl } from '@/infrastructure/repositories/user.repository.impl';
-import { IncidentReportRepository } from '@/domain/repositories/incident-report.repository';
-import { IncidentReportRepositoryImpl } from '@/infrastructure/repositories/incident-report.repository.impl';
-import { TenantRepository } from '@/domain/repositories/tenant.repository';
-import { TenantRepositoryImpl } from '@/infrastructure/repositories/tenant.repository.impl';
-import { authInterceptor } from '@/infrastructure/interceptors/auth.interceptor';
-import { StaffRepository } from '@/domain/repositories/staff.repository';
-import { StaffRepositoryImpl } from '@/infrastructure/repositories/staff.repository.impl';
-import { PropertyRepository } from '@/domain/repositories/property.repository';
-import { PropertyRepositoryImpl } from '@/infrastructure/repositories/property.repository.impl';
-import { GuestAuthRepository } from '@/domain/repositories/guest-auth.repository';
-import { GuestAuthRepositoryImpl } from '@/infrastructure/repositories/guest-auth.repository.impl';
-import { AuditLogRepository } from '@/domain/repositories/audit-log.repository';
-import { AuditLogRepositoryImpl } from '@/infrastructure/repositories/audit-log.repository.impl';
-import { ReservationRepository } from '@/domain/repositories/reservation.repository';
-import { ReservationRepositoryImpl } from '@/infrastructure/repositories/reservation.repository.impl';
-import { CrmRepository } from '@/domain/repositories/crm.repository';
-import { CrmRepositoryImpl } from '@/infrastructure/repositories/crm.repository.impl';
+import { provideNgIconLoader, withCaching } from '@ng-icons/core';
+import { AuthRepository } from '@/domain/tenant/auth/auth.repository';
+import { AuthSessionRepository } from '@/domain/tenant/auth-session/auth-session.repository';
+import { AuthSessionRepositoryImpl } from '@/infrastructure/tenant/auth-session/auth-session.repository.impl';
+import { GuestSessionRepository } from '@/domain/guest/guest-session/guest-session.repository';
+import { GuestSessionRepositoryImpl } from '@/infrastructure/guest/guest-session/guest-session.repository.impl';
+import { AuthRepositoryImpl } from '@/infrastructure/tenant/auth/auth.repository.impl';
+import { UserRepository } from '@/domain/tenant/user/user.repository';
+import { UserRepositoryImpl } from '@/infrastructure/tenant/user/user.repository.impl';
+import { IncidentReportRepository } from '@/domain/tenant/incident-report/incident-report.repository';
+import { IncidentReportRepositoryImpl } from '@/infrastructure/tenant/incident-report/incident-report.repository.impl';
+import { TenantRepository } from '@/domain/tenant/tenant/tenant.repository';
+import { TenantRepositoryImpl } from '@/infrastructure/tenant/tenant/tenant.repository.impl';
+import { authInterceptor } from '@/infrastructure/tenant/interceptors/auth.interceptor';
+import { guestAuthInterceptor } from '@/infrastructure/guest/interceptors/guest-auth.interceptor';
+import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
+import { StaffRepositoryImpl } from '@/infrastructure/tenant/staff/staff.repository.impl';
+import { PropertyRepository } from '@/domain/shared/property/property.repository';
+import { PropertyRepositoryImpl } from '@/infrastructure/shared/property/property.repository.impl';
+import { GuestAuthRepository } from '@/domain/guest/guest-auth/guest-auth.repository';
+import { GuestAuthRepositoryImpl } from '@/infrastructure/guest/guest-auth/guest-auth.repository.impl';
+import { AuditLogRepository } from '@/domain/tenant/audit-log/audit-log.repository';
+import { AuditLogRepositoryImpl } from '@/infrastructure/tenant/audit-log/audit-log.repository.impl';
+import { ReservationRepository } from '@/domain/shared/reservation/reservation.repository';
+import { ReservationRepositoryImpl } from '@/infrastructure/shared/reservation/reservation.repository.impl';
+import { CrmRepository } from '@/domain/tenant/crm/crm.repository';
+import { CrmRepositoryImpl } from '@/infrastructure/tenant/crm/crm.repository.impl';
+import { GuestReservationRepository } from '@/domain/guest/guest-reservation/guest-reservation.repository';
+import { GuestReservationRepositoryImpl } from '@/infrastructure/guest/guest-reservation/guest-reservation.repository.impl';
+import { SupplierRepository } from '@/domain/tenant/supplier/supplier.repository';
+import { SupplierRepositoryImpl } from '@/infrastructure/tenant/supplier/supplier.repository.impl';
+import { ExperienceRepository } from '@/domain/tenant/experience/experience.repository';
+import { ExperienceRepositoryImpl } from '@/infrastructure/tenant/experience/experience.repository.impl';
+import { ImageStorageRepository } from '@/domain/tenant/image-storage/image-storage.repository';
+import { ImageStorageRepositoryImpl } from '@/infrastructure/tenant/image-storage/image-storage.repository.impl';
+import { ShiftRepository } from '@/domain/tenant/shift/shift.repository';
+import { ShiftRepositoryImpl } from '@/infrastructure/tenant/shift/shift.repository.impl';
+import { InventoryRepository } from '@/domain/tenant/inventory/inventory.repository';
+import { InventoryRepositoryImpl } from '@/infrastructure/tenant/inventory/inventory.repository.impl';
+import { StorageRepository } from '@/domain/tenant/storage/storage.repository';
+import { StorageRepositoryImpl } from '@/infrastructure/tenant/storage/storage.repository.impl';
+import { TenantGuestRepository } from '@/domain/tenant/tenant-guest/tenant-guest.repository';
+import { TenantGuestRepositoryImpl } from '@/infrastructure/tenant/tenant-guest/tenant-guest.repository.impl';
+import { GuestCartRepository } from '@/domain/guest/guest-cart/guest-cart.repository';
+import { GuestCartRepositoryImpl } from '@/infrastructure/guest/guest-cart/guest-cart.repository.impl';
+import { GuestExperienceRepository } from '@/domain/guest/guest-experience/guest-experience.repository';
+import { GuestExperienceRepositoryImpl } from '@/infrastructure/guest/guest-experience/guest-experience.repository.impl';
+import { PaymentRepository } from '@/domain/guest/payment/payment.repository';
+import { PaymentRepositoryImpl } from '@/infrastructure/guest/payment/payment.repository.impl';
+import { PlanRepository } from '@/domain/shared/plan/plan.repository';
+import { PlanRepositoryImpl } from '@/infrastructure/shared/plan/plan.repository.impl';
 import { routes } from './app.routes';
+
+const ICON_LOADER_BASE_PATH = '/extra-icons';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([guestAuthInterceptor, authInterceptor])),
+    provideNgIconLoader(
+      (name) =>
+        inject(HttpClient).get(`${ICON_LOADER_BASE_PATH}/${name}.svg`, {
+          responseType: 'text',
+        }),
+      withCaching()
+    ),
     { provide: AuthRepository, useClass: AuthRepositoryImpl },
+    { provide: AuthSessionRepository, useClass: AuthSessionRepositoryImpl },
+    { provide: GuestSessionRepository, useClass: GuestSessionRepositoryImpl },
     { provide: UserRepository, useClass: UserRepositoryImpl },
     { provide: IncidentReportRepository, useClass: IncidentReportRepositoryImpl },
     { provide: TenantRepository, useClass: TenantRepositoryImpl },
@@ -39,5 +80,17 @@ export const appConfig: ApplicationConfig = {
     { provide: AuditLogRepository, useClass: AuditLogRepositoryImpl },
     { provide: ReservationRepository, useClass: ReservationRepositoryImpl },
     { provide: CrmRepository, useClass: CrmRepositoryImpl },
+    { provide: GuestReservationRepository, useClass: GuestReservationRepositoryImpl },
+    { provide: SupplierRepository, useClass: SupplierRepositoryImpl },
+    { provide: ExperienceRepository, useClass: ExperienceRepositoryImpl },
+    { provide: ImageStorageRepository, useClass: ImageStorageRepositoryImpl },
+    { provide: ShiftRepository, useClass: ShiftRepositoryImpl },
+    { provide: InventoryRepository, useClass: InventoryRepositoryImpl },
+    { provide: StorageRepository, useClass: StorageRepositoryImpl },
+    { provide: TenantGuestRepository, useClass: TenantGuestRepositoryImpl },
+    { provide: GuestCartRepository, useClass: GuestCartRepositoryImpl },
+    { provide: GuestExperienceRepository, useClass: GuestExperienceRepositoryImpl },
+    { provide: PaymentRepository, useClass: PaymentRepositoryImpl },
+    { provide: PlanRepository, useClass: PlanRepositoryImpl },
   ],
 };

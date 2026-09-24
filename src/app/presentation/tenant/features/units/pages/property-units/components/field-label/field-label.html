@@ -1,0 +1,15 @@
+<span class="field-label-row">
+  <label [for]="forId()">
+    {{ label() }}
+    @if (required()) {
+      <span class="required">*</span>
+    }
+  </label>
+
+  @if (description()) {
+    <app-tooltip [ariaLabel]="'Ayuda ' + label()" position="top">
+      <strong>{{ label() }}</strong>
+      {{ description() }}
+    </app-tooltip>
+  }
+</span>

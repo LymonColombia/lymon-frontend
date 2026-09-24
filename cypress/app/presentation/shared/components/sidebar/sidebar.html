@@ -1,0 +1,108 @@
+@if (isExpanded()) {
+  <div class="sidebar-backdrop" (click)="toggleExpanded()" (keydown)="toggleExpanded()" aria-hidden="true"></div>
+}
+
+<button
+  class="sidebar-float-toggle"
+  type="button"
+  (click)="toggleExpanded()"
+  [title]="isExpanded() ? 'Contraer menú' : 'Expandir menú'"
+  [attr.aria-label]="isExpanded() ? 'Contraer menú lateral' : 'Expandir menú lateral'"
+  [attr.aria-expanded]="isExpanded()"
+>
+  <ng-icon name="bootstrapLayoutSidebar" size="20px" aria-hidden="true"></ng-icon>
+</button>
+
+<nav class="sidebar" [class.sidebar--collapsed]="!isExpanded()" [class.sidebar--ready]="transitionsReady()">
+  <div class="sidebar-header">
+    <a routerLink="/lyhost" class="sidebar-logo-link">
+      <img
+        class="sidebar-logo-image"
+        [class.sidebar-logo-image--hidden]="!isExpanded()"
+        src="/images/LyHost.svg"
+        alt="LyHost"
+        width="140"
+        height="38"
+      />
+      <img
+        class="sidebar-logo-image--collapsed"
+        [class.sidebar-logo-image--collapsed-visible]="!isExpanded()"
+        src="/images/LyHost.svg"
+        alt="LyHost"
+        width="56"
+        height="14"
+      />
+    </a>
+  </div>
+
+  <ul class="sidebar-menu">
+    @for (item of menuItems; track item.route) {
+      <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <a [routerLink]="item.route" class="menu-link" [attr.title]="!isExpanded() ? item.label : null">
+          <ng-icon [name]="item.icon" size="20px" class="menu-icon" aria-hidden="true"></ng-icon>
+          <span class="menu-label" [class.menu-label--hidden]="!isExpanded()">{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <div class="sidebar-footer" aria-label="Perfil">
+    <div class="profile" [class.profile--collapsed]="!isExpanded()">
+      <div class="profile-avatar" aria-hidden="true" [title]="!isExpanded() ? tenantNameDisplay() : null">{{ tenantInitials() }}</div>
+      <div class="profile-text" [class.profile-text--hidden]="!isExpanded()">
+        <div class="profile-name" [title]="tenantNameDisplay()">{{ tenantNameDisplay() }}</div>
+        <div class="profile-email" [title]="tenantEmailDisplay()">{{ tenantEmailDisplay() }}</div>
+      </div>
+    </div>
+
+    @if (isExpanded()) {
+      <div class="profile-menu-container" #profileMenuContainer>
+        <button
+          type="button"
+          class="profile-menu-trigger"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="isProfileMenuOpen()"
+          aria-label="Opciones de perfil"
+          (click)="toggleProfileMenu()"
+        >
+          <ng-icon name="bootstrapThreeDotsVertical" size="18px" aria-hidden="true"></ng-icon>
+        </button>
+
+        @if (isProfileMenuOpen()) {
+          <div class="profile-menu" role="menu" aria-label="Opciones">
+            <button type="button" class="profile-menu-item" role="menuitem" (click)="goToSettings()">
+              Configuración
+            </button>
+
+            <button
+              type="button"
+              class="profile-menu-item profile-menu-item--danger"
+              role="menuitem"
+              (click)="openLogoutConfirm()"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <app-modal
+    [open]="isLogoutConfirmOpen()"
+    title="Cerrar sesión"
+    size="small"
+    (closed)="closeLogoutConfirm()"
+  >
+    <p>¿Seguro que deseas cerrar sesión?</p>
+
+    <div modal-footer style="display: flex; justify-content: flex-end; gap: 10px;">
+      <app-button variant="secondary" size="medium" type="button" (clicked)="closeLogoutConfirm()">
+        Cancelar
+      </app-button>
+      <app-button variant="primary" size="medium" type="button" (clicked)="confirmLogout()">
+        Cerrar sesión
+      </app-button>
+    </div>
+  </app-modal>
+</nav>

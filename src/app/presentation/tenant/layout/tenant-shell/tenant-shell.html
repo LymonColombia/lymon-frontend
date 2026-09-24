@@ -1,0 +1,8 @@
+<app-sidebar></app-sidebar>
+<div class="shell-content">
+  <router-outlet></router-outlet>
+</div>
+
+@if (tutorialService.isActive()) {
+  <app-tutorial-overlay />
+}

@@ -1,0 +1,15 @@
+<button
+  [type]="type()"
+  [disabled]="disabled() || loading()"
+  [attr.aria-label]="ariaLabel()"
+  (click)="onClick($event)"
+  class="btn-inner"
+>
+  @if (loading()) {
+    <span class="btn-spinner" aria-hidden="true"></span>
+  }
+  
+  <span class="btn-content" [class.btn-content-hidden]="loading()">
+    <ng-content />
+  </span>
+</button>

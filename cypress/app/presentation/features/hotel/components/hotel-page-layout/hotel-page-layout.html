@@ -1,0 +1,58 @@
+<div class="main-content">
+  <div class="page-container">
+    @if (backLink()) {
+      <div class="page-back">
+        <a [routerLink]="backLink()!" class="back-link">
+          <ng-icon name="bootstrapChevronLeft" size="16px" aria-hidden="true"></ng-icon>
+          {{ backLabel() }}
+        </a>
+      </div>
+    }
+
+    <div class="page-title-row">
+      <div class="page-title-content">
+        @if (hasCustomIcon() || iconName()) {
+          <div class="page-icon">
+            @if (hasCustomIcon()) {
+              <ng-content select="[hotelPageIcon]"></ng-content>
+            } @else {
+              <ng-icon [name]="iconName()!" size="28px" aria-hidden="true"></ng-icon>
+            }
+          </div>
+        }
+
+        <div class="title-text">
+          @if (breadcrumbItems().length > 0) {
+            <app-breadcrumb [items]="breadcrumbItems()" />
+          }
+          <h1 class="page-title">{{ title() }}</h1>
+          @if (subtitle()) {
+            <p class="page-subtitle">{{ subtitle() }}</p>
+          }
+        </div>
+      </div>
+
+      @if (hasRightContent()) {
+        <div class="page-title-meta-right">
+          @if (hasMeta()) {
+            <div class="page-header-meta">
+              <ng-content select="[hotelPageMeta]"></ng-content>
+            </div>
+          }
+
+          @if (hasActions()) {
+            <div class="page-header-actions">
+              <ng-content select="[hotelPageActions]"></ng-content>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="page-body">
+      <ng-content></ng-content>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</div>

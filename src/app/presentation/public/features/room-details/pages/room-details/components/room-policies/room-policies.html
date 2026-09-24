@@ -1,0 +1,12 @@
+<div class="info-section">
+  <h2 class="section-title">Políticas de la Habitación</h2>
+
+  <div class="policies-list">
+    @for (policy of policies(); track policy) {
+      <div class="policy-item">
+        <ng-icon name="bootstrapCheckLg" size="20px" aria-hidden="true"></ng-icon>
+        <span>{{ policy }}</span>
+      </div>
+    }
+  </div>
+</div>

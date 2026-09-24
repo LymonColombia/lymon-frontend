@@ -1,0 +1,81 @@
+<section class="room-ratings">
+  <h2 class="ratings-title">
+    Valoraciones
+    @if (total() > 0) {
+      <span class="ratings-count">({{ total() }})</span>
+    }
+  </h2>
+
+  <div class="ratings-filters">
+    <div class="filter-wrapper">
+      <app-select
+        [options]="sortOptions"
+        [value]="sort() ?? ''"
+        size="small"
+        placeholder="Más recientes"
+        (valueChange)="onSortChange($event)"
+      ></app-select>
+    </div>
+
+    <div class="filter-wrapper">
+      <app-select
+        [options]="filterRateOptions"
+        [value]="filterRate() ?? ''"
+        size="small"
+        placeholder="Todas las estrellas"
+        (valueChange)="onFilterRateChange($event)"
+      ></app-select>
+    </div>
+  </div>
+
+  @if (isLoading() && ratings().length === 0) {
+    <div class="ratings-loading">Cargando valoraciones...</div>
+  }
+
+  @if (!isLoading() && ratings().length === 0) {
+    <div class="ratings-empty">
+      <ng-icon name="bootstrapStar" size="32px" aria-hidden="true"></ng-icon>
+      <p>Aún no hay valoraciones para esta habitación.</p>
+    </div>
+  }
+
+  <div class="ratings-list">
+    @for (rating of ratings(); track rating.id) {
+      <article class="rating-card">
+        <div class="rating-header">
+          <div class="rating-guest">
+            <div class="guest-avatar">{{ (rating.guestName ?? '?').charAt(0).toUpperCase() }}</div>
+            <div class="guest-info">
+              <span class="guest-name">{{ rating.guestName }}</span>
+              <span class="rating-date">{{ formatDate(rating.createdAt) }}</span>
+            </div>
+          </div>
+          <div class="rating-stars" [attr.aria-label]="rating.rate + ' de 5 estrellas'">
+            @for (filled of getStars(rating.rate); track $index) {
+              <ng-icon
+                [name]="filled ? 'bootstrapStarFill' : 'bootstrapStar'"
+                size="14px"
+                class="star-icon"
+                aria-hidden="true"
+              ></ng-icon>
+            }
+          </div>
+        </div>
+        @if (rating.message) {
+          <p class="rating-message">{{ rating.message }}</p>
+        }
+      </article>
+    }
+  </div>
+
+  @if (hasMore()) {
+    <button
+      type="button"
+      class="btn-load-more"
+      (click)="onLoadMore()"
+      [disabled]="isLoading()"
+    >
+      {{ isLoading() ? 'Cargando...' : 'Ver más valoraciones' }}
+    </button>
+  }
+</section>

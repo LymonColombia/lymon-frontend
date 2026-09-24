@@ -1,0 +1,419 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
+}
+
+.main-content {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg-secondary);
+}
+
+.dashboard-container {
+  padding: var(--spacing-3xl);
+  max-width: var(--max-width-2xl);
+  margin: 0 auto;
+  font-family: var(--font-primary);
+  animation: dashboard-enter 220ms ease-out;
+}
+
+.dashboard-header {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.subtitle {
+  margin-top: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+}
+
+.feedback-state {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-danger-light);
+  background: color-mix(in srgb, var(--color-danger-light) 35%, white);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.feedback-state p {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+.retry-button {
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-danger);
+  color: #fff;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-3xl);
+}
+
+.kpi-grid.is-loading,
+.charts-grid.is-loading,
+.table-card.is-loading {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.kpi-card {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.card-title {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.icon-container {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(108, 194, 74, 0.1);
+  color: var(--color-primary-dark);
+}
+
+.chart-icon {
+  color: var(--color-success);
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.trend {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trend-value {
+  font-weight: var(--font-weight-semibold);
+}
+
+.trend.positive .trend-value {
+  color: var(--color-success);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-3xl);
+}
+
+.chart-card,
+.table-card {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+}
+
+.chart-card h3,
+.table-card h3 {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+}
+
+.chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.revenue-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: color-mix(in srgb, var(--color-success) 20%, #fff);
+  color: color-mix(in srgb, var(--color-success) 80%, #000);
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.revenue-chip--negative {
+  background: color-mix(in srgb, var(--color-danger-light) 35%, #fff);
+  color: var(--color-danger);
+}
+
+.chart-container {
+  height: 220px;
+  width: 100%;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  border-bottom: 1px dashed var(--color-border-light);
+  border-left: 1px dashed var(--color-border-light);
+  padding: var(--spacing-sm) var(--spacing-sm) 26px 12px;
+  box-sizing: border-box;
+}
+
+.bar-group {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+
+.bar {
+  width: 100%;
+  max-width: 32px;
+  background: var(--color-primary-gradient);
+  border-radius: 6px 6px 0 0;
+  transition: height var(--transition-base);
+}
+
+.label {
+  position: absolute;
+  bottom: -22px;
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+.revenue-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  height: auto;
+}
+
+.revenue-row {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.revenue-row-month {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-transform: lowercase;
+}
+
+.revenue-row-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-bg-secondary);
+  overflow: hidden;
+}
+
+.revenue-row-fill {
+  height: 100%;
+  min-width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5ab6ff, #2f80ed);
+  transition: width var(--transition-base);
+}
+
+.revenue-row-value {
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.table-card h3 {
+  margin-bottom: var(--spacing-lg);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.reservations-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.reservations-table th {
+  padding: var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.reservations-table td {
+  padding: var(--spacing-md);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-bg-secondary);
+}
+
+.reservations-table tr:last-child td {
+  border-bottom: none;
+}
+
+.guest-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.empty-cell {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  min-width: 86px;
+  height: 28px;
+}
+
+.status-badge.active {
+  background-color: var(--color-success);
+  color: #fff;
+}
+
+.status-badge.confirmed {
+  background-color: var(--color-info);
+  color: #fff;
+}
+
+.status-badge.pending {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #d39e00;
+}
+
+.status-badge.finished {
+  background-color: var(--color-border-medium);
+  color: var(--color-text-secondary);
+}
+
+.status-badge.cancelled {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+@keyframes dashboard-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-container {
+    animation: none;
+  }
+
+  .main-content,
+  .kpi-card,
+  .bar,
+  .revenue-row-fill {
+    transition: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboard-container {
+    padding: var(--spacing-xl);
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .revenue-row {
+    grid-template-columns: 34px 1fr;
+  }
+
+  .revenue-row-value {
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  .chart-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
