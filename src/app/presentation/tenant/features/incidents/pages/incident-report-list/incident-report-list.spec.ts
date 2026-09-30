@@ -6,13 +6,25 @@ import { vi } from 'vitest';
 
 import { IncidentReportListComponent } from './incident-report-list';
 import { GetIncidentReportsUseCase } from '@/domain/tenant/incident-report/use-cases/get-incident-reports.use-case';
-import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
-import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
+import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
+import { Property } from '@/domain/shared/property/property.model';
 import { IncidentReport } from '@/domain/tenant/incident-report/incident-report.model';
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────
 
 const PROPERTY_ID = '69a6379a2ffa06e9f5cdf556';
+const OTHER_PROPERTY_ID = '69a6379a2ffa06e9f5cdf999';
+
+function property(id: string, name: string): Property {
+  return { id, name, propertyType: 'HOTEL', city: 'Medellín' };
+}
+
+const SINGLE_PROPERTY: Property[] = [property(PROPERTY_ID, 'Hotel Boutique')];
+
+const MULTIPLE_PROPERTIES: Property[] = [
+  ...SINGLE_PROPERTY,
+  property(OTHER_PROPERTY_ID, 'Finca La Montana'),
+];
 
 const MOCK_REPORTS: IncidentReport[] = [
   {
@@ -32,34 +44,70 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
   let fixture: ComponentFixture<IncidentReportListComponent>;
   let component: IncidentReportListComponent;
   let getMock: ReturnType<typeof vi.fn>;
+  let getPropertiesMock: ReturnType<typeof vi.fn>;
   let router: Router;
-  let userSessionService: UserSessionService;
 
   beforeEach(async () => {
     getMock = vi.fn();
+    getPropertiesMock = vi.fn().mockReturnValue(of(SINGLE_PROPERTY));
 
     await TestBed.configureTestingModule({
       imports: [IncidentReportListComponent],
       providers: [
         provideRouter([]),
         { provide: GetIncidentReportsUseCase, useValue: { execute: getMock } },
-        { provide: GetTenantProfileUseCase, useValue: { execute: () => of({ data: {} }) } },
-        {
-          provide: UserSessionService,
-          useValue: {
-            get tenantId() {
-              return PROPERTY_ID;
-            },
-            currentUser: () => null,
-          },
-        },
+        { provide: GetPropertiesUseCase, useValue: { execute: getPropertiesMock } },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(IncidentReportListComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
-    userSessionService = TestBed.inject(UserSessionService);
+  });
+
+  // ─── Carga de propiedades ────────────────────────────────────────────────
+
+  describe('Carga de propiedades', () => {
+    it('debe consultar el id de propiedad y no el de la cuenta', () => {
+      getMock.mockReturnValue(of(MOCK_REPORTS));
+
+      fixture.detectChanges();
+
+      expect(getPropertiesMock).toHaveBeenCalled();
+      expect(getMock).toHaveBeenCalledWith(PROPERTY_ID);
+    });
+
+    it('debe seleccionar la primera propiedad cuando hay varias', () => {
+      getPropertiesMock.mockReturnValue(of(MULTIPLE_PROPERTIES));
+      getMock.mockReturnValue(of(MOCK_REPORTS));
+
+      fixture.detectChanges();
+
+      expect(component.properties().length).toBe(2);
+      expect(component.selectedPropertyId()).toBe(PROPERTY_ID);
+      expect(getMock).toHaveBeenCalledWith(PROPERTY_ID);
+    });
+
+    it('debe marcar que no hay propiedades cuando la cuenta no tiene ninguna', () => {
+      getPropertiesMock.mockReturnValue(of([]));
+
+      fixture.detectChanges();
+
+      expect(component.hasNoProperties()).toBe(true);
+      expect(component.isLoading()).toBe(false);
+      expect(getMock).not.toHaveBeenCalled();
+    });
+
+    it('debe reportar error si falla la carga de propiedades', () => {
+      getPropertiesMock.mockReturnValue(throwError(() => new Error('Network error')));
+
+      fixture.detectChanges();
+
+      expect(component.errorMessage()).toBe(
+        'No se pudieron cargar las propiedades de tu cuenta.',
+      );
+      expect(getMock).not.toHaveBeenCalled();
+    });
   });
 
   // ─── GET: Cargar novedades por propiedad ────────────────────────────────
@@ -96,16 +144,26 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
       );
     });
 
-    it('debe mostrar error cuando no existe tenantId', () => {
-      vi.spyOn(userSessionService, 'tenantId', 'get').mockReturnValue(null);
+    it('debe recargar al cambiar la propiedad seleccionada', () => {
+      getPropertiesMock.mockReturnValue(of(MULTIPLE_PROPERTIES));
+      getMock.mockReturnValue(of(MOCK_REPORTS));
+      fixture.detectChanges();
+      getMock.mockClear();
 
+      component.onPropertyChange({ target: { value: OTHER_PROPERTY_ID } } as unknown as Event);
+
+      expect(component.selectedPropertyId()).toBe(OTHER_PROPERTY_ID);
+      expect(getMock).toHaveBeenCalledWith(OTHER_PROPERTY_ID);
+    });
+
+    it('debe limpiar la lista si se deselecciona la propiedad', () => {
+      getMock.mockReturnValue(of(MOCK_REPORTS));
       fixture.detectChanges();
 
+      component.onPropertyChange({ target: { value: '' } } as unknown as Event);
+
+      expect(component.reports()).toEqual([]);
       expect(component.isLoading()).toBe(false);
-      expect(component.errorMessage()).toBe(
-        'No se pudo obtener la propiedad asociada a tu cuenta.',
-      );
-      expect(getMock).not.toHaveBeenCalled();
     });
 
     it('debe mantener loading en true hasta recibir respuesta', () => {
