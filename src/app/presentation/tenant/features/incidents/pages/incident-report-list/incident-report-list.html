@@ -21,6 +21,26 @@
       <div class="alert alert-error">{{ errorMessage() }}</div>
     }
 
+    @if (!hasNoProperties()) {
+      <div class="filter-bar">
+        <label class="filter-label" for="propertyFilter">Propiedad</label>
+        <select
+          class="filter-select"
+          id="propertyFilter"
+          [value]="selectedPropertyId()"
+          (change)="onPropertyChange($event)"
+          [disabled]="isLoadingProperties()"
+        >
+          <option value="" disabled>
+            {{ isLoadingProperties() ? 'Cargando propiedades...' : 'Selecciona una propiedad' }}
+          </option>
+          @for (property of properties(); track property.id) {
+            <option [value]="property.id">{{ property.name }}</option>
+          }
+        </select>
+      </div>
+    }
+
     @if (isLoading()) {
       <div class="loading-state">
         <div class="spinner"></div>
@@ -31,12 +51,20 @@
         <div class="empty-icon">
           <ng-icon name="bootstrapFileEarmarkText" size="40px" aria-hidden="true"></ng-icon>
         </div>
-        <h2 class="empty-title">No hay novedades registradas</h2>
-        <p class="empty-subtitle">Registra la primera novedad laboral de tu propiedad.</p>
-        <app-button variant="primary" size="medium" (clicked)="navigateToCreate()">
-          <ng-icon name="bootstrapFileEarmarkPlus" size="16px" aria-hidden="true"></ng-icon>
-          Registrar Novedad
-        </app-button>
+        @if (hasNoProperties()) {
+          <h2 class="empty-title">No tienes propiedades registradas</h2>
+          <p class="empty-subtitle">Registra una propiedad antes de crear novedades laborales.</p>
+          <app-button variant="primary" size="medium" routerLink="/admin/properties">
+            Ir a Propiedades
+          </app-button>
+        } @else {
+          <h2 class="empty-title">No hay novedades registradas</h2>
+          <p class="empty-subtitle">Registra la primera novedad laboral de tu propiedad.</p>
+          <app-button variant="primary" size="medium" (clicked)="navigateToCreate()">
+            <ng-icon name="bootstrapFileEarmarkPlus" size="16px" aria-hidden="true"></ng-icon>
+            Registrar Novedad
+          </app-button>
+        }
       </div>
     } @else {
       <div class="reports-grid">

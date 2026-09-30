@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://lymon-backend-development.onrender.com',
+  apiUrl: 'http://localhost:3000',
   auth: {
     endpoint: '/auth',
   },

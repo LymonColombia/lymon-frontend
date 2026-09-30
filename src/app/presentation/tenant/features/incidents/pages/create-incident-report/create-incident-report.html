@@ -11,8 +11,43 @@
       <div class="alert alert-error">{{ errorMessage() }}</div>
     }
 
+    @if (hasNoProperties()) {
+      <div class="form-card">
+        <div class="no-properties">
+          <h2 class="no-properties-title">No tienes propiedades registradas</h2>
+          <p class="no-properties-text">
+            Registra una propiedad antes de crear novedades laborales.
+          </p>
+          <app-button variant="primary" size="medium" routerLink="/admin/properties">
+            Ir a Propiedades
+          </app-button>
+        </div>
+      </div>
+    } @else {
     <div class="form-card">
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        <div class="form-group">
+          <label class="form-label" for="propertyId">
+            Propiedad <span class="required">*</span>
+          </label>
+          <select
+            class="form-input"
+            id="propertyId"
+            formControlName="propertyId"
+            [class.form-input--error]="propertyIdControl.invalid && propertyIdControl.touched"
+          >
+            <option value="" disabled>
+              {{ isLoadingProperties() ? 'Cargando propiedades...' : 'Selecciona una propiedad' }}
+            </option>
+            @for (property of properties(); track property.id) {
+              <option [value]="property.id">{{ property.name }}</option>
+            }
+          </select>
+          @if (propertyIdControl.invalid && propertyIdControl.touched) {
+            <span class="field-error">Selecciona la propiedad donde ocurrió la novedad.</span>
+          }
+        </div>
 
         <div class="form-group">
           <label class="form-label" for="title">
@@ -59,13 +94,14 @@
           <app-button type="button" variant="secondary" routerLink="/admin/incidents">
             Cancelar
           </app-button>
-          <app-button type="submit" variant="primary" [loading]="isLoading()" [disabled]="isLoading()">
+          <app-button type="submit" variant="primary" [loading]="isLoading()" [disabled]="isLoading() || isLoadingProperties()">
             Registrar Novedad
           </app-button>
         </div>
 
       </form>
     </div>
+    }
 
   </div>
 </app-tenant-page-layout>
