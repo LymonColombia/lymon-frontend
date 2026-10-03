@@ -8,6 +8,8 @@ import { PropertiesComponent } from './properties';
 import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
 import { CreatePropertyUseCase } from '@/domain/shared/property/use-cases/create-property.use-case';
 import { CancellationPolicy, PropertyType } from '@/domain/shared/property/property.model';
+import { UserRepository } from '@/domain/tenant/user/user.repository';
+import { PropertyRepository } from '@/domain/shared/property/property.repository';
 
 const mockGetProperties = { execute: vi.fn() };
 const mockCreateProperty = { execute: vi.fn() };
@@ -56,6 +58,9 @@ async function setup() {
   await TestBed.configureTestingModule({
     imports: [PropertiesComponent],
     providers: [
+      // Real TutorialService (inactive) and the unmocked property use cases need these to construct
+      { provide: UserRepository, useValue: {} },
+      { provide: PropertyRepository, useValue: {} },
       provideRouter([]),
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
       { provide: CreatePropertyUseCase, useValue: mockCreateProperty },
