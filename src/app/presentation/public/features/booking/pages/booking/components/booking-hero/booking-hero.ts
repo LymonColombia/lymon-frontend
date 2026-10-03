@@ -26,7 +26,7 @@ const SHORT_MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago
 const DATE_WRAPPER_SELECTOR = '.date-trigger-wrapper';
 
 @Component({
-  selector: 'booking-hero',
+  selector: 'app-booking-hero',
   standalone: true,
   imports: [NgIcon, CalendarComponent],
   providers: [provideIcons({ bootstrapCalendar, bootstrapPeopleFill, bootstrapSearch })],
@@ -40,7 +40,7 @@ export class BookingHeroComponent implements OnInit {
   readonly initialStartDate = input<string | undefined>(undefined);
   readonly initialEndDate = input<string | undefined>(undefined);
   readonly initialMinGuests = input<number | undefined>(undefined);
-  readonly search = output<BookingSearchParams>();
+  readonly searchSubmit = output<BookingSearchParams>();
 
   readonly checkInDate = signal<string | null>(null);
   readonly checkOutDate = signal<string | null>(null);
@@ -92,7 +92,7 @@ export class BookingHeroComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.search.emit({
+    this.searchSubmit.emit({
       startDate: this.checkInDate() ?? undefined,
       endDate: this.checkOutDate() ?? undefined,
       minGuests: this.minGuests(),

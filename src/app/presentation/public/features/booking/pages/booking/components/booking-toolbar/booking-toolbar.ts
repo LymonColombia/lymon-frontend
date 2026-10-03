@@ -6,7 +6,7 @@ import { SelectComponent, SelectOption } from '@/presentation/shared/components/
 export type BookingSortOption = 'price-asc' | 'price-desc' | 'rating';
 
 @Component({
-  selector: 'booking-toolbar',
+  selector: 'app-booking-toolbar',
   standalone: true,
   imports: [NgIcon, SelectComponent],
   providers: [provideIcons({ bootstrapSearch, bootstrapX })],

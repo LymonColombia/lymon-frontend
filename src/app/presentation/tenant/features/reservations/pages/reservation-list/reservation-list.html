@@ -118,7 +118,7 @@
   </section>
 
   @if (selectedReservation(); as res) {
-  <div class="modal-overlay-wrapper" (keydown.escape)="closeDetails()">
+  <div class="modal-overlay-wrapper">
     <button type="button" class="modal-overlay-backdrop" (click)="closeDetails()" aria-label="Cerrar detalles"></button>
     <div class="modal-container">
       <header class="modal-header">
@@ -237,7 +237,7 @@
   }
 
   @if (showCancelConfirm()) {
-  <div class="modal-overlay-wrapper" (keydown.escape)="closeCancelConfirm()">
+  <div class="modal-overlay-wrapper">
     <button type="button" class="modal-overlay-backdrop" (click)="closeCancelConfirm()"
       aria-label="Cerrar confirmación"></button>
     <div class="modal-container confirm-modal">
@@ -278,7 +278,7 @@
   }
 
   @if (showEditModal()) {
-  <div class="modal-overlay-wrapper" (keydown.escape)="closeEditModal()">
+  <div class="modal-overlay-wrapper">
     <button type="button" class="modal-overlay-backdrop" (click)="closeEditModal()"
       aria-label="Cerrar edición"></button>
     <div class="modal-container">
@@ -337,7 +337,7 @@
   }
 
   @if (showCheckInInfoModal()) {
-  <div class="modal-overlay-wrapper" (keydown.escape)="closeCheckInInfoModal()">
+  <div class="modal-overlay-wrapper">
     <button type="button" class="modal-overlay-backdrop" (click)="closeCheckInInfoModal()"
       aria-label="Cerrar información"></button>
     <div class="modal-container confirm-modal">

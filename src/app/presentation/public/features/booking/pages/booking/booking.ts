@@ -19,7 +19,7 @@ const ITEMS_PER_PAGE = 8;
 const SEARCH_DEBOUNCE_MS = 400;
 
 @Component({
-  selector: 'booking-page',
+  selector: 'app-booking-page',
   standalone: true,
   imports: [
     FooterComponent,

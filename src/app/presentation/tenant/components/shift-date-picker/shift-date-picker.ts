@@ -23,7 +23,6 @@ const MONTHS = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ];
 
-const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 function toIso(date: Date): string {
   const year = date.getFullYear();

@@ -43,7 +43,7 @@ export interface BookingRoomCard {
 }
 
 @Component({
-  selector: 'booking-room-card',
+  selector: 'app-booking-room-card',
   standalone: true,
   imports: [NgIcon, ImageCarouselComponent],
   providers: [

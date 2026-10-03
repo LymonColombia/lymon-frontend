@@ -65,13 +65,13 @@
             (click)="toggleCategoriesDropdown()" (keydown.escape)="toggleCategoriesDropdown()"></button>
           }
         </div>
-        <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()" [tutorialHighlight]="2">
+        <app-button type="button" variant="primary" (clicked)="openCreateSupplyModal()" [appTutorialHighlight]="2">
           <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
           Agregar Insumo
         </app-button>
       </div>
       } @else {
-      <app-button type="button" variant="primary" (clicked)="openCreateProviderModal()" [tutorialHighlight]="3">
+      <app-button type="button" variant="primary" (clicked)="openCreateProviderModal()" [appTutorialHighlight]="3">
         <ng-icon name="bootstrapPlusLg" size="16px" aria-hidden="true"></ng-icon>
         Agregar Proveedor
       </app-button>
@@ -181,7 +181,7 @@
                 {{ getSupplierItemCount(provider.id) === 1 ? 'insumo asociado' : 'insumos asociados' }}
               </td>
               <td>
-                <div class="actions-cell" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                <div class="actions-cell" role="presentation" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
                   <button type="button" class="icon-action" (click)="openEditProviderModal(provider)"
                     aria-label="Editar proveedor" title="Editar">
                     <ng-icon name="bootstrapPencilSquare" size="15px" aria-hidden="true"></ng-icon>

@@ -43,6 +43,9 @@ interface Variable {
 
 @Component({
   selector: 'app-email-config',
+  host: {
+    '(document:keydown.escape)': 'onEscapeKey()',
+  },
   imports: [TenantPageLayoutComponent, TenantPageActionsDirective, NgIcon],
   providers: [
     provideIcons({
@@ -169,6 +172,11 @@ El equipo de {NOMBRE_HOTEL}`,
 
   openModal(): void {
     this.showModal = true;
+  }
+
+  onEscapeKey(): void {
+    if (this.showPreviewModal) this.closePreviewModal();
+    else if (this.showModal) this.closeModal();
   }
 
   closeModal(): void {

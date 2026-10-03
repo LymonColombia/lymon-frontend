@@ -13,7 +13,7 @@ import {
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 
 @Directive({
-  selector: '[tutorialHighlight]',
+  selector: '[appTutorialHighlight]',
   standalone: true,
 })
 export class TutorialHighlightDirective implements OnDestroy {
@@ -21,7 +21,7 @@ export class TutorialHighlightDirective implements OnDestroy {
   private readonly renderer = inject(Renderer2);
   private readonly tutorialService = inject(TutorialService);
 
-  readonly tutorialHighlight = input.required<number>();
+  readonly appTutorialHighlight = input.required<number>();
 
   private readonly cleanupEffect: EffectRef;
 
@@ -31,7 +31,7 @@ export class TutorialHighlightDirective implements OnDestroy {
     const clickedSteps: Signal<Set<number>> = this.tutorialService.actionButtonClicked;
 
     this.cleanupEffect = effect(() => {
-      const step = this.tutorialHighlight();
+      const step = this.appTutorialHighlight();
       const shouldPulse =
         isActive() && currentStep() === step && !clickedSteps().has(step);
 
@@ -48,7 +48,7 @@ export class TutorialHighlightDirective implements OnDestroy {
 
   @HostListener('click')
   onClick(): void {
-    this.tutorialService.markActionButtonClicked(this.tutorialHighlight());
+    this.tutorialService.markActionButtonClicked(this.appTutorialHighlight());
   }
 
   ngOnDestroy(): void {

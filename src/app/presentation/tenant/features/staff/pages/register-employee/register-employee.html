@@ -149,8 +149,9 @@
                   @if (getRoleGroupAt($index).get('scopeType')?.value === SCOPE_UNIT) {
                     <div class="property-unit-grid">
                       <div class="form-group">
-                        <label>Propiedad <span class="required">*</span></label>
+                        <label [for]="'role-property-' + $index">Propiedad <span class="required">*</span></label>
                         <app-select
+                          [id]="'role-property-' + $index"
                           formControlName="selectedPropertyId"
                           [options]="propertySelectOptions()"
                           (valueChange)="onPropertySelectChange($index, $any($event))"
@@ -190,7 +191,7 @@
 
     <div class="form-actions">
       <app-button type="button" variant="secondary" (clicked)="onCancel()">Cancelar</app-button>
-      <app-button type="submit" variant="primary" [disabled]="isLoading()" [loading]="isLoading()" [tutorialHighlight]="4">
+      <app-button type="submit" variant="primary" [disabled]="isLoading()" [loading]="isLoading()" [appTutorialHighlight]="4">
         <ng-icon name="bootstrapPersonFillAdd" size="18px" aria-hidden="true"></ng-icon>
         @if (isLoading()) {
           Registrando...

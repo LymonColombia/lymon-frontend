@@ -72,8 +72,12 @@ export class InputComponent implements ControlValueAccessor {
     return classes.join(' ');
   });
 
-  private onChange: (value: TypeValue) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: TypeValue) => void = () => {
+    // Replaced by registerOnChange
+  };
+  private onTouched: () => void = () => {
+    // Replaced by registerOnTouched
+  };
 
   writeValue(value:TypeValue): void {
     if (value === null || value === undefined || value === '') {

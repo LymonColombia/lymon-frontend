@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 @Component({
-  selector: 'catalog-pagination',
+  selector: 'app-catalog-pagination',
   standalone: true,
   imports: [],
   templateUrl: './catalog-pagination.html',

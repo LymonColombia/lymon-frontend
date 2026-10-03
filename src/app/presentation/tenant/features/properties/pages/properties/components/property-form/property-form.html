@@ -8,9 +8,10 @@
 
   <div class="form-row">
     <div class="form-group">
-      <label>Nombre <span class="required">*</span></label>
+      <label for="property-name">Nombre <span class="required">*</span></label>
       <app-input
         type="text"
+        id="property-name"
         formControlName="name"
         placeholder="Hotel Paraíso"
       />
@@ -21,8 +22,9 @@
   </div>
 
   <div class="form-group">
-    <label>Descripción <span class="required">*</span></label>
+    <label for="property-description">Descripción <span class="required">*</span></label>
     <textarea
+      id="property-description"
       formControlName="description"
       rows="3"
       placeholder="Describe tu propiedad..."
@@ -50,9 +52,10 @@
 
   <div class="form-row">
     <div class="form-group">
-      <label>Ciudad <span class="required">*</span></label>
+      <label for="property-city">Ciudad <span class="required">*</span></label>
       <app-input
         type="text"
+        id="property-city"
         formControlName="city"
         placeholder="Bogotá"
       />
@@ -61,9 +64,10 @@
       }
     </div>
     <div class="form-group">
-      <label>Departamento / Estado <span class="required">*</span></label>
+      <label for="property-state">Departamento / Estado <span class="required">*</span></label>
       <app-input
         type="text"
+        id="property-state"
         formControlName="state"
         placeholder="Cundinamarca"
       />
@@ -75,9 +79,10 @@
 
   <div class="form-row">
     <div class="form-group">
-      <label>País <span class="required">*</span></label>
+      <label for="property-country">País <span class="required">*</span></label>
       <app-input
         type="text"
+        id="property-country"
         formControlName="country"
         placeholder="Colombia"
       />
@@ -86,9 +91,10 @@
       }
     </div>
     <div class="form-group">
-      <label>Código Postal <span class="required">*</span></label>
+      <label for="property-zipCode">Código Postal <span class="required">*</span></label>
       <app-input
         type="text"
+        id="property-zipCode"
         formControlName="zipCode"
         placeholder="110111"
       />
@@ -102,9 +108,10 @@
 
   <div class="form-row">
     <div class="form-group">
-      <label>Check-in <span class="required">*</span></label>
+      <label for="property-checkInTime">Check-in <span class="required">*</span></label>
       <app-input
         type="time"
+        id="property-checkInTime"
         formControlName="checkInTime"
       />
       @if (form().controls['checkInTime'].invalid && form().controls['checkInTime'].touched) {
@@ -112,9 +119,10 @@
       }
     </div>
     <div class="form-group">
-      <label>Check-out <span class="required">*</span></label>
+      <label for="property-checkOutTime">Check-out <span class="required">*</span></label>
       <app-input
         type="time"
+        id="property-checkOutTime"
         formControlName="checkOutTime"
       />
       @if (form().controls['checkOutTime'].invalid && form().controls['checkOutTime'].touched) {
@@ -129,9 +137,10 @@
 
   <div class="form-row">
     <div class="form-group">
-      <label>Teléfono del Anfitrión <span class="required">*</span></label>
+      <label for="property-hostPhone">Teléfono del Anfitrión <span class="required">*</span></label>
       <app-input
         type="tel"
+        id="property-hostPhone"
         formControlName="hostPhone"
         placeholder="+57 300 000 0000"
       />
@@ -140,9 +149,10 @@
       }
     </div>
     <div class="form-group">
-      <label>Correo del Anfitrión <span class="required">*</span></label>
+      <label for="property-hostEmail">Correo del Anfitrión <span class="required">*</span></label>
       <app-input
         type="email"
+        id="property-hostEmail"
         formControlName="hostEmail"
         placeholder="host@hotel.com"
       />

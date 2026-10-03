@@ -426,8 +426,8 @@ export class ExperienceFormComponent implements OnChanges {
 
   private resolveBlackoutRanges(
     type: ExperienceAvailabilityType,
-    ranges: Array<{ startAt: string | null; endAt: string | null }>,
-  ): Array<{ startAt: string; endAt: string }> | undefined {
+    ranges: { startAt: string | null; endAt: string | null }[],
+  ): { startAt: string; endAt: string }[] | undefined {
     if (type !== 'DATE_RANGE') return undefined;
     return ranges.map((range) => ({
       startAt: this.toIsoDateTime(range.startAt ?? ''),

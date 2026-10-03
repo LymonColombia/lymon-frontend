@@ -65,6 +65,9 @@ interface ProviderRow {
   contactPhone: string;
 }
 
+// Select options can't hold null, so "no supplier" is an empty string in the form
+const NO_SUPPLIER = '';
+
 @Component({
   selector: 'app-inventory',
   standalone: true,
@@ -146,7 +149,7 @@ export class InventoryComponent implements OnInit {
   readonly isCategoriesDropdownOpen = signal(false);
   readonly categories = signal<InventoryCategory[]>([]);
   readonly notification = signal<{ message: string; type: 'error' | 'success' } | null>(null);
-  private notificationTimeout: any;
+  private notificationTimeout: ReturnType<typeof setTimeout> | null = null;
 
   readonly isAssignSupplierModalOpen = signal(false);
   readonly selectedItemForSupplier = signal<SupplyRow | null>(null);
@@ -227,11 +230,11 @@ export class InventoryComponent implements OnInit {
       value: provider.id,
       label: provider.name
     }));
-    return [{ value: null as any, label: 'Sin proveedor' }, ...options];
+    return [{ value: NO_SUPPLIER, label: 'Sin proveedor' }, ...options];
   });
 
   readonly supplierAssignmentForm = this.fb.group({
-    supplierId: [null as string | null],
+    supplierId: [NO_SUPPLIER],
   });
 
   readonly providerOptions = computed<SelectOption[]>(() => {
@@ -523,7 +526,7 @@ export class InventoryComponent implements OnInit {
   openAssignSupplierModal(item: SupplyRow): void {
     this.selectedItemForSupplier.set(item);
     this.supplierAssignmentForm.reset({
-      supplierId: item.supplierId
+      supplierId: item.supplierId ?? NO_SUPPLIER
     });
     this.isAssignSupplierModalOpen.set(true);
   }
@@ -609,7 +612,7 @@ export class InventoryComponent implements OnInit {
     const { supplierId } = this.supplierAssignmentForm.getRawValue();
 
     this.isSavingSupplierAssignment.set(true);
-    this.associateInventorySupplierUseCase.execute(propertyId, item.id, supplierId).subscribe({
+    this.associateInventorySupplierUseCase.execute(propertyId, item.id, supplierId || null).subscribe({
       next: () => {
         this.isSavingSupplierAssignment.set(false);
         this.showNotification('¡Proveedor asignado con éxito!', 'success');

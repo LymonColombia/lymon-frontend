@@ -12,12 +12,14 @@
 
     <div class="nav-actions">
       <div class="nav-profile-wrapper">
-        <div class="nav-profile" (click)="toggleDropdown()" [class.nav-profile--open]="isDropdownOpen()">
-          <div class="profile-avatar" aria-hidden="true">{{ initials() }}</div>
-          <div class="profile-info">
+        <button type="button" class="nav-profile"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isDropdownOpen()" (click)="toggleDropdown()" [class.nav-profile--open]="isDropdownOpen()">
+          <span class="profile-avatar" aria-hidden="true">{{ initials() }}</span>
+          <span class="profile-info">
             <span class="profile-name">{{ profileLabel() }}</span>
             <span class="profile-email">{{ guestEmail() }}</span>
-          </div>
+          </span>
           <ng-icon
             name="bootstrapChevronDown"
             size="13px"
@@ -25,7 +27,7 @@
             [class.profile-chevron--open]="isDropdownOpen()"
             aria-hidden="true"
           />
-        </div>
+        </button>
 
         @if (isDropdownOpen()) {
           <div class="profile-dropdown" role="menu" aria-label="Profile actions">
