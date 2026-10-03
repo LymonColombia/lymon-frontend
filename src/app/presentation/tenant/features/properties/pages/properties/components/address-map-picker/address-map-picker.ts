@@ -74,8 +74,12 @@ export class AddressMapPickerComponent implements ControlValueAccessor, OnDestro
   private pendingCenter?: L.LatLngExpression;
   private searchTimeout?: ReturnType<typeof setTimeout>;
   private resizeObserver?: ResizeObserver;
-  private onChange: (value: AddressLocationValue) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: AddressLocationValue) => void = () => {
+    // Replaced by registerOnChange
+  };
+  private onTouched: () => void = () => {
+    // Replaced by registerOnTouched
+  };
 
   readonly mapContainer = viewChild.required<ElementRef<HTMLDivElement>>('mapContainer');
 

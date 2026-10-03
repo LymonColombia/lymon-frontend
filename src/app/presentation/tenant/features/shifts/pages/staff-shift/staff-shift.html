@@ -177,7 +177,7 @@
       </label>
 
       <button type="button" class="btn-primary btn-assign" (click)="openCreateAssignmentModal()"
-        aria-label="Asignar turno" [tutorialHighlight]="6">
+        aria-label="Asignar turno" [appTutorialHighlight]="6">
         <ng-icon name="bootstrapPersonPlusFill" size="15"></ng-icon>
         Asignar turno
       </button>
@@ -314,7 +314,7 @@
 
 
 
-        <button type="button" class="btn-primary" (click)="openCreateShiftModal()" [tutorialHighlight]="5">
+        <button type="button" class="btn-primary" (click)="openCreateShiftModal()" [appTutorialHighlight]="5">
           + Crear turno fijo
         </button>
       </div>
@@ -384,8 +384,7 @@
   @if (isCreateModalOpen()) {
   <button type="button" class="modal-backdrop" (click)="closeCreateShiftModal()" aria-label="Cerrar modal"></button>
 
-  <dialog class="modal-card modal-card--wide" open aria-modal="true" aria-labelledby="create-shift-title"
-    (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+  <dialog class="modal-card modal-card--wide" open aria-modal="true" aria-labelledby="create-shift-title">
     <header class="modal-header">
       <div class="modal-header-info">
         <h2 id="create-shift-title">Crear turno</h2>
@@ -412,12 +411,12 @@
       <div class="form-section">
         <span class="form-section-label">Propiedad</span>
         <div class="form-section-fields">
-          <label class="field-group field-group--full">
+          <label class="field-group field-group--full" for="shift-property">
             <span class="field-label">Propiedad <span class="field-required">*</span></span>
             @if (properties().length === 0) {
             <div class="field-loading">Cargando propiedades…</div>
             } @else {
-            <select class="field-input" [value]="newShiftPropertyId()" (change)="onNewShiftPropertyChange($event)">
+            <select id="shift-property" class="field-input" [value]="newShiftPropertyId()" (change)="onNewShiftPropertyChange($event)">
               @for (property of properties(); track property.id) {
               <option [value]="property.id">{{ property.name }}</option>
               }
@@ -510,8 +509,7 @@
   <button type="button" class="modal-backdrop" (click)="closeCreateAssignmentModal()"
     aria-label="Cerrar modal"></button>
 
-  <dialog class="modal-card" open aria-modal="true" aria-labelledby="create-assignment-title"
-    (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+  <dialog class="modal-card" open aria-modal="true" aria-labelledby="create-assignment-title">
     <header class="modal-header">
       <h2 id="create-assignment-title">Nueva asignación</h2>
       <button type="button" class="icon-btn" aria-label="Cerrar modal" (click)="closeCreateAssignmentModal()">
@@ -533,7 +531,7 @@
         </select>
       </label>
 
-      <label class="field-group">
+      <div class="field-group">
         <span class="field-label">Nombre del empleado</span>
         <div class="employee-select-wrap" style="position: relative; display: flex; align-items: center;">
           <button type="button" class="field-input field-input--select-btn" (click)="openEmployeeSelectorModal()"
@@ -549,9 +547,9 @@
           </button>
           }
         </div>
-      </label>
+      </div>
 
-      <label class="field-group">
+      <div class="field-group">
         <span class="field-label">Turno</span>
         @if (!assignmentProperty() || !assignmentEmployee()) {
         <div class="field-input field-input--disabled">Seleccioná propiedad y empleado primero</div>
@@ -570,7 +568,7 @@
           }
         </div>
         }
-      </label>
+      </div>
     </div>
 
     <footer class="modal-actions">
@@ -591,7 +589,7 @@
   }
 
   @if (isEmployeeSelectorModalOpen()) {
-  <button type="button" class="modal-backdrop modal-backdrop--top" (click)="closeEmployeeSelectorModal()"
+  <button type="button" class="modal-backdrop modal-backdrop--top" (click)="closeEmployeeSelectorModal()" aria-label="Cerrar selector de empleado"
     style="z-index: 1000;"></button>
   <dialog class="modal-card modal-card--top" open aria-modal="true"
     style="z-index: 1001; max-width: 400px; padding: 1.5rem;">
@@ -628,8 +626,7 @@
   <button type="button" class="modal-backdrop" (click)="closeShiftDetail()" aria-label="Cerrar detalle"></button>
 
   <dialog class="modal-card" [class.modal-card--detail]="!isEditingDetail()"
-    [class.modal-card--detail-wide]="isEditingDetail()" open aria-modal="true" aria-labelledby="shift-detail-title"
-    (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+    [class.modal-card--detail-wide]="isEditingDetail()" open aria-modal="true" aria-labelledby="shift-detail-title">
 
     <header class="modal-header" [class.modal-header--detail]="!isEditingDetail()">
       <div class="modal-header-info">
@@ -824,8 +821,7 @@
   @if (isCalendarOverviewModalOpen()) {
   <button type="button" class="modal-backdrop modal-backdrop--overview" (click)="closeCalendarOverviewModal()"
     aria-label="Cerrar calendario"></button>
-  <dialog class="modal-card modal-card--overview" open aria-modal="true" (click)="$event.stopPropagation()"
-    (keydown)="$event.stopPropagation()">
+  <dialog class="modal-card modal-card--overview" open aria-modal="true">
     <header class="modal-header">
       <div class="modal-header-info">
         <h2 id="calendar-overview-title">Lista de Asignaciones</h2>

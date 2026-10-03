@@ -23,7 +23,7 @@ import {
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 
 @Component({
-  selector: 'catalog-nav',
+  selector: 'app-catalog-nav',
   standalone: true,
   imports: [ButtonComponent, NgOptimizedImage, NgIcon, RouterModule],
   providers: [

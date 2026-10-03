@@ -39,6 +39,12 @@ module.exports = defineConfig([
       angular.configs.templateRecommended,
       angular.configs.templateAccessibility,
     ],
-    rules: {},
+    rules: {
+      // Our form components render a native control inside, so a wrapping <label> or for/id works
+      "@angular-eslint/template/label-has-associated-control": [
+        "error",
+        { controlComponents: ["app-input", "app-select", "app-shift-date-picker"] },
+      ],
+    },
   }
 ]);

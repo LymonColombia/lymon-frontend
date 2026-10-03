@@ -6,7 +6,7 @@ import { TutorialOverlayComponent } from '@/presentation/tenant/layout/tutorial-
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 
 @Component({
-  selector: 'lyhost-tenant-shell',
+  selector: 'app-tenant-shell',
   standalone: true,
   imports: [RouterOutlet, SidebarComponent, TutorialOverlayComponent],
   templateUrl: './tenant-shell.html',

@@ -132,6 +132,7 @@ export class PlansComponent {
   }
 
   onUpdatePlan(): void {
+    // Plan upgrade flow not implemented yet
   }
 
   closeChangePlanModal(): void {

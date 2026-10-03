@@ -49,7 +49,7 @@ function buildOneTimeSlots(startAt: string | null, endAt: string | null): Availa
 function buildDateRangeSlots(
   startAt: string | null,
   endAt: string | null,
-  blackoutRanges: Array<{ startAt: string; endAt: string }>,
+  blackoutRanges: { startAt: string; endAt: string }[],
 ): AvailabilitySlot[] {
   if (!startAt || !endAt) return [];
 
@@ -90,7 +90,7 @@ function buildDateRangeSlots(
 /** RECURRING */
 function buildRecurringSlots(
   recurrence: { daysOfWeek: number[]; startTime?: string; endTime?: string },
-  blackoutRanges: Array<{ startAt: string; endAt: string }>,
+  blackoutRanges: { startAt: string; endAt: string }[],
 ): AvailabilitySlot[] {
   if (!recurrence.daysOfWeek?.length) return [];
 
@@ -145,7 +145,7 @@ function toIsoDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function isDateBlocked(dateStr: string, blackoutRanges: Array<{ startAt: string; endAt: string }>): boolean {
+function isDateBlocked(dateStr: string, blackoutRanges: { startAt: string; endAt: string }[]): boolean {
   return blackoutRanges.some((range) => {
     const blockStart = isoDatePart(range.startAt);
     const blockEnd = isoDatePart(range.endAt);

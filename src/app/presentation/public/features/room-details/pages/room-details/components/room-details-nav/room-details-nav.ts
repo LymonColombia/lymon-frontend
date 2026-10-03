@@ -36,7 +36,7 @@ const SHORT_MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago
 const DATE_TRIGGER_SELECTOR = '.nav-date-trigger-wrapper';
 
 @Component({
-  selector: 'room-details-nav',
+  selector: 'app-room-details-nav',
   standalone: true,
   imports: [ButtonComponent, CalendarComponent, GuestStepperComponent, NgOptimizedImage, NgIcon, RouterModule],
   providers: [
@@ -66,7 +66,7 @@ export class RoomDetailsNavComponent {
   readonly loginClicked = output<void>();
   readonly logoutClicked = output<void>();
   readonly myReservationsClicked = output<void>();
-  readonly search = output<RoomDetailsSearchParams>();
+  readonly searchSubmit = output<RoomDetailsSearchParams>();
 
   readonly isDropdownOpen = signal(false);
   readonly isCalendarOpen = signal(false);
@@ -150,7 +150,7 @@ export class RoomDetailsNavComponent {
 
   onSearch(): void {
     this.isCalendarOpen.set(false);
-    this.search.emit({
+    this.searchSubmit.emit({
       checkIn: this.checkIn(),
       checkOut: this.checkOut(),
       guests: this.guests(),

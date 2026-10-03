@@ -63,8 +63,7 @@ describe('PropertyUnitsComponent – sin propertyId en URL', () => {
   });
 
   it('navega a /admin/properties si no hay propertyId', async () => {
-    const { router } = await setup(null);
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    await setup(null);
     // ngOnInit already ran during fixture.detectChanges(); spy after the fact
     // Re-trigger to capture: use a new component
     TestBed.resetTestingModule();

@@ -1,4 +1,4 @@
-import { AvailabilityType, ExperienceScope, GuestExperience, GuestExperiencePage } from '@/domain/guest/guest-experience/guest-experience.model';
+import { AvailabilityType, ExperienceRecurrence, ExperienceScope, GuestExperience, GuestExperiencePage } from '@/domain/guest/guest-experience/guest-experience.model';
 import { GuestExperienceDto, GuestExperiencePageDto } from '@/infrastructure/guest/guest-experience/guest-experience.dto';
 
 export class GuestExperienceMapper {
@@ -26,13 +26,9 @@ export class GuestExperienceMapper {
       startAt: dto.startAt ?? null,
       endAt: dto.endAt ?? null,
       recurrence: dto.recurrence
-        ? {
-            daysOfWeek: (dto.recurrence as any).daysOfWeek,
-            startTime: (dto.recurrence as any).startTime,
-            endTime: (dto.recurrence as any).endTime,
-          }
+        ? { ...(dto.recurrence as ExperienceRecurrence) }
         : null,
-      blackoutRanges: (dto.blackoutRanges as Array<{ startAt: string; endAt: string }>).map((range) => ({
+      blackoutRanges: (dto.blackoutRanges as { startAt: string; endAt: string }[]).map((range) => ({
         startAt: range.startAt,
         endAt: range.endAt,
       })),

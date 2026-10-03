@@ -17,19 +17,19 @@ import {
 } from '@/presentation/shared/components/breadcrumb/breadcrumb';
 
 @Directive({
-  selector: '[tenantPageMeta]',
+  selector: '[appTenantPageMeta]',
   standalone: true,
 })
 export class TenantPageMetaDirective {}
 
 @Directive({
-  selector: '[tenantPageActions]',
+  selector: '[appTenantPageActions]',
   standalone: true,
 })
 export class TenantPageActionsDirective {}
 
 @Directive({
-  selector: '[tenantPageIcon]',
+  selector: '[appTenantPageIcon]',
   standalone: true,
 })
 export class TenantPageIconDirective {}

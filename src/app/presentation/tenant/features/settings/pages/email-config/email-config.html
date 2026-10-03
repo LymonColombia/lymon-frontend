@@ -3,7 +3,7 @@
   subtitle="Configura correos automáticos para mejorar la atención al cliente"
   iconName="bootstrapEnvelopeAt"
 >
-    <div tenantPageActions class="email-header-actions">
+    <div appTenantPageActions class="email-header-actions">
       <button class="btn-new-template" (click)="openModal()">
         <ng-icon name="bootstrapPlusLg" size="18px" style="color: white"></ng-icon>
         Nueva Plantilla
@@ -101,8 +101,8 @@
 </app-tenant-page-layout>
 
 @if (showModal) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-container" (click)="$event.stopPropagation()">
+  <div class="modal-overlay" role="presentation" (click)="closeModal()">
+    <div class="modal-container" role="presentation" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <div class="modal-title-row">
           <ng-icon name="bootstrapPlusLg" size="24px" style="color: #009a44"></ng-icon>
@@ -175,8 +175,8 @@
 }
 
 @if (showPreviewModal && selectedTemplate) {
-  <div class="modal-overlay" (click)="closePreviewModal()">
-    <div class="preview-modal-container" (click)="$event.stopPropagation()">
+  <div class="modal-overlay" role="presentation" (click)="closePreviewModal()">
+    <div class="preview-modal-container" role="presentation" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2 class="modal-title">Vista Previa</h2>
         <button class="modal-close" (click)="closePreviewModal()">

@@ -36,9 +36,9 @@
       <li
         class="select-option"
         role="option"
-        [class.select-option-selected]="value() === option.value"
+        [class.select-option-selected]="selectedValue() === option.value"
         [class.select-option-disabled]="option.disabled ?? false"
-        [attr.aria-selected]="value() === option.value"
+        [attr.aria-selected]="selectedValue() === option.value"
         [attr.aria-disabled]="option.disabled ?? false"
         [attr.tabindex]="option.disabled ? -1 : 0"
         (click)="selectOption(option)"

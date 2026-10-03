@@ -32,18 +32,20 @@
     <div class="nav-actions">
       @if (isAuthenticated()) {
         <div class="nav-profile-wrapper">
-          <div
+          <button type="button"
             class="nav-profile"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isDropdownOpen()"
             [class.nav-profile--open]="isDropdownOpen()"
             (click)="toggleDropdown()"
           >
-            <div class="profile-avatar" aria-hidden="true">{{ initials() }}</div>
-            <div class="profile-info">
+            <span class="profile-avatar" aria-hidden="true">{{ initials() }}</span>
+            <span class="profile-info">
               <span class="profile-name">{{ profileLabel() }}</span>
               @if (guestEmail()) {
                 <span class="profile-email">{{ guestEmail() }}</span>
               }
-            </div>
+            </span>
             <ng-icon
               name="bootstrapChevronDown"
               size="13px"
@@ -51,7 +53,7 @@
               [class.profile-chevron--open]="isDropdownOpen()"
               aria-hidden="true"
             />
-          </div>
+          </button>
 
           @if (isDropdownOpen()) {
             <div class="profile-dropdown" role="menu" aria-label="Profile actions">

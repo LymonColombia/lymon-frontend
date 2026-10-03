@@ -15,7 +15,7 @@ import {
 
 
 @Component({
-  selector: 'experience-card',
+  selector: 'app-experience-card',
   standalone: true,
   imports: [NgIcon],
   templateUrl: './experience-card.html',

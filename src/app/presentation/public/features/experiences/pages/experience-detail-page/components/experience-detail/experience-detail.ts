@@ -6,14 +6,13 @@ import { SelectComponent, SelectOption } from '@/presentation/shared/components/
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCalendar, bootstrapGeoAlt, bootstrapGeoAltFill, bootstrapPeopleFill, bootstrapSignpostSplit, bootstrapStar } from '@ng-icons/bootstrap-icons';
 import { LocationMap } from '@/presentation/shared/components/location-map/location-map';
-import { Cart } from '@/domain/guest/guest-cart/cart.model';
 import { GuestExperience } from '@/domain/guest/guest-experience/guest-experience.model';
 import { AddCartExperienceItemUseCase } from '@/domain/guest/guest-cart/use-cases/add-cart-experience-item.use-case';
 import { buildAvailableSlots } from '@/presentation/shared/utils/experience-availability.util';
 import { coverImageOf } from '@/presentation/shared/utils/media.util';
 
 @Component({
-  selector: 'experience-detail',
+  selector: 'app-experience-detail',
   standalone: true,
   imports: [BreadcrumbComponent, SelectComponent, NgIcon, LocationMap],
   providers: [
@@ -165,7 +164,7 @@ export class ExperienceDetailComponent {
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (_cart: Cart) => {
+        next: () => {
           this.isReserving.set(false);
           this.router.navigate(['/guest/cart']);
         },

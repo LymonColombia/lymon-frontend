@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { GuestRecoverPasswordUseCase } from '@/domain/guest/guest-auth/use-cases/guest-recover-password.use-case';
-import { HttpErrorResponse } from '@angular/common/http';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapArrowRightCircleFill,
@@ -44,7 +43,7 @@ export class GuestForgotPasswordComponent {
         this.isLoading.set(false);
         this.submitted.set(true);
       },
-      error: (_err: HttpErrorResponse) => {
+      error: () => {
         // Always show the same "check your email" screen — do not reveal if email exists
         this.isLoading.set(false);
         this.submitted.set(true);

@@ -1,6 +1,6 @@
 import { Observable, map } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ReservationRepository, PaginatedReservations } from '@/domain/shared/reservation/reservation.repository';
 import { Reservation } from '@/domain/shared/reservation/reservation.model';
 import { CreateReservationInput } from '@/domain/shared/reservation/use-cases/create-reservation.use-case';
@@ -11,12 +11,9 @@ import { environment } from '@env';
   providedIn: 'root',
 })
 export class ReservationRepositoryImpl extends ReservationRepository {
+  private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
   private readonly endpoint = environment.reservations.endpoint;
-
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   getReservations(params?: { page?: number; limit?: number; status?: string; tenantId?: string }): Observable<PaginatedReservations> {
     let httpParams = new HttpParams();

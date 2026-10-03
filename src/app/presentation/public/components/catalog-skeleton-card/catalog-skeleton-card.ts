@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'catalog-skeleton-card',
+  selector: 'app-catalog-skeleton-card',
   standalone: true,
   templateUrl: './catalog-skeleton-card.html',
   styleUrl: './catalog-skeleton-card.css',

@@ -21,6 +21,12 @@ import { UpdateExperienceUseCase } from '@/domain/tenant/experience/use-cases/up
 import { GetExperienceByIdUseCase } from '@/domain/tenant/experience/use-cases/get-experience-by-id.use-case';
 import { ExperienceFormSubmitPayload } from '../../models/experience-form.model';
 
+interface SaveErrorResponse {
+  status?: number;
+  message?: unknown;
+  error?: { statusCode?: number; message?: unknown };
+}
+
 @Component({
   selector: 'app-tenant-experience-form-page',
   standalone: true,
@@ -185,7 +191,7 @@ export class TenantExperienceFormPageComponent implements OnInit {
     this.router.navigate(['/admin/experiences']);
   }
 
-  private handleSaveError(message: string, error: any): void {
+  private handleSaveError(message: string, error: unknown): void {
     this.isSaving.set(false);
     this.saveErrorTitle.set('No se pudo guardar la experiencia');
     this.saveErrorMessage.set(this.translateSaveError(error) || message);
@@ -196,7 +202,8 @@ export class TenantExperienceFormPageComponent implements OnInit {
     this.saveErrorModalOpen.set(false);
   }
 
-  private translateSaveError(error: any): string {
+  private translateSaveError(rawError: unknown): string {
+    const error = rawError as SaveErrorResponse | null;
     const statusCode = Number(error?.error?.statusCode ?? error?.status);
     const rawMessage = this.normalizeErrorMessage(error?.error?.message ?? error?.message).toLowerCase();
 

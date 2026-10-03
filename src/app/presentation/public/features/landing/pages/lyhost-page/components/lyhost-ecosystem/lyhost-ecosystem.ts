@@ -51,7 +51,7 @@ function alpha(t: number) {
   return 1;
 }
 
-type Particle = { x: number; y: number; opacity: number; color: string };
+interface Particle { x: number; y: number; opacity: number; color: string }
 
 type OrbitNode = (typeof NODE_DEFS)[number] & {
   x: number;

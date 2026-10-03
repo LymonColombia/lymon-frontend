@@ -3,7 +3,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 
 @Component({
-  selector: 'booking-empty-state',
+  selector: 'app-booking-empty-state',
   standalone: true,
   imports: [NgIcon],
   providers: [provideIcons({ bootstrapSearch })],

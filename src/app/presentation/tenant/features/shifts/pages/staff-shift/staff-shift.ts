@@ -27,7 +27,8 @@ import { AssignStaffToShiftUseCase } from '@/domain/tenant/shift/use-cases/assig
 import { UnassignStaffFromShiftUseCase } from '@/domain/tenant/shift/use-cases/unassign-staff.use-case';
 import { StaffRepository } from '@/domain/tenant/staff/staff.repository';
 import { Property } from '@/domain/shared/property/property.model';
-import { StaffMember } from '@/domain/tenant/staff/staff.model';
+import { RoleAssignment, StaffMember } from '@/domain/tenant/staff/staff.model';
+import { ShiftResponse } from '@/domain/tenant/shift/shift.model';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
   bootstrapTrash,
@@ -80,12 +81,6 @@ interface FixedShiftCard {
   notes?: string;
   staffMemberIds?: string[];
   colorIndex?: number;
-}
-
-interface ShiftOption {
-  id: string | number;
-  name: string;
-  timeRange: string;
 }
 
 @Component({
@@ -311,7 +306,7 @@ export class StaffShiftComponent implements OnInit {
   readonly filteredAssignmentDays = computed<AssignmentDay[]>(() => {
     const query = this.normalizeText(this.calendarSearch());
 
-    let filteredDays = this.assignmentDays();
+    const filteredDays = this.assignmentDays();
 
     if (!query) {
       return filteredDays;
@@ -389,7 +384,7 @@ export class StaffShiftComponent implements OnInit {
     propNames: string,
     shiftFilter: string,
     avatarColor: string
-  ): any[] {
+  ) {
     const memberShifts = this.fixedShifts().filter(s => s.staffMemberIds?.includes(member.id || ''));
 
     if (memberShifts.length > 0) {
@@ -693,12 +688,9 @@ export class StaffShiftComponent implements OnInit {
       const startQuarter = Math.round((startH * 60 + startM) / 15);
       const endQuarter = Math.round((endH * 60 + endM) / 15);
 
-      let gridCol = '';
-      if (startQuarter < endQuarter) {
-        gridCol = `${startQuarter + 1} / ${endQuarter + 1}`;
-      } else {
-        gridCol = `${startQuarter + 1} / 97`;
-      }
+      const gridCol = startQuarter < endQuarter
+        ? `${startQuarter + 1} / ${endQuarter + 1}`
+        : `${startQuarter + 1} / 97`;
 
       segments.push({
         id: `overview-${dateIso}-${index}`,
@@ -722,7 +714,7 @@ export class StaffShiftComponent implements OnInit {
   private loadStaff(): void {
     this.getStaffUseCase.execute().subscribe({
       next: (members) => {
-        const normalized = members.map((m: any) => ({
+        const normalized = members.map((m: StaffMember & { _id?: string; userId?: string }) => ({
           ...m,
           id: m.id || m._id || m.userId || ''
         }));
@@ -736,7 +728,7 @@ export class StaffShiftComponent implements OnInit {
     this.staffRepository.getProperties().subscribe({
       next: (response) => {
         const data = response.data ?? [];
-        const normalizedData = data.map((p: any) => ({
+        const normalizedData = data.map((p: (typeof data)[number] & { _id?: string; propertyId?: string }) => ({
           ...p,
           id: p.id || p._id || p.propertyId || ''
         }));
@@ -756,7 +748,7 @@ export class StaffShiftComponent implements OnInit {
   private loadFixedShifts(): void {
     this.getShiftsUseCase.execute().subscribe({
       next: (shifts) => {
-        const mappedShifts: FixedShiftCard[] = shifts.map((s: any) => {
+        const mappedShifts: FixedShiftCard[] = shifts.map((s: ShiftResponse & { _id?: string; shiftId?: string; property_id?: string }) => {
           const id = s.id || s._id || s.shiftId || '';
           const propertyId = s.propertyId || s.property_id || '';
           const colorIndex = typeof id === 'string'
@@ -1114,7 +1106,7 @@ export class StaffShiftComponent implements OnInit {
       const emp = this.staffMembers().find(e => e.id === empId);
       if (emp) {
         let hasAccess = false;
-        emp.roleAssignments?.forEach((ra: any) => {
+        emp.roleAssignments?.forEach((ra) => {
           if (ra.scope?.type === 'TENANT') {
             hasAccess = true;
           } else if (ra.scope?.type === 'PROPERTY' && Array.isArray(ra.scope.resourceIds)) {
@@ -1146,12 +1138,12 @@ export class StaffShiftComponent implements OnInit {
   getEmployeePropertiesText(employee: StaffMember): string {
     let isTenant = false;
     const names: string[] = [];
-    employee.roleAssignments?.forEach((ra: any) => {
+    employee.roleAssignments?.forEach((ra) => {
       if (ra.scope?.type === 'TENANT') {
         isTenant = true;
       } else if (ra.scope?.type === 'PROPERTY') {
         if (ra.scope.resources && Array.isArray(ra.scope.resources)) {
-          ra.scope.resources.forEach((r: any) => { if (r.name) names.push(r.name); });
+          ra.scope.resources.forEach((r) => { if (r.name) names.push(r.name); });
         } else if (ra.scope.resourceIds && Array.isArray(ra.scope.resourceIds)) {
           ra.scope.resourceIds.forEach((id: string) => {
             const p = this.properties().find(prop => prop.id === id);
@@ -1177,7 +1169,7 @@ export class StaffShiftComponent implements OnInit {
     if (propertyFilter && propertyFilter !== 'ALL') {
       staff = staff.filter(emp => {
         let hasAccess = false;
-        emp.roleAssignments?.forEach((ra: any) => {
+        emp.roleAssignments?.forEach((ra) => {
           if (ra.scope?.type === 'TENANT') {
             hasAccess = true;
           } else if (ra.scope?.type === 'PROPERTY' && Array.isArray(ra.scope.resourceIds)) {
@@ -1212,7 +1204,7 @@ export class StaffShiftComponent implements OnInit {
     if (employee) {
       let isTenant = false;
       const propIds: string[] = [];
-      employee.roleAssignments?.forEach((ra: any) => {
+      employee.roleAssignments?.forEach((ra) => {
         if (ra.scope?.type === 'TENANT') {
           isTenant = true;
         } else if (ra.scope?.type === 'PROPERTY') {
@@ -1271,8 +1263,7 @@ export class StaffShiftComponent implements OnInit {
   }
 
   createAssignment(): void {
-    const propertyId = this.assignmentProperty().trim();
-    let employeeId = this.assignmentEmployee().trim();
+    const employeeId = this.assignmentEmployee().trim();
     const shiftId = this.assignmentShiftId();
 
     const assignmentErrors = this.validateAssignment();
@@ -1561,7 +1552,7 @@ export class StaffShiftComponent implements OnInit {
     let isTenant = false;
     const names: string[] = [];
 
-    member.roleAssignments.forEach((ra: any) => {
+    member.roleAssignments.forEach((ra) => {
       if (ra.scope?.type === 'TENANT') {
         isTenant = true;
       } else if (ra.scope?.type === 'PROPERTY') {
@@ -1573,9 +1564,9 @@ export class StaffShiftComponent implements OnInit {
     return names.length > 0 ? [...new Set(names)].join(', ') : 'Sin propiedad asignada';
   }
 
-  private extractPropertyNamesFromScope(scope: any, names: string[]): void {
+  private extractPropertyNamesFromScope(scope: RoleAssignment['scope'], names: string[]): void {
     if (scope.resources && Array.isArray(scope.resources)) {
-      scope.resources.forEach((r: any) => {
+      scope.resources.forEach((r) => {
         if (r.name) names.push(r.name);
       });
     } else if (scope.resourceIds && Array.isArray(scope.resourceIds)) {
@@ -1588,7 +1579,7 @@ export class StaffShiftComponent implements OnInit {
 
   private checkStaffHasProperty(member: StaffMember, propertyId: string): boolean {
     if (!member.roleAssignments) return false;
-    return member.roleAssignments.some((ra: any) => {
+    return member.roleAssignments.some((ra) => {
       if (ra.scope?.type === 'TENANT') return true;
       return ra.scope?.type === 'PROPERTY' &&
         Array.isArray(ra.scope.resourceIds) &&

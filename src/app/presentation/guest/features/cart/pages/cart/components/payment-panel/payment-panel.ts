@@ -29,9 +29,7 @@ interface WompiWidgetCheckout {
   open(callback: (result: WompiWidgetResult) => void): void;
 }
 
-interface WompiWidgetConstructor {
-  new (config: WompiWidgetConfig): WompiWidgetCheckout;
-}
+type WompiWidgetConstructor = new (config: WompiWidgetConfig) => WompiWidgetCheckout;
 
 declare const WidgetCheckout: WompiWidgetConstructor;
 
