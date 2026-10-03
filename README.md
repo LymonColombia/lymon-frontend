@@ -72,6 +72,7 @@ Against a local backend, use the accounts it seeds: `dev.owner@lymon.local` (sta
 
 ```bash
 pnpm start                    # dev server on localhost:4200
+pnpm lint                     # ESLint (angular-eslint)
 pnpm run build                # production build
 pnpm test                     # unit tests (Vitest)
 pnpm test:cov:scope           # coverage for the files Sonar tracks

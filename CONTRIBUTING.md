@@ -133,10 +133,11 @@ There are also Cypress specs in `cypress/e2e/` (`pnpm cy:open`).
 
 ### Before you push
 
-Nothing in CI runs the build or the unit tests yet, so running them locally is the only
-check before review:
+CI runs the same three checks on every PR (section 7). Run them locally first so the PR
+doesn't come back red:
 
 ```bash
+pnpm lint        # ESLint (angular-eslint), including template accessibility rules
 pnpm run build   # type and template errors
 pnpm test        # all unit tests
 pnpm test --include "src/app/**/<feature>/**/*.spec.ts"   # only the feature you changed
@@ -177,14 +178,21 @@ Open the PR on GitHub:
 
 Then move the Jira ticket from **In Progress** to **PR**.
 
-**GitHub Actions** runs one workflow on every PR,
-[`.github/workflows/playwright.yml`](.github/workflows/playwright.yml). It installs
-dependencies, installs the Playwright browsers and runs the e2e suite. The suite runs
-against the deployed site, so it checks that `main` still works, not your branch. The
-HTML report is uploaded as the `playwright-report` artifact for 30 days.
+**GitHub Actions** runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml) on every PR
+to `main` and on every push to `main`. It has three jobs that run in sequence, each one only
+if the previous one passed:
 
-The build and the unit tests are **not** run in CI. Reviewers rely on you having run them
-(section 5).
+1. **`lint`**: `pnpm lint`
+2. **`build`**: `pnpm run build`
+3. **`test`**: `pnpm test --watch=false`
+
+All three must be green before the PR can be merged. Pushing new commits to the PR cancels
+the run still in progress. E2E tests are not part of CI; they will run against staging once
+the deployment pipeline exists.
+
+Making the checks required is a repository setting, not part of the workflow. An admin sets
+it once in **Settings → Branches → Branch protection rule** for `main`: enable **Require
+status checks to pass before merging** and select `lint`, `build` and `test`.
 
 Netlify builds and deploys `main` with `ng build --configuration production`
 ([`netlify.toml`](netlify.toml)).
