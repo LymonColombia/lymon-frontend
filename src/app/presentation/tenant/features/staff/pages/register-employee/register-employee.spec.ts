@@ -10,6 +10,7 @@ import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-pro
 import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
 import { AddStaffUseCase } from '@/domain/tenant/staff/use-cases/add-staff.use-case';
 import { Role } from '@/domain/tenant/staff/staff.model';
+import { UserRepository } from '@/domain/tenant/user/user.repository';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -34,6 +35,8 @@ describe('RegisterEmployeeComponent — US-026 (Ver roles del sistema)', () => {
     await TestBed.configureTestingModule({
       imports: [RegisterEmployeeComponent, ReactiveFormsModule],
       providers: [
+        // Real TutorialService (inactive) needs this to construct
+        { provide: UserRepository, useValue: {} },
         provideRouter([]),
         { provide: GetRolesUseCase, useValue: { execute: getRolesMock } },
         { provide: GetPropertiesUseCase, useValue: { execute: getPropertiesMock } },

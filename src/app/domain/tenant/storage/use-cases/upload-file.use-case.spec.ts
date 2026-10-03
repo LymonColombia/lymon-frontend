@@ -55,6 +55,7 @@ describe('UploadFileUseCase', () => {
           expect(repositoryMock.getPresignedUrl).toHaveBeenCalledWith({
             fileName: 'photo.jpg',
             contentType: 'image/jpeg',
+            fileSize: file.size,
             category: 'experiences',
           });
           expect(repositoryMock.getPresignedUrl).toHaveBeenCalledTimes(1);
@@ -151,6 +152,7 @@ describe('UploadFileUseCase', () => {
           expect(repositoryMock.getPresignedUrl).toHaveBeenCalledWith({
             fileName: 'hotel-report.final.docx',
             contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            fileSize: file.size,
             category: 'experiences',
           });
           resolve();

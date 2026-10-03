@@ -36,7 +36,7 @@ async function setup() {
   await TestBed.configureTestingModule({
     imports: [RegisterComponent],
     providers: [
-      provideRouter([]),
+      provideRouter([{ path: '**', children: [] }]),
       { provide: RegisterUseCase, useValue: mockRegisterUseCase },
       { provide: LoginUseCase, useValue: mockLoginUseCase },
       { provide: GetPlansUseCase, useValue: mockGetPlansUseCase },

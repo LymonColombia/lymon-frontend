@@ -45,7 +45,7 @@ describe('GuestLoginComponent — US-022', () => {
     await TestBed.configureTestingModule({
       imports: [GuestLoginComponent, ReactiveFormsModule],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: '**', children: [] }]),
         { provide: GuestLoginUseCase, useValue: { execute: executeMock } },
       ],
     }).compileComponents();
@@ -163,12 +163,12 @@ describe('GuestLoginComponent — US-022', () => {
       expect(component.errorMessage()).toBeNull();
     });
 
-    it('navega a /guest/dashboard aunque el email no esté verificado', () => {
+    it('navega a /booking aunque el email no esté verificado', () => {
       const navigateSpy = vi.spyOn(router, 'navigate');
 
       component.onSubmit();
 
-      expect(navigateSpy).toHaveBeenCalledWith(['/guest/dashboard']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/booking']);
     });
 
     it('llama al use-case con las credenciales correctas', () => {
@@ -207,12 +207,12 @@ describe('GuestLoginComponent — US-022', () => {
       expect(component.errorMessage()).toBeNull();
     });
 
-    it('navega a /guest/dashboard', () => {
+    it('navega a /booking', () => {
       const navigateSpy = vi.spyOn(router, 'navigate');
 
       component.onSubmit();
 
-      expect(navigateSpy).toHaveBeenCalledWith(['/guest/dashboard']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/booking']);
     });
   });
 });

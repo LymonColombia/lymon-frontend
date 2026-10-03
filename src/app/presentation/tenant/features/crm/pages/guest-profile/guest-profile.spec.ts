@@ -16,6 +16,8 @@ import { SendCrmGuestMessageUseCase } from '@/domain/tenant/crm/use-cases/send-c
 import { UpdateCrmGuestTagsUseCase } from '@/domain/tenant/crm/use-cases/update-crm-guest-tags.use-case';
 import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
+import { GetCrmGuestRatingsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-ratings.use-case';
+import { GetCrmGuestStatsUseCase } from '@/domain/tenant/crm/use-cases/get-crm-guest-stats.use-case';
 import { CrmGuest, CrmGuestBooking, CrmGuestNote } from '@/domain/tenant/crm/crm-guest.model';
 
 const mockGetCrmGuests = { execute: vi.fn() };
@@ -30,6 +32,8 @@ const mockSendCrmGuestMessage = { execute: vi.fn() };
 const mockUpdateCrmGuestTags = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
 const mockGetUnits = { execute: vi.fn() };
+const mockGetCrmGuestRatings = { execute: vi.fn() };
+const mockGetCrmGuestStats = { execute: vi.fn() };
 
 const MOCK_GUEST: CrmGuest = {
   id: 'guest-1',
@@ -75,6 +79,12 @@ function setupDefaultMocks(): void {
   mockUpdateCrmGuestTags.execute.mockReturnValue(of({}));
   mockGetProperties.execute.mockReturnValue(of([]));
   mockGetUnits.execute.mockReturnValue(of([]));
+  mockGetCrmGuestRatings.execute.mockReturnValue(
+    of({ items: [], averageRating: 0, pagination: { total: 0, page: 1, limit: 20, totalPages: 0 } }),
+  );
+  mockGetCrmGuestStats.execute.mockReturnValue(
+    of({ monthlySpending: [], bookingOrigins: { total: 0, sources: [] } }),
+  );
 }
 
 function makeActivatedRoute(guestId: string | null) {
@@ -102,6 +112,8 @@ async function setup(guestId: string | null = 'guest-1') {
       { provide: UpdateCrmGuestTagsUseCase, useValue: mockUpdateCrmGuestTags },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
       { provide: GetUnitsUseCase, useValue: mockGetUnits },
+      { provide: GetCrmGuestRatingsUseCase, useValue: mockGetCrmGuestRatings },
+      { provide: GetCrmGuestStatsUseCase, useValue: mockGetCrmGuestStats },
     ],
     schemas: [NO_ERRORS_SCHEMA],
   })
@@ -291,10 +303,10 @@ describe('GuestProfileComponent – señales computadas', () => {
     expect(component.totalSpend()).toBe(800);
   });
 
-  it('breadcrumbItems incluye el nombre del huésped', async () => {
+  it('breadcrumbItems termina en el detalle del huésped', async () => {
     const { component } = await setup();
     const items = component.breadcrumbItems();
-    expect(items[items.length - 1].label).toBe('Maria Gonzalez');
+    expect(items[items.length - 1].label).toBe('Detalle del huésped');
   });
 
   it('pinnedNotes solo contiene notas fijadas', async () => {
