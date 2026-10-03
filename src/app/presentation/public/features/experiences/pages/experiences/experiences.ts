@@ -143,10 +143,10 @@ export class ExperienceComponent {
   }
 
   onPageChange(page: number): void {
-    this.loadExperiences(page, true);
+    this.loadExperiences(page);
   }
 
-  private loadExperiences(page: number, scrollOnComplete = false): void {
+  private loadExperiences(page: number): void {
     this.experiencesLoadSubscription?.unsubscribe();
     this.isExperienceLoading.set(true);
 

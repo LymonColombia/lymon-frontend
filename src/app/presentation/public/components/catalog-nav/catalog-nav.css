@@ -153,6 +153,11 @@
 }
 
 .nav-profile {
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);

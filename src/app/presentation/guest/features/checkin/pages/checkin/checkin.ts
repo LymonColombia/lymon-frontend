@@ -46,8 +46,8 @@ interface GuestFormValue {
 }
 
 const GUEST_ROUTE_PREFIX = '/guest/';
-const ACTIVE_RESERVATION_STATUSES: ReadonlyArray<Reservation['status']> = ['active', 'confirmed', 'pending'];
-const RESERVATION_STATUSES: ReadonlyArray<Reservation['status']> = [
+const ACTIVE_RESERVATION_STATUSES: readonly Reservation['status'][] = ['active', 'confirmed', 'pending'];
+const RESERVATION_STATUSES: readonly Reservation['status'][] = [
   'active',
   'pending',
   'finished',

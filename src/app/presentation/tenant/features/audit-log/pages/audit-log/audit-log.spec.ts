@@ -9,7 +9,7 @@ import { GetAuditLogsUseCase } from '@/domain/tenant/audit-log/use-cases/get-aud
 
 const mockUseCase = { execute: vi.fn() };
 
-const EMPTY_RESULT = { items: [], total: 0 };
+interface AuditLogResult { items: never[]; total: number }
 
 async function setup() {
   await TestBed.configureTestingModule({
@@ -88,7 +88,7 @@ describe('AuditLogComponent – carga en curso', () => {
   });
 
   it('isLoading es true mientras el observable no emite', async () => {
-    const pending = new Subject<typeof EMPTY_RESULT>();
+    const pending = new Subject<AuditLogResult>();
     mockUseCase.execute.mockReturnValue(pending.asObservable());
     const { component } = await setup();
     expect(component.isLoading()).toBe(true);

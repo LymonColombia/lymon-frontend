@@ -4,14 +4,14 @@ import { GetInventoryCategoriesUseCase } from './get-inventory-categories.use-ca
 
 describe('GetInventoryCategoriesUseCase', () => {
   let useCase: GetInventoryCategoriesUseCase;
-  let repository: any;
+  let repository: { getCategories: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     repository = {
       getCategories: vi.fn(),
     };
     useCase = new GetInventoryCategoriesUseCase();
-    (useCase as any).repository = repository;
+    (useCase as unknown as { repository: typeof repository }).repository = repository;
   });
 
   it('should call getCategories from repository', async () => {

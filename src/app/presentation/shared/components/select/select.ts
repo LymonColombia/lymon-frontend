@@ -10,7 +10,7 @@ import {
   ViewChild,
   ElementRef,
   inject,
-  OnChanges,
+  OnChanges, OnDestroy,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -44,7 +44,7 @@ export interface SelectOption {
     '(document:click)': 'onDocumentClick($event)',
   },
 })
-export class SelectComponent implements ControlValueAccessor,OnChanges {
+export class SelectComponent implements ControlValueAccessor,OnChanges, OnDestroy {
   @ViewChild('triggerElement', { static: false }) triggerElement?: ElementRef<HTMLButtonElement>;
   private readonly hostElement = inject(ElementRef<HTMLElement>);
   private closeAnimationTimeoutId: number | null = null;
@@ -52,7 +52,7 @@ export class SelectComponent implements ControlValueAccessor,OnChanges {
 
   // Signal Inputs
   readonly options = input.required<SelectOption[]>();
-  readonly externalValue = input<string | number | null>(null, { alias: 'value' });
+  readonly value = input<string | number | null>(null);
   readonly size = input<SelectSize>('medium');
   readonly placeholder = input<string>('Select an option');
   readonly disabled = input<boolean>(false);
@@ -67,15 +67,15 @@ export class SelectComponent implements ControlValueAccessor,OnChanges {
   readonly blurred = output<void>();
 
   // Internal state
-  readonly value = signal<string | number | null>(null);
+  readonly selectedValue = signal<string | number | null>(null);
   readonly isFocused = signal<boolean>(false);
   readonly isOpen = signal<boolean>(false);
   readonly isClosing = signal<boolean>(false);
 
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['externalValue']) {
-      this.value.set(changes['externalValue'].currentValue ?? null);
+    if (changes['value']) {
+      this.selectedValue.set(changes['value'].currentValue ?? null);
     }
   }
   // Computed host classes
@@ -93,7 +93,7 @@ export class SelectComponent implements ControlValueAccessor,OnChanges {
   readonly isDropdownVisible = computed(() => this.isOpen() || this.isClosing());
 
   readonly selectedOption = computed(() =>
-    this.options().find((option) => option.value === this.value()) ?? null,
+    this.options().find((option) => option.value === this.selectedValue()) ?? null,
   );
 
   readonly triggerLabel = computed(() => {
@@ -106,11 +106,15 @@ export class SelectComponent implements ControlValueAccessor,OnChanges {
   });
 
   // ControlValueAccessor implementation
-  private onChange: (value: string | number | null) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string | number | null) => void = () => {
+    // Replaced by registerOnChange
+  };
+  private onTouched: () => void = () => {
+    // Replaced by registerOnTouched
+  };
 
   writeValue(value: string | number | null): void {
-    this.value.set(value);
+    this.selectedValue.set(value);
   }
 
   registerOnChange(fn: (value: string | number | null) => void): void {
@@ -121,7 +125,7 @@ export class SelectComponent implements ControlValueAccessor,OnChanges {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
+  setDisabledState(): void {
     // Disabled state is handled through the signal input
   }
 
@@ -199,7 +203,7 @@ export class SelectComponent implements ControlValueAccessor,OnChanges {
   }
 
   private updateValue(value: string | number, closeAfterSelection: boolean): void {
-    this.value.set(value);
+    this.selectedValue.set(value);
     this.onChange(value);
     this.valueChange.emit(value);
 
@@ -279,7 +283,7 @@ export class SelectComponent implements ControlValueAccessor,OnChanges {
       return;
     }
 
-    const currentIndex = options.findIndex((option) => option.value === this.value());
+    const currentIndex = options.findIndex((option) => option.value === this.selectedValue());
 
     for (let index = currentIndex + 1; index < options.length; index += 1) {
       if (!options[index].disabled) {
@@ -302,7 +306,7 @@ export class SelectComponent implements ControlValueAccessor,OnChanges {
       return;
     }
 
-    const currentIndex = options.findIndex((option) => option.value === this.value());
+    const currentIndex = options.findIndex((option) => option.value === this.selectedValue());
     const startIndex = currentIndex === -1 ? options.length - 1 : currentIndex - 1;
 
     for (let index = startIndex; index >= 0; index -= 1) {
