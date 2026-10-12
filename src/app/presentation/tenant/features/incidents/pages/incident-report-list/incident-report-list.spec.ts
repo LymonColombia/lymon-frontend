@@ -83,7 +83,7 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
 
       fixture.detectChanges();
 
-      expect(component.properties().length).toBe(2);
+      expect(component.properties()).toHaveLength(2);
       expect(component.selectedPropertyId()).toBe(PROPERTY_ID);
       expect(getMock).toHaveBeenCalledWith(PROPERTY_ID);
     });
@@ -120,7 +120,7 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
 
       expect(getMock).toHaveBeenCalledWith(PROPERTY_ID);
       expect(component.isLoading()).toBe(false);
-      expect(component.reports().length).toBe(1);
+      expect(component.reports()).toHaveLength(1);
       expect(component.reports()[0].title).toBe('Daño general');
     });
 
@@ -130,7 +130,7 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
       fixture.detectChanges();
 
       expect(component.isLoading()).toBe(false);
-      expect(component.reports().length).toBe(0);
+      expect(component.reports()).toHaveLength(0);
     });
 
     it('debe mostrar error cuando falla la carga', () => {
@@ -190,7 +190,7 @@ describe('IncidentReportListComponent — Listar Novedades Laborales', () => {
 
       fixture.detectChanges();
 
-      expect(component.reports().length).toBe(2);
+      expect(component.reports()).toHaveLength(2);
     });
   });
 
