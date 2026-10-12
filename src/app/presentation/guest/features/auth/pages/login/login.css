@@ -92,8 +92,8 @@
   width: 52px;
   height: 52px;
   color: #fff;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   cursor: pointer;
   backdrop-filter: blur(6px);
@@ -101,7 +101,7 @@
 }
 
 .carousel-arrow:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .carousel-thumbs {
