@@ -77,7 +77,7 @@ describe('CreateIncidentReportComponent — Registrar Novedad Laboral', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      expect(component.properties().length).toBe(2);
+      expect(component.properties()).toHaveLength(2);
       expect(component.form.controls.propertyId.value).toBe('');
     });
 
