@@ -5,14 +5,12 @@ import { CreateTenantGuestUseCase } from '@/domain/tenant/tenant-guest/use-cases
 import { CreateReservationUseCase } from '@/domain/shared/reservation/use-cases/create-reservation.use-case';
 import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
-import { GetTenantGuestsUseCase } from '@/domain/tenant/tenant-guest/use-cases/get-tenant-guests.use-case';
 import { FindTenantGuestByIdNumberUseCase } from '@/domain/tenant/tenant-guest/use-cases/find-tenant-guest-by-id-number.use-case';
 
 const mockCreateTenantGuestUseCase = { execute: vi.fn() };
 const mockCreateReservationUseCase = { execute: vi.fn() };
 const mockGetPropertiesUseCase = { execute: vi.fn() };
 const mockGetUnitsUseCase = { execute: vi.fn() };
-const mockGetTenantGuestsUseCase = { execute: vi.fn() };
 const mockFindTenantGuestByIdNumberUseCase = { execute: vi.fn() };
 
 async function setup() {
@@ -23,7 +21,6 @@ async function setup() {
       { provide: CreateReservationUseCase, useValue: mockCreateReservationUseCase },
       { provide: GetPropertiesUseCase, useValue: mockGetPropertiesUseCase },
       { provide: GetUnitsUseCase, useValue: mockGetUnitsUseCase },
-      { provide: GetTenantGuestsUseCase, useValue: mockGetTenantGuestsUseCase },
       { provide: FindTenantGuestByIdNumberUseCase, useValue: mockFindTenantGuestByIdNumberUseCase },
     ],
   });
@@ -60,7 +57,6 @@ describe('CreateReservationWizardComponent', () => {
     TestBed.resetTestingModule();
 
     mockGetPropertiesUseCase.execute.mockReturnValue(of([]));
-    mockGetTenantGuestsUseCase.execute.mockReturnValue(of([]));
     mockGetUnitsUseCase.execute.mockReturnValue(of([]));
     mockCreateReservationUseCase.execute.mockReturnValue(of({}));
     mockCreateTenantGuestUseCase.execute.mockReturnValue(of({ guestId: 'guest-new', fullName: 'New Guest', primaryEmail: 'new@test.com' }));
@@ -242,25 +238,6 @@ describe('CreateReservationWizardComponent', () => {
       expect(component.properties()).toEqual([{ id: 'p1', name: 'Propiedad sin nombre' }]);
     });
 
-    it('should load tenant guests and prefer fullName over name/email fallbacks', async () => {
-      mockGetTenantGuestsUseCase.execute.mockReturnValue(
-        of([
-          { id: 'g1', fullName: 'Carlos Ruiz' },
-          { id: 'g2', name: 'Only Name' },
-          { id: 'g3', primaryEmail: 'only-email@test.com' },
-          { id: 'g4' },
-        ]),
-      );
-
-      const { component } = await setup();
-
-      expect(component.guests()).toEqual([
-        { id: 'g1', name: 'Carlos Ruiz' },
-        { id: 'g2', name: 'Only Name' },
-        { id: 'g3', name: 'only-email@test.com' },
-        { id: 'g4', name: 'Sin Nombre' },
-      ]);
-    });
   });
 
   describe('onPropertySelect()', () => {
@@ -387,7 +364,6 @@ describe('CreateReservationWizardComponent', () => {
       component.registerAndNext();
 
       expect(component.reservationForm.guestId).toBe('guest-new');
-      expect(component.guests()).toEqual([{ id: 'guest-new', name: 'New Guest' }]);
       expect(component.isCreatingGuest()).toBe(false);
       // registerAndNext() only calls nextStep() — it does not set guestExists(),
       // so from step 1 (default) it advances by one, not straight to the confirmation step.

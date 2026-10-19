@@ -479,3 +479,48 @@ select {
     display: none;
   }
 }
+.guest-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--color-border-light, #e2e8f0);
+  background: var(--color-bg-subtle, #f8fafc);
+}
+
+.guest-summary-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: rgba(45, 193, 148, 0.15);
+  color: #2dc194;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.guest-summary-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #475569);
+}
+
+.guest-summary-info strong {
+  font-size: 0.875rem;
+  color: var(--color-text-primary, #0f172a);
+}
+
+.guest-summary-badge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(45, 193, 148, 0.15);
+  color: #1b8a68;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

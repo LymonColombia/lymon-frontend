@@ -18,7 +18,6 @@ import { CreateTenantGuestUseCase } from '@/domain/tenant/tenant-guest/use-cases
 import { CreateReservationUseCase } from '@/domain/shared/reservation/use-cases/create-reservation.use-case';
 import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
-import { GetTenantGuestsUseCase } from '@/domain/tenant/tenant-guest/use-cases/get-tenant-guests.use-case';
 import { FindTenantGuestByIdNumberUseCase } from '@/domain/tenant/tenant-guest/use-cases/find-tenant-guest-by-id-number.use-case';
 import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
 
@@ -50,7 +49,6 @@ export class CreateReservationWizardComponent implements OnInit {
   private readonly createReservationUseCase = inject(CreateReservationUseCase);
   private readonly getPropertiesUseCase = inject(GetPropertiesUseCase);
   private readonly getUnitsUseCase = inject(GetUnitsUseCase);
-  private readonly getTenantGuestsUseCase = inject(GetTenantGuestsUseCase);
   private readonly findTenantGuestByIdNumberUseCase = inject(FindTenantGuestByIdNumberUseCase);
 
   currentStep = signal(1);
@@ -87,7 +85,6 @@ export class CreateReservationWizardComponent implements OnInit {
 
   properties = signal<{ id: string; name: string }[]>([]);
   units = signal<{ id: string; name: string }[]>([]);
-  guests = signal<{ id: string; name: string }[]>([]);
 
   ngOnInit(): void {
     this.getPropertiesUseCase.execute().subscribe({
@@ -97,15 +94,6 @@ export class CreateReservationWizardComponent implements OnInit {
       error: (err) => console.error('Error fetching properties', err)
     });
 
-    this.getTenantGuestsUseCase.execute().subscribe({
-      next: (guestList) => {
-        this.guests.set(guestList.map(g => ({
-          id: g.id,
-          name: g.fullName || g.name || g.primaryEmail || g.email || 'Sin Nombre'
-        })));
-      },
-      error: (err) => console.error('Error fetching guests', err)
-    });
   }
 
   onPropertySelect(propertyId: string) {
@@ -197,7 +185,6 @@ export class CreateReservationWizardComponent implements OnInit {
 
     this.createTenantGuestUseCase.execute(this.guestForm).subscribe({
       next: (res) => {
-        this.guests.update(list => [...list, { id: res.guestId, name: res.fullName }]);
         this.reservationForm.guestId = res.guestId;
 
         this.isCreatingGuest.set(false);

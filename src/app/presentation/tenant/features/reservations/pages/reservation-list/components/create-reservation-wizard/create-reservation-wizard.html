@@ -145,18 +145,19 @@
           </div>
           }
           <div class="form-group full-width">
-            <label for="guestSelect">Seleccionar Huésped</label>
-            <div class="select-wrapper">
-              <select id="guestSelect" [(ngModel)]="reservationForm.guestId" name="guestId"
-                [disabled]="guestExists() === false">
-                <option value="" disabled selected>Selecciona un huésped...</option>
-                @if (guestExists() === false) {
-                <option [value]="reservationForm.guestId" selected>{{ guestForm.fullName }} (Nuevo)</option>
+            <label>Huésped</label>
+            <div class="guest-summary">
+              <div class="guest-summary-avatar">
+                <ng-icon name="bootstrapPersonCheck"></ng-icon>
+              </div>
+              <div class="guest-summary-info">
+                <strong>{{ guestForm.fullName || 'Sin nombre' }}</strong>
+                <span>ID: {{ guestForm.idNumber }}</span>
+                @if (guestForm.primaryEmail) {
+                <span>{{ guestForm.primaryEmail }}</span>
                 }
-                @for (guest of guests(); track guest.id) {
-                <option [value]="guest.id">{{ guest.name }}</option>
-                }
-              </select>
+              </div>
+              <span class="guest-summary-badge">{{ guestExists() ? 'Registrado' : 'Nuevo' }}</span>
             </div>
           </div>
 
