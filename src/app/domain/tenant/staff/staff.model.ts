@@ -15,7 +15,7 @@ export interface RoleAssignment {
   scope: {
     type: ScopeType;
     resourceIds?: string[];
-    resources?: Array<{ id: string; name: string }>;
+    resources?: { id: string; name: string }[];
   };
 }
 
@@ -36,6 +36,7 @@ export interface StaffMember {
   name?: string;
   role?: 'ADMIN' | 'STAFF';
   createdAt?: string;
+  document?: string;
   roleAssignments?: RoleAssignment[];
 }
 

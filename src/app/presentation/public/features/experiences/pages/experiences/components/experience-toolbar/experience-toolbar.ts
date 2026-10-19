@@ -7,7 +7,7 @@ export type ExperienceSortOption = 'asc' | 'desc' | undefined;
 export type ExperienceCategoryFilter = null | 'TRANSPORTATION' ;
 
 @Component({
-  selector: 'experience-toolbar',
+  selector: 'app-experience-toolbar',
   standalone: true,
   imports: [NgIcon, SelectComponent],
   providers: [provideIcons({ bootstrapSearch, bootstrapX })],

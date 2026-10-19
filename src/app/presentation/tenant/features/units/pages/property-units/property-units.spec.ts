@@ -10,6 +10,7 @@ import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-pro
 import { GetUnitUseCase } from '@/domain/shared/property/use-cases/get-unit.use-case';
 import { DeleteUnitUseCase } from '@/domain/shared/property/use-cases/delete-unit.use-case';
 import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
+import { UserRepository } from '@/domain/tenant/user/user.repository';
 
 const mockGetUnits = { execute: vi.fn() };
 const mockGetProperties = { execute: vi.fn() };
@@ -34,6 +35,8 @@ async function setup(pid: string | null = 'p1') {
   await TestBed.configureTestingModule({
     imports: [PropertyUnitsComponent],
     providers: [
+      // Real TutorialService (inactive) needs this to construct
+      { provide: UserRepository, useValue: {} },
       provideRouter([]),
       { provide: GetUnitsUseCase, useValue: mockGetUnits },
       { provide: GetPropertiesUseCase, useValue: mockGetProperties },
@@ -63,8 +66,7 @@ describe('PropertyUnitsComponent – sin propertyId en URL', () => {
   });
 
   it('navega a /admin/properties si no hay propertyId', async () => {
-    const { router } = await setup(null);
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    await setup(null);
     // ngOnInit already ran during fixture.detectChanges(); spy after the fact
     // Re-trigger to capture: use a new component
     TestBed.resetTestingModule();
@@ -74,6 +76,8 @@ describe('PropertyUnitsComponent – sin propertyId en URL', () => {
     await TestBed.configureTestingModule({
       imports: [PropertyUnitsComponent],
       providers: [
+        // Real TutorialService (inactive) needs this to construct
+        { provide: UserRepository, useValue: {} },
         provideRouter([]),
         { provide: GetUnitsUseCase, useValue: mockGetUnits },
         { provide: GetPropertiesUseCase, useValue: mockGetProperties },

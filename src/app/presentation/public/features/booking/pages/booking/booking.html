@@ -1,55 +1,55 @@
-<catalog-nav
+<app-catalog-nav
   #bookingNav
   [isAuthenticated]="guestTokenService.isAuthenticated()"
   [guestEmail]="guestEmail"
   (loginClicked)="onGuestLogin()"
   (logoutClicked)="onGuestLogout()"
   (myReservationsClicked)="onMyReservations()">
-</catalog-nav>
+</app-catalog-nav>
 
-<booking-hero
+<app-booking-hero
   [initialStartDate]="startDate()"
   [initialEndDate]="endDate()"
   [initialMinGuests]="minGuests()"
-  (search)="onHeroSearch($event)">
-</booking-hero>
+  (searchSubmit)="onHeroSearch($event)">
+</app-booking-hero>
 
 <section class="results-section" #resultsSection>
   <div class="results-container">
-    <booking-toolbar
+    <app-booking-toolbar
       [resultsCount]="totalCount()"
       [sortBy]="sortBy()"
       [initialQuery]="searchQuery()"
       (searchQueryChange)="onSearchQueryChange($event)"
       (sortChange)="onSortChange($event)">
-    </booking-toolbar>
+    </app-booking-toolbar>
 
     @if (isRoomsLoading()) {
       <div class="rooms-grid">
         @for (item of skeletonItems; track $index) {
-          <catalog-skeleton-card></catalog-skeleton-card>
+          <app-catalog-skeleton-card></app-catalog-skeleton-card>
         }
       </div>
     } @else if (displayedRooms().length === 0) {
-      <booking-empty-state></booking-empty-state>
+      <app-booking-empty-state></app-booking-empty-state>
     } @else {
       <div class="rooms-grid">
         @for (room of displayedRooms(); track room.id) {
-          <booking-room-card
+          <app-booking-room-card
             [room]="room"
             (viewDetails)="goToRoomDetails($event)">
-          </booking-room-card>
+          </app-booking-room-card>
         }
       </div>
     }
 
     @if (totalPages() > 1) {
-      <catalog-pagination
+      <app-catalog-pagination
         [currentPage]="currentPage()"
         [totalPages]="totalPages()"
         [disabled]="isRoomsLoading()"
         (pageChange)="onPageChange($event)">
-      </catalog-pagination>
+      </app-catalog-pagination>
     }
   </div>
 </section>

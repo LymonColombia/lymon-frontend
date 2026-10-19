@@ -1,17 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { InventoryRepository } from '@/domain/tenant/inventory/inventory.repository';
 import { GetInventoryCategoriesUseCase } from './get-inventory-categories.use-case';
 
 describe('GetInventoryCategoriesUseCase', () => {
   let useCase: GetInventoryCategoriesUseCase;
-  let repository: any;
+  let repository: { getCategories: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     repository = {
       getCategories: vi.fn(),
     };
-    useCase = new GetInventoryCategoriesUseCase();
-    (useCase as any).repository = repository;
+    TestBed.configureTestingModule({
+      providers: [{ provide: InventoryRepository, useValue: repository }],
+    });
+    useCase = TestBed.inject(GetInventoryCategoriesUseCase);
   });
 
   it('should call getCategories from repository', async () => {
