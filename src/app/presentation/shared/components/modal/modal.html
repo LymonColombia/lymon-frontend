@@ -4,6 +4,7 @@
     role="presentation"
     (mousedown)="onBackdropMouseDown($event)"
     (click)="onBackdropClick($event)"
+    (keydown.escape)="onEscapeKey(); $event.stopPropagation()"
   >
     <section
       class="modal-dialog"

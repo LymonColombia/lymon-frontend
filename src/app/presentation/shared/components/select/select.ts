@@ -16,10 +16,11 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapChevronDown } from '@ng-icons/bootstrap-icons';
 
+export type SelectValue = string | number;
 export type SelectSize = 'small' | 'medium' | 'large';
 
 export interface SelectOption {
-  value: string | number;
+  value: SelectValue;
   label: string;
   disabled?: boolean;
 }
@@ -52,7 +53,7 @@ export class SelectComponent implements ControlValueAccessor,OnChanges, OnDestro
 
   // Signal Inputs
   readonly options = input.required<SelectOption[]>();
-  readonly value = input<string | number | null>(null);
+  readonly value = input<SelectValue | null>(null);
   readonly size = input<SelectSize>('medium');
   readonly placeholder = input<string>('Select an option');
   readonly disabled = input<boolean>(false);
@@ -62,12 +63,12 @@ export class SelectComponent implements ControlValueAccessor,OnChanges, OnDestro
   readonly id = input<string>('');
 
   // Signal Outputs
-  readonly valueChange = output<string | number>();
+  readonly valueChange = output<SelectValue>();
   readonly focused = output<void>();
   readonly blurred = output<void>();
 
   // Internal state
-  readonly selectedValue = signal<string | number | null>(null);
+  readonly selectedValue = signal<SelectValue | null>(null);
   readonly isFocused = signal<boolean>(false);
   readonly isOpen = signal<boolean>(false);
   readonly isClosing = signal<boolean>(false);
@@ -106,18 +107,18 @@ export class SelectComponent implements ControlValueAccessor,OnChanges, OnDestro
   });
 
   // ControlValueAccessor implementation
-  private onChange: (value: string | number | null) => void = () => {
+  private onChange: (value: SelectValue | null) => void = () => {
     // Replaced by registerOnChange
   };
   private onTouched: () => void = () => {
     // Replaced by registerOnTouched
   };
 
-  writeValue(value: string | number | null): void {
+  writeValue(value: SelectValue | null): void {
     this.selectedValue.set(value);
   }
 
-  registerOnChange(fn: (value: string | number | null) => void): void {
+  registerOnChange(fn: (value: SelectValue | null) => void): void {
     this.onChange = fn;
   }
 
@@ -202,7 +203,7 @@ export class SelectComponent implements ControlValueAccessor,OnChanges, OnDestro
     }
   }
 
-  private updateValue(value: string | number, closeAfterSelection: boolean): void {
+  private updateValue(value: SelectValue, closeAfterSelection: boolean): void {
     this.selectedValue.set(value);
     this.onChange(value);
     this.valueChange.emit(value);
