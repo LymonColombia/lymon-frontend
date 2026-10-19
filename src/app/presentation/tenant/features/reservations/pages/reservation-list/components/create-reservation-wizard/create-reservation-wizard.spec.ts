@@ -144,19 +144,12 @@ describe('CreateReservationWizardComponent', () => {
       expect(mockCreateReservationUseCase.execute).toHaveBeenCalled();
     });
 
-    it('should reject when checkOut equals checkIn', async () => {
+    it.each([
+      { name: 'checkOut equals checkIn', checkIn: '2026-07-01', checkOut: '2026-07-01' },
+      { name: 'checkOut is before checkIn', checkIn: '2026-07-10', checkOut: '2026-07-01' },
+    ])('should reject when $name', async ({ checkIn, checkOut }) => {
       const { component } = await setup();
-      fillValidReservationForm(component, { checkIn: '2026-07-01', checkOut: '2026-07-01' });
-
-      component.onSubmit();
-
-      expect(component.errorMessage()).toBe('La fecha de salida debe ser posterior a la fecha de entrada.');
-      expect(mockCreateReservationUseCase.execute).not.toHaveBeenCalled();
-    });
-
-    it('should reject when checkOut is before checkIn', async () => {
-      const { component } = await setup();
-      fillValidReservationForm(component, { checkIn: '2026-07-10', checkOut: '2026-07-01' });
+      fillValidReservationForm(component, { checkIn, checkOut });
 
       component.onSubmit();
 
@@ -174,32 +167,13 @@ describe('CreateReservationWizardComponent', () => {
       expect(mockCreateReservationUseCase.execute).toHaveBeenCalled();
     });
 
-    it('should reject a malformed checkIn date string (not YYYY-MM-DD)', async () => {
+    it.each([
+      { name: 'a malformed checkIn date string (not YYYY-MM-DD)', checkIn: '07/01/2026', checkOut: '2026-07-05' },
+      { name: 'a malformed checkOut date string (not YYYY-MM-DD)', checkIn: '2026-07-01', checkOut: 'not-a-date' },
+      { name: 'a checkIn that is a full ISO datetime instead of a bare date', checkIn: '2026-07-01T15:00:00.000Z', checkOut: '2026-07-05' },
+    ])('should reject $name', async ({ checkIn, checkOut }) => {
       const { component } = await setup();
-      fillValidReservationForm(component, { checkIn: '07/01/2026', checkOut: '2026-07-05' });
-
-      component.onSubmit();
-
-      expect(component.errorMessage()).toBe('Las fechas seleccionadas no son válidas.');
-      expect(mockCreateReservationUseCase.execute).not.toHaveBeenCalled();
-    });
-
-    it('should reject a malformed checkOut date string (not YYYY-MM-DD)', async () => {
-      const { component } = await setup();
-      fillValidReservationForm(component, { checkIn: '2026-07-01', checkOut: 'not-a-date' });
-
-      component.onSubmit();
-
-      expect(component.errorMessage()).toBe('Las fechas seleccionadas no son válidas.');
-      expect(mockCreateReservationUseCase.execute).not.toHaveBeenCalled();
-    });
-
-    it('should reject when checkIn is a full ISO datetime instead of a bare date', async () => {
-      const { component } = await setup();
-      fillValidReservationForm(component, {
-        checkIn: '2026-07-01T15:00:00.000Z',
-        checkOut: '2026-07-05',
-      });
+      fillValidReservationForm(component, { checkIn, checkOut });
 
       component.onSubmit();
 
