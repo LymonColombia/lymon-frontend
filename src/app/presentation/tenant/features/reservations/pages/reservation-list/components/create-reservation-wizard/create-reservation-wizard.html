@@ -144,9 +144,9 @@
             {{ errorMessage() }}
           </div>
           }
-          <div class="form-group full-width">
-            <span class="field-label" id="guestSummaryLabel">Huésped</span>
-            <div class="guest-summary" role="group" aria-labelledby="guestSummaryLabel">
+          <fieldset class="form-group full-width guest-fieldset">
+            <legend class="field-label">Huésped</legend>
+            <div class="guest-summary">
               <div class="guest-summary-avatar">
                 <ng-icon name="bootstrapPersonCheck"></ng-icon>
               </div>
@@ -159,7 +159,7 @@
               </div>
               <span class="guest-summary-badge">{{ guestExists() ? 'Registrado' : 'Nuevo' }}</span>
             </div>
-          </div>
+          </fieldset>
 
           <div class="form-group">
             <label for="propertySelect">Propiedad</label>
