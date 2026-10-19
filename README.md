@@ -1,70 +1,97 @@
-# LymonFrontend
+# Lyhost Frontend
 
-## Arquitectura limpia
+Web app for **Lyhost**, a multi-tenant SaaS for hotel and property management.
+One Angular app for three audiences: staff and owners run their tenant from the admin
+back office, guests book units and experiences and pay from the guest portal, and anyone
+can browse the public catalog.
 
-El proyecto sigue los principios de Clean Architecture para mantener el código desacoplado, testear fácilmente y escalable. A continuación se describe qué va en cada carpeta:
+**Stack:** Angular 21 · TypeScript · signals · Vitest · Playwright
 
-### `src/app/core`
+## Quick start
 
-Esta capa contiene la lógica de negocio pura y es independiente de cualquier framework externo o implementación de datos.
+### 1. Prerequisites
 
-- **domain/**: Aquí residen las _Entidades_ y modelos del negocio.
-- **use-cases/**: Contiene la lógica de aplicación. Cada caso de uso representa una acción específica que puede realizar el usuario (ej. `GetAllUsers`, `LoginUser`).
-- **repositories/** (Interfaces): Aquí se definen los _contratos_ (interfaces abstractas) de los repositorios. La capa `core` dice _qué_ necesita, pero no _cómo_ se obtiene.
+- **Node.js 20+**
+- **pnpm** (don't use npm or yarn in this repo)
+- Optional: the [backend](https://github.com/LymonColombia/lymon-backend) running
+  locally, if you need to change API data or test against your own database
 
-### `src/app/data`
+### 2. Install dependencies
 
-Esta capa se encarga de la recuperación y persistencia de datos. Implementa las interfaces definidas en `core`.
+```bash
+git clone https://github.com/Lymonoficial/lymon-frontend.git
+# or over SSH: git clone git@github.com:Lymonoficial/lymon-frontend.git
+cd lymon-frontend
+pnpm install
+```
 
-- **repositories/** (Implementaciones): Implementaciones concretas de las interfaces de `core`. Aquí se realizan las llamadas HTTP o conexiones a bases de datos locales.
-- **mappers/**: Funciones o clases encargadas de transformar los datos que vienen fuentes externas (DTOs) a las entidades del dominio definidas en `core`, y viceversa.
+### 3. Pick the API
 
-### `src/app/presentation`
+The API URL lives in `src/environments/`, not in `.env`:
 
-Capa encargada de lo que ve el usuario. Solo debe preocuparse por mostrar datos y capturar eventos.
+| File | Used by | `apiUrl` |
+|---|---|---|
+| `environment.ts` | `pnpm start` and dev builds | shared development backend on Render |
+| `environment.production.ts` | `pnpm run build` (swapped in by `angular.json`) | shared development backend on Render |
 
-- **pages/**: "Smart Components" o Vistas. Son componentes que orquestan la vista, llaman a los `use-cases` y gestionan el estado de la página.
-- **components/**: "Dumb Components" o componentes reutilizables. Solo reciben datos (`@Input`) y emiten eventos (`@Output`), sin depender de servicios complejos.
+The defaults work without running anything else. To use a local backend, set `apiUrl` in
+`environment.ts` to `http://localhost:3000` and follow the
+[backend README](https://github.com/LymonColombia/lymon-backend#quick-start). Don't
+commit that change.
 
----
+`.env` is only for the e2e tests:
 
-## Conventional Commits
+```bash
+cp .env.example .env
+```
 
-Para mantener un historial de cambios limpio y legible, utilizamos **Conventional Commits**. Cada commit debe tener la estructura: `<tipo>: <descripción breve>`.
+| Variable | Needed locally? | What it does |
+|---|---|---|
+| `MANAGER_EMAIL`, `MANAGER_PASSWORD` | only for Playwright | Staff account that `tests/auth.setup.ts` logs in with |
 
-### Tipos de Commits permitidos:
+### 4. Start the app
 
-- **feat**: Una nueva funcionalidad.
-  - Ejemplo: `feat: add login page validation`
-- **fix**: Corrección de un error (bug).
-  - Ejemplo: `fix: resolve crash when user list is empty`
-- **docs**: Cambios solo en la documentación.
-  - Ejemplo: `docs: update readme with project structure`
-- **style**: Cambios que no afectan el significado del código (espacios, formato, puntos y comas).
-  - Ejemplo: `style: format user.service.ts`
-- **refactor**: Cambio en el código que no arregla un bug ni añade una funcionalidad (mejora de estructura).
-  - Ejemplo: `refactor: simplify date parsing logic`
-- **test**: Añadir o corregir tests existentes.
-  - Ejemplo: `test: add unit tests for date-mapper`
-- **chore**: Cambios en el proceso de construcción o herramientas auxiliares y librerías.
-  - Ejemplo: `chore: update angular dependencies`
+```bash
+pnpm start
+```
 
----
+When the log shows `Local: http://localhost:4200/`, the app is up. It reloads on save.
 
-## Reglas y Buenas Prácticas
+### 5. Try it
 
-Para asegurar la calidad del código, seguimos estas reglas estrictas:
+| Area | URL | Account |
+|---|---|---|
+| Public catalog | http://localhost:4200/lyhost | none |
+| Admin back office (staff) | http://localhost:4200/login | a staff account |
+| Guest portal | http://localhost:4200/guest/login | a guest account |
 
-1. **Idioma: Inglés**
-   - **TODO** el código debe estar en inglés. Esto incluye nombres de variables, funciones, clases, interfaces, comentarios y mensajes de commit.
-   - _Correcto_: `getUserById(id: string)`
-   - _Incorrecto_: `obtenerUsuarioPorId(id: string)`
+Against a local backend, use the accounts it seeds: `dev.owner@lymon.local` (staff) and
+`dev.guest@lymon.local` (guest), both with password `DevPassword123!`.
 
-2. **Convenciones de Nombres (Naming Conventions)**
-   - **Clases e Interfaces**: Usar `PascalCase`. (Ej. `UserLogin`, `ProductRepository`).
-   - **Variables y Funciones**: Usar `camelCase`. (Ej. `isLoading`, `calculateTotal()`).
-   - **Constantes Globales**: Usar `UPPER_SNAKE_CASE`. (Ej. `MAX_RETRY_COUNT`).
+### Everyday commands
 
-3. **Responsabilidad Única (Single Responsibility Principle - SRP)**
-   - Cada archivo, clase o función debe tener una única responsabilidad.
-   - Si un componente está haciendo demasiadas cosas (ej. llamando a la API, validando formularios y calculando fechas), divide la lógica en servicios, utilidades o componentes más pequeños.
+```bash
+pnpm start                    # dev server on localhost:4200
+pnpm run build                # production build
+pnpm test                     # unit tests (Vitest)
+pnpm test:cov:scope           # coverage for the files Sonar tracks
+
+pnpm exec playwright test     # e2e tests, against https://lyhost.netlify.app
+pnpm cy:open                  # Cypress, interactive
+```
+
+### Troubleshooting
+
+- **The first request hangs for a while**: the shared Render backend may be waking up.
+  Wait, or point `apiUrl` at a local backend.
+- **Every request fails with a network or CORS error**: the backend in `apiUrl` isn't
+  running. With a local backend, check that `pnpm dev` is up in `lymon-backend`.
+- **Sent back to the login page with `?sessionExpired=true`**: the refresh token has
+  expired or belongs to another backend. Log in again. If you switched `apiUrl`, clear the
+  `lymon_*` keys from local storage first.
+- **Playwright fails at the `setup` project**: `.env` is missing, or its credentials don't
+  work on https://lyhost.netlify.app.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow from Jira ticket to merged PR.
