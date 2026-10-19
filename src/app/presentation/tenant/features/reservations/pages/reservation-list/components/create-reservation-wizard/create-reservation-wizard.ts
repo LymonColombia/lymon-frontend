@@ -22,6 +22,9 @@ import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
 
 @Component({
   selector: 'app-create-reservation-wizard',
+  host: {
+    '(document:keydown.escape)': 'onClose()',
+  },
   standalone: true,
   imports: [CommonModule, FormsModule, NgIconComponent, ShiftDatePickerComponent],
   templateUrl: './create-reservation-wizard.html',

@@ -14,7 +14,7 @@
         @if (hasCustomIcon() || iconName()) {
           <div class="page-icon">
             @if (hasCustomIcon()) {
-              <ng-content select="[tenantPageIcon]"></ng-content>
+              <ng-content select="[appTenantPageIcon]"></ng-content>
             } @else {
               <ng-icon [name]="iconName()!" size="28px" aria-hidden="true"></ng-icon>
             }
@@ -36,13 +36,13 @@
         <div class="page-title-meta-right">
           @if (hasMeta()) {
             <div class="page-header-meta">
-              <ng-content select="[tenantPageMeta]"></ng-content>
+              <ng-content select="[appTenantPageMeta]"></ng-content>
             </div>
           }
 
           @if (hasActions()) {
             <div class="page-header-actions">
-              <ng-content select="[tenantPageActions]"></ng-content>
+              <ng-content select="[appTenantPageActions]"></ng-content>
             </div>
           }
         </div>

@@ -121,7 +121,7 @@ export class StaffManagementComponent implements OnInit {
     const pages: number[] = [];
 
     let start = Math.max(1, current - 2);
-    let end = Math.min(total, start + 4);
+    const end = Math.min(total, start + 4);
 
     if (end - start < 4) {
       start = Math.max(1, end - 4);
@@ -267,7 +267,7 @@ export class StaffManagementComponent implements OnInit {
       role: isAdmin ? 'ADMIN' : 'STAFF',
       status: 'ACTIVO',
       createdAt: staff.createdAt ?? '',
-      document: (staff as any).document ?? 'No registrado',
+      document: staff.document ?? 'No registrado',
     };
   }
 

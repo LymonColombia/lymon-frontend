@@ -11,11 +11,12 @@ import { GuestRegisterUseCase } from '@/domain/guest/guest-auth/use-cases/guest-
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 const VALID_FORM = {
-  fullName: 'Felipe Torres',
+  firstName: 'Felipe',
+  lastName: 'Torres',
   email: 'felipe@example.com',
   password: 'secret1234',
-  firstName: '',
-  lastName: '',
+  confirmPassword: 'secret1234',
+  terms: true,
 };
 
 const SUCCESS_RESPONSE = {
@@ -167,8 +168,8 @@ describe('GuestRegisterComponent — US-021', () => {
         fullName: 'Felipe Torres',
         email: 'felipe@example.com',
         password: 'secret1234',
-        firstName: undefined,
-        lastName: undefined,
+        firstName: 'Felipe',
+        lastName: 'Torres',
       });
       expect(executeMock).toHaveBeenCalledTimes(1);
     });
@@ -191,22 +192,12 @@ describe('GuestRegisterComponent — US-021', () => {
       expect(component.errorMessage()).toBeNull();
     });
 
-    it('envía firstName y lastName cuando se proporcionan', () => {
-      component.form.patchValue({ firstName: 'Felipe', lastName: 'Torres' });
+    it('arma fullName a partir de firstName y lastName', () => {
+      component.form.patchValue({ firstName: 'Ana', lastName: 'Ruiz' });
 
       component.onSubmit();
 
-      const payload = executeMock.mock.calls[0][0];
-      expect(payload.firstName).toBe('Felipe');
-      expect(payload.lastName).toBe('Torres');
-    });
-
-    it('omite firstName y lastName cuando están vacíos', () => {
-      component.onSubmit();
-
-      const payload = executeMock.mock.calls[0][0];
-      expect(payload.firstName).toBeUndefined();
-      expect(payload.lastName).toBeUndefined();
+      expect(executeMock.mock.calls[0][0].fullName).toBe('Ana Ruiz');
     });
   });
 });
