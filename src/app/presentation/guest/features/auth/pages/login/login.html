@@ -1,8 +1,14 @@
 <div class="login-split">
   <section class="hero" aria-label="Galería de LyHost">
-    @if (currentSlide().image; as image) {
-      <img class="hero-image" [src]="image" [alt]="currentSlide().alt" />
-    }
+    <div class="hero-track" [style.transform]="'translateX(-' + activeSlide() * 100 + '%)'">
+      @for (slide of slides; track $index) {
+        <div class="hero-slide" [class.hero-slide--placeholder]="!slide.image">
+          @if (slide.image) {
+            <img class="hero-image" [src]="slide.image" [alt]="slide.alt" />
+          }
+        </div>
+      }
+    </div>
     <div class="hero-overlay"></div>
 
     <div class="hero-location">
@@ -16,7 +22,13 @@
       <p>Inicia sesión y accede a los detalles de tu viaje.</p>
     </div>
 
-    <div class="hero-carousel">
+    <div
+      class="hero-carousel"
+      (mouseenter)="carouselPaused.set(true)"
+      (mouseleave)="carouselPaused.set(false)"
+      (focusin)="carouselPaused.set(true)"
+      (focusout)="carouselPaused.set(false)"
+    >
       <div class="carousel-row">
         <button type="button" class="carousel-arrow" aria-label="Anterior" (click)="previousSlide()">
           <ng-icon name="bootstrapArrowLeft" size="18px" aria-hidden="true"></ng-icon>

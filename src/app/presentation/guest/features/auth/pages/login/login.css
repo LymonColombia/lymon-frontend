@@ -21,9 +21,34 @@
   background: linear-gradient(160deg, #1d4a40 0%, #084539 55%, #0b2a24 100%);
 }
 
-.hero-image {
+.hero-track {
   position: absolute;
   inset: 0;
+  display: flex;
+  transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+
+.hero-slide {
+  flex: none;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-slide--placeholder:nth-child(3n + 1) {
+  background: linear-gradient(160deg, #1d4a40 0%, #084539 55%, #0b2a24 100%);
+}
+
+.hero-slide--placeholder:nth-child(3n + 2) {
+  background: linear-gradient(160deg, #24574b 0%, #0b5a49 55%, #0e332b 100%);
+}
+
+.hero-slide--placeholder:nth-child(3n) {
+  background: linear-gradient(160deg, #163d34 0%, #06352b 55%, #0a2620 100%);
+}
+
+.hero-image {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -35,7 +60,7 @@
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0.6) 100%);
 }
 
-.hero > :not(.hero-image):not(.hero-overlay) {
+.hero > :not(.hero-track):not(.hero-overlay) {
   position: relative;
   z-index: 1;
 }
@@ -118,10 +143,19 @@
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: border-color var(--transition-base);
+  transition: border-color var(--transition-base), transform 300ms ease;
+  animation: thumb-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes thumb-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
 }
 
 .thumb--active {
+  transform: scale(1.04);
   border-color: var(--color-primary);
 }
 
@@ -266,6 +300,15 @@
 .login-footer--muted {
   margin-top: 8px;
   font-size: var(--font-size-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-track,
+  .thumb,
+  .dot {
+    transition: none;
+    animation: none;
+  }
 }
 
 @media (max-width: 960px) {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GuestLoginUseCase } from '@/domain/guest/guest-auth/use-cases/guest-login.use-case';
@@ -28,6 +28,7 @@ const LOGIN_SLIDES: readonly LoginSlide[] = [
   { image: null, alt: 'Zonas comunes' },
 ];
 const VISIBLE_THUMBS = 3;
+const AUTOPLAY_DELAY_MS = 3000;
 
 @Component({
   selector: 'app-guest-login',
@@ -60,6 +61,8 @@ export class GuestLoginComponent {
 
   readonly slides = LOGIN_SLIDES;
   readonly activeSlide = signal(0);
+  /** Autoplay is suspended while the user hovers or focuses the carousel. */
+  readonly carouselPaused = signal(false);
   readonly currentSlide = computed(() => this.slides[this.activeSlide()]);
   /** Thumbnails shown in the strip: a window that always contains the active slide. */
   readonly visibleThumbs = computed(() => {
@@ -71,6 +74,16 @@ export class GuestLoginComponent {
       .slice(start, start + VISIBLE_THUMBS)
       .map((slide, i) => ({ slide, index: start + i }));
   });
+
+  constructor() {
+    // Re-runs on every slide change (auto or manual), so any user interaction restarts the countdown.
+    effect((onCleanup) => {
+      this.activeSlide();
+      if (this.carouselPaused() || this.prefersReducedMotion()) return;
+      const timer = setTimeout(() => this.nextSlide(), AUTOPLAY_DELAY_MS);
+      onCleanup(() => clearTimeout(timer));
+    });
+  }
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -120,6 +133,10 @@ export class GuestLoginComponent {
 
   goToSlide(index: number): void {
     this.activeSlide.set(index);
+  }
+
+  private prefersReducedMotion(): boolean {
+    return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
   get emailControl() {
