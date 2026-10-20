@@ -144,7 +144,7 @@ export class UnitFormModalComponent {
     this.gallerySelection.set(selection);
   }
 
-  private buildBed(type: BedType = 'QUEEN', count: number = 1): FormGroup {
+  private buildBed(type: BedType = 'QUEEN', count = 1): FormGroup {
     return this.fb.group({
       type: [type, Validators.required],
       count: [count, [Validators.required, Validators.min(1)]],
@@ -164,7 +164,8 @@ export class UnitFormModalComponent {
   toggleAmenity(name: string): void {
     this.selectedAmenities.update((set) => {
       const next = new Set(set);
-      next.has(name) ? next.delete(name) : next.add(name);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
       return next;
     });
   }

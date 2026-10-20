@@ -3,7 +3,7 @@ import { bootstrapSearch } from '@ng-icons/bootstrap-icons';
 import { provideIcons, NgIcon } from '@ng-icons/core';
 
 @Component({
-  selector: 'experience-empty-state',
+  selector: 'app-experience-empty-state',
   standalone: true,
   templateUrl: './experience-empty-state.html',
   styleUrl: './experience-empty-state.css',

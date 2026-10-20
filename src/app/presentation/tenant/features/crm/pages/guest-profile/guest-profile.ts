@@ -224,7 +224,7 @@ export class GuestProfileComponent implements OnInit {
 
   readonly activeTab = signal<GuestProfileTab>('resumen');
 
-  readonly profileNavTabs: Array<{ value: GuestProfileTab; label: string; icon: string }> = [
+  readonly profileNavTabs: { value: GuestProfileTab; label: string; icon: string }[] = [
     { value: 'resumen', label: 'Resumen', icon: 'bootstrapPerson' },
     { value: 'metricas', label: 'Métricas', icon: 'bootstrapGraphUp' },
     { value: 'reservas', label: 'Reservas', icon: 'bootstrapCalendar3' },
@@ -304,7 +304,7 @@ export class GuestProfileComponent implements OnInit {
   readonly isDeletingNote = signal(false);
   readonly deleteNoteErrorMessage = signal<string | null>(null);
 
-  readonly noteFilterTabs: Array<{ value: CrmGuestNoteCategory | 'all'; label: string }> = [
+  readonly noteFilterTabs: { value: CrmGuestNoteCategory | 'all'; label: string }[] = [
     { value: 'all', label: 'Todas' },
     { value: 'general', label: 'General' },
     { value: 'preference', label: 'Preferencias' },
@@ -1246,7 +1246,7 @@ export class GuestProfileComponent implements OnInit {
             ),
           ),
         )
-      : of([] as Array<{ propertyId: string; units: Unit[] }>);
+      : of([] as { propertyId: string; units: Unit[] }[]);
 
     forkJoin({ propertyNames: propertyNames$, unitsByProperty: unitNames$ }).subscribe(
       ({ propertyNames, unitsByProperty }) => {
@@ -1288,7 +1288,7 @@ export class GuestProfileComponent implements OnInit {
   }
 
   private toUnitNameMap(
-    unitsByProperty: Array<{ propertyId: string; units: UnitLookupItem[] }>,
+    unitsByProperty: { propertyId: string; units: UnitLookupItem[] }[],
   ): Record<string, string> {
     return unitsByProperty.reduce<Record<string, string>>((acc, { units }) => {
       for (const unit of units) {
