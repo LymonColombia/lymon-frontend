@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators, FormArray, FormGroup, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { normalizeEmail, minLocalPartLength } from '@/presentation/shared/utils/email.utils';
+import { normalizeEmail } from '@/presentation/shared/utils/email.utils';
 import { ToastService } from '@/presentation/tenant/services/toast.service';
 import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { AddStaffUseCase } from '@/domain/tenant/staff/use-cases/add-staff.use-case';
@@ -125,7 +125,7 @@ export class RegisterEmployeeComponent implements OnInit {
   readonly form = this.fb.group({
     fullName: ['', [Validators.required]],
     document: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email, Validators.maxLength(254), minLocalPartLength(8)]],
+    email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     roleAssignments: this.fb.array([this.buildRoleGroup()]),
   });
