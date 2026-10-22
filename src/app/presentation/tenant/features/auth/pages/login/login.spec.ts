@@ -4,13 +4,19 @@ import { of, throwError, Subject } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoginComponent } from './login';
 import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
+import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 
 const mockUseCase = { execute: vi.fn() };
+const mockTutorialService = { start: vi.fn() };
 
 async function setup() {
   await TestBed.configureTestingModule({
     imports: [LoginComponent],
-    providers: [provideRouter([]), { provide: LoginUseCase, useValue: mockUseCase }],
+    providers: [
+      provideRouter([{ path: '**', children: [] }]),
+      { provide: LoginUseCase, useValue: mockUseCase },
+      { provide: TutorialService, useValue: mockTutorialService },
+    ],
   }).compileComponents();
 
   const fixture = TestBed.createComponent(LoginComponent);
@@ -70,7 +76,7 @@ describe('LoginComponent – inicio de sesión exitoso', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.resetTestingModule();
-    mockUseCase.execute.mockReturnValue(of(undefined));
+    mockUseCase.execute.mockReturnValue(of({ user: { tutorialCompleted: true } }));
   });
 
   it('navega a /dashboard tras el éxito', async () => {
@@ -79,6 +85,16 @@ describe('LoginComponent – inicio de sesión exitoso', () => {
     component.form.patchValue({ email: 'admin@lymon.com', password: 'Password1' });
     component.onSubmit();
     expect(navigateSpy).toHaveBeenCalledWith(['/admin/dashboard']);
+  });
+
+  it('inicia el tutorial en vez de navegar si no lo ha completado', async () => {
+    mockUseCase.execute.mockReturnValue(of({ user: { tutorialCompleted: false } }));
+    const { component, router } = await setup();
+    const navigateSpy = vi.spyOn(router, 'navigate');
+    component.form.patchValue({ email: 'admin@lymon.com', password: 'Password1' });
+    component.onSubmit();
+    expect(mockTutorialService.start).toHaveBeenCalled();
+    expect(navigateSpy).not.toHaveBeenCalled();
   });
 
   it('isLoading vuelve a false tras el éxito', async () => {

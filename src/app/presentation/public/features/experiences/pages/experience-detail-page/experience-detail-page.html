@@ -9,7 +9,7 @@
   @if (isLoading()) {
     <div class="detail-state">Cargando experiencia...</div>
   } @else if (experience(); as selectedExperience) {
-    <experience-detail [experience]="selectedExperience"></experience-detail>
+    <app-experience-detail [experience]="selectedExperience"></app-experience-detail>
   } @else {
     <div class="detail-state">
       <h2>Experiencia no encontrada</h2>

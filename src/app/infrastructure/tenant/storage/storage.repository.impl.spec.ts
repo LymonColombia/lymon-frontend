@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { firstValueFrom } from 'rxjs';
 
 import { StorageRepositoryImpl } from './storage.repository.impl';
 import { environment } from '@env';
@@ -108,76 +109,63 @@ describe('StorageRepositoryImpl', () => {
 
   describe('uploadToPresignedUrl()', () => {
     const PRESIGNED_URL = 'https://r2.example.com/bucket/uploads/photo.jpg?X-Amz-Signature=abc';
+    let fetchMock: ReturnType<typeof vi.fn>;
 
     const makeFile = (name = 'photo.jpg', type = 'image/jpeg'): File =>
       new File(['file-content'], name, { type });
 
-    it('should PUT the file to the presigned URL', () => {
+    const lastFetchInit = (): RequestInit => fetchMock.mock.calls[0][1] as RequestInit;
+
+    beforeEach(() => {
+      fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
+      vi.stubGlobal('fetch', fetchMock);
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('should PUT the file to the presigned URL', async () => {
+      await firstValueFrom(repository.uploadToPresignedUrl(PRESIGNED_URL, makeFile()));
+
+      expect(fetchMock).toHaveBeenCalledWith(PRESIGNED_URL, expect.objectContaining({ method: 'PUT' }));
+    });
+
+    it('should send the file as the PUT request body', async () => {
       const file = makeFile();
 
-      repository.uploadToPresignedUrl(PRESIGNED_URL, file).subscribe();
+      await firstValueFrom(repository.uploadToPresignedUrl(PRESIGNED_URL, file));
 
-      const req = httpMock.expectOne(PRESIGNED_URL);
-      expect(req.request.method).toBe('PUT');
-      req.flush(null);
+      expect(lastFetchInit().body).toBe(file);
     });
 
-    it('should send the file as the PUT request body', () => {
-      const file = makeFile();
+    it('should set the Content-Type header to the file MIME type', async () => {
+      await firstValueFrom(repository.uploadToPresignedUrl(PRESIGNED_URL, makeFile('photo.jpg', 'image/jpeg')));
 
-      repository.uploadToPresignedUrl(PRESIGNED_URL, file).subscribe();
-
-      const req = httpMock.expectOne(PRESIGNED_URL);
-      expect(req.request.body).toBe(file);
-      req.flush(null);
+      expect(lastFetchInit().headers).toEqual({ 'Content-Type': 'image/jpeg' });
     });
 
-    it('should set the Content-Type header to the file MIME type', () => {
-      const file = makeFile('photo.jpg', 'image/jpeg');
+    it('should set the correct Content-Type header for non-image files', async () => {
+      await firstValueFrom(repository.uploadToPresignedUrl(PRESIGNED_URL, makeFile('document.pdf', 'application/pdf')));
 
-      repository.uploadToPresignedUrl(PRESIGNED_URL, file).subscribe();
-
-      const req = httpMock.expectOne(PRESIGNED_URL);
-      expect(req.request.headers.get('Content-Type')).toBe('image/jpeg');
-      req.flush(null);
+      expect(lastFetchInit().headers).toEqual({ 'Content-Type': 'application/pdf' });
     });
 
-    it('should set the correct Content-Type header for non-image files', () => {
-      const file = makeFile('document.pdf', 'application/pdf');
-
-      repository.uploadToPresignedUrl(PRESIGNED_URL, file).subscribe();
-
-      const req = httpMock.expectOne(PRESIGNED_URL);
-      expect(req.request.headers.get('Content-Type')).toBe('application/pdf');
-      req.flush(null);
-    });
-
-    it('should NOT send an Authorization header in the R2 PUT request', () => {
+    it('should NOT send an Authorization header in the R2 PUT request', async () => {
       // R2 presigned URLs must not include the app Authorization token.
-      // The impl uses HttpBackend directly to bypass auth interceptors.
-      const file = makeFile();
+      // fetch bypasses the Angular auth interceptor, and no header is added manually.
+      await firstValueFrom(repository.uploadToPresignedUrl(PRESIGNED_URL, makeFile()));
 
-      repository.uploadToPresignedUrl(PRESIGNED_URL, file).subscribe();
-
-      const req = httpMock.expectOne(PRESIGNED_URL);
-      expect(req.request.headers.has('Authorization')).toBe(false);
-      req.flush(null);
+      expect(lastFetchInit().headers).not.toHaveProperty('Authorization');
+      expect(httpMock.match(PRESIGNED_URL)).toHaveLength(0);
     });
 
-    it('should propagate upload errors from the presigned URL endpoint', () => {
-      return new Promise<void>((resolve) => {
-        const file = makeFile();
+    it('should propagate upload errors from the presigned URL endpoint', async () => {
+      fetchMock.mockResolvedValue(new Response('Forbidden', { status: 403 }));
 
-        repository.uploadToPresignedUrl(PRESIGNED_URL, file).subscribe({
-          error: (err) => {
-            expect(err.status).toBe(403);
-            resolve();
-          },
-        });
-
-        const req = httpMock.expectOne(PRESIGNED_URL);
-        req.flush('Forbidden', { status: 403, statusText: 'Forbidden' });
-      });
+      await expect(
+        firstValueFrom(repository.uploadToPresignedUrl(PRESIGNED_URL, makeFile())),
+      ).rejects.toThrow('R2 upload failed (403): Forbidden');
     });
   });
 });

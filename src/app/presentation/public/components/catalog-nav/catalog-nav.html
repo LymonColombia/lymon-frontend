@@ -31,42 +31,11 @@
 
     <div class="nav-actions">
       @if (isAuthenticated()) {
-        <div class="nav-profile-wrapper">
-          <div
-            class="nav-profile"
-            [class.nav-profile--open]="isDropdownOpen()"
-            (click)="toggleDropdown()"
-          >
-            <div class="profile-avatar" aria-hidden="true">{{ initials() }}</div>
-            <div class="profile-info">
-              <span class="profile-name">{{ profileLabel() }}</span>
-              @if (guestEmail()) {
-                <span class="profile-email">{{ guestEmail() }}</span>
-              }
-            </div>
-            <ng-icon
-              name="bootstrapChevronDown"
-              size="13px"
-              class="profile-chevron"
-              [class.profile-chevron--open]="isDropdownOpen()"
-              aria-hidden="true"
-            />
-          </div>
-
-          @if (isDropdownOpen()) {
-            <div class="profile-dropdown" role="menu" aria-label="Profile actions">
-              <button class="profile-dropdown-option" type="button" role="menuitem" (click)="onMyReservations()">
-                <ng-icon name="bootstrapCalendar2Check" size="15px" aria-hidden="true" />
-                Mis reservas
-              </button>
-              <div class="dropdown-divider"></div>
-              <button class="profile-dropdown-option profile-dropdown-option--danger" type="button" role="menuitem" (click)="onLogout()">
-                <ng-icon name="bootstrapBoxArrowRight" size="15px" aria-hidden="true" />
-                Cerrar sesión
-              </button>
-            </div>
-          }
-        </div>
+        <app-profile-menu
+          [email]="guestEmail()"
+          (logoutClicked)="logoutClicked.emit()"
+          (myReservationsClicked)="myReservationsClicked.emit()"
+        />
       } @else {
         <app-button variant="primary" size="medium" (clicked)="loginClicked.emit()">
           <ng-icon name="bootstrapBoxArrowInRight" size="18px" aria-hidden="true" />

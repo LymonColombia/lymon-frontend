@@ -1,55 +1,55 @@
-<catalog-nav
+<app-catalog-nav
   [isAuthenticated]="guestTokenService.isAuthenticated()"
   [guestEmail]="guestEmail"
   (loginClicked)="onGuestLogin()"
   (logoutClicked)="onGuestLogout()"
   (myReservationsClicked)="onMyReservations()">
-</catalog-nav>
+</app-catalog-nav>
 
-<experience-hero
+<app-experience-hero
   [selectedCategory]="selectedCategory()"
   (filtersApply)="onHeroFiltersApply($event)">
-</experience-hero>
+</app-experience-hero>
 
 <section class="experiences-section" #resultsSection aria-label="Experiencias">
   <div class="experiences-container">
-    <experience-toolbar
+    <app-experience-toolbar
       [resultsCount]="filteredExperiences().length"
       [sortBy]="sortBy()"
       [selectedCategory]="selectedCategory()"
       (searchQueryChange)="onSearchQueryChange($event)"
       (sortChange)="onSortChange($event)"
       (categoryChange)="onCategoryChange($event)">
-       </experience-toolbar>
+       </app-experience-toolbar>
 
     @if (isExperienceLoading()) {
       <div class="experiences-grid experiences-grid--loading">
         @for (item of skeletonItems; track $index) {
-          <catalog-skeleton-card></catalog-skeleton-card>
+          <app-catalog-skeleton-card></app-catalog-skeleton-card>
         }
       </div>
     } @else if (filteredExperiences().length === 0) {
-      <experience-empty-state
+      <app-experience-empty-state
         title="No encontramos experiencias"
         message="Intenta ajustar tu busqueda o tus filtros para ver mas opciones.">
-      </experience-empty-state>
+      </app-experience-empty-state>
     } @else {
       <div class="experiences-grid">
         @for (experience of filteredExperiences(); track experience.id) {
-          <experience-card
+          <app-experience-card
             [experience]="experience"
             [isLiked]="likedExperiencesIds().has(experience.id)"
             (viewDetails)="goToExperienceDetails($event)"
             (toggleLike)="onToggleLike($event)">
-          </experience-card>
+          </app-experience-card>
         }
       </div>
 
-      <catalog-pagination
+      <app-catalog-pagination
         [currentPage]="currentPage()"
         [totalPages]="totalPages()"
         (pageChange)="onPageChange($event)">
-      </catalog-pagination>
+      </app-catalog-pagination>
     }
   </div>
 </section>

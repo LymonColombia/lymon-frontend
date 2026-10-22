@@ -25,6 +25,9 @@ const ID_NUMBER_PATTERN = /^[A-Za-z0-9-]{5,15}$/;
 
 @Component({
   selector: 'app-create-reservation-wizard',
+  host: {
+    '(document:keydown.escape)': 'onClose()',
+  },
   standalone: true,
   imports: [CommonModule, FormsModule, NgIconComponent, ShiftDatePickerComponent],
   templateUrl: './create-reservation-wizard.html',

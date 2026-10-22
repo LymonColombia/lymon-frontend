@@ -13,13 +13,11 @@ import { RouterModule } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapBoxArrowInRight,
-  bootstrapBoxArrowRight,
   bootstrapCalendar,
-  bootstrapCalendar2Check,
   bootstrapCart,
-  bootstrapChevronDown,
   bootstrapSearch,
 } from '@ng-icons/bootstrap-icons';
+import { ProfileMenuComponent } from '@/presentation/public/components/profile-menu/profile-menu';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { CalendarComponent, DateRange } from '@/presentation/shared/components/calendar/calendar';
 import { GuestStepperComponent } from '@/presentation/public/features/room-details/pages/room-details/components/guest-stepper/guest-stepper';
@@ -36,17 +34,14 @@ const SHORT_MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago
 const DATE_TRIGGER_SELECTOR = '.nav-date-trigger-wrapper';
 
 @Component({
-  selector: 'room-details-nav',
+  selector: 'app-room-details-nav',
   standalone: true,
-  imports: [ButtonComponent, CalendarComponent, GuestStepperComponent, NgOptimizedImage, NgIcon, RouterModule],
+  imports: [ButtonComponent, ProfileMenuComponent, CalendarComponent, GuestStepperComponent, NgOptimizedImage, NgIcon, RouterModule],
   providers: [
     provideIcons({
       bootstrapBoxArrowInRight,
-      bootstrapBoxArrowRight,
       bootstrapCalendar,
-      bootstrapCalendar2Check,
       bootstrapCart,
-      bootstrapChevronDown,
       bootstrapSearch,
     }),
   ],
@@ -66,9 +61,8 @@ export class RoomDetailsNavComponent {
   readonly loginClicked = output<void>();
   readonly logoutClicked = output<void>();
   readonly myReservationsClicked = output<void>();
-  readonly search = output<RoomDetailsSearchParams>();
+  readonly searchSubmit = output<RoomDetailsSearchParams>();
 
-  readonly isDropdownOpen = signal(false);
   readonly isCalendarOpen = signal(false);
 
   readonly checkIn = signal<string | undefined>(undefined);
@@ -80,34 +74,6 @@ export class RoomDetailsNavComponent {
 
   readonly checkInDisplay = computed(() => this.formatDate(this.checkIn() ?? null));
   readonly checkOutDisplay = computed(() => this.formatDate(this.checkOut() ?? null));
-
-  readonly initials = computed(() => {
-    const email = (this.guestEmail() ?? '').trim();
-    if (!email) return '?';
-
-    const [localPart] = email.split('@');
-    if (!localPart) return '?';
-
-    return localPart.slice(0, 2).toUpperCase();
-  });
-
-  readonly profileLabel = computed(() => {
-    const email = (this.guestEmail() ?? '').trim();
-    if (!email) {
-      return 'Guest';
-    }
-
-    const [localPart] = email.split('@');
-    if (!localPart) {
-      return email;
-    }
-
-    return localPart;
-  });
-
-  toggleDropdown(): void {
-    this.isDropdownOpen.update((v) => !v);
-  }
 
   toggleCalendar(): void {
     this.isCalendarOpen.update((v) => !v);
@@ -122,23 +88,9 @@ export class RoomDetailsNavComponent {
     this.checkOut.set(range.checkOut ?? undefined);
   }
 
-  onMyReservations(): void {
-    this.isDropdownOpen.set(false);
-    this.myReservationsClicked.emit();
-  }
-
-  onLogout(): void {
-    this.isDropdownOpen.set(false);
-    this.logoutClicked.emit();
-  }
-
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as Element | null;
     if (!target) return;
-
-    if (this.isDropdownOpen() && !this.elementRef.nativeElement.contains(target)) {
-      this.isDropdownOpen.set(false);
-    }
 
     if (this.isCalendarOpen()) {
       const wrapper = this.elementRef.nativeElement.querySelector(DATE_TRIGGER_SELECTOR) as Element | null;
@@ -150,7 +102,7 @@ export class RoomDetailsNavComponent {
 
   onSearch(): void {
     this.isCalendarOpen.set(false);
-    this.search.emit({
+    this.searchSubmit.emit({
       checkIn: this.checkIn(),
       checkOut: this.checkOut(),
       guests: this.guests(),
