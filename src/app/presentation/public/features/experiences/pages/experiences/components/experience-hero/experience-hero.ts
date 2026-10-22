@@ -9,7 +9,7 @@ export interface ExperienceHeroFilters {
 }
 
 @Component({
-  selector: 'experience-hero',
+  selector: 'app-experience-hero',
   standalone: true,
   templateUrl: './experience-hero.html',
   styleUrl: './experience-hero.css',

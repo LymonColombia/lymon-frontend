@@ -38,8 +38,12 @@ export class PasswordInputComponent implements ControlValueAccessor {
   readonly showPassword = signal(false);
   readonly isDisabled = signal(false);
 
-  private onChange: (value: string) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string) => void = () => {
+    // Replaced by registerOnChange
+  };
+  private onTouched: () => void = () => {
+    // Replaced by registerOnTouched
+  };
 
   writeValue(value: string): void {
     this.value.set(value ?? '');

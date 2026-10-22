@@ -3,7 +3,7 @@
   subtitle="Análisis financiero y facturas detalladas"
   iconName="bootstrapCurrencyDollar"
 >
-    <div tenantPageActions class="sales-header-actions">
+    <div appTenantPageActions class="sales-header-actions">
         <app-button type="button" variant="secondary" class="btn-pdf">
             <ng-icon name="bootstrapDownload" size="18px" aria-hidden="true"></ng-icon>
             PDF
@@ -23,20 +23,20 @@
             </div>
             <div class="filters-content">
                 <div class="filter-group">
-                    <label>Fecha Inicio</label>
-                    <app-input type="date" [hasIcon]="true">
+                    <label for="sales-start-date">Fecha Inicio</label>
+                    <app-input id="sales-start-date" type="date" [hasIcon]="true">
                         <ng-icon icon name="bootstrapCalendar" size="18px" aria-hidden="true"></ng-icon>
                     </app-input>
                 </div>
                 <div class="filter-group">
-                    <label>Fecha Fin</label>
-                    <app-input type="date" [hasIcon]="true">
+                    <label for="sales-end-date">Fecha Fin</label>
+                    <app-input id="sales-end-date" type="date" [hasIcon]="true">
                         <ng-icon icon name="bootstrapCalendar" size="18px" aria-hidden="true"></ng-icon>
                     </app-input>
                 </div>
                 <div class="filter-group search-group">
-                    <label>Buscar</label>
-                    <app-input type="text" placeholder="Huésped, factura, habitación..." [hasIcon]="true">
+                    <label for="sales-search">Buscar</label>
+                    <app-input id="sales-search" type="text" placeholder="Huésped, factura, habitación..." [hasIcon]="true">
                         <ng-icon icon name="bootstrapSearch" size="18px" aria-hidden="true"></ng-icon>
                     </app-input>
                 </div>

@@ -54,7 +54,7 @@ describe('EditIncidentReportComponent — Editar Novedad Laboral', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
 
     vi.spyOn(activatedRoute.snapshot.paramMap, 'get').mockReturnValue(MOCK_REPORT.id);
-    vi.spyOn(router, 'currentNavigation').mockReturnValue({ extras: { state: { report: MOCK_REPORT } } } as any);
+    vi.spyOn(router, 'currentNavigation').mockReturnValue({ extras: { state: { report: MOCK_REPORT } } } as unknown as ReturnType<Router['currentNavigation']>);
   });
 
   // ─── Inicialización ────────────────────────────────────────────────────────
@@ -78,7 +78,7 @@ describe('EditIncidentReportComponent — Editar Novedad Laboral', () => {
     });
 
     it('debe mostrar notFound cuando falta el report en state', () => {
-      vi.spyOn(router, 'currentNavigation').mockReturnValue({ extras: { state: {} } } as any);
+      vi.spyOn(router, 'currentNavigation').mockReturnValue({ extras: { state: {} } } as unknown as ReturnType<Router['currentNavigation']>);
 
       fixture.detectChanges();
 

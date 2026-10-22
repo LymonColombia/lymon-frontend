@@ -1,11 +1,11 @@
-<room-details-nav
+<app-room-details-nav
     [isAuthenticated]="guestTokenService.isAuthenticated()"
     [guestEmail]="guestEmail"
-    (search)="onNavSearch($event)"
+    (searchSubmit)="onNavSearch($event)"
     (loginClicked)="onGuestLogin()"
     (logoutClicked)="onGuestLogout()"
     (myReservationsClicked)="onMyReservations()">
-</room-details-nav>
+</app-room-details-nav>
 
 <div class="room-details-container">
   <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
@@ -34,7 +34,7 @@
               </app-calendar>
 
               <div class="guests-selector">
-                <label class="guests-label">Huéspedes</label>
+                <span class="guests-label">Huéspedes</span>
                 <app-guest-stepper
                   variant="block"
                   [value]="guestsCount()"
