@@ -6,7 +6,6 @@ export const EMPLOYEE_MESSAGES = {
       required: 'El correo electrónico es obligatorio.',
       email: 'Ingresa una dirección de correo válida.',
       maxlength: 'El correo no puede superar los 254 caracteres.',
-      minLocalPartLength: 'El correo debe tener al menos 8 caracteres antes del símbolo @.',
     },
     password: {
       required: 'La contraseña es obligatoria.',

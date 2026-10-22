@@ -36,7 +36,7 @@ export const PLANS: readonly Plan[] = [
     type: 'LYMON_ONE',
     name: 'LyHost One',
     subtitle: 'Ideal para propietarios independientes',
-    price: '$89.900',
+    price: '$124.999',
     priceSuffix: '/mes',
     priceNote: 'Pago mensual sin compromiso',
     detailsSections: [
@@ -60,7 +60,7 @@ export const PLANS: readonly Plan[] = [
     type: 'PLUS',
     name: 'LyHost Plus',
     subtitle: 'Para administradores profesionales',
-    price: '$189.900',
+    price: '$179.999',
     priceSuffix: '/mes',
     priceNote: 'Incluye todo lo de LyHost One +',
     detailsSections: [
@@ -82,7 +82,7 @@ export const PLANS: readonly Plan[] = [
     type: 'PRIME',
     name: 'LyHost Prime',
     subtitle: 'Solución completa sin límites',
-    price: '$349.900',
+    price: '$280.000',
     priceSuffix: '/mes',
     priceNote: 'Todo incluido',
     detailsSections: [
