@@ -27,7 +27,7 @@ export const environment = {
   experiences: {
     endpoint: '/experiences',
   },
-   storage: {
+  storage: {
     endpoint: '/storage/presigned-url',
   },
   guestAuth: {

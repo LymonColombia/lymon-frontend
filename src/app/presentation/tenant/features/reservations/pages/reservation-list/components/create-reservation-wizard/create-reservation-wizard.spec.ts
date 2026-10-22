@@ -5,13 +5,13 @@ import { CreateTenantGuestUseCase } from '@/domain/tenant/tenant-guest/use-cases
 import { CreateReservationUseCase } from '@/domain/shared/reservation/use-cases/create-reservation.use-case';
 import { GetPropertiesUseCase } from '@/domain/shared/property/use-cases/get-properties.use-case';
 import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.use-case';
-import { GetTenantGuestsUseCase } from '@/domain/tenant/tenant-guest/use-cases/get-tenant-guests.use-case';
+import { FindTenantGuestByIdNumberUseCase } from '@/domain/tenant/tenant-guest/use-cases/find-tenant-guest-by-id-number.use-case';
 
 const mockCreateTenantGuestUseCase = { execute: vi.fn() };
 const mockCreateReservationUseCase = { execute: vi.fn() };
 const mockGetPropertiesUseCase = { execute: vi.fn() };
 const mockGetUnitsUseCase = { execute: vi.fn() };
-const mockGetTenantGuestsUseCase = { execute: vi.fn() };
+const mockFindTenantGuestByIdNumberUseCase = { execute: vi.fn() };
 
 async function setup() {
   const testingModule = TestBed.configureTestingModule({
@@ -21,7 +21,7 @@ async function setup() {
       { provide: CreateReservationUseCase, useValue: mockCreateReservationUseCase },
       { provide: GetPropertiesUseCase, useValue: mockGetPropertiesUseCase },
       { provide: GetUnitsUseCase, useValue: mockGetUnitsUseCase },
-      { provide: GetTenantGuestsUseCase, useValue: mockGetTenantGuestsUseCase },
+      { provide: FindTenantGuestByIdNumberUseCase, useValue: mockFindTenantGuestByIdNumberUseCase },
     ],
   });
 
@@ -57,10 +57,10 @@ describe('CreateReservationWizardComponent', () => {
     TestBed.resetTestingModule();
 
     mockGetPropertiesUseCase.execute.mockReturnValue(of([]));
-    mockGetTenantGuestsUseCase.execute.mockReturnValue(of([]));
     mockGetUnitsUseCase.execute.mockReturnValue(of([]));
     mockCreateReservationUseCase.execute.mockReturnValue(of({}));
     mockCreateTenantGuestUseCase.execute.mockReturnValue(of({ guestId: 'guest-new', fullName: 'New Guest', primaryEmail: 'new@test.com' }));
+    mockFindTenantGuestByIdNumberUseCase.execute.mockReturnValue(of(null));
   });
 
   describe('onSubmit() — date-string pass-through (LYMON-1092)', () => {
@@ -144,19 +144,12 @@ describe('CreateReservationWizardComponent', () => {
       expect(mockCreateReservationUseCase.execute).toHaveBeenCalled();
     });
 
-    it('should reject when checkOut equals checkIn', async () => {
+    it.each([
+      { name: 'checkOut equals checkIn', checkIn: '2026-07-01', checkOut: '2026-07-01' },
+      { name: 'checkOut is before checkIn', checkIn: '2026-07-10', checkOut: '2026-07-01' },
+    ])('should reject when $name', async ({ checkIn, checkOut }) => {
       const { component } = await setup();
-      fillValidReservationForm(component, { checkIn: '2026-07-01', checkOut: '2026-07-01' });
-
-      component.onSubmit();
-
-      expect(component.errorMessage()).toBe('La fecha de salida debe ser posterior a la fecha de entrada.');
-      expect(mockCreateReservationUseCase.execute).not.toHaveBeenCalled();
-    });
-
-    it('should reject when checkOut is before checkIn', async () => {
-      const { component } = await setup();
-      fillValidReservationForm(component, { checkIn: '2026-07-10', checkOut: '2026-07-01' });
+      fillValidReservationForm(component, { checkIn, checkOut });
 
       component.onSubmit();
 
@@ -174,32 +167,13 @@ describe('CreateReservationWizardComponent', () => {
       expect(mockCreateReservationUseCase.execute).toHaveBeenCalled();
     });
 
-    it('should reject a malformed checkIn date string (not YYYY-MM-DD)', async () => {
+    it.each([
+      { name: 'a malformed checkIn date string (not YYYY-MM-DD)', checkIn: '07/01/2026', checkOut: '2026-07-05' },
+      { name: 'a malformed checkOut date string (not YYYY-MM-DD)', checkIn: '2026-07-01', checkOut: 'not-a-date' },
+      { name: 'a checkIn that is a full ISO datetime instead of a bare date', checkIn: '2026-07-01T15:00:00.000Z', checkOut: '2026-07-05' },
+    ])('should reject $name', async ({ checkIn, checkOut }) => {
       const { component } = await setup();
-      fillValidReservationForm(component, { checkIn: '07/01/2026', checkOut: '2026-07-05' });
-
-      component.onSubmit();
-
-      expect(component.errorMessage()).toBe('Las fechas seleccionadas no son válidas.');
-      expect(mockCreateReservationUseCase.execute).not.toHaveBeenCalled();
-    });
-
-    it('should reject a malformed checkOut date string (not YYYY-MM-DD)', async () => {
-      const { component } = await setup();
-      fillValidReservationForm(component, { checkIn: '2026-07-01', checkOut: 'not-a-date' });
-
-      component.onSubmit();
-
-      expect(component.errorMessage()).toBe('Las fechas seleccionadas no son válidas.');
-      expect(mockCreateReservationUseCase.execute).not.toHaveBeenCalled();
-    });
-
-    it('should reject when checkIn is a full ISO datetime instead of a bare date', async () => {
-      const { component } = await setup();
-      fillValidReservationForm(component, {
-        checkIn: '2026-07-01T15:00:00.000Z',
-        checkOut: '2026-07-05',
-      });
+      fillValidReservationForm(component, { checkIn, checkOut });
 
       component.onSubmit();
 
@@ -238,25 +212,6 @@ describe('CreateReservationWizardComponent', () => {
       expect(component.properties()).toEqual([{ id: 'p1', name: 'Propiedad sin nombre' }]);
     });
 
-    it('should load tenant guests and prefer fullName over name/email fallbacks', async () => {
-      mockGetTenantGuestsUseCase.execute.mockReturnValue(
-        of([
-          { id: 'g1', fullName: 'Carlos Ruiz' },
-          { id: 'g2', name: 'Only Name' },
-          { id: 'g3', primaryEmail: 'only-email@test.com' },
-          { id: 'g4' },
-        ]),
-      );
-
-      const { component } = await setup();
-
-      expect(component.guests()).toEqual([
-        { id: 'g1', name: 'Carlos Ruiz' },
-        { id: 'g2', name: 'Only Name' },
-        { id: 'g3', name: 'only-email@test.com' },
-        { id: 'g4', name: 'Sin Nombre' },
-      ]);
-    });
   });
 
   describe('onPropertySelect()', () => {
@@ -283,22 +238,6 @@ describe('CreateReservationWizardComponent', () => {
   });
 
   describe('step navigation', () => {
-    it('should skip step 2 when the guest is already registered', async () => {
-      const { component } = await setup();
-
-      component.setGuestRegistered(true);
-
-      expect(component.currentStep()).toBe(3);
-    });
-
-    it('should go through step 2 when the guest is not registered', async () => {
-      const { component } = await setup();
-
-      component.setGuestRegistered(false);
-
-      expect(component.currentStep()).toBe(2);
-    });
-
     it('should not advance currentStep past 3', async () => {
       const { component } = await setup();
       component.currentStep.set(3);
@@ -314,6 +253,73 @@ describe('CreateReservationWizardComponent', () => {
       component.prevStep();
 
       expect(component.currentStep()).toBe(1);
+    });
+  });
+
+  describe('lookupGuest() — auto-detect by ID number (LYMON-1110)', () => {
+    it('should reject an invalid ID format without calling the lookup use-case', async () => {
+      const { component } = await setup();
+      component.guestIdNumber.set('ab');
+
+      component.lookupGuest();
+
+      expect(mockFindTenantGuestByIdNumberUseCase.execute).not.toHaveBeenCalled();
+      expect(component.idNumberFormatError()).toBeTruthy();
+      expect(component.currentStep()).toBe(1);
+    });
+
+    it('should skip registration and jump to step 3 when the guest is found', async () => {
+      mockFindTenantGuestByIdNumberUseCase.execute.mockReturnValue(
+        of({ id: 'g1', fullName: 'Carlos Ruiz', primaryEmail: 'carlos@test.com' }),
+      );
+      const { component } = await setup();
+      component.guestIdNumber.set('1020304050');
+
+      component.lookupGuest();
+
+      expect(mockFindTenantGuestByIdNumberUseCase.execute).toHaveBeenCalledWith('1020304050');
+      expect(component.guestExists()).toBe(true);
+      expect(component.reservationForm.guestId).toBe('g1');
+      expect(component.guestForm.fullName).toBe('Carlos Ruiz');
+      expect(component.currentStep()).toBe(3);
+    });
+
+    it('should go to the registration form with the ID prefilled when the guest is not found', async () => {
+      mockFindTenantGuestByIdNumberUseCase.execute.mockReturnValue(of(null));
+      const { component } = await setup();
+      component.guestIdNumber.set('1020304050');
+
+      component.lookupGuest();
+
+      expect(component.guestExists()).toBe(false);
+      expect(component.guestForm.idNumber).toBe('1020304050');
+      expect(component.currentStep()).toBe(2);
+    });
+
+    it('should set an error state and stay on step 1 when the lookup call fails', async () => {
+      mockFindTenantGuestByIdNumberUseCase.execute.mockReturnValue(throwError(() => new Error('network down')));
+      const { component } = await setup();
+      component.guestIdNumber.set('1020304050');
+
+      component.lookupGuest();
+
+      expect(component.lookupState()).toBe('error');
+      expect(component.lookupErrorMessage()).toBe('network down');
+      expect(component.currentStep()).toBe(1);
+    });
+
+    it('should set loading state while the lookup is in flight', async () => {
+      const { component } = await setup();
+      mockFindTenantGuestByIdNumberUseCase.execute.mockReturnValue({
+        subscribe: () => {
+          // intentionally left pending to keep lookup in loading state
+        },
+      });
+      component.guestIdNumber.set('1020304050');
+
+      component.lookupGuest();
+
+      expect(component.lookupState()).toBe('loading');
     });
   });
 
@@ -336,11 +342,23 @@ describe('CreateReservationWizardComponent', () => {
       component.registerAndNext();
 
       expect(component.reservationForm.guestId).toBe('guest-new');
-      expect(component.guests()).toEqual([{ id: 'guest-new', name: 'New Guest' }]);
       expect(component.isCreatingGuest()).toBe(false);
-      // registerAndNext() only calls nextStep() — it does not set guestIsRegistered(),
+      // registerAndNext() only calls nextStep() — it does not set guestExists(),
       // so from step 1 (default) it advances by one, not straight to the confirmation step.
       expect(component.currentStep()).toBe(2);
+    });
+
+    it('should forward the looked-up idNumber to the create-guest use case', async () => {
+      const { component } = await setup();
+      component.guestForm.idNumber = '1020304050';
+      component.guestForm.fullName = 'New Guest';
+      component.guestForm.primaryEmail = 'new@test.com';
+
+      component.registerAndNext();
+
+      expect(mockCreateTenantGuestUseCase.execute).toHaveBeenCalledWith(
+        expect.objectContaining({ idNumber: '1020304050' }),
+      );
     });
 
     it('should set an error message when guest creation fails', async () => {
