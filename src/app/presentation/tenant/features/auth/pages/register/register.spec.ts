@@ -92,12 +92,6 @@ describe('RegisterComponent – paso 1', () => {
     expect(component.currentStep()).toBe(1);
   });
 
-  it('valida longitud mínima de la parte local del correo', async () => {
-    const { component } = await setup();
-    component.stepOneForm.patchValue({ ...VALID_STEP_ONE, email: 'a@b.com' });
-    expect(component.emailControl.hasError('minLocalPartLength')).toBe(true);
-  });
-
   it('avanza al paso 2 cuando el paso 1 es válido y carga planes', async () => {
     const { component } = await setup();
     component.stepOneForm.patchValue(VALID_STEP_ONE);

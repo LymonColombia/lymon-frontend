@@ -33,7 +33,6 @@ import { Plan, isFreePlan } from '@/domain/shared/plan/plan.model';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
 import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
 import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle';
-import { minLocalPartLength } from '@/presentation/shared/validators/email.validator';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -131,15 +130,7 @@ export class RegisterComponent {
     stepOne: this.fb.group(
       {
         tenantName: ['', Validators.required],
-        email: [
-          '',
-          [
-            Validators.required,
-            Validators.email,
-            Validators.maxLength(254),
-            minLocalPartLength(8),
-          ],
-        ],
+        email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
         password: ['', [Validators.required, Validators.minLength(8)]],
         confirmPassword: ['', Validators.required],
         terms: [false, Validators.requiredTrue],
