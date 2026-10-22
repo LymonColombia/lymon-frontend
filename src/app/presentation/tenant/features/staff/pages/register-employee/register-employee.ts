@@ -21,6 +21,10 @@ import { ToastComponent } from '@/presentation/tenant/components/toast/toast';
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 import { TutorialHighlightDirective } from '@/presentation/tenant/directives/tutorial-highlight.directive';
 import {
+  bootstrapArrowLeft,
+  bootstrapArrowRight,
+  bootstrapCheck,
+  bootstrapCheckLg,
   bootstrapEye,
   bootstrapEyeSlash,
   bootstrapLock,
@@ -45,6 +49,10 @@ import {
   ],
   providers: [
     provideIcons({
+      bootstrapArrowLeft,
+      bootstrapArrowRight,
+      bootstrapCheck,
+      bootstrapCheckLg,
       bootstrapEye,
       bootstrapEyeSlash,
       bootstrapLock,
@@ -74,6 +82,9 @@ export class RegisterEmployeeComponent implements OnInit {
   readonly propertiesLoading = signal(true);
   readonly errorMessage = signal<string | null>(null);
   readonly showPassword = signal(false);
+  readonly currentStep = signal<1 | 2>(1);
+  readonly stepDirection = signal<'forward' | 'backward'>('forward');
+  readonly justRegistered = signal(false);
   readonly availableRoles = signal<Role[]>([]);
   readonly availableProperties = signal<Property[]>([]);
   readonly unitsPerRow = signal<Partial<Record<number, Unit[]>>>({});
@@ -290,6 +301,34 @@ export class RegisterEmployeeComponent implements OnInit {
     this.showPassword.update((v) => !v);
   }
 
+  nextStep(): void {
+    const controls = this.form.controls;
+    const stepOneInvalid =
+      controls.fullName.invalid || controls.document.invalid || controls.email.invalid || controls.password.invalid;
+
+    if (stepOneInvalid) {
+      controls.fullName.markAsTouched();
+      controls.document.markAsTouched();
+      controls.email.markAsTouched();
+      controls.password.markAsTouched();
+      [
+        ...this.collectControlErrors(controls.fullName, 'fullName'),
+        ...this.collectControlErrors(controls.document, 'document'),
+        ...this.collectControlErrors(controls.email, 'email'),
+        ...this.collectControlErrors(controls.password, 'password'),
+      ].forEach((message) => this.toastService.error(message));
+      return;
+    }
+
+    this.stepDirection.set('forward');
+    this.currentStep.set(2);
+  }
+
+  prevStep(): void {
+    this.stepDirection.set('backward');
+    this.currentStep.set(1);
+  }
+
   onCancel(): void {
     if (this.tutorialService.isActive()) {
       this.tutorialService.resetActionButtonClicked(4);
@@ -300,6 +339,11 @@ export class RegisterEmployeeComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.currentStep() === 1) {
+      this.nextStep();
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.showValidationErrorsAsToasts();
@@ -340,18 +384,26 @@ export class RegisterEmployeeComponent implements OnInit {
         this.employeeSaved = true;
         this.toastService.success(EMPLOYEE_MESSAGES.success.create);
         this.tutorialService.stepCompleted$.next();
-        this.form.reset();
-        while (this.roleAssignments.length > 1) {
-          this.roleAssignments.removeAt(1);
-        }
-        this.getRoleGroupAt(0).patchValue({
-          scopeType: 'TENANT',
-          roleId: '',
-          resourceIds: [],
-          selectedPropertyId: '',
-        });
-        this.unitsPerRow.set({});
-        this.unitsLoadingPerRow.set({});
+        this.justRegistered.set(true);
+
+        const resetTimeout = setTimeout(() => {
+          this.justRegistered.set(false);
+          this.form.reset();
+          while (this.roleAssignments.length > 1) {
+            this.roleAssignments.removeAt(1);
+          }
+          this.getRoleGroupAt(0).patchValue({
+            scopeType: 'TENANT',
+            roleId: '',
+            resourceIds: [],
+            selectedPropertyId: '',
+          });
+          this.unitsPerRow.set({});
+          this.unitsLoadingPerRow.set({});
+          this.stepDirection.set('backward');
+          this.currentStep.set(1);
+        }, 1500);
+        this.destroyRef.onDestroy(() => clearTimeout(resetTimeout));
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
