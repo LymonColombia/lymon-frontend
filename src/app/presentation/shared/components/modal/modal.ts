@@ -86,12 +86,4 @@ export class ModalComponent {
 
     this.requestClose();
   }
-
-  onDialogMouseDown(): void {
-    this.canCloseFromBackdropClick = false;
-  }
-
-  onDialogClick(event: MouseEvent): void {
-    event.stopPropagation();
-  }
 }

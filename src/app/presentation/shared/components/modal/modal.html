@@ -1,8 +1,10 @@
 @if (open()) {
   <div
     class="modal-backdrop"
+    role="presentation"
     (mousedown)="onBackdropMouseDown($event)"
     (click)="onBackdropClick($event)"
+    (keydown.escape)="onEscapeKey(); $event.stopPropagation()"
   >
     <section
       class="modal-dialog"
@@ -10,8 +12,6 @@
       aria-modal="true"
       [attr.aria-labelledby]="titleId()"
       [attr.aria-label]="title() || 'Modal'"
-      (mousedown)="onDialogMouseDown()"
-      (click)="onDialogClick($event)"
     >
       <header class="modal-header">
         @if (title()) {

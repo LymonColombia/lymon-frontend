@@ -317,12 +317,12 @@ export class RegisterEmployeeComponent implements OnInit {
       fullName: raw.fullName as string,
       document: raw.document as string,
       roleAssignments: (
-        raw.roleAssignments as Array<{
+        raw.roleAssignments as {
           roleId: string;
           scopeType: ScopeType;
           selectedPropertyId: string;
           resourceIds: string[];
-        }>
+        }[]
       ).map((r) => {
         if (r.scopeType === this.SCOPE_TENANT) {
           return { roleId: r.roleId, scope: { type: 'TENANT' as const } };

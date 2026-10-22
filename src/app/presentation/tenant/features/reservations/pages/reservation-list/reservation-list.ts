@@ -50,6 +50,9 @@ const STATUS_FILTER_OPTIONS: SelectOption[] = [
 
 @Component({
   selector: 'app-tenant-reservations',
+  host: {
+    '(document:keydown.escape)': 'onEscapeKey()',
+  },
   standalone: true,
   imports: [CommonModule, FormsModule, NgIconComponent, TenantPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent, ShiftDatePickerComponent, SelectComponent],
   templateUrl: './reservation-list.html',
@@ -280,6 +283,14 @@ export class TenantReservations implements OnInit {
   openDetails(reservation: ReservationViewModel) {
     this.statusActionError.set(null);
     this.selectedReservation.set(reservation);
+  }
+
+  // Modals stack (cancel/edit open over details), so Escape closes the topmost one
+  onEscapeKey(): void {
+    if (this.showCheckInInfoModal()) this.closeCheckInInfoModal();
+    else if (this.showEditModal()) this.closeEditModal();
+    else if (this.showCancelConfirm()) this.closeCancelConfirm();
+    else if (this.selectedReservation()) this.closeDetails();
   }
 
   closeDetails() {

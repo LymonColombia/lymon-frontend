@@ -46,8 +46,8 @@ interface GuestFormValue {
 }
 
 const GUEST_ROUTE_PREFIX = '/guest/';
-const ACTIVE_RESERVATION_STATUSES: ReadonlyArray<Reservation['status']> = ['active', 'confirmed', 'pending'];
-const RESERVATION_STATUSES: ReadonlyArray<Reservation['status']> = [
+const ACTIVE_RESERVATION_STATUSES: ReadonlySet<Reservation['status']> = new Set(['active', 'confirmed', 'pending']);
+const RESERVATION_STATUSES: readonly Reservation['status'][] = [
   'active',
   'pending',
   'finished',
@@ -304,7 +304,7 @@ export class CheckinComponent {
     }
 
     const activeReservation = reservations.find((reservation) =>
-      ACTIVE_RESERVATION_STATUSES.includes(reservation.status),
+      ACTIVE_RESERVATION_STATUSES.has(reservation.status),
     );
 
     return activeReservation ?? reservations[0];
