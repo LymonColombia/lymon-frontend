@@ -310,7 +310,11 @@ describe('CreateReservationWizardComponent', () => {
 
     it('should set loading state while the lookup is in flight', async () => {
       const { component } = await setup();
-      mockFindTenantGuestByIdNumberUseCase.execute.mockReturnValue({ subscribe: () => {} });
+      mockFindTenantGuestByIdNumberUseCase.execute.mockReturnValue({
+        subscribe: () => {
+          // intentionally left pending to keep lookup in loading state
+        },
+      });
       component.guestIdNumber.set('1020304050');
 
       component.lookupGuest();
