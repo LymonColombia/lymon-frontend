@@ -44,7 +44,8 @@ describe('TenantReservations', () => {
           provide: TenantGuestRepository,
           useValue: {
             createGuest: () => of({ guestId: '1', fullName: 'Guest', primaryEmail: 'guest@test.com' }),
-            getGuests: () => of([])
+            getGuests: () => of([]),
+            findByIdNumber: () => of(null)
           }
         }
       ]
@@ -94,39 +95,17 @@ describe('TenantReservations', () => {
       expect(result.some((r) => r.status === 'Finalizada')).toBe(false);
     });
 
-    it('shows only pending reservations when pending filter is active', () => {
-      component.statusFilter.set('pending');
+    it.each([
+      { filter: 'pending', status: 'Pendiente' },
+      { filter: 'confirmed', status: 'Confirmada' },
+      { filter: 'checked-in', status: 'Check-in' },
+      { filter: 'finished', status: 'Finalizada' },
+      { filter: 'cancelled', status: 'Cancelada' },
+    ] as const)('shows only $status reservations when $filter filter is active', ({ filter, status }) => {
+      component.statusFilter.set(filter);
       const result = component.filteredReservations();
       expect(result).toHaveLength(1);
-      expect(result[0].status).toBe('Pendiente');
-    });
-
-    it('shows only confirmed reservations when confirmed filter is active', () => {
-      component.statusFilter.set('confirmed');
-      const result = component.filteredReservations();
-      expect(result).toHaveLength(1);
-      expect(result[0].status).toBe('Confirmada');
-    });
-
-    it('shows only checked-in reservations when checked-in filter is active', () => {
-      component.statusFilter.set('checked-in');
-      const result = component.filteredReservations();
-      expect(result).toHaveLength(1);
-      expect(result[0].status).toBe('Check-in');
-    });
-
-    it('shows only finished reservations when finished filter is active', () => {
-      component.statusFilter.set('finished');
-      const result = component.filteredReservations();
-      expect(result).toHaveLength(1);
-      expect(result[0].status).toBe('Finalizada');
-    });
-
-    it('shows only cancelled reservations when cancelled filter is active', () => {
-      component.statusFilter.set('cancelled');
-      const result = component.filteredReservations();
-      expect(result).toHaveLength(1);
-      expect(result[0].status).toBe('Cancelada');
+      expect(result[0].status).toBe(status);
     });
 
     it('shows all reservations when all filter is active', () => {
