@@ -129,8 +129,6 @@ pnpm exec playwright test
 pnpm exec playwright test tests/e2e/incident-report   # one folder
 ```
 
-There are also Cypress specs in `cypress/e2e/` (`pnpm cy:open`).
-
 ### Before you push
 
 CI runs the same three checks on every PR (section 7). Run them locally first so the PR
