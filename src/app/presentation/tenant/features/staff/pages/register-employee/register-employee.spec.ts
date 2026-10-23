@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
@@ -11,6 +11,7 @@ import { GetUnitsUseCase } from '@/domain/shared/property/use-cases/get-units.us
 import { AddStaffUseCase } from '@/domain/tenant/staff/use-cases/add-staff.use-case';
 import { Role } from '@/domain/tenant/staff/staff.model';
 import { UserRepository } from '@/domain/tenant/user/user.repository';
+import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
@@ -137,5 +138,94 @@ describe('RegisterEmployeeComponent — US-026 (Ver roles del sistema)', () => {
         expect(document?.valid).toBe(false);
       });
     });
+  });
+});
+
+describe('RegisterEmployeeComponent — navigation (LYMON-1149)', () => {
+  const STAFF_LIST_URL = '/admin/staff';
+  const REDIRECT_DELAY_MS = 1500;
+  let fixture: ComponentFixture<RegisterEmployeeComponent>;
+  let component: RegisterEmployeeComponent;
+  let navigateSpy: ReturnType<typeof vi.spyOn>;
+  let addStaffMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(async () => {
+    addStaffMock = vi.fn().mockReturnValue(of(undefined));
+
+    await TestBed.configureTestingModule({
+      imports: [RegisterEmployeeComponent, ReactiveFormsModule],
+      providers: [
+        { provide: UserRepository, useValue: {} },
+        provideRouter([]),
+        { provide: GetRolesUseCase, useValue: { execute: vi.fn().mockReturnValue(of(MOCK_ROLES)) } },
+        { provide: GetPropertiesUseCase, useValue: { execute: vi.fn().mockReturnValue(of([])) } },
+        { provide: GetUnitsUseCase, useValue: { execute: vi.fn().mockReturnValue(of([])) } },
+        { provide: AddStaffUseCase, useValue: { execute: addStaffMock } },
+      ],
+    }).compileComponents();
+
+    navigateSpy = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    fixture = TestBed.createComponent(RegisterEmployeeComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should navigate to /admin/staff when cancelling outside the tutorial', () => {
+    component.onCancel();
+
+    expect(navigateSpy).toHaveBeenCalledWith([STAFF_LIST_URL]);
+  });
+
+  it('should not navigate when cancelling during the tutorial', () => {
+    TestBed.inject(TutorialService).isActive.set(true);
+
+    component.onCancel();
+
+    expect(navigateSpy).not.toHaveBeenCalled();
+  });
+
+  it('should navigate to /admin/staff only after 1500ms when submit succeeds', () => {
+    vi.useFakeTimers();
+    component.form.patchValue({
+      fullName: 'Maria Lopez',
+      document: '1020304050',
+      email: 'maria.lopez@hotel.com',
+      password: 'Secret123!',
+    });
+    component.roleAssignments.at(0).patchValue({ roleId: 'role-1', scopeType: 'TENANT' });
+    component.currentStep.set(2);
+
+    component.onSubmit();
+
+    expect(addStaffMock).toHaveBeenCalledTimes(1);
+    expect(navigateSpy).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(REDIRECT_DELAY_MS - 1);
+    expect(navigateSpy).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(1);
+    expect(navigateSpy).toHaveBeenCalledWith([STAFF_LIST_URL]);
+  });
+
+  it('should not navigate when the component is destroyed before the delay elapses', () => {
+    vi.useFakeTimers();
+    component.form.patchValue({
+      fullName: 'Maria Lopez',
+      document: '1020304050',
+      email: 'maria.lopez@hotel.com',
+      password: 'Secret123!',
+    });
+    component.roleAssignments.at(0).patchValue({ roleId: 'role-1', scopeType: 'TENANT' });
+    component.currentStep.set(2);
+    component.onSubmit();
+
+    fixture.destroy();
+    vi.advanceTimersByTime(REDIRECT_DELAY_MS);
+
+    expect(navigateSpy).not.toHaveBeenCalled();
   });
 });

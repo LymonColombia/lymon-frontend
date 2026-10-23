@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapPeople, bootstrapTrash, bootstrapSearch, bootstrapChevronLeft, bootstrapChevronRight, bootstrapX, bootstrapEnvelope, bootstrapShieldCheck, bootstrapCalendar3, bootstrapPersonBadge, bootstrapClipboard } from '@ng-icons/bootstrap-icons';
+import { bootstrapPeople, bootstrapTrash, bootstrapSearch, bootstrapChevronLeft, bootstrapChevronRight, bootstrapX, bootstrapEnvelope, bootstrapShieldCheck, bootstrapCalendar3, bootstrapPersonBadge, bootstrapClipboard, bootstrapPersonAdd } from '@ng-icons/bootstrap-icons';
+import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 import { GetStaffUseCase } from '@/domain/tenant/staff/use-cases/get-staff.use-case';
@@ -42,7 +43,8 @@ interface EmployeeRow {
     bootstrapShieldCheck,
     bootstrapCalendar3,
     bootstrapPersonBadge,
-    bootstrapClipboard
+    bootstrapClipboard,
+    bootstrapPersonAdd
   })],
   templateUrl: './staff-management.html',
   styleUrl: './staff-management.css',
@@ -54,6 +56,7 @@ export class StaffManagementComponent implements OnInit {
   private readonly getRolesUseCase = inject(GetRolesUseCase);
   private readonly deleteStaffUseCase = inject(DeleteStaffUseCase);
   private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
 
   readonly isLoading = signal(true);
   readonly isDeleting = signal<string | null>(null);
@@ -132,6 +135,10 @@ export class StaffManagementComponent implements OnInit {
     }
     return pages;
   });
+
+  navigateToRegister(): void {
+    this.router.navigate(['/admin/staff/new']);
+  }
 
   ngOnInit(): void {
     this.refreshStaff();
