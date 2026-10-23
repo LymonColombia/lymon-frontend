@@ -335,7 +335,7 @@ export class RegisterEmployeeComponent implements OnInit {
       this.form.reset();
       return;
     }
-    this.router.navigate(['/booking']);
+    this.router.navigate(['/admin/staff']);
   }
 
   onSubmit(): void {
@@ -386,23 +386,7 @@ export class RegisterEmployeeComponent implements OnInit {
         this.tutorialService.stepCompleted$.next();
         this.justRegistered.set(true);
 
-        const resetTimeout = setTimeout(() => {
-          this.justRegistered.set(false);
-          this.form.reset();
-          while (this.roleAssignments.length > 1) {
-            this.roleAssignments.removeAt(1);
-          }
-          this.getRoleGroupAt(0).patchValue({
-            scopeType: 'TENANT',
-            roleId: '',
-            resourceIds: [],
-            selectedPropertyId: '',
-          });
-          this.unitsPerRow.set({});
-          this.unitsLoadingPerRow.set({});
-          this.stepDirection.set('backward');
-          this.currentStep.set(1);
-        }, 1500);
+        const resetTimeout = setTimeout(() => this.router.navigate(['/admin/staff']), 1500);
         this.destroyRef.onDestroy(() => clearTimeout(resetTimeout));
       },
       error: (err: HttpErrorResponse) => {
