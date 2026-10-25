@@ -31,6 +31,19 @@ import {
 } from './tasks/incident-report/create-incident-report.task';
 import { openAuditLogPage } from './tasks/audit/audit-log.task';
 import { errorMessageFrom } from './questions/error-message.question';
+import {
+  openReservationsPage,
+  openCreateReservationWizard,
+  chooseNewGuestRegistration,
+  chooseExistingGuest,
+  fillNewGuestForm,
+  submitNewGuestForm,
+  fillReservationDetails,
+  selectReservationDates,
+  submitReservationForm,
+  closeReservationWizard,
+  NewGuestData,
+} from './tasks/reservations/manual-reservation.task';
 
 const DASHBOARD_ARIA_SNAPSHOT = `
   - heading "Dashboard" [level=1]
@@ -165,5 +178,50 @@ export class ManagerFlow {
 
   async expectManagerLoginError(message: string | RegExp): Promise<void> {
     await expect(await this.actor.asks(errorMessageFrom('app-login'))).toContainText(message);
+  }
+
+  async openReservationsPage(): Promise<void> {
+    await this.actor.attemptsTo(openReservationsPage());
+  }
+
+  async openCreateReservationWizard(): Promise<void> {
+    await this.actor.attemptsTo(openCreateReservationWizard());
+  }
+
+  async chooseNewGuestRegistration(): Promise<void> {
+    await this.actor.attemptsTo(chooseNewGuestRegistration());
+  }
+
+  async chooseExistingGuest(): Promise<void> {
+    await this.actor.attemptsTo(chooseExistingGuest());
+  }
+
+  async fillNewGuestForm(data: NewGuestData): Promise<void> {
+    await this.actor.attemptsTo(fillNewGuestForm(data));
+  }
+
+  async submitNewGuestForm(): Promise<void> {
+    await this.actor.attemptsTo(submitNewGuestForm());
+  }
+
+  async fillReservationDetails(data: {
+    propertyName?: string;
+    unitName?: string;
+    guestsCount?: number;
+    notes?: string;
+  }): Promise<void> {
+    await this.actor.attemptsTo(fillReservationDetails(data));
+  }
+
+  async selectReservationDates(): Promise<void> {
+    await this.actor.attemptsTo(selectReservationDates());
+  }
+
+  async submitReservationForm(): Promise<void> {
+    await this.actor.attemptsTo(submitReservationForm());
+  }
+
+  async closeReservationWizard(): Promise<void> {
+    await this.actor.attemptsTo(closeReservationWizard());
   }
 }

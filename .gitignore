@@ -56,3 +56,6 @@ node_modules/
 # Claude
 CLAUDE.md
 /.claude
+
+# Opencode
+opencode.jsonc

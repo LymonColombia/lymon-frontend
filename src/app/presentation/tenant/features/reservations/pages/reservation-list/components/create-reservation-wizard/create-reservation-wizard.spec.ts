@@ -334,6 +334,30 @@ describe('CreateReservationWizardComponent', () => {
       expect(mockCreateTenantGuestUseCase.execute).not.toHaveBeenCalled();
     });
 
+    it('should not submit when primaryEmail is missing', async () => {
+      const { component } = await setup();
+      component.guestForm.fullName = 'Jane Doe';
+      component.guestForm.primaryEmail = '';
+
+      component.registerAndNext();
+
+      expect(mockCreateTenantGuestUseCase.execute).not.toHaveBeenCalled();
+    });
+
+    it('should call createTenantGuestUseCase with the guest form data', async () => {
+      const { component } = await setup();
+      component.guestForm.fullName = 'Jane Doe';
+      component.guestForm.primaryEmail = 'jane@example.com';
+
+      component.registerAndNext();
+
+      expect(mockCreateTenantGuestUseCase.execute).toHaveBeenCalledWith({
+        idNumber: '',
+        fullName: 'Jane Doe',
+        primaryEmail: 'jane@example.com',
+      });
+    });
+
     it('should create the guest, prefill guestId, and advance to the next step', async () => {
       const { component } = await setup();
       component.guestForm.fullName = 'New Guest';
@@ -359,6 +383,32 @@ describe('CreateReservationWizardComponent', () => {
       expect(mockCreateTenantGuestUseCase.execute).toHaveBeenCalledWith(
         expect.objectContaining({ idNumber: '1020304050' }),
       );
+    });
+
+    it('should navigate through the entire manual guest registration flow from step 1 to step 3', async () => {
+      mockFindTenantGuestByIdNumberUseCase.execute.mockReturnValue(of(null));
+      const { component } = await setup();
+
+      // Step 1: the manager looks the guest up by ID number and finds no match
+      expect(component.currentStep()).toBe(1);
+      component.guestIdNumber.set('1020304050');
+      component.lookupGuest();
+      expect(component.guestExists()).toBe(false);
+      expect(component.currentStep()).toBe(2);
+
+      // Step 2: the manager registers the guest
+      component.guestForm.fullName = 'New Guest';
+      component.guestForm.primaryEmail = 'new@test.com';
+      component.registerAndNext();
+
+      // Step 3: guest created, id preselected, wizard moves to reservation details
+      expect(mockCreateTenantGuestUseCase.execute).toHaveBeenCalledWith({
+        idNumber: '1020304050',
+        fullName: 'New Guest',
+        primaryEmail: 'new@test.com',
+      });
+      expect(component.reservationForm.guestId).toBe('guest-new');
+      expect(component.currentStep()).toBe(3);
     });
 
     it('should set an error message when guest creation fails', async () => {

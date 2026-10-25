@@ -35,7 +35,7 @@ export default defineConfig({
 
   use: {
     trace: 'on-first-retry',
-    baseURL: 'https://lyhost.netlify.app',
+    baseURL: 'http://localhost:3000',
   },
 
   projects: [
