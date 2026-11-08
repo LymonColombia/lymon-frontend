@@ -121,7 +121,6 @@ export class SidebarComponent implements OnInit {
     { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/admin/reservations' },
     { icon: 'bootstrapHouseDoor', label: ROOM_LABELS.propertiesAndRooms, route: '/admin/properties' },
     { icon: 'bootstrapStar', label: 'Experiencias', route: '/admin/experiences' },
-    { icon: 'bootstrapPersonAdd', label: 'Registrar Empleado', route: '/admin/staff/new' },
     { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/admin/staff' },
     { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/admin/shifts' },
     { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/admin/audit-log' },
