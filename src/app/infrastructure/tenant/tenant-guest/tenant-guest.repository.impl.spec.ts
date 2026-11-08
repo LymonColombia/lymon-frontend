@@ -145,4 +145,40 @@ describe('TenantGuestRepositoryImpl', () => {
       expect(hasError).toBe(true);
     });
   });
+
+  describe('findByIdNumber()', () => {
+    it('should search via the `q` query param and return the first match', () => {
+      const mockGuest: TenantGuest = {
+        id: 'guest-1',
+        fullName: 'Carlos Pérez',
+        primaryEmail: 'carlos@example.com',
+      };
+
+      let result: TenantGuest | null | undefined;
+      repository.findByIdNumber('999888777').subscribe((res) => {
+        result = res;
+      });
+
+      const req = httpMock.expectOne((r) => r.url === GUESTS_URL);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.params.get('q')).toBe('999888777');
+      expect(req.request.params.has('documentNumber')).toBe(false);
+
+      req.flush({ data: [mockGuest] });
+
+      expect(result).toEqual(mockGuest);
+    });
+
+    it('should return null when no guest matches the search', () => {
+      let result: TenantGuest | null | undefined;
+      repository.findByIdNumber('00000000').subscribe((res) => {
+        result = res;
+      });
+
+      const req = httpMock.expectOne((r) => r.url === GUESTS_URL);
+      req.flush({ data: [] });
+
+      expect(result).toBeNull();
+    });
+  });
 });

@@ -26,8 +26,10 @@ export class TenantGuestRepositoryImpl extends TenantGuestRepository {
   }
 
   findByIdNumber(idNumber: string): Observable<TenantGuest | null> {
+    // The backend exposes a single free-text search (`q`) that matches name,
+    // email, document number and phone. There is no dedicated documentNumber filter.
     return this.http
-      .get<GetTenantGuestsResponse>(GUESTS_URL, { params: { documentNumber: idNumber } })
+      .get<GetTenantGuestsResponse>(GUESTS_URL, { params: { q: idNumber } })
       .pipe(map((res) => res.data?.[0] ?? null));
   }
 }

@@ -23,23 +23,37 @@ export const openReservationsPage = (): ActorTask => async (actor: Actor) => {
 /** Open the "Crear Reserva" wizard dialog */
 export const openCreateReservationWizard = (): ActorTask => async (actor: Actor) => {
   const page = actor.browse.page;
-  await page.locator('button').filter({ hasText: 'Crear Reserva' }).first().click();
+  await page.getByRole('button', { name: 'Crear Reserva' }).first().click();
   await page.locator('.wizard-container').waitFor({ state: 'visible' });
 };
 
-/** In Step 1: select "No, registrar nuevo" to enter manual guest registration */
-export const chooseNewGuestRegistration = (): ActorTask => async (actor: Actor) => {
-  const page = actor.browse.page;
-  await page.locator('button').filter({ hasText: 'No, registrar nuevo' }).click();
-  await page.locator('#fullName').waitFor({ state: 'visible' });
-};
+/**
+ * In Step 1: look up an unregistered identification number.
+ * The wizard advances to Step 2 (manual guest registration).
+ */
+export const lookupNewGuest =
+  (idNumber: string): ActorTask =>
+  async (actor: Actor) => {
+    const page = actor.browse.page;
+    const wizard = page.locator('.wizard-container');
+    await page.locator('#idNumber').fill(idNumber);
+    await wizard.getByRole('button', { name: 'Buscar' }).click();
+    await page.locator('#fullName').waitFor({ state: 'visible' });
+  };
 
-/** In Step 1: select "Sí, ya está registrado" to skip to reservation details */
-export const chooseExistingGuest = (): ActorTask => async (actor: Actor) => {
-  const page = actor.browse.page;
-  await page.locator('button').filter({ hasText: 'Sí, ya está registrado' }).click();
-  await page.locator('#guestSelect').waitFor({ state: 'visible' });
-};
+/**
+ * In Step 1: look up an already registered identification number.
+ * The wizard skips Step 2 and goes straight to Step 3 (reservation details).
+ */
+export const lookupExistingGuest =
+  (idNumber: string): ActorTask =>
+  async (actor: Actor) => {
+    const page = actor.browse.page;
+    const wizard = page.locator('.wizard-container');
+    await page.locator('#idNumber').fill(idNumber);
+    await wizard.getByRole('button', { name: 'Buscar' }).click();
+    await page.locator('#propertySelect').waitFor({ state: 'visible' });
+  };
 
 /** In Step 2: fill the new guest information form */
 export const fillNewGuestForm =
@@ -53,7 +67,8 @@ export const fillNewGuestForm =
 /** In Step 2: submit guest registration and advance to step 3 */
 export const submitNewGuestForm = (): ActorTask => async (actor: Actor) => {
   const page = actor.browse.page;
-  await page.locator('button').filter({ hasText: 'Siguiente' }).click();
+  await page.locator('.wizard-container').getByRole('button', { name: 'Siguiente' }).click();
+  await page.locator('#propertySelect').waitFor({ state: 'visible' });
 };
 
 /** In Step 3: fill reservation property, unit, count, and notes */
@@ -62,27 +77,22 @@ export const fillReservationDetails =
   async (actor: Actor) => {
     const page = actor.browse.page;
 
+    const propertySelect = page.locator('#propertySelect');
     if (data.propertyName) {
-      await page.locator('#propertySelect').selectOption({ label: data.propertyName });
+      await propertySelect.selectOption({ label: data.propertyName });
     } else {
-      // Select the first available non-disabled property option if present
-      const propertySelect = page.locator('#propertySelect');
-      const count = await propertySelect.locator('option').count();
-      if (count > 1) {
-        await propertySelect.selectOption({ index: 1 });
-      }
+      // Wait for the async property list, then pick the first real option.
+      await propertySelect.locator('option').nth(1).waitFor({ state: 'attached' });
+      await propertySelect.selectOption({ index: 1 });
     }
 
+    const unitSelect = page.locator('#unitSelect');
     if (data.unitName) {
-      await page.locator('#unitSelect').selectOption({ label: data.unitName });
+      await unitSelect.selectOption({ label: data.unitName });
     } else {
-      // Select the first available unit option once loaded
-      const unitSelect = page.locator('#unitSelect');
-      await page.waitForTimeout(1000);
-      const count = await unitSelect.locator('option').count();
-      if (count > 1) {
-        await unitSelect.selectOption({ index: 1 });
-      }
+      // Units are loaded after a property is chosen.
+      await unitSelect.locator('option').nth(1).waitFor({ state: 'attached' });
+      await unitSelect.selectOption({ index: 1 });
     }
 
     if (data.guestsCount) {
@@ -98,27 +108,25 @@ export const fillReservationDetails =
 export const selectReservationDates = (): ActorTask => async (actor: Actor) => {
   const page = actor.browse.page;
 
-  // Open check-in picker
-  await page.locator('#checkIn').click();
+  // The `id` lives on the <app-shift-date-picker> host; click its trigger button.
+  await page.locator('#checkIn .sdp-trigger').click();
   const checkInDays = page.locator('.sdp-dropdown .sdp-day:not([disabled])');
-  if (await checkInDays.count()) {
-    await checkInDays.first().click();
-  }
+  await checkInDays.first().waitFor({ state: 'visible' });
+  await checkInDays.first().click();
 
   // Open check-out picker
-  await page.locator('#checkOut').click();
+  await page.locator('#checkOut .sdp-trigger').click();
   const checkOutDays = page.locator('.sdp-dropdown .sdp-day:not([disabled])');
-  if (await checkOutDays.count()) {
-    const total = await checkOutDays.count();
-    // Select a day towards the end of the available dates
-    await checkOutDays.nth(Math.min(2, total - 1)).click();
-  }
+  await checkOutDays.first().waitFor({ state: 'visible' });
+  const total = await checkOutDays.count();
+  // Select a day after check-in (the first enabled day is check-in itself).
+  await checkOutDays.nth(Math.min(2, total - 1)).click();
 };
 
 /** In Step 3: submit the reservation */
 export const submitReservationForm = (): ActorTask => async (actor: Actor) => {
   const page = actor.browse.page;
-  await page.locator('button').filter({ hasText: 'Confirmar Reserva' }).click();
+  await page.locator('.wizard-container').getByRole('button', { name: 'Confirmar Reserva' }).click();
 };
 
 /** Close the wizard modal */

@@ -35,7 +35,19 @@ export default defineConfig({
 
   use: {
     trace: 'on-first-retry',
-    baseURL: 'http://localhost:3000',
+    // The Angular app — NOT the backend API (which runs on :3000).
+    baseURL: process.env.BASE_URL ?? 'http://localhost:4200',
+  },
+
+  /**
+   * Starts the Angular dev server automatically so the suite is self-contained.
+   * If a dev server is already running on :4200 it is reused instead.
+   */
+  webServer: {
+    command: 'pnpm exec ng serve --port 4200',
+    url: process.env.BASE_URL ?? 'http://localhost:4200',
+    reuseExistingServer: !process.env.CI,
+    timeout: 180_000,
   },
 
   projects: [
@@ -67,14 +79,21 @@ export default defineConfig({
     },
 
     // ─── WebKit ───────────────────────────────────────────────────────────────
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        storageState: 'tests/.auth/manager.json',
-      },
-      dependencies: ['setup'],
-      testIgnore: /auth\.setup\.ts/,
-    },
+    // WebKit needs system libraries (GTK4, GStreamer, …) that are not installed
+    // by default. Install them with `sudo pnpm exec playwright install-deps webkit`
+    // and run with PW_WEBKIT=1 to include this project.
+    ...(process.env.PW_WEBKIT === '1'
+      ? [
+          {
+            name: 'webkit',
+            use: {
+              ...devices['Desktop Safari'],
+              storageState: 'tests/.auth/manager.json',
+            },
+            dependencies: ['setup'],
+            testIgnore: /auth\.setup\.ts/,
+          },
+        ]
+      : []),
   ],
 });

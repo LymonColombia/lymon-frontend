@@ -15,6 +15,13 @@ import { test, expect } from '../../fixtures/api.fixture';
 import { ManagerFlow } from '../../support/screenplay/manager-flow';
 
 const UNIQUE_ID = Date.now();
+// Document numbers must match the wizard's ID_NUMBER_PATTERN: ^[A-Za-z0-9-]{5,15}$
+const RUN_ID = String(UNIQUE_ID).slice(-9);
+const NEW_GUEST_ID = `E2E${RUN_ID}1`;
+const VALIDATION_ID = `E2E${RUN_ID}2`;
+const RESERVATION_ID = `E2E${RUN_ID}3`;
+const EXISTING_GUEST_ID = `E2E${RUN_ID}4`;
+
 const NEW_GUEST = {
   fullName: `Huésped E2E ${UNIQUE_ID}`,
   primaryEmail: `huesped.e2e.${UNIQUE_ID}@example.com`,
@@ -40,7 +47,7 @@ test.describe('Feature: Manual Reservation and Guest Registration', () => {
     // 2. Mock a successful response so the wizard flow works regardless of deployment state
     let capturedRequestBody: Record<string, unknown> | null = null;
 
-    await page.route('**/guests', async (route) => {
+    await page.route(/\/guests(?:\?|$)/, async (route) => {
       if (route.request().method() !== 'POST') {
         await route.continue();
         return;
@@ -67,8 +74,8 @@ test.describe('Feature: Manual Reservation and Guest Registration', () => {
     await expect(wizard).toBeVisible();
     await expect(wizard.getByRole('heading', { name: 'Nueva Reserva' })).toBeVisible();
 
-    // When selecting that the guest is not registered (Step 1 -> Step 2)
-    await manager.chooseNewGuestRegistration();
+    // When entering an identification number that is not registered (Step 1 -> Step 2)
+    await manager.lookupNewGuest(NEW_GUEST_ID);
     await expect(wizard.getByRole('heading', { name: 'Información del Huésped' })).toBeVisible();
 
     // And filling the guest information
@@ -89,11 +96,12 @@ test.describe('Feature: Manual Reservation and Guest Registration', () => {
     // Verify the body only contains whitelisted properties
     const allowedKeys = ['fullName', 'primaryEmail', 'identity', 'firstName', 'lastName', 'tags', 'preferences'];
     expect(Object.keys(capturedRequestBody!).sort()).toEqual([...allowedKeys].sort());
+    expect(capturedRequestBody!.identity).toEqual({ documentNumber: NEW_GUEST_ID });
 
-    // And the guest is pre-selected and labeled as (Nuevo), with selector disabled
-    const guestSelect = page.locator('#guestSelect');
-    await expect(guestSelect).toBeDisabled();
-    await expect(guestSelect).toContainText(NEW_GUEST.fullName);
+    // And the guest is shown in the summary and labeled as "Nuevo"
+    const guestSummary = wizard.locator('.guest-summary');
+    await expect(guestSummary).toContainText(NEW_GUEST.fullName);
+    await expect(guestSummary.locator('.guest-summary-badge')).toHaveText('Nuevo');
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -102,9 +110,9 @@ test.describe('Feature: Manual Reservation and Guest Registration', () => {
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: guest registration requires full name and primary email to advance', async ({ page }) => {
     await manager.openCreateReservationWizard();
-    await manager.chooseNewGuestRegistration();
+    await manager.lookupNewGuest(VALIDATION_ID);
 
-    const nextButton = page.locator('button').filter({ hasText: 'Siguiente' });
+    const nextButton = page.locator('.wizard-container').getByRole('button', { name: 'Siguiente' });
 
     // Both empty: button should be disabled
     await expect(nextButton).toBeDisabled();
@@ -128,8 +136,28 @@ test.describe('Feature: Manual Reservation and Guest Registration', () => {
   // Guided by: create-reservation-wizard.spec.ts (full flow step 1 -> 2 -> 3 -> submit)
   // ──────────────────────────────────────────────────────────────────────────
   test('Scenario: manager creates a manual reservation with a newly registered guest', async ({ page }) => {
+    // Stub POST /reservations so parallel browser projects cannot collide on the
+    // single shared unit (409 Conflict). Guest creation and lookup remain real.
+    let reservationRequestBody: Record<string, unknown> | null = null;
+    await page.route(/\/reservations(?:\?|$)/, async (route) => {
+      if (route.request().method() !== 'POST') {
+        await route.continue();
+        return;
+      }
+
+      reservationRequestBody = route.request().postDataJSON();
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          message: 'Reservation created successfully',
+          data: { id: `reservation-e2e-${UNIQUE_ID}` },
+        }),
+      });
+    });
+
     await manager.openCreateReservationWizard();
-    await manager.chooseNewGuestRegistration();
+    await manager.lookupNewGuest(RESERVATION_ID);
     await manager.fillNewGuestForm({
       fullName: `Reserva E2E ${UNIQUE_ID}`,
       primaryEmail: `reserva.${UNIQUE_ID}@example.com`,
@@ -154,6 +182,19 @@ test.describe('Feature: Manual Reservation and Guest Registration', () => {
     // Wizard should close on successful submission
     await expect(wizard).not.toBeVisible({ timeout: 10000 });
 
+    // The request carries the guest created in step 2 and the selected stay details.
+    expect(reservationRequestBody).not.toBeNull();
+    expect(reservationRequestBody).toMatchObject({
+      guestsCount: 2,
+      source: 'MANUAL',
+      notes: 'Reserva manual de prueba E2E',
+    });
+    expect(reservationRequestBody!.guestId).toBeTruthy();
+    expect(reservationRequestBody!.propertyId).toBeTruthy();
+    expect(reservationRequestBody!.unitId).toBeTruthy();
+    expect(reservationRequestBody!.checkIn).toBeTruthy();
+    expect(reservationRequestBody!.checkOut).toBeTruthy();
+
     // The reservation list displays the management table
     await expect(page.getByRole('heading', { name: 'Reservaciones', level: 2 })).toBeVisible();
   });
@@ -162,18 +203,30 @@ test.describe('Feature: Manual Reservation and Guest Registration', () => {
   // Scenario: Manager creates a manual reservation for an already registered guest
   // Guided by: create-reservation-wizard.spec.ts (skipping step 2 directly to step 3)
   // ──────────────────────────────────────────────────────────────────────────
-  test('Scenario: manager creates a manual reservation for an already registered guest', async ({ page }) => {
+  test('Scenario: manager creates a manual reservation for an already registered guest', async ({
+    page,
+    apiClient,
+  }) => {
+    // Seed an already registered guest with a known document number (Clean Slate).
+    const existingGuestName = `Huésped Recurrente ${UNIQUE_ID}`;
+    await apiClient.createGuest({
+      fullName: existingGuestName,
+      primaryEmail: `recurrente.${UNIQUE_ID}@example.com`,
+      identity: { documentNumber: EXISTING_GUEST_ID },
+    });
+
     await manager.openCreateReservationWizard();
 
-    // In Step 1: select "Sí, ya está registrado" -> skips Step 2 straight to Step 3
-    await manager.chooseExistingGuest();
+    // In Step 1: look up the registered document number -> skips Step 2 straight to Step 3
+    await manager.lookupExistingGuest(EXISTING_GUEST_ID);
 
     const wizard = page.locator('.wizard-container');
     await expect(wizard.getByRole('heading', { name: 'Detalles de la Reserva' })).toBeVisible();
 
-    // The guest selector should be enabled so the manager can pick from existing guests
-    const guestSelect = page.locator('#guestSelect');
-    await expect(guestSelect).toBeEnabled();
+    // The guest summary is populated and labeled as "Registrado"
+    const guestSummary = wizard.locator('.guest-summary');
+    await expect(guestSummary).toContainText(existingGuestName);
+    await expect(guestSummary.locator('.guest-summary-badge')).toHaveText('Registrado');
 
     // Fill remaining reservation details
     await manager.fillReservationDetails({

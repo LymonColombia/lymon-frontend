@@ -34,8 +34,8 @@ import { errorMessageFrom } from './questions/error-message.question';
 import {
   openReservationsPage,
   openCreateReservationWizard,
-  chooseNewGuestRegistration,
-  chooseExistingGuest,
+  lookupNewGuest,
+  lookupExistingGuest,
   fillNewGuestForm,
   submitNewGuestForm,
   fillReservationDetails,
@@ -188,12 +188,12 @@ export class ManagerFlow {
     await this.actor.attemptsTo(openCreateReservationWizard());
   }
 
-  async chooseNewGuestRegistration(): Promise<void> {
-    await this.actor.attemptsTo(chooseNewGuestRegistration());
+  async lookupNewGuest(idNumber: string): Promise<void> {
+    await this.actor.attemptsTo(lookupNewGuest(idNumber));
   }
 
-  async chooseExistingGuest(): Promise<void> {
-    await this.actor.attemptsTo(chooseExistingGuest());
+  async lookupExistingGuest(idNumber: string): Promise<void> {
+    await this.actor.attemptsTo(lookupExistingGuest(idNumber));
   }
 
   async fillNewGuestForm(data: NewGuestData): Promise<void> {
