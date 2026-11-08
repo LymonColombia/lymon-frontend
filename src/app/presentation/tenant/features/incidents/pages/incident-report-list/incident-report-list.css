@@ -8,6 +8,41 @@
   width: 100%;
 }
 
+/* Property filter */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.filter-select {
+  height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+  outline: none;
+  transition: border-color var(--transition-fast);
+  min-width: 200px;
+}
+
+.filter-select:focus {
+  border-color: var(--color-primary);
+  background: var(--color-bg-primary);
+}
+
 .alert {
   padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-lg);
