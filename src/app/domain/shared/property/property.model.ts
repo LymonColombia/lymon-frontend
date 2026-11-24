@@ -79,7 +79,6 @@ export interface CreateUnitDto {
   standardGuests: number;
   bedrooms: BedroomDto[];
   bathroomsCount: number;
-  isShared: boolean;
   amenities: string[];
   pricePerNight: number;
   externalIds?: {
