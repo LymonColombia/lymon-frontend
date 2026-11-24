@@ -252,7 +252,6 @@ export class UnitFormModalComponent {
       maxGuests: raw.maxGuests ?? 1,
       standardGuests: raw.maxGuests ?? 1,
       bathroomsCount: raw.bathroomsCount ?? 1,
-      isShared: false,
       pricePerNight: raw.pricePerNight ?? 0,
       amenities: [...this.selectedAmenities()],
       bedrooms: [
