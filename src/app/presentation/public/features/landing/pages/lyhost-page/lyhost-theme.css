@@ -40,8 +40,10 @@
   letter-spacing: -0.035em;
 }
 
-.live {
-  animation: live-pulse 1.8s ease-in-out infinite;
+@media (prefers-reduced-motion: no-preference) {
+  .live {
+    animation: live-pulse 1.8s ease-in-out infinite;
+  }
 }
 
 .live-dot {

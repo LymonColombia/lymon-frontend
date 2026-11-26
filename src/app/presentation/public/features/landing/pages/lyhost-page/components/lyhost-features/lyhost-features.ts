@@ -123,7 +123,9 @@ export class LyhostFeaturesComponent {
   });
   readonly rippleClass = computed(() => {
     const c = this.walk().click;
-    return c === 0 ? 'ripple' : c % 2 ? 'ripple ripple-a' : 'ripple ripple-b';
+    if (c === 0) return 'ripple';
+    // Alternate the two keyframes so each click restarts the ripple
+    return c % 2 ? 'ripple ripple-a' : 'ripple ripple-b';
   });
 
   readonly stays: [string, Stay[]][] = [

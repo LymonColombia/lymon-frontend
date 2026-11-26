@@ -25,9 +25,11 @@
 }
 
 /* Headline wipes up line by line */
-.hero-h .ln > span {
-  animation: lh-line-up 0.8s var(--ease) both;
-  animation-delay: var(--d, 0s);
+@media (prefers-reduced-motion: no-preference) {
+  .hero-h .ln > span {
+    animation: lh-line-up 0.8s var(--ease) both;
+    animation-delay: var(--d, 0s);
+  }
 }
 
 .hero-side {
@@ -51,9 +53,11 @@
   flex-wrap: wrap;
 }
 
-.h-in {
-  animation: hero-in 0.6s var(--ease) both;
-  animation-delay: var(--d, 0s);
+@media (prefers-reduced-motion: no-preference) {
+  .h-in {
+    animation: hero-in 0.6s var(--ease) both;
+    animation-delay: var(--d, 0s);
+  }
 }
 
 @keyframes hero-in {
@@ -91,6 +95,7 @@ app-lyhost-calendar {
 }
 
 .prod {
+  position: relative;
   transform-origin: 50% 0;
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-product);
@@ -112,10 +117,6 @@ app-lyhost-calendar {
 }
 
 /* Round pause disc, bottom-right of the product frame */
-.prod {
-  position: relative;
-}
-
 .demo-pause {
   position: absolute;
   right: 12px;
@@ -187,8 +188,15 @@ app-lyhost-calendar {
   to { opacity: 0; transform: scale(1); }
 }
 
-.ripple-a { animation: ripple-a 0.5s ease-out; }
-.ripple-b { animation: ripple-b 0.5s ease-out; }
+@media (prefers-reduced-motion: no-preference) {
+  .ripple-a {
+    animation: ripple-a 0.5s ease-out;
+  }
+
+  .ripple-b {
+    animation: ripple-b 0.5s ease-out;
+  }
+}
 
 .flabel {
   font: 500 12px/16px var(--font-sans);
@@ -221,7 +229,12 @@ app-lyhost-calendar {
   background: var(--ink);
   vertical-align: -3px;
   margin-left: 1px;
-  animation: caret-blink 1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .caret {
+    animation: caret-blink 1s steps(1) infinite;
+  }
 }
 
 .chip-hide,
@@ -568,8 +581,13 @@ app-lyhost-calendar {
 
 .ap-new {
   z-index: 2;
-  animation: ap-new 1.6s var(--ease) both;
   transition: opacity 0.5s ease-out;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ap-new {
+    animation: ap-new 1.6s var(--ease) both;
+  }
 }
 
 /* The confirmation toast: a dark pill, bottom centre, as in the panel */

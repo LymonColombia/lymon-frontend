@@ -109,8 +109,10 @@
   to { transform: scaleX(1); }
 }
 
-.auto-run .prog {
-  animation: prog-fill 8s linear forwards;
+@media (prefers-reduced-motion: no-preference) {
+  .auto-run .prog {
+    animation: prog-fill 8s linear forwards;
+  }
 }
 
 .tabs:hover .prog,
@@ -175,7 +177,12 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  animation: panel-in 0.35s var(--ease) both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ph {
+    animation: panel-in 0.35s var(--ease) both;
+  }
 }
 
 .ph-num {
@@ -219,7 +226,11 @@
   gap: 12px;
 }
 
-.rows > * { animation: row-in 0.4s var(--ease) both; }
+@media (prefers-reduced-motion: no-preference) {
+  .rows > * {
+    animation: row-in 0.4s var(--ease) both;
+  }
+}
 .rows > *:nth-child(1) { animation-delay: 0.06s; }
 .rows > *:nth-child(2) { animation-delay: 0.1s; }
 .rows > *:nth-child(3) { animation-delay: 0.14s; }
@@ -355,7 +366,12 @@
   background: var(--ink);
   vertical-align: -3px;
   margin-left: 1px;
-  animation: caret-blink 1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .caret {
+    animation: caret-blink 1s steps(1) infinite;
+  }
 }
 
 .fx-list {
@@ -830,7 +846,12 @@
 
 .pop {
   display: inline-flex;
-  animation: pop-in 0.35s var(--ease) both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pop {
+    animation: pop-in 0.35s var(--ease) both;
+  }
 }
 
 div.pop { display: flex; }
@@ -876,8 +897,15 @@ div.pop { display: flex; }
   to { opacity: 0; transform: scale(1); }
 }
 
-.ripple-a { animation: ripple-a 0.5s ease-out; }
-.ripple-b { animation: ripple-b 0.5s ease-out; }
+@media (prefers-reduced-motion: no-preference) {
+  .ripple-a {
+    animation: ripple-a 0.5s ease-out;
+  }
+
+  .ripple-b {
+    animation: ripple-b 0.5s ease-out;
+  }
+}
 
 .f-toast {
   position: absolute;

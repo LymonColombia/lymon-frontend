@@ -108,7 +108,12 @@
   white-space: nowrap;
   overflow: hidden;
   box-sizing: border-box;
-  animation: bar-in 0.6s var(--ease) both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bar {
+    animation: bar-in 0.6s var(--ease) both;
+  }
 }
 
 .bar.ly { background: var(--ly-bg); color: var(--ly-ink); }
@@ -142,7 +147,12 @@
   opacity: 0.5;
   pointer-events: none;
   transform-origin: top;
-  animation: lh-grow-y 0.8s var(--ease) 0.5s both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .today-line {
+    animation: lh-grow-y 0.8s var(--ease) 0.5s both;
+  }
 }
 
 @keyframes bar-in {
