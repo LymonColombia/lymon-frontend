@@ -8,6 +8,9 @@ export type LyhostLang = 'es' | 'en';
 
 export const LYHOST_TEXTS: Record<LyhostLang, LyhostText> = { es: LYHOST_ES, en: LYHOST_EN };
 
+/** Languages with a URL of their own: /lyhost/es, /lyhost/en. */
+export const LYHOST_LANGS = Object.keys(LYHOST_TEXTS) as LyhostLang[];
+
 /** Spanish is the product's home language, so it wins when the browser asks for neither. */
 export const LYHOST_DEFAULT_LANG: LyhostLang = 'es';
 
@@ -28,14 +31,22 @@ function browserLanguages(): readonly string[] {
   return navigator.languages?.length ? navigator.languages : [navigator.language];
 }
 
-/** Language of the landing page for this visitor, detected once. */
+/**
+ * Language of the landing page. Each /lyhost/<lang> route provides its own value;
+ * outside those routes it falls back to the browser's language, which picks where /lyhost redirects.
+ */
 export const LYHOST_LANG = new InjectionToken<LyhostLang>('LYHOST_LANG', {
   providedIn: 'root',
   factory: () => detectLyhostLang(browserLanguages()),
 });
 
-/** The landing text in the visitor's language. Components read their strings from here. */
+/** The landing text. Each /lyhost/<lang> route provides its language's file; components read their strings from here. */
 export const LYHOST_TEXT = new InjectionToken<LyhostText>('LYHOST_TEXT', {
   providedIn: 'root',
   factory: () => LYHOST_TEXTS[inject(LYHOST_LANG)],
 });
+
+/** Where a bare /lyhost (or any unknown URL) sends the visitor: the landing in their browser's language. */
+export function lyhostLandingPath(): string {
+  return `/lyhost/${inject(LYHOST_LANG)}`;
+}

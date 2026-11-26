@@ -1,4 +1,5 @@
-import { LYHOST_TEXTS, detectLyhostLang } from './lyhost-i18n';
+import { TestBed } from '@angular/core/testing';
+import { LYHOST_LANG, LYHOST_LANGS, LYHOST_TEXTS, detectLyhostLang, lyhostLandingPath } from './lyhost-i18n';
 
 describe('detectLyhostLang', () => {
   it('picks Spanish for any Spanish locale', () => {
@@ -34,5 +35,15 @@ describe('LYHOST_TEXTS', () => {
 
   it('gives English exactly the same keys and list lengths as Spanish', () => {
     expect(shape(LYHOST_TEXTS.en)).toEqual(shape(LYHOST_TEXTS.es));
+  });
+});
+
+describe('lyhostLandingPath', () => {
+  it('sends /lyhost to the landing in the detected language', () => {
+    for (const lang of LYHOST_LANGS) {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [{ provide: LYHOST_LANG, useValue: lang }] });
+      expect(TestBed.runInInjectionContext(lyhostLandingPath)).toBe(`/lyhost/${lang}`);
+    }
   });
 });
