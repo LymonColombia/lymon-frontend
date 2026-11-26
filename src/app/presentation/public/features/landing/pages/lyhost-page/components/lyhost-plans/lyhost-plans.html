@@ -1,65 +1,56 @@
-<section id="planes" class="lyhost-plans">
-  <div class="container">
-    <div class="plans-header">
-      <div class="section-chip"><span>PARA GESTORES DE PROPIEDADES</span></div>
-      <h2>
-        Gestiona tus propiedades<br />
-        <span>con el plan perfecto</span>
-      </h2>
-      <p>
-        Los mejores planes con herramientas profesionales para propietarios y administradores de alojamientos turísticos.
+<section id="planes" class="plans-band">
+  <div class="wrap plans-inner">
+    <div class="g12 hw plans-head">
+      <h2 class="h2 plans-title"><span class="ln"><span>Un plan para cada operación.</span></span></h2>
+      <p class="ov muted plans-lead">
+        Para propietarios y administradores de alojamientos turísticos. Precios en pesos colombianos, pago mensual, sin compromiso.
       </p>
     </div>
 
-    <div class="plans-grid">
-      @for (plan of plans; track plan.type) {
-        <article class="plan-card" [class.plan-highlighted]="isHighlighted(plan)" [class.plan-trial]="isTrialPlan(plan)">
-          @if (isHighlighted(plan)) {
-            <div class="plan-badge">Más popular</div>
-          }
-          @if (isTrialPlan(plan)) {
-            <div class="plan-trial-badge">5 días gratis</div>
-          }
-
-          <div class="plan-header">
-            <h3>{{ plan.name }}</h3>
-            <p>{{ plan.subtitle }}</p>
-          </div>
-
-          <div class="plan-price-block">
-            <div class="plan-price-row">
-              <span class="plan-price">{{ plan.price }}</span>
-              @if (plan.priceSuffix) {
-                <span class="plan-price-unit">{{ plan.priceSuffix }}</span>
+    <div class="dx plans-wrap">
+      <div class="rule-x" aria-hidden="true"></div>
+      <div class="plans stg">
+      @for (c of columns; track c.name; let i = $index) {
+        <article class="pcard" [class.is-featured]="c.featured" [style.--i]="i">
+          <div class="p-head">
+            <div class="p-name-row">
+              <h3 class="p-name">{{ c.name }}</h3>
+              @if (c.featured) {
+                <span class="badge">Más popular</span>
               }
             </div>
-            @if (plan.priceNote) {
-              <p class="plan-properties">{{ plan.priceNote }}</p>
-            }
+            <span class="p-for">{{ c.subtitle }}</span>
           </div>
 
-          <div class="plan-features">
-            @for (feature of allFeatures(plan); track feature) {
-              <div class="plan-feature-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 6L9 17L4 12"></path>
-                </svg>
-                <span>{{ feature }}</span>
-              </div>
-            }
+          <div class="p-price">
+            <span class="p-amt"><span class="pmask"><span>{{ c.price }}</span></span></span>
+            <span class="p-per">{{ c.note }}</span>
           </div>
 
-          @if (isTrialPlan(plan)) {
-            <p class="plan-trial-pitch">
-              Configura tu primera propiedad, carga tus habitaciones y recibe tu primera reserva — todo en el primer día.
-            </p>
-          }
-
-          <app-button variant="secondary" size="medium" [fullWidth]="true">
-            {{ isCustomPrice(plan) ? 'Contactar ventas' : 'Empezar prueba gratuita' }}
+          <app-button [variant]="c.featured ? 'primary' : 'secondary'" [fullWidth]="true" (clicked)="goToRegister()">
+            {{ c.cta }}
           </app-button>
+
+          <ul class="feats" [attr.aria-label]="'Incluye ' + c.name">
+            @for (f of c.features; track f; let j = $index) {
+              <li class="feat" [style.--j]="j">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12l5 5L20 7"></path>
+                </svg>
+                {{ f }}
+              </li>
+            }
+          </ul>
         </article>
       }
+      </div>
+    </div>
+
+    <div class="trial-note reveal">
+      <p><b>¿Prefieres probar primero?</b> Prueba LyHost 5 días con acceso completo a todos los módulos.</p>
+      <app-button variant="secondary" (clicked)="scrollTo('empezar')">
+        Probar LyHost <span class="nudge" aria-hidden="true">→</span>
+      </app-button>
     </div>
   </div>
 </section>

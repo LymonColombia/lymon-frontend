@@ -1,27 +1,199 @@
+/* LyHost design system tokens, scoped to the landing page and inherited by every section */
 :host {
-  display: block;
-}
+  --brand-950: #052e26;
+  --brand-900: #084539;
+  --brand-700: #0f7a56;
+  --brand-600: #2ec094;
+  --brand-300: #a9cac3;
+  --brand-100: #e6f7f2;
+  --surface: #f7f6f3;
+  --surface-raised: #ffffff;
+  --surface-sunken: #efeee9;
+  --line: #e3e1da;
+  --line-strong: #8a877e;
+  --ink: #10201b;
+  --ink-muted: #5c615d;
+  --primary: var(--brand-900);
+  --primary-text: var(--brand-700);
+  --primary-hover: var(--brand-950);
+  --primary-soft: var(--brand-100);
+  --on-primary: #ffffff;
+  --signal: var(--brand-600);
+  --info: #1d4ed8;
+  --info-soft: #eff6ff;
+  --success: #15803d;
+  --success-soft: #f0fdf4;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --focus-ring: var(--primary-text);
+  --shadow-sm: 0 1px 2px rgba(16, 32, 27, 0.05);
+  --shadow-lg: 0 24px 48px -12px rgba(16, 32, 27, 0.18);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --font-display: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --stone: #e8e4db;
+  --shadow-product: 0 12px 32px rgb(16 35 30 / 8%);
 
-.lyhost-page {
+  display: block;
   min-height: 100vh;
-  background: var(--color-bg-primary);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
 
-.reveal-section {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
+/* The design is drawn with the browser's default box model; the app's global reset uses border-box */
+:host ::ng-deep *,
+:host ::ng-deep *::before,
+:host ::ng-deep *::after {
+  box-sizing: content-box;
 }
 
-:host.scroll-reveal-enabled .reveal-section {
-  opacity: 0;
-  transform: translateY(var(--spacing-3xl));
-  transition:
-    opacity 700ms ease-out,
-    transform 700ms ease-out;
+:host ::ng-deep section[id] {
+  scroll-margin-top: 84px;
 }
 
-:host.scroll-reveal-enabled .reveal-section.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+/* Closing call to action, compact, after the plans */
+.close {
+  background: var(--stone);
+  padding: 88px 0;
+}
+
+.close-grid {
+  row-gap: 28px;
+  align-items: center;
+}
+
+.close-copy {
+  grid-column: 1 / span 7;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.close h2 {
+  margin: 0;
+  font: 600 40px/44px var(--font-display);
+  letter-spacing: -0.035em;
+}
+
+.close p {
+  margin: 0;
+  max-width: 520px;
+  font-size: 17px;
+  line-height: 27px;
+}
+
+.close-actions {
+  grid-column: 9 / span 4;
+  justify-self: end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+}
+
+/* Footer */
+.footer {
+  border-top: 1px solid var(--line);
+}
+
+.footer-inner {
+  padding-top: 48px;
+  padding-bottom: 40px;
+  row-gap: 32px;
+}
+
+.footer-brand {
+  grid-column: 1 / span 6;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-brand img {
+  height: 36px;
+  width: auto;
+  align-self: flex-start;
+}
+
+.footer-bottom {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.footer-col {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.footer-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: 500 13px/20px var(--font-sans);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.footer-link:hover {
+  color: var(--ink);
+}
+
+.footer-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.footer-tagline {
+  max-width: 320px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.footer-note {
+  max-width: 280px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+@media (max-width: 860px) {
+  .close h2 {
+    font-size: 34px;
+    line-height: 38px;
+  }
+
+  .close-actions {
+    justify-self: stretch;
+    max-width: none;
+  }
 }

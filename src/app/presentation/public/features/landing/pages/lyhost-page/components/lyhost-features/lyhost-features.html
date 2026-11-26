@@ -1,34 +1,252 @@
-<section id="caracteristicas" class="lyhost-features">
-  <div class="container">
-    <div class="features-header">
-      <div class="section-chip">
-        <span>ECOSISTEMA</span>
+<section #band id="caracteristicas" class="band">
+  <div class="wrap g12 band-grid">
+    <div class="hw intro">
+      <h2 class="h2 band-title"><span class="ln"><span>Todos tus alojamientos conectados</span></span></h2>
+      <p class="ov band-lead">LyHost conecta todos los módulos de tu operación. Un solo sistema, todo en tiempo real.</p>
+
+      <div role="tablist" aria-label="Módulos" class="tabs" [class.auto-run]="autoRun()">
+        <span class="tab-marker" aria-hidden="true" [style.transform]="'translateY(' + activeIndex() * 64 + 'px)'"></span>
+        @for (m of modules; track m.id; let i = $index) {
+          <button
+            type="button"
+            role="tab"
+            class="mod"
+            [class.mod-on]="i === activeIndex()"
+            [attr.aria-selected]="i === activeIndex()"
+            aria-controls="module-panel"
+            (click)="select(i)"
+          >
+            <span class="idx">0{{ i + 1 }}</span>
+            <span class="lbl">{{ m.title }}</span>
+            @if (i === activeIndex()) {
+              <span class="prog" aria-hidden="true" (animationend)="onProgressEnd($event)"></span>
+            }
+          </button>
+        }
       </div>
-      <h2>
-        Tu hotel. Tus reglas.<br />
-        <span>Sin intermediarios.</span>
-      </h2>
-      <p>
-        Gestiona reservas, huéspedes, turnos y finanzas desde un solo lugar. Sin excel, sin caos, sin comisiones.
-      </p>
+      <button type="button" class="tour-btn" (click)="toggleTour()">
+        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path [attr.d]="auto() ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M8 5v14l11-7z'"></path>
+        </svg>
+        {{ auto() ? 'Pausar recorrido' : 'Reanudar recorrido' }}
+      </button>
     </div>
 
-    <div class="features-grid">
-      @for (feature of features; track feature.title; let i = $index) {
-        <article
-          class="feature-card"
-          [class.feature-card-hover]="hoveredIndex() === i"
-          (mouseenter)="setHoveredIndex(i)"
-          (mouseleave)="setHoveredIndex(null)"
-        >
-          <div class="feature-icon" [class.feature-icon-hover]="hoveredIndex() === i">
-            <ng-icon [name]="feature.icon" size="24" color="var(--color-primary)" />
+    <div class="panel-col">
+      @let m = current();
+      <div class="feat-panel">
+        @for (key of [m.id]; track key) {
+          <div id="module-panel" role="tabpanel" aria-live="polite" class="ph">
+            <span class="overline ph-num">0{{ activeIndex() + 1 }} / 05</span>
+            <h3>{{ m.title }}</h3>
+            <p class="ph-text">{{ m.text }}</p>
           </div>
+        }
 
-          <h3>{{ feature.title }}</h3>
-          <p>{{ feature.description }}</p>
-        </article>
-      }
+        <div class="fx-frame">
+        <div #pb class="pb" aria-hidden="true">
+          @switch (m.id) {
+            @case ('res') {
+              <div class="rows fx">
+                <app-lyhost-calendar [stays]="stays" [from]="0" [cols]="5" />
+                @if (s().ropen) {
+                  <div class="fx-card pop">
+                    <div class="split">
+                      <span class="ap-pill ly-pill">LyHost · directa</span>
+                      <span class="mono ap-muted">RSV-00517</span>
+                    </div>
+                    <div>
+                      <b class="card-name">Valentina Ruiz</b>
+                      <div class="ap-muted">Hab. 101 · lun 16 → mar 17 nov · 1 noche</div>
+                    </div>
+                    <div class="fx-row">
+                      <span class="ap-muted">Pago</span>
+                      <span class="st" [class.ok]="s().paid" [class.wait]="!s().paid">
+                        {{ s().paid ? 'Pagada en LyHost' : 'Pendiente de pago' }}
+                      </span>
+                    </div>
+                    @if (!s().paid) {
+                      <span data-spot="pay" class="ap-btn">Registrar pago · $ 260.000</span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+            @case ('guests') {
+              <div class="rows fx">
+                @if (!s().gopen) {
+                  <div data-spot="search" class="fbox search" [class.fbox-focus]="s().focus">
+                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                    <span>{{ query() }}@if (s().focus) {<span class="caret"></span>}@if (!s().focus && query() === '') {<span class="placeholder">Buscar por nombre, correo o teléfono</span>}</span>
+                  </div>
+                  <div class="fx-list">
+                    <div class="fx-g">
+                      <span class="fx-face">SA</span>
+                      <div class="fx-gt"><b>Santiago Arango</b><span>santiago.arango&#64;ejemplo.co</span></div>
+                      <span class="fx-tag">VIP</span>
+                      <span class="st ok">Hospedado</span>
+                      <span data-spot="vg" class="vg" [class.vg-on]="s().hover">Ver perfil</span>
+                    </div>
+                    @if (query().length < 2) {
+                      <div class="fx-g">
+                        <span class="fx-face">AB</span>
+                        <div class="fx-gt"><b>Ana Betancur</b><span>ana.betancur&#64;ejemplo.co</span></div>
+                        <span class="fx-tag">Fidelidad</span>
+                        <span class="st wait">Por llegar</span>
+                        <span class="fx-link">Ver perfil</span>
+                      </div>
+                      <div class="fx-g">
+                        <span class="fx-face">CR</span>
+                        <div class="fx-gt"><b>Carlos Restrepo</b><span>carlos.restrepo&#64;ejemplo.co</span></div>
+                        <span class="fx-tag">Negocios</span>
+                        <span class="st off">Anterior</span>
+                        <span class="fx-link">Ver perfil</span>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="fx-card pop roomy">
+                    <div class="guest">
+                      <span class="fx-face lg">SA</span>
+                      <div class="guest-text">
+                        <div class="guest-head"><b class="guest-name">Santiago Arango</b><span class="st ok">Hospedado</span></div>
+                        <div class="guest-tags"><span class="fx-tag">VIP</span><span class="fx-tag">Regular</span></div>
+                      </div>
+                    </div>
+                    <div class="fx-stats">
+                      <div><span>Estancias</span><b>4</b></div>
+                      <div><span>Noches</span><b>12</b></div>
+                      <div><span>Total gastado</span><b>$ 2,58 M</b></div>
+                      <div><span>Última visita</span><b>16 nov</b></div>
+                    </div>
+                    <div class="fx-note">
+                      <span class="ncat pref">Preferencial</span>
+                      <span>Prefiere piso alto y lejos del ascensor. Pide almohada firme.</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+            @case ('shifts') {
+              <div class="rows fx">
+                <div class="fx-board">
+                  <div class="fx-trow head">
+                    <span></span>
+                    <span class="fx-thd today">Lun<b>16</b></span>
+                    <span class="fx-thd">Mar<b>17</b></span>
+                    <span class="fx-thd">Mié<b>18</b></span>
+                  </div>
+                  <div class="fx-trow">
+                    <span class="fx-tsh"><b>Mañana</b>6:00 – 14:00</span>
+                    <span class="fx-tc today"><span class="fx-tchip"><i>LG</i>Laura</span></span>
+                    <span class="fx-tc"><span class="fx-tchip"><i>LG</i>Laura</span></span>
+                    <span class="fx-tc"><span class="fx-tchip"><i>SP</i>Sofía</span></span>
+                  </div>
+                  <div class="fx-trow">
+                    <span class="fx-tsh"><b>Tarde</b>14:00 – 22:00</span>
+                    <span class="fx-tc today"><span class="fx-tchip"><i>SP</i>Sofía</span></span>
+                    <span class="fx-tc"><span class="fx-tchip"><i>SP</i>Sofía</span></span>
+                    <span class="fx-tc"><span class="fx-tchip"><i>LG</i>Laura</span></span>
+                  </div>
+                  <div class="fx-trow">
+                    <span class="fx-tsh"><b>Noche</b>22:00 – 6:00</span>
+                    <span class="fx-tc today"><span class="fx-tchip"><i>CR</i>Camilo</span></span>
+                    <span class="fx-tc"><span class="fx-tchip"><i>CR</i>Camilo</span></span>
+                    <span data-spot="slot" class="fx-tc" [class.hot]="s().hot">
+                      @if (s().assigned) {
+                        <span class="fx-tchip pop"><i>JP</i>Jorge</span>
+                      } @else {
+                        <span class="fx-gap">Sin cubrir</span>
+                      }
+                    </span>
+                  </div>
+                </div>
+                <div class="fx-pool">
+                  <span class="ap-muted pool-label">Equipo · Casa Laureles</span>
+                  <span data-spot="chip" class="fx-tp" [class.src]="s().drag"><i>JP</i><span><b>Jorge Peña</b>32 h esta semana</span></span>
+                  <span class="fx-tp"><i>MR</i><span><b>Marta Ruiz</b>40 h esta semana</span></span>
+                </div>
+              </div>
+            }
+            @case ('fin') {
+              <div class="rows fin">
+                <div class="fin-kpis">
+                  <div><span class="fin-label">Ingresos de diciembre</span><span class="mono fin-value">$ 18.450.000</span></div>
+                  <div><span class="fin-label">Pagos pendientes</span><span class="mono fin-value">$ 1.960.000</span></div>
+                </div>
+                <div class="fin-chart">
+                  @for (w of revenueWeeks; track w.spot) {
+                    <div
+                      class="fin-bar"
+                      [attr.data-spot]="w.spot"
+                      [class.current]="w.current"
+                      [class.hot]="w.current && s().hover"
+                      [style.height.%]="w.height"
+                    ></div>
+                  }
+                  @if (s().hover) {
+                    <div class="pop fin-tip">Semana 3 · <span class="mono">$ 5.240.000</span></div>
+                  }
+                </div>
+                <div class="fin-labels">
+                  <span class="mono">Sem 1</span><span class="mono">Sem 2</span><span class="mono">Sem 3</span><span class="mono">Sem 4</span>
+                </div>
+                <span data-spot="export" class="fake-btn">Exportar reporte</span>
+              </div>
+            }
+            @case ('exp') {
+              <div class="rows exp">
+                <div class="exp-row">
+                  <div>
+                    <div class="exp-name">Tour de café en Jardín</div>
+                    <div class="mono exp-when">Sáb 14 dic · 7:00 a. m. · 8 cupos</div>
+                  </div>
+                  <span class="exp-state"><span class="sw sw-on"></span><app-lyhost-badge tone="success">Activa</app-lyhost-badge></span>
+                </div>
+                <div class="exp-row">
+                  <div>
+                    <div class="exp-name">Graffitour Comuna 13</div>
+                    <div class="mono exp-when">Todos los días · 10:00 a. m. · 2 cupos</div>
+                  </div>
+                  <span class="exp-state"><span class="sw sw-on"></span><app-lyhost-badge tone="warning">Pocos cupos</app-lyhost-badge></span>
+                </div>
+                <div class="exp-row">
+                  <div>
+                    <div class="exp-name">Clase de cocina paisa</div>
+                    <div class="mono exp-when">{{ s().published ? 'Sáb 21 dic · 4:00 p. m. · 10 cupos' : 'Por programar' }}</div>
+                  </div>
+                  <span class="exp-state">
+                    <span data-spot="sw" class="sw" [class.sw-on]="s().published"></span>
+                    @if (s().published) {
+                      <span class="pop"><app-lyhost-badge tone="success">Activa</app-lyhost-badge></span>
+                    } @else {
+                      <app-lyhost-badge>Borrador</app-lyhost-badge>
+                    }
+                  </span>
+                </div>
+              </div>
+            }
+          }
+
+          <!-- What just happened -->
+          <div class="f-toast" [class.f-toast-on]="walk().toastOn"><span class="f-toast-dot"></span>{{ walk().toast }}</div>
+
+          <!-- The person using it -->
+          <div
+            class="cursor"
+            [class.cursor-down]="walk().down"
+            [style.transform]="cursorTransform()"
+            [style.opacity]="walk().on ? 1 : 0"
+          >
+            <span [class]="rippleClass()"></span>
+            @if (s().drag) {
+              <span class="f-ghost"><i>JP</i>Jorge</span>
+            }
+            <svg width="20" height="22" viewBox="0 0 20 22"><path d="M2 1.5L2 17.5L6.4 13.6L9.3 20.2L12.3 18.9L9.4 12.4L15.3 12.1Z" fill="#10201b" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

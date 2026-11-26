@@ -1,43 +1,57 @@
-<div class="lyhost-page">
-  <app-lyhost-nav></app-lyhost-nav>
+<app-lyhost-nav />
 
-  <main>
-    <section
-      #revealSection
-      class="reveal-section"
-      data-section-id="hero"
-      [class.is-visible]="isVisible('hero')"
-    >
-      <app-lyhost-hero></app-lyhost-hero>
-    </section>
+<main>
+  <app-lyhost-hero />
+  <app-lyhost-ecosystem />
 
-    <section
-      #revealSection
-      class="reveal-section"
-      data-section-id="features"
-      [class.is-visible]="isVisible('features')"
-    >
-      <app-lyhost-features></app-lyhost-features>
-    </section>
+  <app-lyhost-features />
+  <app-lyhost-plans />
 
-    <section
-      #revealSection
-      class="reveal-section"
-      data-section-id="ecosystem"
-      [class.is-visible]="isVisible('ecosystem')"
-    >
-      <app-lyhost-ecosystem></app-lyhost-ecosystem>
-    </section>
+  <section id="empezar" class="close">
+    <div class="wrap">
+      <div class="g12 hw close-grid">
+        <div class="close-copy">
+          <h2><span class="ln"><span>Prueba LyHost durante 5 días.</span></span></h2>
+          <p class="ov muted">Explora todos los módulos y descubre cómo gestionar tu operación desde un solo lugar.</p>
+        </div>
+        <div class="ov close-actions">
+          <app-button variant="primary" [fullWidth]="true" (clicked)="goToRegister()">
+            Empezar prueba gratuita
+          </app-button>
+          <!-- ponytail: no sales channel yet; the design links to "#" too -->
+          <app-button variant="secondary" [fullWidth]="true">Contactar ventas</app-button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-    <section
-      #revealSection
-      class="reveal-section"
-      data-section-id="plans"
-      [class.is-visible]="isVisible('plans')"
-    >
-      <app-lyhost-plans></app-lyhost-plans>
-    </section>
-  </main>
-
-  <app-footer [dark]="true"></app-footer>
-</div>
+<footer class="footer">
+  <div class="wrap g12 footer-inner">
+    <div class="footer-brand">
+      <img ngSrc="images/lyhost-logo.svg" width="141" height="52" alt="LyHost" />
+      <span class="footer-tagline">Desarrollado en Colombia. Diseñado para la hospitalidad.</span>
+      <span class="footer-note muted">Un producto de Lymon Colombia S.A.S. · Medellín, Colombia</span>
+    </div>
+    <div class="footer-col">
+      <span class="overline">Producto</span>
+      <button type="button" class="footer-link" (click)="scrollTo('ecosistema')">Producto</button>
+      <button type="button" class="footer-link" (click)="scrollTo('caracteristicas')">Módulos</button>
+      <button type="button" class="footer-link" (click)="scrollTo('planes')">Planes</button>
+    </div>
+    <div class="footer-col">
+      <span class="overline">Legal</span>
+      <a class="footer-link" href="#">Términos</a>
+      <a class="footer-link" href="#">Privacidad</a>
+      <a class="footer-link" href="#">Tratamiento de datos</a>
+    </div>
+    <div class="footer-col">
+      <span class="overline">Contacto</span>
+      <a class="footer-link" href="mailto:lymonoficial@lymon.com.co">lymonoficial@lymon.com.co</a>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Lymon Colombia S.A.S.</span>
+      <span>Las pantallas de esta página muestran datos de ejemplo.</span>
+    </div>
+  </div>
+</footer>
