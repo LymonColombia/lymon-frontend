@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { DOCUMENT, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
-import { LYHOST_LANG, LYHOST_TEXT } from './i18n/lyhost-i18n';
+import { LYHOST_LANG, landingText } from './i18n/lyhost-i18n';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { LyhostNavComponent } from './components/lyhost-nav/lyhost-nav';
 import { LyhostHeroComponent } from './components/lyhost-hero/lyhost-hero';
@@ -26,7 +26,9 @@ import { LyhostEcosystemComponent } from './components/lyhost-ecosystem/lyhost-e
 })
 export class LyhostPageComponent {
   private readonly router = inject(Router);
-  readonly t = inject(LYHOST_TEXT);
+  readonly nav = landingText('nav');
+  readonly close = landingText('close');
+  readonly footer = landingText('footer');
 
   constructor() {
     // Tell browsers and screen readers which language the page is in; restore the app's own on leave

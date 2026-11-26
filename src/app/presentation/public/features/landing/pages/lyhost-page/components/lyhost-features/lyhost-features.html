@@ -1,12 +1,12 @@
 <section #band id="caracteristicas" class="band">
   <div class="wrap g12 band-grid">
     <div class="hw intro">
-      <h2 class="h2 band-title"><span class="ln"><span>{{ t.title }}</span></span></h2>
-      <p class="ov band-lead">{{ t.lead }}</p>
+      <h2 class="h2 band-title"><span class="ln"><span>{{ t().title }}</span></span></h2>
+      <p class="ov band-lead">{{ t().lead }}</p>
 
-      <div role="tablist" [attr.aria-label]="t.tabsLabel" class="tabs" [class.auto-run]="autoRun()">
+      <div role="tablist" [attr.aria-label]="t().tabsLabel" class="tabs" [class.auto-run]="autoRun()">
         <span class="tab-marker" aria-hidden="true" [style.transform]="'translateY(' + activeIndex() * 64 + 'px)'"></span>
-        @for (m of modules; track m.id; let i = $index) {
+        @for (m of modules(); track m.id; let i = $index) {
           <button
             type="button"
             role="tab"
@@ -28,7 +28,7 @@
         <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
           <path [attr.d]="auto() ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M8 5v14l11-7z'"></path>
         </svg>
-        {{ auto() ? t.pause : t.resume }}
+        {{ auto() ? t().pause : t().resume }}
       </button>
     </div>
 
@@ -48,25 +48,25 @@
           @switch (m.id) {
             @case ('res') {
               <div class="rows fx">
-                <app-lyhost-calendar [stays]="stays" [from]="0" [cols]="5" />
+                <app-lyhost-calendar [stays]="stays()" [from]="0" [cols]="5" />
                 @if (s().ropen) {
                   <div class="fx-card pop">
                     <div class="split">
-                      <span class="ap-pill ly-pill">{{ t.res.direct }}</span>
+                      <span class="ap-pill ly-pill">{{ t().res.direct }}</span>
                       <span class="mono ap-muted">RSV-00517</span>
                     </div>
                     <div>
                       <b class="card-name">Valentina Ruiz</b>
-                      <div class="ap-muted">{{ t.res.stay }}</div>
+                      <div class="ap-muted">{{ t().res.stay }}</div>
                     </div>
                     <div class="fx-row">
-                      <span class="ap-muted">{{ t.res.payment }}</span>
+                      <span class="ap-muted">{{ t().res.payment }}</span>
                       <span class="st" [class.ok]="s().paid" [class.wait]="!s().paid">
-                        {{ s().paid ? t.res.paid : t.res.pending }}
+                        {{ s().paid ? t().res.paid : t().res.pending }}
                       </span>
                     </div>
                     @if (!s().paid) {
-                      <span data-spot="pay" class="ap-btn">{{ t.res.register }}</span>
+                      <span data-spot="pay" class="ap-btn">{{ t().res.register }}</span>
                     }
                   </div>
                 }
@@ -77,30 +77,30 @@
                 @if (!s().gopen) {
                   <div data-spot="search" class="fbox search" [class.fbox-focus]="s().focus">
                     <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
-                    <span>{{ query() }}@if (s().focus) {<span class="caret"></span>}@if (!s().focus && query() === '') {<span class="placeholder">{{ t.guests.search }}</span>}</span>
+                    <span>{{ query() }}@if (s().focus) {<span class="caret"></span>}@if (!s().focus && query() === '') {<span class="placeholder">{{ t().guests.search }}</span>}</span>
                   </div>
                   <div class="fx-list">
                     <div class="fx-g">
                       <span class="fx-face">SA</span>
-                      <div class="fx-gt"><b>Santiago Arango</b><span>santiago.arango&#64;{{ t.guests.emailDomain }}</span></div>
-                      <span class="fx-tag">{{ t.guests.vip }}</span>
-                      <span class="st ok">{{ t.guests.staying }}</span>
-                      <span data-spot="vg" class="vg" [class.vg-on]="s().hover">{{ t.guests.viewProfile }}</span>
+                      <div class="fx-gt"><b>Santiago Arango</b><span>santiago.arango&#64;{{ t().guests.emailDomain }}</span></div>
+                      <span class="fx-tag">{{ t().guests.vip }}</span>
+                      <span class="st ok">{{ t().guests.staying }}</span>
+                      <span data-spot="vg" class="vg" [class.vg-on]="s().hover">{{ t().guests.viewProfile }}</span>
                     </div>
                     @if (query().length < 2) {
                       <div class="fx-g">
                         <span class="fx-face">AB</span>
-                        <div class="fx-gt"><b>Ana Betancur</b><span>ana.betancur&#64;{{ t.guests.emailDomain }}</span></div>
-                        <span class="fx-tag">{{ t.guests.loyalty }}</span>
-                        <span class="st wait">{{ t.guests.arriving }}</span>
-                        <span class="fx-link">{{ t.guests.viewProfile }}</span>
+                        <div class="fx-gt"><b>Ana Betancur</b><span>ana.betancur&#64;{{ t().guests.emailDomain }}</span></div>
+                        <span class="fx-tag">{{ t().guests.loyalty }}</span>
+                        <span class="st wait">{{ t().guests.arriving }}</span>
+                        <span class="fx-link">{{ t().guests.viewProfile }}</span>
                       </div>
                       <div class="fx-g">
                         <span class="fx-face">CR</span>
-                        <div class="fx-gt"><b>Carlos Restrepo</b><span>carlos.restrepo&#64;{{ t.guests.emailDomain }}</span></div>
-                        <span class="fx-tag">{{ t.guests.business }}</span>
-                        <span class="st off">{{ t.guests.past }}</span>
-                        <span class="fx-link">{{ t.guests.viewProfile }}</span>
+                        <div class="fx-gt"><b>Carlos Restrepo</b><span>carlos.restrepo&#64;{{ t().guests.emailDomain }}</span></div>
+                        <span class="fx-tag">{{ t().guests.business }}</span>
+                        <span class="st off">{{ t().guests.past }}</span>
+                        <span class="fx-link">{{ t().guests.viewProfile }}</span>
                       </div>
                     }
                   </div>
@@ -109,19 +109,19 @@
                     <div class="guest">
                       <span class="fx-face lg">SA</span>
                       <div class="guest-text">
-                        <div class="guest-head"><b class="guest-name">Santiago Arango</b><span class="st ok">{{ t.guests.staying }}</span></div>
-                        <div class="guest-tags"><span class="fx-tag">{{ t.guests.vip }}</span><span class="fx-tag">{{ t.guests.regular }}</span></div>
+                        <div class="guest-head"><b class="guest-name">Santiago Arango</b><span class="st ok">{{ t().guests.staying }}</span></div>
+                        <div class="guest-tags"><span class="fx-tag">{{ t().guests.vip }}</span><span class="fx-tag">{{ t().guests.regular }}</span></div>
                       </div>
                     </div>
                     <div class="fx-stats">
-                      <div><span>{{ t.guests.stays }}</span><b>4</b></div>
-                      <div><span>{{ t.guests.nights }}</span><b>12</b></div>
-                      <div><span>{{ t.guests.spent }}</span><b>{{ t.guests.spentValue }}</b></div>
-                      <div><span>{{ t.guests.lastVisit }}</span><b>{{ t.guests.lastVisitValue }}</b></div>
+                      <div><span>{{ t().guests.stays }}</span><b>4</b></div>
+                      <div><span>{{ t().guests.nights }}</span><b>12</b></div>
+                      <div><span>{{ t().guests.spent }}</span><b>{{ t().guests.spentValue }}</b></div>
+                      <div><span>{{ t().guests.lastVisit }}</span><b>{{ t().guests.lastVisitValue }}</b></div>
                     </div>
                     <div class="fx-note">
-                      <span class="ncat pref">{{ t.guests.noteTag }}</span>
-                      <span>{{ t.guests.note }}</span>
+                      <span class="ncat pref">{{ t().guests.noteTag }}</span>
+                      <span>{{ t().guests.note }}</span>
                     </div>
                   </div>
                 }
@@ -132,47 +132,47 @@
                 <div class="fx-board">
                   <div class="fx-trow head">
                     <span></span>
-                    <span class="fx-thd today">{{ t.shifts.days[0] }}<b>16</b></span>
-                    <span class="fx-thd">{{ t.shifts.days[1] }}<b>17</b></span>
-                    <span class="fx-thd">{{ t.shifts.days[2] }}<b>18</b></span>
+                    <span class="fx-thd today">{{ t().shifts.days[0] }}<b>16</b></span>
+                    <span class="fx-thd">{{ t().shifts.days[1] }}<b>17</b></span>
+                    <span class="fx-thd">{{ t().shifts.days[2] }}<b>18</b></span>
                   </div>
                   <div class="fx-trow">
-                    <span class="fx-tsh"><b>{{ t.shifts.morning }}</b>6:00 – 14:00</span>
+                    <span class="fx-tsh"><b>{{ t().shifts.morning }}</b>6:00 – 14:00</span>
                     <span class="fx-tc today"><span class="fx-tchip"><i>LG</i>Laura</span></span>
                     <span class="fx-tc"><span class="fx-tchip"><i>LG</i>Laura</span></span>
                     <span class="fx-tc"><span class="fx-tchip"><i>SP</i>Sofía</span></span>
                   </div>
                   <div class="fx-trow">
-                    <span class="fx-tsh"><b>{{ t.shifts.afternoon }}</b>14:00 – 22:00</span>
+                    <span class="fx-tsh"><b>{{ t().shifts.afternoon }}</b>14:00 – 22:00</span>
                     <span class="fx-tc today"><span class="fx-tchip"><i>SP</i>Sofía</span></span>
                     <span class="fx-tc"><span class="fx-tchip"><i>SP</i>Sofía</span></span>
                     <span class="fx-tc"><span class="fx-tchip"><i>LG</i>Laura</span></span>
                   </div>
                   <div class="fx-trow">
-                    <span class="fx-tsh"><b>{{ t.shifts.night }}</b>22:00 – 6:00</span>
+                    <span class="fx-tsh"><b>{{ t().shifts.night }}</b>22:00 – 6:00</span>
                     <span class="fx-tc today"><span class="fx-tchip"><i>CR</i>Camilo</span></span>
                     <span class="fx-tc"><span class="fx-tchip"><i>CR</i>Camilo</span></span>
                     <span data-spot="slot" class="fx-tc" [class.hot]="s().hot">
                       @if (s().assigned) {
                         <span class="fx-tchip pop"><i>JP</i>Jorge</span>
                       } @else {
-                        <span class="fx-gap">{{ t.shifts.uncovered }}</span>
+                        <span class="fx-gap">{{ t().shifts.uncovered }}</span>
                       }
                     </span>
                   </div>
                 </div>
                 <div class="fx-pool">
-                  <span class="ap-muted pool-label">{{ t.shifts.team }}</span>
-                  <span data-spot="chip" class="fx-tp" [class.src]="s().drag"><i>JP</i><span><b>Jorge Peña</b>32 {{ t.shifts.thisWeek }}</span></span>
-                  <span class="fx-tp"><i>MR</i><span><b>Marta Ruiz</b>40 {{ t.shifts.thisWeek }}</span></span>
+                  <span class="ap-muted pool-label">{{ t().shifts.team }}</span>
+                  <span data-spot="chip" class="fx-tp" [class.src]="s().drag"><i>JP</i><span><b>Jorge Peña</b>32 {{ t().shifts.thisWeek }}</span></span>
+                  <span class="fx-tp"><i>MR</i><span><b>Marta Ruiz</b>40 {{ t().shifts.thisWeek }}</span></span>
                 </div>
               </div>
             }
             @case ('fin') {
               <div class="rows fin">
                 <div class="fin-kpis">
-                  <div><span class="fin-label">{{ t.fin.revenue }}</span><span class="mono fin-value">{{ t.fin.revenueValue }}</span></div>
-                  <div><span class="fin-label">{{ t.fin.pending }}</span><span class="mono fin-value">{{ t.fin.pendingValue }}</span></div>
+                  <div><span class="fin-label">{{ t().fin.revenue }}</span><span class="mono fin-value">{{ t().fin.revenueValue }}</span></div>
+                  <div><span class="fin-label">{{ t().fin.pending }}</span><span class="mono fin-value">{{ t().fin.pendingValue }}</span></div>
                 </div>
                 <div class="fin-chart">
                   @for (w of revenueWeeks; track w.spot) {
@@ -185,42 +185,42 @@
                     ></div>
                   }
                   @if (s().hover) {
-                    <div class="pop fin-tip">{{ t.fin.tip }} · <span class="mono">{{ t.fin.tipValue }}</span></div>
+                    <div class="pop fin-tip">{{ t().fin.tip }} · <span class="mono">{{ t().fin.tipValue }}</span></div>
                   }
                 </div>
                 <div class="fin-labels">
-                  @for (week of t.fin.weeks; track week) {<span class="mono">{{ week }}</span>}
+                  @for (week of t().fin.weeks; track week) {<span class="mono">{{ week }}</span>}
                 </div>
-                <span data-spot="export" class="fake-btn">{{ t.fin.export }}</span>
+                <span data-spot="export" class="fake-btn">{{ t().fin.export }}</span>
               </div>
             }
             @case ('exp') {
               <div class="rows exp">
                 <div class="exp-row">
                   <div>
-                    <div class="exp-name">{{ t.exp.coffee }}</div>
-                    <div class="mono exp-when">{{ t.exp.coffeeWhen }}</div>
+                    <div class="exp-name">{{ t().exp.coffee }}</div>
+                    <div class="mono exp-when">{{ t().exp.coffeeWhen }}</div>
                   </div>
-                  <span class="exp-state"><span class="sw sw-on"></span><app-lyhost-badge tone="success">{{ t.exp.active }}</app-lyhost-badge></span>
+                  <span class="exp-state"><span class="sw sw-on"></span><app-lyhost-badge tone="success">{{ t().exp.active }}</app-lyhost-badge></span>
                 </div>
                 <div class="exp-row">
                   <div>
-                    <div class="exp-name">{{ t.exp.graffiti }}</div>
-                    <div class="mono exp-when">{{ t.exp.graffitiWhen }}</div>
+                    <div class="exp-name">{{ t().exp.graffiti }}</div>
+                    <div class="mono exp-when">{{ t().exp.graffitiWhen }}</div>
                   </div>
-                  <span class="exp-state"><span class="sw sw-on"></span><app-lyhost-badge tone="warning">{{ t.exp.fewSpots }}</app-lyhost-badge></span>
+                  <span class="exp-state"><span class="sw sw-on"></span><app-lyhost-badge tone="warning">{{ t().exp.fewSpots }}</app-lyhost-badge></span>
                 </div>
                 <div class="exp-row">
                   <div>
-                    <div class="exp-name">{{ t.exp.cooking }}</div>
-                    <div class="mono exp-when">{{ s().published ? t.exp.cookingWhen : t.exp.unscheduled }}</div>
+                    <div class="exp-name">{{ t().exp.cooking }}</div>
+                    <div class="mono exp-when">{{ s().published ? t().exp.cookingWhen : t().exp.unscheduled }}</div>
                   </div>
                   <span class="exp-state">
                     <span data-spot="sw" class="sw" [class.sw-on]="s().published"></span>
                     @if (s().published) {
-                      <span class="pop"><app-lyhost-badge tone="success">{{ t.exp.active }}</app-lyhost-badge></span>
+                      <span class="pop"><app-lyhost-badge tone="success">{{ t().exp.active }}</app-lyhost-badge></span>
                     } @else {
-                      <app-lyhost-badge>{{ t.exp.draft }}</app-lyhost-badge>
+                      <app-lyhost-badge>{{ t().exp.draft }}</app-lyhost-badge>
                     }
                   </span>
                 </div>

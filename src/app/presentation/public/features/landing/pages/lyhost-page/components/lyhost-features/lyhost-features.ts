@@ -12,7 +12,7 @@ import {
 import { LyhostCalendarComponent } from '../lyhost-calendar/lyhost-calendar';
 import { Stay } from '../lyhost-calendar/calendar-bars';
 import { LyhostBadgeComponent } from '../lyhost-badge/lyhost-badge';
-import { LYHOST_TEXT } from '../../i18n/lyhost-i18n';
+import { landingText } from '../../i18n/lyhost-i18n';
 
 type ModuleId = 'res' | 'guests' | 'shifts' | 'fin' | 'exp';
 
@@ -68,16 +68,16 @@ export class LyhostFeaturesComponent {
   private timers: ReturnType<typeof setTimeout>[] = [];
   private reduceMotion = false;
 
-  readonly t = inject(LYHOST_TEXT).features;
-  private readonly room = inject(LYHOST_TEXT).calendar.room;
+  readonly t = landingText('features');
+  private readonly calendar = landingText('calendar');
 
-  readonly modules = MODULE_IDS.map((id) => ({ id, ...this.t.modules[id] }));
+  readonly modules = computed(() => MODULE_IDS.map((id) => ({ id, ...this.t().modules[id] })));
   readonly activeIndex = signal(0);
   /** Modules advance on their own until the visitor picks one. */
   readonly auto = signal(true);
   readonly inView = signal(false);
   readonly autoRun = computed(() => this.auto() && this.inView());
-  readonly current = computed(() => this.modules[this.activeIndex()]);
+  readonly current = computed(() => this.modules()[this.activeIndex()]);
 
   readonly walk = signal<Walkthrough>({
     on: false,
@@ -101,11 +101,11 @@ export class LyhostFeaturesComponent {
     return c % 2 ? 'ripple ripple-a' : 'ripple ripple-b';
   });
 
-  readonly stays: [string, Stay[]][] = [
-    [`${this.room} 101`, [[0, 1, 'ly', 'Valentina Ruiz', 'bar'], [2, 4, 'bk', 'Lucas Schmidt']]],
-    [`${this.room} 102`, [[-1, 4, 'ab', 'Sofía Marín']]],
-    [`${this.room} 204`, [[0, 3, 'ly', 'Santiago Arango'], [3, 2, 'bk', 'Lena Novak']]],
-  ];
+  readonly stays = computed<[string, Stay[]][]>(() => [
+    [`${this.calendar().room} 101`, [[0, 1, 'ly', 'Valentina Ruiz', 'bar'], [2, 4, 'bk', 'Lucas Schmidt']]],
+    [`${this.calendar().room} 102`, [[-1, 4, 'ab', 'Sofía Marín']]],
+    [`${this.calendar().room} 204`, [[0, 3, 'ly', 'Santiago Arango'], [3, 2, 'bk', 'Lena Novak']]],
+  ]);
 
   readonly revenueWeeks = [3.9, 4.6, 5.24, 4.7].map((value, i) => ({
     spot: `w${i + 1}`,
@@ -138,7 +138,7 @@ export class LyhostFeaturesComponent {
 
   onProgressEnd(event: AnimationEvent): void {
     if (event.target !== event.currentTarget) return;
-    this.goTo((this.activeIndex() + 1) % this.modules.length, false);
+    this.goTo((this.activeIndex() + 1) % MODULE_IDS.length, false);
   }
 
   private start(): void {
@@ -148,7 +148,8 @@ export class LyhostFeaturesComponent {
       this.patch({ s: REDUCED_STATE });
       return;
     }
-    // Auto-advance the modules only while the band is on screen
+    // Auto-advance the modules only while the band crosses the middle of the screen.
+    // A centre band (not a share of the element) works however tall the band is compared with the screen.
     this.observer = new IntersectionObserver(
       ([entry]) => {
         const visible = entry.isIntersecting;
@@ -157,7 +158,7 @@ export class LyhostFeaturesComponent {
         if (visible) this.at(60, () => this.runModule(this.current().id));
         else this.clearTimers();
       },
-      { threshold: 0.35 },
+      { rootMargin: '-35% 0px -35% 0px' },
     );
     this.observer.observe(this.bandEl().nativeElement);
   }
@@ -168,7 +169,7 @@ export class LyhostFeaturesComponent {
     this.activeIndex.set(index);
     this.clearTimers();
     if (this.reduceMotion) return;
-    this.at(60, () => this.runModule(this.modules[index].id));
+    this.at(60, () => this.runModule(MODULE_IDS[index]));
   }
 
   private runModule(id: ModuleId): void {
@@ -188,7 +189,7 @@ export class LyhostFeaturesComponent {
       at(2850, () => this.click());
       at(3050, () => {
         s({ paid: true });
-        this.toast(this.t.res.toast);
+        this.toast(this.t().res.toast);
       });
       at(3600, () => this.move('rest'));
     } else if (id === 'guests') {
@@ -216,7 +217,7 @@ export class LyhostFeaturesComponent {
       at(2350, () => {
         this.walk.update((w) => ({ ...w, down: false, click: w.click + 1 }));
         s({ drag: false, hot: false, assigned: true });
-        this.toast(this.t.shifts.toast);
+        this.toast(this.t().shifts.toast);
       });
       at(3000, () => this.move('rest'));
     } else if (id === 'fin') {
@@ -227,14 +228,14 @@ export class LyhostFeaturesComponent {
         this.move('export');
       });
       at(3500, () => this.click());
-      at(3650, () => this.toast(this.t.fin.toast));
+      at(3650, () => this.toast(this.t().fin.toast));
       at(4100, () => this.move('rest'));
     } else {
       at(500, () => this.move('sw'));
       at(1300, () => this.click());
       at(1450, () => {
         s({ published: true });
-        this.toast(this.t.exp.toast);
+        this.toast(this.t().exp.toast);
       });
       at(2100, () => this.move('rest'));
     }

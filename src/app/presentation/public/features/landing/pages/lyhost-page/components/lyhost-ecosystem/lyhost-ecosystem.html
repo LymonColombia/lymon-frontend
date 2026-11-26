@@ -1,23 +1,23 @@
 <section id="ecosistema" class="eco">
   <div class="wrap eco-inner">
     <div class="g12 hw eco-head">
-      <h2 class="h2 eco-title"><span class="ln"><span>{{ t.title }}</span></span></h2>
-      <p class="ov muted eco-lead">{{ t.lead }}</p>
+      <h2 class="h2 eco-title"><span class="ln"><span>{{ t().title }}</span></span></h2>
+      <p class="ov muted eco-lead">{{ t().lead }}</p>
     </div>
 
     <div class="g12 eco-grid">
       <!-- The focal story: every property, one operation -->
       <article class="reveal cs eco-main">
-        <figure class="ill ill-lg" [attr.aria-label]="t.propertiesLabel">
+        <figure class="ill ill-lg" [attr.aria-label]="t().propertiesLabel">
           <div class="ill-h">
-            <span class="overline">{{ t.properties }}</span>
-            <span class="ill-tot">{{ t.totalBefore }} <b>68 %</b> {{ t.totalAfter }}</span>
+            <span class="overline">{{ t().properties }}</span>
+            <span class="ill-tot">{{ t().totalBefore }} <b>68 %</b> {{ t().totalAfter }}</span>
           </div>
           <div class="ill-props">
             <div class="ill-th">
-              <span>{{ t.colProperty }}</span><span>{{ t.colOccupancy }}</span><span class="num">{{ t.colArrivals }}</span><span class="num">{{ t.colRevenue }}</span>
+              <span>{{ t().colProperty }}</span><span>{{ t().colOccupancy }}</span><span class="num">{{ t().colArrivals }}</span><span class="num">{{ t().colRevenue }}</span>
             </div>
-            @for (p of properties; track p.name) {
+            @for (p of properties(); track p.name) {
               <div class="ill-tr">
                 <span><b>{{ p.name }}</b><i>{{ p.meta }}</i></span>
                 <span class="ill-occ">
@@ -31,47 +31,47 @@
           </div>
         </figure>
         <div class="copy copy-lg">
-          <h3 class="fh">{{ t.mainTitle }}</h3>
-          <p class="muted">{{ t.mainText }}</p>
+          <h3 class="fh">{{ t().mainTitle }}</h3>
+          <p class="muted">{{ t().mainText }}</p>
         </div>
       </article>
 
       <!-- Two quieter stories, separated by a fine rule -->
       <div class="eco-side">
         <article class="reveal cs side-feat">
-          <figure class="ill" [attr.aria-label]="t.guestLabel">
+          <figure class="ill" [attr.aria-label]="t().guestLabel">
             <div class="guest">
               <img class="face" src="images/landing/guest-valentina-gomez.jpg" width="36" height="36" alt="Valentina Gómez" />
               <div class="guest-text">
                 <div class="guest-name">Valentina Gómez</div>
-                <div class="tnum muted guest-meta">{{ t.guestMeta }}</div>
+                <div class="tnum muted guest-meta">{{ t().guestMeta }}</div>
               </div>
-              <app-lyhost-badge tone="info">{{ t.inStay }}</app-lyhost-badge>
+              <app-lyhost-badge tone="info">{{ t().inStay }}</app-lyhost-badge>
             </div>
             <div class="tags">
-              @for (tag of guestTags; track tag; let i = $index) {
+              @for (tag of t().guestTags; track tag; let i = $index) {
                 <span class="tag tagi" [style.--i]="i">{{ tag }}</span>
               }
             </div>
             <div class="stays">
-              @for (stay of t.guestStays; track stay.room) {
+              @for (stay of t().guestStays; track stay.room) {
                 <div class="stay"><span>{{ stay.room }}</span><span class="tnum muted">{{ stay.nights }}</span></div>
               }
             </div>
           </figure>
-          <h3 class="fh">{{ t.guestTitle }}</h3>
-          <p class="muted">{{ t.guestText }}</p>
+          <h3 class="fh">{{ t().guestTitle }}</h3>
+          <p class="muted">{{ t().guestText }}</p>
         </article>
 
         <article class="reveal cs side-feat">
-          <figure class="ill" [attr.aria-label]="t.weekLabel">
+          <figure class="ill" [attr.aria-label]="t().weekLabel">
             <div class="kpi">
               <div class="kpi-text">
-                <span class="overline">{{ t.today }}</span>
+                <span class="overline">{{ t().today }}</span>
                 <span class="kpi-value">72 %</span>
               </div>
               <div class="bars">
-                @for (d of week; track $index) {
+                @for (d of week(); track $index) {
                   <div class="bar-col">
                     <span class="filly" [class.current]="d.current" [style.--i]="$index" [style.height.px]="d.height"></span>
                     <span class="tnum bar-label">{{ d.label }}</span>
@@ -80,8 +80,8 @@
               </div>
             </div>
           </figure>
-          <h3 class="fh">{{ t.occupancyTitle }}</h3>
-          <p class="muted">{{ t.occupancyText }}</p>
+          <h3 class="fh">{{ t().occupancyTitle }}</h3>
+          <p class="muted">{{ t().occupancyText }}</p>
         </article>
       </div>
     </div>

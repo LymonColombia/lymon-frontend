@@ -1,18 +1,18 @@
 <header class="nav-bar">
-  <nav class="wrap nav-inner" [attr.aria-label]="t.label">
-    <button type="button" class="brand" [attr.aria-label]="t.home" (click)="scrollTo('inicio')">
+  <nav class="wrap nav-inner" [attr.aria-label]="t().label">
+    <button type="button" class="brand" [attr.aria-label]="t().home" (click)="scrollTo('inicio')">
       <img ngSrc="images/lyhost-logo.svg" width="141" height="52" priority alt="LyHost" />
     </button>
 
     <div class="links">
-      @for (link of links; track link.sectionId) {
+      @for (link of links(); track link.sectionId) {
         <button type="button" class="navlink" (click)="scrollTo(link.sectionId)">{{ link.label }}</button>
       }
     </div>
 
     <div class="actions">
-      <button type="button" class="navlink login" (click)="goTo('/login')">{{ t.login }}</button>
-      <app-button variant="primary" (clicked)="goTo('/register')">{{ t.trial }}</app-button>
+      <button type="button" class="navlink login" (click)="goTo('/login')">{{ t().login }}</button>
+      <app-button variant="primary" (clicked)="goTo('/register')">{{ t().trial }}</app-button>
     </div>
   </nav>
   <div class="scroll-prog" aria-hidden="true"></div>

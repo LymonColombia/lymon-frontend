@@ -1,6 +1,7 @@
 import { ApplicationConfig, inject, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
+import { provideAppI18n } from '@/presentation/shared/i18n/i18n';
 import { provideNgIconLoader, withCaching } from '@ng-icons/core';
 import { AuthRepository } from '@/domain/tenant/auth/auth.repository';
 import { AuthSessionRepository } from '@/domain/tenant/auth-session/auth-session.repository';
@@ -60,6 +61,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
+    provideAppI18n(),
     provideHttpClient(withInterceptors([guestAuthInterceptor, authInterceptor])),
     provideNgIconLoader(
       (name) =>

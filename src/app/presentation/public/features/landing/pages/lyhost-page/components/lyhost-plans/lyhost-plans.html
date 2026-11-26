@@ -1,20 +1,20 @@
 <section id="planes" class="plans-band">
   <div class="wrap plans-inner">
     <div class="g12 hw plans-head">
-      <h2 class="h2 plans-title"><span class="ln"><span>{{ t.title }}</span></span></h2>
-      <p class="ov muted plans-lead">{{ t.lead }}</p>
+      <h2 class="h2 plans-title"><span class="ln"><span>{{ t().title }}</span></span></h2>
+      <p class="ov muted plans-lead">{{ t().lead }}</p>
     </div>
 
     <div class="dx plans-wrap">
       <div class="rule-x" aria-hidden="true"></div>
       <div class="plans stg">
-      @for (c of columns; track c.name; let i = $index) {
+      @for (c of t().columns; track c.name; let i = $index) {
         <article class="pcard" [class.is-featured]="c.featured" [style.--i]="i">
           <div class="p-head">
             <div class="p-name-row">
               <h3 class="p-name">{{ c.name }}</h3>
               @if (c.featured) {
-                <span class="badge">{{ t.popular }}</span>
+                <span class="badge">{{ t().popular }}</span>
               }
             </div>
             <span class="p-for">{{ c.subtitle }}</span>
@@ -29,7 +29,7 @@
             {{ c.cta }}
           </app-button>
 
-          <ul class="feats" [attr.aria-label]="t.includes + ' ' + c.name">
+          <ul class="feats" [attr.aria-label]="t().includes + ' ' + c.name">
             @for (f of c.features; track f; let j = $index) {
               <li class="feat" [style.--j]="j">
                 <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
@@ -45,9 +45,9 @@
     </div>
 
     <div class="trial-note reveal">
-      <p><b>{{ t.trialQuestion }}</b> {{ t.trialText }}</p>
+      <p><b>{{ t().trialQuestion }}</b> {{ t().trialText }}</p>
       <app-button variant="secondary" (clicked)="scrollTo('empezar')">
-        {{ t.trialCta }} <span class="nudge" aria-hidden="true">→</span>
+        {{ t().trialCta }} <span class="nudge" aria-hidden="true">→</span>
       </app-button>
     </div>
   </div>
