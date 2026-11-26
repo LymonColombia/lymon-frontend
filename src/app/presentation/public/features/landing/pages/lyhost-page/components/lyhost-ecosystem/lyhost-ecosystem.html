@@ -1,21 +1,21 @@
 <section id="ecosistema" class="eco">
   <div class="wrap eco-inner">
     <div class="g12 hw eco-head">
-      <h2 class="h2 eco-title"><span class="ln"><span>Un solo panel para toda tu operación</span></span></h2>
-      <p class="ov muted eco-lead">Lo que antes estaba en hojas de cálculo, chats y cuadernos, ahora en un mismo lugar.</p>
+      <h2 class="h2 eco-title"><span class="ln"><span>{{ t.title }}</span></span></h2>
+      <p class="ov muted eco-lead">{{ t.lead }}</p>
     </div>
 
     <div class="g12 eco-grid">
       <!-- The focal story: every property, one operation -->
       <article class="reveal cs eco-main">
-        <figure class="ill ill-lg" aria-label="Ejemplo: tres propiedades con su ocupación, llegadas de hoy e ingresos del mes">
+        <figure class="ill ill-lg" [attr.aria-label]="t.propertiesLabel">
           <div class="ill-h">
-            <span class="overline">Propiedades</span>
-            <span class="ill-tot">Todas · <b>68 %</b> de ocupación</span>
+            <span class="overline">{{ t.properties }}</span>
+            <span class="ill-tot">{{ t.totalBefore }} <b>68 %</b> {{ t.totalAfter }}</span>
           </div>
           <div class="ill-props">
             <div class="ill-th">
-              <span>Propiedad</span><span>Ocupación</span><span class="num">Llegadas hoy</span><span class="num">Ingresos del mes</span>
+              <span>{{ t.colProperty }}</span><span>{{ t.colOccupancy }}</span><span class="num">{{ t.colArrivals }}</span><span class="num">{{ t.colRevenue }}</span>
             </div>
             @for (p of properties; track p.name) {
               <div class="ill-tr">
@@ -31,22 +31,22 @@
           </div>
         </figure>
         <div class="copy copy-lg">
-          <h3 class="fh">Todas tus propiedades, una sola operación.</h3>
-          <p class="muted">Reservas, personal y finanzas de cada alojamiento en un mismo panel. Cambia de propiedad o míralas todas juntas.</p>
+          <h3 class="fh">{{ t.mainTitle }}</h3>
+          <p class="muted">{{ t.mainText }}</p>
         </div>
       </article>
 
       <!-- Two quieter stories, separated by a fine rule -->
       <div class="eco-side">
         <article class="reveal cs side-feat">
-          <figure class="ill" aria-label="Ejemplo: perfil de un huésped con sus preferencias y sus últimas estadías">
+          <figure class="ill" [attr.aria-label]="t.guestLabel">
             <div class="guest">
               <img class="face" src="images/landing/guest-valentina-gomez.jpg" width="36" height="36" alt="Valentina Gómez" />
               <div class="guest-text">
                 <div class="guest-name">Valentina Gómez</div>
-                <div class="tnum muted guest-meta">4 estadías · desde 2025</div>
+                <div class="tnum muted guest-meta">{{ t.guestMeta }}</div>
               </div>
-              <app-lyhost-badge tone="info">En estadía</app-lyhost-badge>
+              <app-lyhost-badge tone="info">{{ t.inStay }}</app-lyhost-badge>
             </div>
             <div class="tags">
               @for (tag of guestTags; track tag; let i = $index) {
@@ -54,19 +54,20 @@
               }
             </div>
             <div class="stays">
-              <div class="stay"><span>Hab. 402 · 8–11 nov</span><span class="tnum muted">3 noches</span></div>
-              <div class="stay"><span>Hab. 405 · 2–4 ago</span><span class="tnum muted">2 noches</span></div>
+              @for (stay of t.guestStays; track stay.room) {
+                <div class="stay"><span>{{ stay.room }}</span><span class="tnum muted">{{ stay.nights }}</span></div>
+              }
             </div>
           </figure>
-          <h3 class="fh">Recuerda a cada huésped, no solo su reserva.</h3>
-          <p class="muted">Estadías, preferencias y notas del equipo en su perfil, para que cada visita se sienta como en casa.</p>
+          <h3 class="fh">{{ t.guestTitle }}</h3>
+          <p class="muted">{{ t.guestText }}</p>
         </article>
 
         <article class="reveal cs side-feat">
-          <figure class="ill" aria-label="Ejemplo: ocupación de la semana, de 58 % el martes a 94 % el sábado; hoy, jueves, 72 %.">
+          <figure class="ill" [attr.aria-label]="t.weekLabel">
             <div class="kpi">
               <div class="kpi-text">
-                <span class="overline">Ocupación hoy</span>
+                <span class="overline">{{ t.today }}</span>
                 <span class="kpi-value">72 %</span>
               </div>
               <div class="bars">
@@ -79,8 +80,8 @@
               </div>
             </div>
           </figure>
-          <h3 class="fh">Conoce la ocupación y los ingresos de hoy.</h3>
-          <p class="muted">Ocupación, llegadas e ingresos del mes de cada propiedad, sin armar reportes a mano.</p>
+          <h3 class="fh">{{ t.occupancyTitle }}</h3>
+          <p class="muted">{{ t.occupancyText }}</p>
         </article>
       </div>
     </div>

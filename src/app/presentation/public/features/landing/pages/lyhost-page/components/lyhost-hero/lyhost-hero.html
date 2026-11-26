@@ -2,15 +2,15 @@
   <div class="wrap">
     <div class="g12 hero-top">
       <h1 class="h1 hero-h">
-        <span class="ln"><span style="--d: 0.1s">Tu propiedad. Tus reglas.</span></span>
-        <span class="ln"><span class="muted" style="--d: 0.22s">Todo en un solo lugar.</span></span>
+        <span class="ln"><span style="--d: 0.1s">{{ h.titleA }}</span></span>
+        <span class="ln"><span class="muted" style="--d: 0.22s">{{ h.titleB }}</span></span>
       </h1>
       <div class="h-in hero-side" style="--d: 0.4s">
-        <p class="lead">Para hoteles, hostales y alojamientos independientes. Reservas, huéspedes, equipo y finanzas en un solo panel.</p>
+        <p class="lead">{{ h.lead }}</p>
         <div class="cta">
-          <app-button variant="primary" (clicked)="goToRegister()">Empezar prueba gratuita</app-button>
+          <app-button variant="primary" (clicked)="goToRegister()">{{ h.startTrial }}</app-button>
           <app-button variant="secondary" (clicked)="scrollTo('planes')">
-            Ver planes <span class="nudge" aria-hidden="true">→</span>
+            {{ h.seePlans }} <span class="nudge" aria-hidden="true">→</span>
           </app-button>
         </div>
       </div>
@@ -21,7 +21,7 @@
       <div class="fit-inner" [style.width]="fitInnerWidth()" [style.transform]="fitInnerTransform()">
         <div class="h-in prod-3d" style="--d: 0.5s">
           <div class="prod">
-            <figure class="ap-cq" aria-label="Animación: en el calendario de Reservas de LyHost, una persona toca un espacio libre de la habitación 204, crea la reserva de Ana Restrepo y la barra aparece en el calendario">
+            <figure class="ap-cq" [attr.aria-label]="h.demoLabel">
               <div class="ap" aria-hidden="true">
                 <!-- The panel's floating rail, collapsed -->
                 <div class="ap-rail" aria-hidden="true">
@@ -50,37 +50,37 @@
                     <span class="ap-scope">
                       <span class="ap-scope-ic"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"></path></svg></span>Casa Laureles<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"></path></svg>
                     </span>
-                    <span class="ap-crumb">Operación <i>/</i> <b>Reservas</b></span>
+                    <span class="ap-crumb">{{ h.panel.section }} <i>/</i> <b>{{ h.panel.page }}</b></span>
                     <span class="grow"></span>
-                    <span class="ap-search"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>Buscar reservas, huéspedes…</span>
+                    <span class="ap-search"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>{{ h.panel.search }}</span>
                     <span class="ap-ib ap-theme"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></span>
                     <span class="ap-ib"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg></span>
                   </div>
 
                   <div class="ap-head">
                     <div>
-                      <div class="ap-h1">Reservas</div>
-                      <div class="ap-sub">Mostrando: <b>Casa Laureles, Medellín</b></div>
+                      <div class="ap-h1">{{ h.panel.page }}</div>
+                      <div class="ap-sub">{{ h.panel.showing }} <b>{{ h.panel.property }}</b></div>
                     </div>
                     <div class="ap-head-actions">
-                      <span class="ap-pill"><span class="live-dot live"></span>Booking.com y Airbnb sincronizados</span>
-                      <span class="ap-btn">+ Nueva reserva</span>
+                      <span class="ap-pill"><span class="live-dot live"></span>{{ h.panel.synced }}</span>
+                      <span class="ap-btn">{{ h.panel.newBooking }}</span>
                     </div>
                   </div>
 
                   <div class="ap-tools">
-                    <span class="ap-chip"><span class="ap-sw ly"></span>LyHost · directa<b>{{ directCount() }}</b></span>
+                    <span class="ap-chip"><span class="ap-sw ly"></span>{{ h.panel.direct }}<b>{{ directCount() }}</b></span>
                     <span class="ap-chip"><span class="ap-sw bk"></span>Booking.com<b>4</b></span>
                     <span class="ap-chip"><span class="ap-sw ab"></span>Airbnb<b>4</b></span>
                     <span class="grow"></span>
-                    <span class="ap-muted ap-occ">Ocupación en estas fechas: {{ occupancy() }}</span>
+                    <span class="ap-muted ap-occ">{{ h.panel.occupancy }} {{ occupancy() }}</span>
                     <span class="ap-rng"><span class="ap-ib sm">‹</span><b>{{ rangeLabel() }}</b><span class="ap-ib sm">›</span></span>
                   </div>
 
                   <!-- The gantt: one row per unit, bars from afternoon arrival to morning departure -->
                   <app-lyhost-calendar [stays]="stays" [from]="from()" [cols]="cols()" [showToday]="true">
                     @if (demo().sel > 0) {
-                      <div class="ap-sel" [style.top]="selTop" [style.left]="selLeft()" [style.width]="selWidth()">{{ demo().sel >= 4 ? 'jue 19 → lun 23 nov · 4 noches' : '' }}</div>
+                      <div class="ap-sel" [style.top]="selTop" [style.left]="selLeft()" [style.width]="selWidth()">{{ demo().sel >= 4 ? h.panel.selection : '' }}</div>
                     }
                     @if (demo().booked) {
                       <div
@@ -97,43 +97,43 @@
 
                   <!-- The confirmation, as the panel shows it -->
                   <div class="toast" [class.toast-on]="demo().toast" aria-hidden="true">
-                    Reserva creada · RSV-00521 · Hab. 204 · 19–23 nov
+                    {{ h.panel.toast }}
                   </div>
 
                   <!-- The new-reservation panel, step 2 of 3 -->
                   <div class="drawer" [class.drawer-open]="demo().drawer" aria-hidden="true">
                     <div class="ap-dhead">
-                      <div class="ap-dtitle"><span>Nueva reserva</span><span class="ap-ib sm">✕</span></div>
-                      <span class="ap-muted">Paso 2 de 3 · Huésped</span>
+                      <div class="ap-dtitle"><span>{{ h.panel.drawerTitle }}</span><span class="ap-ib sm">✕</span></div>
+                      <span class="ap-muted">{{ h.panel.drawerStep }}</span>
                       <span class="ap-track-s"><span style="width: 66%"></span></span>
                     </div>
                     <div class="ap-dbody">
                       <div class="ap-stay">
-                        <div><span>Llegada</span><b>jue 19 nov</b></div>
-                        <span class="ap-n">4 noches</span>
-                        <div class="ap-stay-end"><span>Salida</span><b>lun 23 nov</b></div>
+                        <div><span>{{ h.panel.arrival }}</span><b>{{ h.panel.arrivalDate }}</b></div>
+                        <span class="ap-n">{{ h.panel.nights }}</span>
+                        <div class="ap-stay-end"><span>{{ h.panel.departure }}</span><b>{{ h.panel.departureDate }}</b></div>
                       </div>
-                      <div class="ap-muted mono ap-stay-meta">Hab. 204 · Casa Laureles · 2 huéspedes</div>
+                      <div class="ap-muted mono ap-stay-meta">{{ h.panel.stayMeta }}</div>
                       <div #guest class="ap-field">
-                        <span class="flabel">Nombre del huésped</span>
+                        <span class="flabel">{{ h.panel.guestName }}</span>
                         <div class="fbox" [class.fbox-focus]="demo().focus">{{ demo().typed }}@if (demo().focus) {<span class="caret"></span>}@if (!demo().focus && demo().typed === '') {<span class="ap-placeholder">Ana Restrepo</span>}</div>
                       </div>
                       <div class="ap-recurring" [class.chip-show]="demo().chip" [class.chip-hide]="!demo().chip">
-                        <span class="ap-tag">Huésped recurrente</span>
-                        <span class="ap-muted">2 estadías · prefiere piso alto</span>
+                        <span class="ap-tag">{{ h.panel.recurring }}</span>
+                        <span class="ap-muted">{{ h.panel.recurringMeta }}</span>
                       </div>
                       <div class="ap-field">
-                        <span class="flabel">Teléfono</span>
+                        <span class="flabel">{{ h.panel.phone }}</span>
                         <div class="fbox">300 555 0148</div>
                       </div>
                       <div class="ap-field">
-                        <span class="flabel">Pago</span>
-                        <div class="ap-pay"><span class="ap-chip sm on">Pagada</span><span class="ap-chip sm">Pendiente</span></div>
+                        <span class="flabel">{{ h.panel.payment }}</span>
+                        <div class="ap-pay"><span class="ap-chip sm on">{{ h.panel.paid }}</span><span class="ap-chip sm">{{ h.panel.pending }}</span></div>
                       </div>
                     </div>
                     <div class="ap-dfoot">
-                      <span class="ap-btn sec">Atrás</span>
-                      <span #confirm class="ap-btn" [class.press]="demo().press">Crear reserva</span>
+                      <span class="ap-btn sec">{{ h.panel.back }}</span>
+                      <span #confirm class="ap-btn" [class.press]="demo().press">{{ h.panel.create }}</span>
                     </div>
                   </div>
 
@@ -155,7 +155,7 @@
               <button
                 type="button"
                 class="demo-pause"
-                [attr.aria-label]="paused() ? 'Reanudar la animación' : 'Pausar la animación'"
+                [attr.aria-label]="paused() ? h.resume : h.pause"
                 (click)="toggleDemo()"
               >
                 <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -171,7 +171,7 @@
 </section>
 
 <!-- Facts strip -->
-<section class="facts-band" aria-label="Por qué LyHost">
+<section class="facts-band" [attr.aria-label]="h.factsLabel">
   <div class="wrap">
     <div class="dx">
       <div class="rule-x" aria-hidden="true"></div>

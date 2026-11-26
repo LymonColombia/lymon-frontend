@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { LYHOST_TEXT } from '../../i18n/lyhost-i18n';
 
 interface LyhostNavLink {
   label: string;
@@ -17,11 +18,12 @@ interface LyhostNavLink {
 })
 export class LyhostNavComponent {
   private readonly router = inject(Router);
+  readonly t = inject(LYHOST_TEXT).nav;
 
   readonly links: LyhostNavLink[] = [
-    { label: 'Producto', sectionId: 'ecosistema' },
-    { label: 'Módulos', sectionId: 'caracteristicas' },
-    { label: 'Planes', sectionId: 'planes' },
+    { label: this.t.product, sectionId: 'ecosistema' },
+    { label: this.t.modules, sectionId: 'caracteristicas' },
+    { label: this.t.plans, sectionId: 'planes' },
   ];
 
   goTo(path: string): void {

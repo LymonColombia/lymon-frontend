@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LyhostBadgeComponent } from '../lyhost-badge/lyhost-badge';
+import { LYHOST_TEXT } from '../../i18n/lyhost-i18n';
 
 @Component({
   selector: 'app-lyhost-ecosystem',
@@ -9,17 +10,20 @@ import { LyhostBadgeComponent } from '../lyhost-badge/lyhost-badge';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LyhostEcosystemComponent {
-  readonly properties = [
-    { name: 'Casa Laureles', meta: 'Hotel · Medellín', occupancy: 72, arrivals: 3, revenue: '$ 12,9 M' },
-    { name: 'Hostal Centro', meta: 'Hostal · Medellín', occupancy: 61, arrivals: 2, revenue: '$ 8,6 M' },
-    { name: 'Hotel Mar Azul', meta: 'Hotel · Santa Marta', occupancy: 70, arrivals: 1, revenue: '$ 7,2 M' },
-  ];
+  readonly t = inject(LYHOST_TEXT).ecosystem;
 
-  readonly guestTags = ['Piso alto', 'Late check-out', 'Viaja por trabajo'];
+  /** Sample figures; names, places and revenue come from the language file. */
+  readonly properties = [
+    { occupancy: 72, arrivals: 3 },
+    { occupancy: 61, arrivals: 2 },
+    { occupancy: 70, arrivals: 1 },
+  ].map((figures, i) => ({ ...this.t.propertyRows[i], ...figures }));
+
+  readonly guestTags = this.t.guestTags;
 
   /** A week with a real shape: quiet midweek, full weekend; today is Thursday. */
   readonly week = [64, 58, 61, 72, 88, 94, 70].map((value, i) => ({
-    label: ['L', 'M', 'M', 'J', 'V', 'S', 'D'][i],
+    label: this.t.weekDays[i],
     height: Math.round(value * 0.62),
     current: i === 3,
   }));

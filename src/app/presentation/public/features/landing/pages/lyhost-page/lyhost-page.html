@@ -11,15 +11,15 @@
     <div class="wrap">
       <div class="g12 hw close-grid">
         <div class="close-copy">
-          <h2><span class="ln"><span>Prueba LyHost durante 5 días.</span></span></h2>
-          <p class="ov muted">Explora todos los módulos y descubre cómo gestionar tu operación desde un solo lugar.</p>
+          <h2><span class="ln"><span>{{ t.close.title }}</span></span></h2>
+          <p class="ov muted">{{ t.close.text }}</p>
         </div>
         <div class="ov close-actions">
           <app-button variant="primary" [fullWidth]="true" (clicked)="goToRegister()">
-            Empezar prueba gratuita
+            {{ t.close.start }}
           </app-button>
           <!-- ponytail: no sales channel yet; the design links to "#" too -->
-          <app-button variant="secondary" [fullWidth]="true">Contactar ventas</app-button>
+          <app-button variant="secondary" [fullWidth]="true">{{ t.close.sales }}</app-button>
         </div>
       </div>
     </div>
@@ -30,28 +30,28 @@
   <div class="wrap g12 footer-inner">
     <div class="footer-brand">
       <img ngSrc="images/lyhost-logo.svg" width="141" height="52" alt="LyHost" />
-      <span class="footer-tagline">Desarrollado en Colombia. Diseñado para la hospitalidad.</span>
-      <span class="footer-note muted">Un producto de Lymon Colombia S.A.S. · Medellín, Colombia</span>
+      <span class="footer-tagline">{{ t.footer.tagline }}</span>
+      <span class="footer-note muted">{{ t.footer.company }}</span>
     </div>
     <div class="footer-col">
-      <span class="overline">Producto</span>
-      <button type="button" class="footer-link" (click)="scrollTo('ecosistema')">Producto</button>
-      <button type="button" class="footer-link" (click)="scrollTo('caracteristicas')">Módulos</button>
-      <button type="button" class="footer-link" (click)="scrollTo('planes')">Planes</button>
+      <span class="overline">{{ t.footer.product }}</span>
+      <button type="button" class="footer-link" (click)="scrollTo('ecosistema')">{{ t.nav.product }}</button>
+      <button type="button" class="footer-link" (click)="scrollTo('caracteristicas')">{{ t.nav.modules }}</button>
+      <button type="button" class="footer-link" (click)="scrollTo('planes')">{{ t.nav.plans }}</button>
     </div>
     <div class="footer-col">
-      <span class="overline">Legal</span>
-      <a class="footer-link" href="#">Términos</a>
-      <a class="footer-link" href="#">Privacidad</a>
-      <a class="footer-link" href="#">Tratamiento de datos</a>
+      <span class="overline">{{ t.footer.legal }}</span>
+      <a class="footer-link" href="#">{{ t.footer.terms }}</a>
+      <a class="footer-link" href="#">{{ t.footer.privacy }}</a>
+      <a class="footer-link" href="#">{{ t.footer.dataPolicy }}</a>
     </div>
     <div class="footer-col">
-      <span class="overline">Contacto</span>
+      <span class="overline">{{ t.footer.contact }}</span>
       <a class="footer-link" href="mailto:lymonoficial@lymon.com.co">lymonoficial@lymon.com.co</a>
     </div>
     <div class="footer-bottom">
       <span>© 2026 Lymon Colombia S.A.S.</span>
-      <span>Las pantallas de esta página muestran datos de ejemplo.</span>
+      <span>{{ t.footer.sample }}</span>
     </div>
   </div>
 </footer>

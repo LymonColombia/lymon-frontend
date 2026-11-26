@@ -26,15 +26,15 @@ export interface CalendarDay {
   weekend: boolean;
 }
 
-const WEEK = ['lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom'];
 const LETTER: Record<Channel, string> = { ly: 'L', bk: 'B', ab: 'A' };
 /** Day number of "today" in the demo (lun 16 nov). */
 const TODAY = 16;
 
-export function calendarDays(from: number, cols: number): CalendarDay[] {
+/** `week` holds the seven day names, Monday first, in the page's language. Today is a Monday. */
+export function calendarDays(from: number, cols: number, week: readonly string[]): CalendarDay[] {
   return Array.from({ length: cols }, (_, i) => {
-    const dow = WEEK[(((from + i) % 7) + 7) % 7];
-    return { dow, dn: String(TODAY + from + i), today: from + i === 0, weekend: dow === 'sáb' || dow === 'dom' };
+    const weekday = (((from + i) % 7) + 7) % 7;
+    return { dow: week[weekday], dn: String(TODAY + from + i), today: from + i === 0, weekend: weekday >= 5 };
   });
 }
 

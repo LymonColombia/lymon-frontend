@@ -12,14 +12,9 @@ import {
 import { LyhostCalendarComponent } from '../lyhost-calendar/lyhost-calendar';
 import { Stay } from '../lyhost-calendar/calendar-bars';
 import { LyhostBadgeComponent } from '../lyhost-badge/lyhost-badge';
+import { LYHOST_TEXT } from '../../i18n/lyhost-i18n';
 
 type ModuleId = 'res' | 'guests' | 'shifts' | 'fin' | 'exp';
-
-interface LandingModule {
-  id: ModuleId;
-  title: string;
-  text: string;
-}
 
 /** What each module's walkthrough has done so far. */
 interface WalkState {
@@ -45,33 +40,8 @@ interface Walkthrough {
   s: WalkState;
 }
 
-const MODULES: LandingModule[] = [
-  {
-    id: 'res',
-    title: 'Reservas y disponibilidad',
-    text: 'Todas tus reservas y habitaciones en un calendario. Sabes qué está ocupado, quién llega hoy y qué falta por pagar.',
-  },
-  {
-    id: 'guests',
-    title: 'Historial de huéspedes',
-    text: 'Cada persona que se queda contigo, con sus estadías y preferencias.',
-  },
-  {
-    id: 'shifts',
-    title: 'Turnos y equipo',
-    text: 'Arma los turnos de recepción, limpieza y mantenimiento, y sabe quién cubre cada uno.',
-  },
-  {
-    id: 'fin',
-    title: 'Finanzas',
-    text: 'Ingresos, gastos y pagos pendientes de cada propiedad, actualizados al instante.',
-  },
-  {
-    id: 'exp',
-    title: 'Experiencias para tus visitantes',
-    text: 'Publica tours y actividades, controla sus cupos y súmalos a la estadía de tus huéspedes.',
-  },
-];
+/** Walkthrough order; titles and texts live in the i18n files. */
+const MODULE_IDS: ModuleId[] = ['res', 'guests', 'shifts', 'fin', 'exp'];
 
 const SEARCH_QUERY = 'Santi';
 const REDUCED_STATE: WalkState = {
@@ -98,13 +68,16 @@ export class LyhostFeaturesComponent {
   private timers: ReturnType<typeof setTimeout>[] = [];
   private reduceMotion = false;
 
-  readonly modules = MODULES;
+  readonly t = inject(LYHOST_TEXT).features;
+  private readonly room = inject(LYHOST_TEXT).calendar.room;
+
+  readonly modules = MODULE_IDS.map((id) => ({ id, ...this.t.modules[id] }));
   readonly activeIndex = signal(0);
   /** Modules advance on their own until the visitor picks one. */
   readonly auto = signal(true);
   readonly inView = signal(false);
   readonly autoRun = computed(() => this.auto() && this.inView());
-  readonly current = computed(() => MODULES[this.activeIndex()]);
+  readonly current = computed(() => this.modules[this.activeIndex()]);
 
   readonly walk = signal<Walkthrough>({
     on: false,
@@ -129,9 +102,9 @@ export class LyhostFeaturesComponent {
   });
 
   readonly stays: [string, Stay[]][] = [
-    ['Hab. 101', [[0, 1, 'ly', 'Valentina Ruiz', 'bar'], [2, 4, 'bk', 'Lucas Schmidt']]],
-    ['Hab. 102', [[-1, 4, 'ab', 'Sofía Marín']]],
-    ['Hab. 204', [[0, 3, 'ly', 'Santiago Arango'], [3, 2, 'bk', 'Lena Novak']]],
+    [`${this.room} 101`, [[0, 1, 'ly', 'Valentina Ruiz', 'bar'], [2, 4, 'bk', 'Lucas Schmidt']]],
+    [`${this.room} 102`, [[-1, 4, 'ab', 'Sofía Marín']]],
+    [`${this.room} 204`, [[0, 3, 'ly', 'Santiago Arango'], [3, 2, 'bk', 'Lena Novak']]],
   ];
 
   readonly revenueWeeks = [3.9, 4.6, 5.24, 4.7].map((value, i) => ({
@@ -165,7 +138,7 @@ export class LyhostFeaturesComponent {
 
   onProgressEnd(event: AnimationEvent): void {
     if (event.target !== event.currentTarget) return;
-    this.goTo((this.activeIndex() + 1) % MODULES.length, false);
+    this.goTo((this.activeIndex() + 1) % this.modules.length, false);
   }
 
   private start(): void {
@@ -195,7 +168,7 @@ export class LyhostFeaturesComponent {
     this.activeIndex.set(index);
     this.clearTimers();
     if (this.reduceMotion) return;
-    this.at(60, () => this.runModule(MODULES[index].id));
+    this.at(60, () => this.runModule(this.modules[index].id));
   }
 
   private runModule(id: ModuleId): void {
@@ -215,7 +188,7 @@ export class LyhostFeaturesComponent {
       at(2850, () => this.click());
       at(3050, () => {
         s({ paid: true });
-        this.toast('Pago registrado · $ 260.000');
+        this.toast(this.t.res.toast);
       });
       at(3600, () => this.move('rest'));
     } else if (id === 'guests') {
@@ -243,7 +216,7 @@ export class LyhostFeaturesComponent {
       at(2350, () => {
         this.walk.update((w) => ({ ...w, down: false, click: w.click + 1 }));
         s({ drag: false, hot: false, assigned: true });
-        this.toast('Turno de noche del miércoles cubierto');
+        this.toast(this.t.shifts.toast);
       });
       at(3000, () => this.move('rest'));
     } else if (id === 'fin') {
@@ -254,14 +227,14 @@ export class LyhostFeaturesComponent {
         this.move('export');
       });
       at(3500, () => this.click());
-      at(3650, () => this.toast('Reporte de diciembre listo'));
+      at(3650, () => this.toast(this.t.fin.toast));
       at(4100, () => this.move('rest'));
     } else {
       at(500, () => this.move('sw'));
       at(1300, () => this.click());
       at(1450, () => {
         s({ published: true });
-        this.toast('Experiencia publicada');
+        this.toast(this.t.exp.toast);
       });
       at(2100, () => this.move('rest'));
     }

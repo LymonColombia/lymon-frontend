@@ -1,5 +1,5 @@
 <div class="head">
-  <span class="lab">Unidad</span>
+  <span class="lab">{{ t.unit }}</span>
   @for (d of days(); track d.dn) {
     <span class="day" [class.today]="d.today" [class.we]="d.weekend">
       <span>{{ d.dow }}</span><i>{{ d.dn }}</i>

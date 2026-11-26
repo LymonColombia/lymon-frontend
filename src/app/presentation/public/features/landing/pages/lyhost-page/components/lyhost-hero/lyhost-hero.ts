@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { LyhostCalendarComponent } from '../lyhost-calendar/lyhost-calendar';
 import { Stay } from '../lyhost-calendar/calendar-bars';
+import { LYHOST_TEXT } from '../../i18n/lyhost-i18n';
 
 type CursorSpot = 'rest' | 'start' | 'end' | 'guest' | 'confirm';
 
@@ -72,6 +73,9 @@ const BAR_TOP = (ROW_CONTENT - 28) / 2;
 })
 export class LyhostHeroComponent {
   private readonly router = inject(Router);
+  readonly t = inject(LYHOST_TEXT);
+  /** Hero copy and the demo panel's labels. */
+  readonly h = this.t.hero;
 
   private readonly fitEl = viewChild.required<ElementRef<HTMLElement>>('fit');
   private readonly mainEl = viewChild.required<ElementRef<HTMLElement>>('main');
@@ -94,7 +98,7 @@ export class LyhostHeroComponent {
 
   readonly from = computed(() => (this.compact() ? 0 : -2));
   readonly cols = computed(() => (this.compact() ? 6 : 10));
-  readonly rangeLabel = computed(() => (this.compact() ? '16 – 21 nov 2026' : '14 – 23 nov 2026'));
+  readonly rangeLabel = computed(() => (this.compact() ? this.h.panel.rangeCompact : this.h.panel.rangeWide));
   /** Column where the new booking starts (jue 19, afternoon arrival). */
   private readonly s0 = computed(() => 3 - this.from() + 0.5);
 
@@ -135,20 +139,15 @@ export class LyhostHeroComponent {
   readonly newClipsRight = computed(() => 4 > this.cols() - this.s0());
 
   readonly stays: [string, Stay[]][] = [
-    ['Hab. 101', [[-2, 2, 'bk', 'Daniel Ospina'], [0, 1, 'ly', 'Valentina Ruiz'], [2, 4, 'bk', 'Lucas Schmidt'], [7, 3, 'ab', 'Emma Laurent']]],
-    ['Hab. 102', [[-1, 4, 'ab', 'Sofía Marín'], [4, 2, 'ly', 'Julián Vélez']]],
-    ['Hab. 104', [[-4, 3, 'bk', 'Mariana López'], [1, 5, 'ab', 'Noah Fischer']]],
-    ['Hab. 201', [[-3, 2, 'ly', 'Carlos Restrepo'], [3, 3, 'bk', 'Lucía Fernández'], [6, 1, 'ly', 'Diego Zapata']]],
-    ['Hab. 204', [[-5, 4, 'ly', 'Laura Henao'], [0, 3, 'ly', 'Santiago Arango'], [7, 4, 'ab', 'Ethan Clark']]],
-    ['Hab. 305', [[-3, 3, 'ab', 'Mia Johnson'], [0, 4, 'bk', 'Felipe Montoya'], [6, 2, 'ly', 'Daniela Correa']]],
+    [`${this.t.calendar.room} 101`, [[-2, 2, 'bk', 'Daniel Ospina'], [0, 1, 'ly', 'Valentina Ruiz'], [2, 4, 'bk', 'Lucas Schmidt'], [7, 3, 'ab', 'Emma Laurent']]],
+    [`${this.t.calendar.room} 102`, [[-1, 4, 'ab', 'Sofía Marín'], [4, 2, 'ly', 'Julián Vélez']]],
+    [`${this.t.calendar.room} 104`, [[-4, 3, 'bk', 'Mariana López'], [1, 5, 'ab', 'Noah Fischer']]],
+    [`${this.t.calendar.room} 201`, [[-3, 2, 'ly', 'Carlos Restrepo'], [3, 3, 'bk', 'Lucía Fernández'], [6, 1, 'ly', 'Diego Zapata']]],
+    [`${this.t.calendar.room} 204`, [[-5, 4, 'ly', 'Laura Henao'], [0, 3, 'ly', 'Santiago Arango'], [7, 4, 'ab', 'Ethan Clark']]],
+    [`${this.t.calendar.room} 305`, [[-3, 3, 'ab', 'Mia Johnson'], [0, 4, 'bk', 'Felipe Montoya'], [6, 2, 'ly', 'Daniela Correa']]],
   ];
 
-  readonly facts = [
-    { title: 'Sin Excel', text: 'Reservas, huéspedes y equipo en un solo sistema.' },
-    { title: 'Sin caos', text: 'Turnos claros y cada persona sabe qué le toca.' },
-    { title: 'Sin comisiones', text: 'Pagas un plan mensual, no un porcentaje por reserva.' },
-    { title: 'En tiempo real', text: 'Todo actualizado al instante, desde cualquier dispositivo.' },
-  ];
+  readonly facts = this.h.facts;
 
   constructor() {
     afterNextRender(() => this.start());
