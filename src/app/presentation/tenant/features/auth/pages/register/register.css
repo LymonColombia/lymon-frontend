@@ -1,429 +1,115 @@
-:host {
-  display: block;
+/* Register stepper: step dots, plan picker, card step and the scenes.
+   The card, form, buttons and tokens come from auth-shell.css */
+
+.card-grid { align-items: stretch; }
+form { max-width: 420px; }
+.sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.pane { display: flex; flex-direction: column; gap: 20px; animation: fadeUp 0.4s var(--ease) both; }
+.heading { display: flex; flex-direction: column; gap: 8px; }
+h1.title { font: 600 32px/36px var(--font-display); letter-spacing: -0.03em; }
+.desc { margin: 0; font-size: 18px; line-height: 28px; letter-spacing: -0.01em; color: var(--ink-muted); }
+.actions { margin-top: auto; gap: 12px; }
+.have-account { margin-left: auto; font-size: 13px; color: var(--ink-muted); }
+
+/* ===== timeline: one dot per step, joined by a line ===== */
+.dots { list-style: none; margin: 0; padding: 0 2px; display: flex; align-items: center; width: 100%; }
+.dot-item { display: flex; align-items: center; flex: 1 1 0; min-width: 0; }
+.dot-item:first-child { flex: 0 0 auto; }
+.seg { display: block; flex: 1; min-width: 12px; height: 2px; background: var(--line); position: relative; overflow: hidden; }
+.seg::after { content: ''; position: absolute; inset: 0; background: var(--primary); transform-origin: left; transform: scaleX(0); }
+.seg-on::after { transform: scaleX(1); }
+.dot {
+  all: unset; box-sizing: border-box; width: 10px; height: 10px; border-radius: 9999px;
+  border: 2px solid var(--line-strong); background: var(--surface-raised); flex: none;
+}
+.dot:disabled { cursor: default; }
+.dot-done {
+  width: 20px; height: 20px; display: grid; place-items: center; background: var(--primary);
+  border-color: var(--primary); color: var(--on-primary); cursor: pointer;
+}
+.dot-done:hover { transform: scale(1.12); }
+.dot-done svg { display: block; }
+.dot-check { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 14; }
+.dot-now { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); transform: scale(1.2); }
+.dot:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+
+/* terms checkbox */
+.check { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 20px; color: var(--ink-muted); cursor: pointer; }
+.check input { flex: none; width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--primary); cursor: pointer; }
+.check input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.link-btn { all: unset; color: var(--link); text-decoration: underline; cursor: pointer; }
+.link-btn:hover { color: var(--ink); }
+.link-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* ===== plan picker ===== */
+.plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.plan {
+  position: relative; display: flex; flex-direction: column; gap: 2px; padding: 14px;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-lg); cursor: pointer; background: var(--surface-raised);
+}
+.plan:hover { background: var(--surface-sunken); }
+.plan-on { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); background: var(--surface-raised); }
+.plan:focus-within { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.plan-name { display: flex; justify-content: space-between; gap: 8px; font: 600 14px/20px var(--font-sans); }
+.plan-tag { font: 500 10px/16px var(--font-sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--primary-text); }
+.plan-price { font: 500 18px/26px var(--font-display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.plan-note { font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+
+/* card step */
+.summary {
+  display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 12px;
+  border-radius: 10px; background: var(--surface-sunken); font-size: 13px; line-height: 20px;
+}
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+/* terms modal (projected into app-modal) */
+.terms-content { max-height: 60vh; overflow-y: auto; padding-right: 16px; font-size: 14px; line-height: 1.6; color: var(--ink); }
+.terms-content h3 { font: 600 18px/24px var(--font-display); margin: 24px 0 12px; }
+.terms-content h3:first-child { margin-top: 0; }
+.terms-content p { margin: 0 0 12px; color: var(--ink-muted); }
+.terms-content strong { color: var(--ink); }
+.modal-actions { display: flex; justify-content: flex-end; }
+
+/* ===== scenes: each step's picture plays when it appears ===== */
+.art { min-height: 420px; overflow: hidden; }
+.scene { position: absolute; inset: 0; }
+.scene rect, .scene path, .scene g, .scene circle, .scene text { transform-box: fill-box; }
+.mail-ok { transform-origin: center; transform: scale(0); opacity: 0; }
+.mail-ok.on { transform: none; opacity: 1; }
+.shackle { transform: translateY(-22px); }
+.shackle.closed { transform: none; }
+.lift { transform: translateY(-10px); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .seg::after { transition: transform 0.45s var(--ease); }
+  .dot { transition: background-color 0.25s ease-out, border-color 0.25s ease-out, box-shadow 0.25s ease-out, transform 0.25s var(--ease); }
+  .dot-check { animation: checkIn 0.35s var(--ease) 0.1s both; }
+  .plan { transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out, background-color 0.15s ease-out; }
+  .scene-in { animation: sceneIn 0.5s var(--ease) both; }
+  .bg-c { transform-origin: center; animation: bgIn 0.7s var(--ease) both; animation-delay: var(--d, 0s); }
+  .rise { transform-origin: bottom; animation: growY 0.7s var(--ease) both; animation-delay: var(--d, 0s); }
+  .widen { transform-origin: left; animation: growX 0.5s var(--ease) both; animation-delay: var(--d, 0s); }
+  .lit { animation: litOn 0.3s ease-out both; animation-delay: calc(0.7s + var(--i) * 90ms); }
+  .pop { transform-origin: center; animation: popIn 0.4s var(--ease) both; animation-delay: var(--d, 0s); }
+  .letter { animation: letterUp 0.9s var(--ease) 0.3s both; }
+  .shackle { transition: transform 0.45s var(--ease); }
+  .morph { transition: fill 0.25s ease-out, transform 0.4s var(--ease), opacity 0.25s ease-out; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pane { animation: none !important; }
 }
 
-/* Stepper */
-.register-stepper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin: 24px 0 32px;
-}
+@keyframes checkIn { from { stroke-dashoffset: 14; } to { stroke-dashoffset: 0; } }
+@keyframes sceneIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes bgIn { from { opacity: 0; transform: scale(0.85); } to { transform: none; } }
+@keyframes growY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes litOn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+@keyframes letterUp { from { transform: translateY(70px); } to { transform: none; } }
 
-.register-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-  position: relative;
-}
-
-.register-step:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  top: 14px;
-  right: -50%;
-  width: 100%;
-  height: 2px;
-  background: var(--color-border-light);
-  z-index: 0;
-}
-
-.register-step-completed:not(:last-child)::after,
-.register-step-active:not(:last-child)::after {
-  background: var(--color-primary);
-}
-
-.register-step-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--color-text-tertiary);
-  background: var(--color-bg-tertiary);
-  border: 2px solid var(--color-border-light);
-  z-index: 1;
-  transition: all var(--transition-base);
-}
-
-.register-step-active .register-step-circle {
-  color: var(--color-bg-primary);
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.register-step-completed .register-step-circle {
-  color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-primary));
-  border-color: var(--color-primary);
-}
-
-.register-step-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  text-align: center;
-}
-
-.register-step-active .register-step-label {
-  color: var(--color-text-primary);
-  font-weight: 600;
-}
-
-.register-step-completed .register-step-label {
-  color: var(--color-primary-dark);
-}
-
-/* Step content */
-.register-step-content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.register-step-title {
-  font-family: var(--font-primary);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-/* Plans */
-.register-plans-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 40px 0;
-  color: var(--color-text-secondary);
-  font-family: var(--font-primary);
-}
-
-.register-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-border-light);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: register-spin 0.8s linear infinite;
-}
-
-@keyframes register-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.register-plans-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 24px;
-  text-align: center;
-  color: var(--color-error);
-  background: color-mix(in srgb, var(--color-error) 8%, var(--color-bg-primary));
-  border: 1px solid var(--color-error);
-  border-radius: var(--radius-md);
-}
-
-.register-plans-error p {
-  margin: 0;
-  font-family: var(--font-primary);
-  font-size: 14px;
-}
-
-.register-plans-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-}
-
-.register-plan-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 20px;
-  background: var(--color-bg-primary);
-  border: 2px solid var(--color-border-light);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-  text-align: left;
-  transition: all var(--transition-base);
-  font-family: var(--font-primary);
-}
-
-.register-plan-card:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-2px);
-}
-
-.register-plan-card-selected {
-  border-color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-primary));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 16%, transparent);
-}
-
-.register-plan-radio {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.register-plan-card:has(.register-plan-radio:focus-visible) {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-.register-plan-check {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  color: var(--color-primary);
-}
-
-.register-plan-name {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-primary-dark);
-}
-
-.register-plan-description {
-  margin: 0;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  line-height: 1.4;
-}
-
-.register-plan-price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  margin-top: auto;
-}
-
-.register-plan-price {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.register-plan-price-suffix {
-  font-size: 13px;
-  color: var(--color-text-secondary);
-}
-
-.register-plan-note {
-  margin: 0;
-  font-size: 12px;
-  color: var(--color-text-tertiary);
-}
-
-/* Plan summary */
-.register-plan-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px;
-  background: var(--color-bg-tertiary);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-md);
-}
-
-.register-plan-summary-label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-secondary);
-}
-
-.register-plan-summary-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.register-plan-summary-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.register-plan-summary-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-primary-dark);
-}
-
-/* Payment row */
-.register-payment-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-@media (max-width: 480px) {
-  .register-payment-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Buttons same size */
-.auth-form .btn-primary,
-.register-btn-secondary {
-  min-height: 52px;
-  padding: 16px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 0;
-}
-
-/* Actions */
-.register-actions {
-  display: flex;
-  align-items: stretch;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.register-actions .btn-primary,
-.register-actions .register-btn-secondary {
-  flex: 1 1 0;
-}
-
-.register-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-family: var(--font-primary);
-  color: var(--color-text-primary);
-  background: var(--color-bg-primary);
-  border: 2px solid var(--color-border-light);
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all var(--transition-base);
-}
-
-.register-btn-secondary:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary-dark);
-}
-
-.register-btn-secondary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Confirm modal */
-.register-confirm-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  font-family: var(--font-primary);
-}
-
-.register-confirm-content > p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: 14px;
-}
-
-.register-confirm-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px;
-  background: var(--color-bg-tertiary);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-md);
-}
-
-.register-confirm-label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-secondary);
-}
-
-.register-confirm-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  word-break: break-all;
-}
-
-/* Checkbox white checkmark */
-.checkbox-container input[type='checkbox'] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  border: 2px solid var(--color-border-light);
-  border-radius: 4px;
-  background: var(--color-bg-primary);
-  cursor: pointer;
-  position: relative;
-  transition: all var(--transition-base);
-}
-
-.checkbox-container input[type='checkbox']:checked {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.checkbox-container input[type='checkbox']:checked::after {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 1px;
-  width: 4px;
-  height: 9px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-@media (max-width: 480px) {
-  .register-step-label {
-    display: none;
-  }
-
-  .register-actions {
-    flex-direction: column;
-  }
+@media (max-width: 960px) {
+  .have-account { margin-left: 0; flex-basis: 100%; }
 }

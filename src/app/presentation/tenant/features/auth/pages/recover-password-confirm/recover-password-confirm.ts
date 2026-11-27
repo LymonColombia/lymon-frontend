@@ -5,24 +5,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConfirmRecoverPasswordUseCase } from '@/domain/tenant/auth/use-cases/confirm-recover-password.use-case';
 import { AuthText, authText } from '@/presentation/tenant/features/auth/i18n/auth-i18n';
+import { passwordStrength } from '@/presentation/tenant/features/auth/password-strength';
+
+export { passwordStrength };
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const newPassword = control.get('newPassword')?.value;
   const newPasswordConfirmation = control.get('newPasswordConfirmation')?.value;
   return newPassword === newPasswordConfirmation ? null : { passwordsMismatch: true };
-}
-
-export type PasswordStrength = 0 | 1 | 2 | 3 | 4;
-
-/** 0 for an empty password, else 1 (weak) to 4 (very strong): length, digits, mixed case, symbols or 12+ characters. */
-export function passwordStrength(pw: string): PasswordStrength {
-  if (!pw) return 0;
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (/\d/.test(pw)) score++;
-  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw) || pw.length >= 12) score++;
-  return Math.max(1, score) as PasswordStrength;
 }
 
 @Component({
