@@ -1,0 +1,112 @@
+<div class="tools">
+  <div class="chips" role="group" aria-label="Filtrar por canal">
+    @for (chip of chips(); track chip.channel) {
+      <button
+        type="button"
+        class="src-chip"
+        [class.off]="chip.off"
+        [attr.aria-pressed]="!chip.off"
+        (click)="toggleChannel(chip.channel)"
+      >
+        <span class="sw {{ chip.channel }}" aria-hidden="true"></span>
+        {{ chip.label }}
+        <b>{{ chip.count }}</b>
+      </button>
+    }
+  </div>
+
+  <span class="grow"></span>
+
+  @if (occupancy() !== null) {
+    <span class="occ">Ocupación en estas fechas: {{ occupancy() }} %</span>
+  }
+
+  <div class="rng" role="group" aria-label="Fechas">
+    <app-ui-icon-button label="Semana anterior" (click)="previous()">
+      <app-ui-icon name="chevronLeft" [size]="16" [strokeWidth]="2" />
+    </app-ui-icon-button>
+    <span class="rng-l" aria-live="polite">{{ rangeLabel() }}</span>
+    <app-ui-icon-button label="Semana siguiente" (click)="next()">
+      <app-ui-icon name="chevronRight" [size]="16" [strokeWidth]="2" />
+    </app-ui-icon-button>
+    <app-ui-button variant="secondary" (click)="goToday()">Hoy</app-ui-button>
+  </div>
+</div>
+
+<section class="card" [attr.aria-busy]="loading()">
+  @if (unitCount() > 0) {
+    <div
+      #scroller
+      class="gantt"
+      role="region"
+      aria-label="Calendario de reservas: desliza horizontalmente para ver más fechas"
+      tabindex="0"
+      (scroll)="onScroll()"
+      (wheel)="onWheel($event)"
+    >
+      <div class="g-in">
+        <div class="g-head">
+          <div class="g-lab">Unidad</div>
+          @for (day of days(); track day.offset) {
+            <div class="g-day" [class.today]="day.today">
+              <span>{{ day.dow }}</span>
+              <span class="dn">{{ day.dn }}</span>
+            </div>
+          }
+        </div>
+
+        <span class="g-today-col" aria-hidden="true" [style.left]="'calc(var(--lab) + ' + todayLeft + 'px)'"></span>
+
+        @for (group of rows(); track group.id) {
+          <div class="g-grp">
+            <div class="g-lab">
+              <b>{{ group.name }}</b>
+              <span>{{ group.meta }}</span>
+            </div>
+            <div class="g-fill" [style.width.px]="trackWidth()"></div>
+          </div>
+
+          @for (unit of group.units; track unit.id) {
+            <div class="g-row">
+              <div class="g-lab">{{ unit.name }}</div>
+              <div class="g-track" [style.width.px]="trackWidth()">
+                @for (bar of unit.bars; track bar.id) {
+                  <button
+                    type="button"
+                    class="g-bar {{ bar.channel }} {{ bar.state }}"
+                    [class.cl]="bar.clippedLeft"
+                    [class.cr]="bar.clippedRight"
+                    [class.on]="selectedId() === bar.id"
+                    [style.left.px]="bar.left"
+                    [style.width.px]="bar.width"
+                    [attr.aria-label]="bar.label"
+                    [attr.title]="bar.label"
+                    (click)="select(bar.id)"
+                  >
+                    <span class="g-src" aria-hidden="true">{{ bar.letter }}</span>
+                    <span class="g-name">{{ bar.guest }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    @if (nothingToShow()) {
+      <div class="g-empty">{{ emptyMessage() }}</div>
+    }
+    <div class="g-key">
+      <span>Desliza o usa las flechas para cambiar de fechas · toca una reserva para ver el detalle</span>
+      <span>Rayada: pendiente de confirmar · Atenuada: finalizada</span>
+    </div>
+  } @else {
+    <div class="soon">
+      <b>{{ loading() ? 'Cargando calendario…' : 'Aún no tienes propiedades' }}</b>
+      @if (!loading()) {
+        <span>Crea una propiedad y sus habitaciones para ver aquí el calendario de reservas.</span>
+      }
+    </div>
+  }
+</section>

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { bootstrapPeople, bootstrapSearch, bootstrapCalendarEvent, bootstrapPlusCircle, bootstrapX, bootstrapCheck, bootstrapPencil, bootstrapInfoCircle } from '@ng-icons/bootstrap-icons';
 import { forkJoin } from 'rxjs';
-import { TenantPageLayoutComponent } from '@/presentation/tenant/layout/tenant-page-layout/tenant-page-layout';
 import { CreateReservationWizardComponent } from './components/create-reservation-wizard/create-reservation-wizard';
 import { GetReservationsUseCase } from '@/domain/shared/reservation/use-cases/get-reservations.use-case';
 import { ConfirmReservationUseCase } from '@/domain/shared/reservation/use-cases/confirm-reservation.use-case';
@@ -20,6 +19,15 @@ import { ROOM_MESSAGES } from '@/domain/shared/property/room.constants';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { ShiftDatePickerComponent } from '@/presentation/tenant/components/shift-date-picker/shift-date-picker';
 import { SelectComponent, SelectOption } from '@/presentation/shared/components/select/select';
+import { UiButtonComponent } from '@/presentation/shared/ui/ui-button/ui-button';
+import { UiIconComponent } from '@/presentation/shared/ui/ui-icon/ui-icon';
+import {
+  BookingState,
+  CalendarBooking,
+  CalendarGroup,
+  ReservationCalendarComponent,
+} from '@/presentation/tenant/features/reservations/components/reservation-calendar/reservation-calendar';
+import { channelOf } from '@/presentation/tenant/features/reservations/components/reservation-calendar/calendar.utils';
 
 export interface ReservationViewModel {
   id: string;
@@ -34,6 +42,9 @@ export interface ReservationViewModel {
   status: string;
   totalAmount: number;
   createdAt: string;
+  propertyId?: string;
+  unitId?: string;
+  source?: string;
 }
 
 type StatusFilter = 'active' | 'pending' | 'confirmed' | 'checked-in' | 'finished' | 'cancelled' | 'all';
@@ -54,7 +65,7 @@ const STATUS_FILTER_OPTIONS: SelectOption[] = [
     '(document:keydown.escape)': 'onEscapeKey()',
   },
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent, TenantPageLayoutComponent, CreateReservationWizardComponent, ButtonComponent, ShiftDatePickerComponent, SelectComponent],
+  imports: [CommonModule, FormsModule, NgIconComponent, CreateReservationWizardComponent, ButtonComponent, ShiftDatePickerComponent, SelectComponent, UiButtonComponent, UiIconComponent, ReservationCalendarComponent],
   templateUrl: './reservation-list.html',
   styleUrls: ['./reservation-list.css'],
   viewProviders: [
@@ -82,6 +93,25 @@ export class TenantReservations implements OnInit {
   private readonly getTenantGuestsUseCase = inject(GetTenantGuestsUseCase);
 
   reservations = signal<ReservationViewModel[]>([]);
+
+  /** The calendar is the main view; the table stays one click away. */
+  view = signal<'calendar' | 'list'>('calendar');
+  calendarGroups = signal<CalendarGroup[]>([]);
+
+  /** Cancelled stays free their unit, so the calendar leaves them out. */
+  calendarBookings = computed<CalendarBooking[]>(() =>
+    this.reservations()
+      .filter((r) => r.unitId && this.calendarState(r.status) !== null)
+      .map((r) => ({
+        id: r.id,
+        unitId: r.unitId as string,
+        guest: r.guestName,
+        channel: channelOf(r.source),
+        state: this.calendarState(r.status) as BookingState,
+        checkIn: r.checkIn,
+        checkOut: r.checkOut,
+      })),
+  );
 
   readonly PAGE_SIZE = 10;
   filteredCurrentPage = signal(1);
@@ -215,9 +245,11 @@ export class TenantReservations implements OnInit {
           }, {})
         );
 
-        const propertyIds = properties.map(p => p.id).filter(Boolean);
+        const namedProperties = properties.filter(p => p.id);
+        const propertyIds = namedProperties.map(p => p.id);
         if (propertyIds.length === 0) {
           this.unitsMap.set({});
+          this.calendarGroups.set([]);
           this.loadReservations();
           return;
         }
@@ -231,10 +263,19 @@ export class TenantReservations implements OnInit {
                 return acc;
               }, {})
             );
+            this.calendarGroups.set(
+              namedProperties.map((p, i) => ({
+                id: p.id,
+                name: p.name || 'Propiedad sin nombre',
+                city: p.city || '',
+                units: (unitsPerProperty[i] ?? []).map(u => ({ id: u.id, name: u.name || ROOM_MESSAGES.unnamedRoom })),
+              }))
+            );
             this.loadReservations();
           },
           error: (err) => {
             this.unitsMap.set({});
+            this.calendarGroups.set([]);
             this.loadReservations();
             console.error('Error fetching units', err);
           }
@@ -277,6 +318,29 @@ export class TenantReservations implements OnInit {
   prevPage(): void {
     if (this.filteredCurrentPage() > 1) {
       this.filteredCurrentPage.update(p => p - 1);
+    }
+  }
+
+  openById(id: string) {
+    const reservation = this.reservations().find((r) => r.id === id);
+    if (reservation) this.openDetails(reservation);
+  }
+
+  private calendarState(status: string): BookingState | null {
+    switch (this.normalizeStatus(status)) {
+      case 'pendiente':
+        return 'pending';
+      case 'confirmada':
+        return 'confirmed';
+      case 'check-in':
+      case 'active':
+        return 'inhouse';
+      case 'finalizada':
+      case 'finished':
+      case 'checked-out':
+        return 'done';
+      default:
+        return null;
     }
   }
 
@@ -554,7 +618,10 @@ export class TenantReservations implements OnInit {
       checkOut: this.formatDate(res.checkOut),
       status: statusLabel,
       totalAmount: res.totalPrice ?? 0,
-      createdAt: res.createdAt
+      createdAt: res.createdAt,
+      propertyId: res.propertyId,
+      unitId: res.unitId,
+      source: res.source
     };
   }
 
