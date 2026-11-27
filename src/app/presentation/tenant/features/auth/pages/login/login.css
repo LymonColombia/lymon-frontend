@@ -84,6 +84,7 @@ h1 { margin: 0; font: 600 40px/44px var(--font-display); letter-spacing: -0.035e
 .banner {
   display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
   font-size: 14px; line-height: 20px;
+  animation: bannerIn 0.3s var(--ease) both;
   background: var(--success-soft); color: var(--success);
 }
 .banner::before { content: ''; width: 8px; height: 8px; border-radius: 9999px; background: currentColor; flex: none; }
@@ -119,10 +120,12 @@ h1 { margin: 0; font: 600 40px/44px var(--font-display); letter-spacing: -0.035e
   font: 500 14px/20px var(--font-sans); letter-spacing: -0.005em; padding: 9px 22px;
   border-radius: var(--radius-full); border: 1px solid transparent; cursor: pointer;
   background: var(--primary); color: var(--on-primary);
-  transition: background-color 0.15s ease-out, border-color 0.15s ease-out, transform 0.1s ease-out;
 }
 .btn:hover:not(:disabled) { background: var(--primary-hover); }
-.btn:active { transform: translateY(1px); }
+@media (prefers-reduced-motion: no-preference) {
+  .btn { transition: background-color 0.15s ease-out, border-color 0.15s ease-out, transform 0.1s ease-out; }
+  .btn:active { transform: translateY(1px); }
+}
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn:focus-visible, .eye:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .signup { margin: 0; font-size: 14px; line-height: 22px; color: var(--ink-muted); }
@@ -134,8 +137,8 @@ h1 { margin: 0; font: 600 40px/44px var(--font-display); letter-spacing: -0.035e
   position: absolute; background: var(--surface-raised); border: 1px solid var(--line);
   border-radius: 14px; box-shadow: var(--shadow-lg);
 }
-.cardA { left: 0; top: 4%; display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 10px; }
-.cardB { right: 0; bottom: 4%; display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; }
+.cardA { animation-name: cardA; left: 0; top: 4%; display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 10px; }
+.cardB { animation-name: cardB; right: 0; bottom: 4%; display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; }
 .avatar {
   width: 32px; height: 32px; border-radius: 9999px; background: var(--primary-soft); color: var(--primary-text);
   display: grid; place-items: center; font: 600 12px/1 var(--font-sans);
@@ -152,7 +155,6 @@ h1 { margin: 0; font: 600 40px/44px var(--font-display); letter-spacing: -0.035e
 .ln { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
 .ln > span { display: inline-block; animation: lineUp 0.8s var(--ease) both; animation-delay: var(--d, 0s); }
 @keyframes bannerIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-.banner { animation: bannerIn 0.3s var(--ease) both; }
 @media (prefers-reduced-motion: reduce) {
   .in, .ln > span, .banner { animation: none !important; }
 }
@@ -186,8 +188,6 @@ h1 { margin: 0; font: 600 40px/44px var(--font-display); letter-spacing: -0.035e
 #keyR{opacity:0;animation-name:keyR}
 #keyG{opacity:1;animation-name:keyG}
 #screenOn{opacity:0;animation-name:screenOn;animation-timing-function:steps(1,end)}
-.cardA{animation-name:cardA}
-.cardB{animation-name:cardB}
 @media (prefers-reduced-motion: reduce){
   .loop{animation:none !important}
   #screenOn{opacity:0}

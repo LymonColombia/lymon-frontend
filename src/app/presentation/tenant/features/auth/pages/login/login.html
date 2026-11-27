@@ -18,10 +18,10 @@
       </div>
 
       @if (sessionExpired()) {
-        <div class="banner warning" role="status">{{ t().sessionExpired }}</div>
+        <output class="banner warning">{{ t().sessionExpired }}</output>
       }
       @if (accountCreated()) {
-        <div class="banner" role="status">{{ t().accountCreated }}</div>
+        <output class="banner">{{ t().accountCreated }}</output>
       }
       @if (errorMessage()) {
         <div class="banner danger" role="alert">{{ errorMessage() }}</div>
