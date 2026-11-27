@@ -12,7 +12,7 @@ import { LyhostBadgeComponent } from '@/presentation/public/features/landing/pag
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, RouterLink, LyhostBadgeComponent],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrls: ['../../styles/auth-shell.css', './login.css'],
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
