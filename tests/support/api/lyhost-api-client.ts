@@ -8,7 +8,8 @@ import { APIRequestContext, expect } from '@playwright/test';
  * before/after UI tests.
  */
 export class LyhostApiClient {
-  private baseUrl = 'https://lymon-backend-development.onrender.com';
+  private baseUrl =
+    process.env.BACKEND_URL ?? 'https://lymon-backend-development.onrender.com';
   private authToken: string | null = null;
 
   constructor(private request: APIRequestContext) {}
@@ -150,20 +151,29 @@ export class LyhostApiClient {
   }
 
   /**
-   * Delete a unit
+   * Create a guest (used to seed an "already registered" guest)
    */
-  async deleteUnit(unitId: string) {
+  async createGuest(guestData: {
+    fullName: string;
+    primaryEmail: string;
+    identity?: { documentNumber: string };
+    phone?: string;
+    tags?: string[];
+  }) {
     await this.ensureAuth();
-    const response = await this.request.delete(`${this.baseUrl}/units/${unitId}`, {
+    const response = await this.request.post(`${this.baseUrl}/guests`, {
+      data: guestData,
       headers: this.getAuthHeader(),
     });
     expect(response.ok()).toBeTruthy();
+    return response.json();
   }
 
   /**
    * Delete a unit
    */
   async deleteUnit(unitId: string) {
+    await this.ensureAuth();
     const response = await this.request.delete(`${this.baseUrl}/units/${unitId}`, {
       headers: this.getAuthHeader(),
     });
