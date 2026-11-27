@@ -35,5 +35,56 @@
       "room": "Hab. 204 · $ 735.000",
       "paid": "Pago registrado"
     }
+  },
+  "forgot": {
+    "home": "LyHost, volver al inicio",
+    "title": "¿Olvidaste tu contraseña?",
+    "lead": "A todos nos pasa. Escribe el correo de tu cuenta y te enviamos un enlace para crear una nueva.",
+    "email": "Correo",
+    "emailPlaceholder": "nombre@hotel.com",
+    "emailRequired": "Escribe tu correo.",
+    "emailInvalid": "Ese correo no parece válido. Revisa que tenga @ y un dominio, por ejemplo tu@hotel.com.",
+    "send": "Enviar enlace",
+    "sending": "Enviando…",
+    "backToLogin": "Volver a iniciar sesión",
+    "sentTitle": "Revisa tu correo",
+    "sentBefore": "Si",
+    "sentAfter": "tiene una cuenta en LyHost, te enviamos un enlace para crear una nueva contraseña. Puede tardar unos minutos; revisa también la carpeta de spam.",
+    "resend": "Reenviar enlace",
+    "resendIn": "Reenviar en",
+    "otherEmail": "Usar otro correo",
+    "errors": {
+      "invalidEmail": "Correo inválido. Verifica los campos.",
+      "unexpected": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    }
+  },
+  "reset": {
+    "home": "LyHost, volver al inicio",
+    "title": "Crea una nueva contraseña",
+    "lead": "Usa al menos 8 caracteres y que sea distinta a la anterior.",
+    "password": "Nueva contraseña",
+    "confirm": "Confirmar contraseña",
+    "passwordShort": "Usa al menos 8 caracteres.",
+    "confirmRequired": "Escribe la contraseña otra vez.",
+    "mismatch": "Las contraseñas no coinciden. Escríbela igual en los dos campos.",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "strengthLow": "Baja",
+    "strengthHigh": "Alta",
+    "strength": {
+      "1": "Seguridad débil",
+      "2": "Seguridad aceptable",
+      "3": "Seguridad fuerte",
+      "4": "Seguridad muy fuerte"
+    },
+    "save": "Guardar contraseña",
+    "saving": "Guardando…",
+    "doneTitle": "Listo, tu contraseña cambió",
+    "doneLead": "Ya puedes iniciar sesión con tu nueva contraseña.",
+    "login": "Iniciar sesión",
+    "errors": {
+      "invalidLink": "El enlace es inválido o ha expirado.",
+      "unexpected": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    }
   }
 }

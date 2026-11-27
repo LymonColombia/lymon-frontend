@@ -35,5 +35,56 @@
       "room": "Room 204 · $ 735,000",
       "paid": "Payment recorded"
     }
+  },
+  "forgot": {
+    "home": "LyHost, back to home",
+    "title": "Forgot your password?",
+    "lead": "It happens to everyone. Enter your account email and we'll send you a link to create a new one.",
+    "email": "Email",
+    "emailPlaceholder": "name@hotel.com",
+    "emailRequired": "Enter your email.",
+    "emailInvalid": "That email doesn't look right. Check it has an @ and a domain, for example you@hotel.com.",
+    "send": "Send link",
+    "sending": "Sending…",
+    "backToLogin": "Back to log in",
+    "sentTitle": "Check your email",
+    "sentBefore": "If",
+    "sentAfter": "has a LyHost account, we sent you a link to create a new password. It can take a few minutes; check your spam folder too.",
+    "resend": "Resend link",
+    "resendIn": "Resend in",
+    "otherEmail": "Use another email",
+    "errors": {
+      "invalidEmail": "Invalid email. Check the field.",
+      "unexpected": "Something went wrong. Try again."
+    }
+  },
+  "reset": {
+    "home": "LyHost, back to home",
+    "title": "Create a new password",
+    "lead": "Use at least 8 characters, different from your old one.",
+    "password": "New password",
+    "confirm": "Confirm password",
+    "passwordShort": "Use at least 8 characters.",
+    "confirmRequired": "Type the password again.",
+    "mismatch": "The passwords don't match. Type it the same in both fields.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "strengthLow": "Low",
+    "strengthHigh": "High",
+    "strength": {
+      "1": "Weak",
+      "2": "Fair",
+      "3": "Strong",
+      "4": "Very strong"
+    },
+    "save": "Save password",
+    "saving": "Saving…",
+    "doneTitle": "Done, your password changed",
+    "doneLead": "You can now log in with your new password.",
+    "login": "Log in",
+    "errors": {
+      "invalidLink": "The link is invalid or has expired.",
+      "unexpected": "Something went wrong. Try again."
+    }
   }
 }

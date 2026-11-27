@@ -1,0 +1,72 @@
+/* Password recovery pages (request link, new password): layout tweaks, strength meter and the scenes.
+   The card, form and tokens come from auth-shell.css */
+
+.card-grid { align-items: stretch; }
+form .logo { margin-bottom: auto; }
+form::after { content: ''; margin-top: auto; }
+.pane { display: flex; flex-direction: column; gap: 20px; animation: fadeUp 0.4s var(--ease) both; }
+.heading { display: flex; flex-direction: column; gap: 8px; }
+h1.title { font: 600 32px/36px var(--font-display); letter-spacing: -0.03em; }
+.desc { margin: 0; font-size: 18px; line-height: 28px; letter-spacing: -0.01em; color: var(--ink-muted); }
+.desc strong { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+.row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+.art { min-height: 480px; overflow: hidden; }
+.scene { position: absolute; inset: 0; }
+
+/* password strength: one bar from low to high, red to green */
+.pw-meter { display: flex; flex-direction: column; gap: 6px; margin-top: -8px; }
+.pw-track { display: block; height: 6px; border-radius: 9999px; background: var(--surface-sunken); overflow: hidden; }
+.pw-fill { display: block; height: 100%; border-radius: 9999px; }
+.pw-scale { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+.pw-word { font-weight: 600; }
+.s1 .pw-fill { width: 25%; background: var(--danger); }
+.s2 .pw-fill { width: 50%; background: var(--warning); }
+.s3 .pw-fill { width: 75%; background: var(--brand-600); }
+.s4 .pw-fill { width: 100%; background: var(--success); }
+.s1 .pw-word { color: var(--danger); }
+.s2 .pw-word { color: var(--warning); }
+.s3 .pw-word { color: var(--primary-text); }
+.s4 .pw-word { color: var(--success); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pw-fill { transition: width 0.35s var(--ease), background-color 0.35s ease-out; }
+  .pw-word { transition: color 0.35s ease-out; }
+}
+
+/* ===== scenes: a person who forgot their password ===== */
+.scene rect, .scene path, .scene g, .scene circle, .scene text { transform-box: fill-box; }
+@keyframes sceneIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+.scene-in { animation: sceneIn 0.5s var(--ease) both; }
+@keyframes bgIn { from { opacity: 0; transform: scale(0.85); } to { transform: none; } }
+.bg-c { transform-origin: center; animation: bgIn 0.7s var(--ease) both; animation-delay: var(--d, 0s); }
+/* scratching: only the forearm rubs gently, pivoting on the elbow */
+@keyframes rub { 0%, 45%, 100% { transform: rotate(0); } 8%, 22%, 36% { transform: rotate(-3deg); } 15%, 29% { transform: rotate(1.5deg); } }
+.scene .rub { transform-box: view-box; transform-origin: 308px 184px; animation: rub 3.2s ease-in-out infinite; }
+@keyframes qUp { 0% { opacity: 0; transform: translateY(10px); } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-26px); } }
+.q { opacity: 0; animation: qUp 2.6s ease-out infinite; }
+.q1 { animation-delay: 0.8s; }
+.q2 { animation-delay: 1.6s; }
+.q3 { animation-delay: 2.3s; }
+/* the email flies into the phone, then the phone pings */
+@keyframes fly { 0% { opacity: 0; transform: translate(0, 0) scale(0.8); } 12% { opacity: 1; transform: none; } 55% { opacity: 1; transform: translate(-152px, 140px) scale(0.45); } 62%, 100% { opacity: 0; transform: translate(-152px, 140px) scale(0.3); } }
+.mail { transform-origin: center; animation: fly 3.2s var(--ease) 0.4s infinite; }
+@keyframes ping { 0%, 55% { opacity: 0; transform: scale(0.4); } 65% { opacity: 1; transform: scale(1.1); } 72%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+.ping { transform-origin: center; opacity: 0; animation: ping 3.2s var(--ease) 0.4s infinite; }
+@keyframes phoneBump { 0%, 55%, 70%, 100% { transform: translateY(0); } 60% { transform: translateY(-3px); } }
+.phone { animation: phoneBump 3.2s ease-out 0.4s infinite; }
+@keyframes dash { to { stroke-dashoffset: -40; } }
+.trail { animation: dash 1.6s linear infinite; opacity: 0.8; }
+/* the lock: shackle lifts, then locks again with the new password */
+@keyframes shackleLoop { 0%, 15% { transform: translateY(-22px); } 35%, 85% { transform: none; } 100% { transform: translateY(-22px); } }
+.shackle-loop { animation: shackleLoop 3.6s var(--ease) 0.4s infinite; }
+@keyframes popIn { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+.pop { transform-origin: center; animation: popIn 0.4s var(--ease) both; }
+@keyframes okIn { 0%, 30% { opacity: 0; transform: scale(0.4); } 40%, 85% { opacity: 1; transform: none; } 100% { opacity: 0; transform: scale(0.8); } }
+.ok-badge { transform-origin: center; opacity: 0; animation: okIn 3.6s var(--ease) 0.4s infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pane, .scene-in, .bg-c, .scene .rub, .q, .mail, .ping, .phone, .trail, .shackle-loop, .pop, .ok-badge { animation: none !important; }
+  .q, .mail { opacity: 0 !important; }
+  .ping, .ok-badge { opacity: 1 !important; }
+}

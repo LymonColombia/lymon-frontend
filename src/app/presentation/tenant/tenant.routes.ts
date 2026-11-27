@@ -42,11 +42,17 @@ export const tenantRoutes: Routes = [
     providers: [provideTranslocoScope(AUTH_SCOPE)],
   },
   { path: 'register', component: RegisterComponent, canActivate: [adminPublicGuard] },
-  { path: 'recover-password', component: RecoverPasswordComponent, canActivate: [adminPublicGuard] },
+  {
+    path: 'recover-password',
+    component: RecoverPasswordComponent,
+    canActivate: [adminPublicGuard, loadAuth],
+    providers: [provideTranslocoScope(AUTH_SCOPE)],
+  },
   {
     path: 'recover-password/confirm',
     component: ConfirmRecoverPasswordComponent,
-    canActivate: [adminPublicGuard],
+    canActivate: [adminPublicGuard, loadAuth],
+    providers: [provideTranslocoScope(AUTH_SCOPE)],
   },
 
   {
