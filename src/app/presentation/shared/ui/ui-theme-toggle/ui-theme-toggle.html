@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="toggle"
+  [class.toggle--dark]="isDark()"
+  aria-label="Tema oscuro"
+  [attr.aria-pressed]="isDark()"
+  (click)="toggled.emit()"
+>
+  <app-ui-icon class="sun" name="sun" [strokeWidth]="1.6" />
+  <app-ui-icon class="moon" name="moon" [strokeWidth]="1.6" />
+</button>

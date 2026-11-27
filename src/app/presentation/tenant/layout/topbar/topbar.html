@@ -1,0 +1,22 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <app-ui-icon-button
+      class="menu-btn"
+      label="Abrir menú"
+      [expanded]="menuOpen()"
+      (click)="menuToggled.emit()"
+    >
+      <app-ui-icon name="menu" [strokeWidth]="1.8" />
+    </app-ui-icon-button>
+
+    <nav class="crumb" aria-label="Ruta">
+      @if (group()) {
+        <span>{{ group() }}</span>
+        <span class="sep" aria-hidden="true">/</span>
+      }
+      <span class="now" aria-current="page">{{ label() }}</span>
+    </nav>
+
+    <app-ui-theme-toggle [theme]="theme()" (toggled)="themeToggled.emit()" />
+  </div>
+</header>

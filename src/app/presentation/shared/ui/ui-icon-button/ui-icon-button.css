@@ -1,0 +1,51 @@
+:host {
+  display: inline-flex;
+  flex: none;
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--ly-r-full);
+  background: var(--surface-raised);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-out,
+    transform 160ms var(--ease-out);
+}
+
+.icon-btn--sm {
+  width: 32px;
+  height: 32px;
+}
+
+.icon-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .icon-btn:hover:not(:disabled) {
+    background: var(--surface-sunken);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn {
+    transition: none;
+  }
+}

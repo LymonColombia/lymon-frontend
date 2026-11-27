@@ -1,0 +1,83 @@
+:host {
+  position: relative;
+  display: block;
+}
+
+.trigger {
+  display: contents;
+}
+
+.panel {
+  position: absolute;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 100%;
+  width: max-content;
+  max-width: 280px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--ly-r-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--ly-shadow-lg);
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+
+/* Anchor to the trigger and grow from the edge that touches it. */
+.panel[data-placement='below'] {
+  top: calc(100% + 8px);
+  transform-origin: top;
+}
+
+.panel[data-placement='above'] {
+  bottom: calc(100% + 8px);
+  transform-origin: bottom;
+}
+
+.panel[data-align='start'] {
+  left: 0;
+}
+
+.panel[data-align='end'] {
+  right: 0;
+}
+
+.panel[data-align='start'][data-placement='below'] {
+  transform-origin: top left;
+}
+
+.panel[data-align='end'][data-placement='below'] {
+  transform-origin: top right;
+}
+
+.panel[data-align='start'][data-placement='above'] {
+  transform-origin: bottom left;
+}
+
+.panel[data-align='end'][data-placement='above'] {
+  transform-origin: bottom right;
+}
+
+@starting-style {
+  .panel {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: opacity 120ms linear;
+  }
+
+  @starting-style {
+    .panel {
+      transform: none;
+    }
+  }
+}

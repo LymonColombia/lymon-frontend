@@ -1,416 +1,417 @@
 :host {
-  display: block;
+  display: contents;
+  font-family: var(--font-sans);
 }
 
-/* Backdrop overlay */
-.sidebar-backdrop {
+/* ---------- Rail ---------- */
+
+.rail {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 999;
+  z-index: 20;
+  top: 12px;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  width: 64px;
+  border: 1px solid var(--line);
+  border-radius: var(--ly-r-xl);
+  background: var(--surface-raised);
+  box-shadow: var(--ly-shadow-lg);
+  transition: width 300ms var(--ease-drawer);
 }
 
-/* Floating toggle button */
-.sidebar-float-toggle {
-  position: fixed;
-  top: var(--spacing-lg);
-  left: calc(80px + var(--spacing-sm));
-  z-index: 1001;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-primary);
-  color: var(--color-text-secondary);
-  cursor: pointer;
+.rail--expanded {
+  width: 256px;
+}
+
+/* Labels fade in once the rail has started to open, and out right away. */
+.lbl {
+  opacity: 0;
+  transform: translateX(-6px);
+  white-space: nowrap;
+  pointer-events: none;
+  transition:
+    opacity 120ms ease-out,
+    transform 120ms ease-out;
+}
+
+.rail--expanded .lbl {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity 220ms ease-out 120ms,
+    transform 220ms var(--ease-out) 120ms;
+}
+
+/* ---------- Brand ---------- */
+
+.brand {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 60px;
+  padding: 0 19px;
+  overflow: hidden;
+  border-radius: 23px 23px 0 0;
+}
+
+.brand-link {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-sm);
-  transition: background var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
+  height: 30px;
+  min-width: 26px;
+  border-radius: var(--ly-r-md);
 }
 
-/* Button follows the sidebar when it expands */
-:host.sidebar-host--ready .sidebar-float-toggle {
-  transition: left var(--transition-base), background var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
+.brand-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 4px;
 }
 
-:host.sidebar-host--expanded .sidebar-float-toggle {
-  left: calc(260px + var(--spacing-sm));
+/* ---------- Items ---------- */
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 2px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: var(--ly-r-lg);
+  background: transparent;
+  color: var(--ink-muted);
+  font: 500 14px/20px var(--font-sans);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out,
+    transform 160ms var(--ease-out);
 }
 
-.sidebar-float-toggle:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-primary-dark);
-  box-shadow: var(--shadow-md);
+.nav-item:active {
+  transform: scale(0.97);
 }
 
-.sidebar-float-toggle:focus-visible {
-  outline: 2px solid var(--color-primary-dark);
+.nav-item:focus-visible,
+.sub:focus-visible,
+.me-gear:focus-visible {
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-.sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 260px;
-  height: 100vh;
-  background: var(--color-bg-primary);
-  border-right: 1px solid var(--color-border-light);
+.nav-item.on,
+.nav-item.on:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(8, 69, 57, 0.28);
+}
+
+/* A group with the current page reads as active while the rail is collapsed. */
+.nav-item.is-current {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.rail:not(.rail--expanded) .nav-item.is-current {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: 0 4px 12px rgba(8, 69, 57, 0.28);
+}
+
+.toggle {
+  flex: none;
+  width: calc(100% - 20px);
+  margin: 0 10px 4px;
+}
+
+.toggle .chev {
+  transition: transform 300ms var(--ease-drawer);
+}
+
+.rail--expanded .toggle .chev {
+  transform: rotate(180deg);
+}
+
+.nav {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding: 8px 10px 10px;
+}
+
+.rail--expanded .nav {
+  overflow: hidden auto;
+}
+
+/* ---------- Groups ---------- */
+
+.group {
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-2xl) 0;
-  z-index: 1000;
-  transition: none;
-  overflow: visible;
 }
 
-.sidebar.sidebar--ready {
-  transition: width var(--transition-base), padding var(--transition-base);
+.group-chev {
+  margin-left: auto;
+  color: var(--ink-muted);
 }
 
-.sidebar--collapsed {
-  width: 80px;
-  padding: var(--spacing-lg) 0;
+.group-chev,
+.group-chev svg {
+  transition: transform 220ms var(--ease-out);
 }
 
-.sidebar-logo-link {
+.group--open .group-chev {
+  transform: rotate(180deg);
+}
+
+/* Height animates through the 0fr to 1fr grid track. */
+.subs-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 240ms var(--ease-drawer);
+}
+
+.group--open .subs-wrap {
+  grid-template-rows: 1fr;
+}
+
+.rail:not(.rail--expanded) .subs-wrap {
+  grid-template-rows: 0fr;
+}
+
+.subs {
+  min-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition: visibility 0s 240ms;
+}
+
+.group--open .subs {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.rail:not(.rail--expanded) .subs {
+  visibility: hidden;
+}
+
+.subs-in {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 8px 22px;
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
 }
 
-.sidebar-header {
+.sub {
   position: relative;
-  padding: 0 var(--spacing-2xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border-light);
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 80px;
-  transition: none;
-}
-
-.sidebar.sidebar--ready .sidebar-header {
-  transition: padding var(--transition-base);
-}
-
-.sidebar--collapsed .sidebar-header {
-  padding: 0 var(--spacing-lg);
-  padding-bottom: var(--spacing-lg);
-}
-
-.sidebar-logo-image {
-  display: block;
-  width: 140px;
-  height: auto;
-  object-fit: contain;
-  opacity: 1;
-  transform: translateY(0);
-  transition: none;
-}
-
-.sidebar.sidebar--ready .sidebar-logo-image {
-  transition: opacity var(--transition-base), transform var(--transition-base);
-}
-
-.sidebar-logo-image--hidden {
-  opacity: 0;
-  transform: translateY(-4px);
-  pointer-events: none;
-}
-
-.sidebar-logo-image--collapsed {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) scale(0.9);
-  opacity: 0;
-  display: block;
-  width: 56px;
-  height: auto;
-  object-fit: contain;
-  transition: none;
-}
-
-.sidebar.sidebar--ready .sidebar-logo-image--collapsed {
-  transition: opacity var(--transition-base), transform var(--transition-base);
-}
-
-.sidebar-logo-image--collapsed-visible {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.sidebar-menu {
-  list-style: none;
-  margin: 0;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.menu-item {
-  margin: 0;
-  padding: 0;
-}
-
-.menu-link {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg) var(--spacing-2xl);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
+  width: 100%;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--ly-r-md);
+  color: var(--ink-muted);
+  font: 500 14px/20px var(--font-sans);
   text-decoration: none;
-  transition: all var(--transition-base);
-  position: relative;
+  white-space: nowrap;
+  transition:
+    color 150ms ease-out,
+    background-color 150ms ease-out;
 }
 
-.sidebar--collapsed .menu-link {
-  padding: var(--spacing-lg);
-  justify-content: center;
-  gap: 0;
+.sub.on,
+.sub.on:hover {
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  font-weight: 600;
 }
 
-.menu-link:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-primary-dark);
-}
-
-.menu-item.active .menu-link {
-  background: var(--color-primary);
-  color: var(--color-bg-primary);
-}
-
-.menu-item.active .menu-link::before {
+.sub.on::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--color-primary-dark);
+  top: 8px;
+  bottom: 8px;
+  left: -14px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--primary);
 }
 
-.sidebar--collapsed .menu-item.active .menu-link::before {
-  display: none;
+/* Hover styling only where hover exists, so touch taps don't leave it stuck. */
+@media (hover: hover) and (pointer: fine) {
+  .nav-item:hover {
+    background: var(--surface-sunken);
+    color: var(--ink);
+  }
+
+  .sub:hover {
+    background: var(--surface-sunken);
+    color: var(--ink);
+  }
 }
 
-.menu-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  color: currentColor;
-}
+/* ---------- Tooltips for the collapsed rail ---------- */
 
-.menu-item.active .menu-icon {
-  color: var(--color-bg-primary);
-}
-
-.menu-label {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  opacity: 1;
-  max-width: 180px;
-  transform: translateX(0);
-  transition: none;
-}
-
-.sidebar.sidebar--ready .menu-label {
-  transition: opacity var(--transition-base), max-width var(--transition-base), transform var(--transition-base);
-}
-
-.menu-label--hidden {
-  flex: 0 0 auto;
-  opacity: 0;
-  max-width: 0;
-  transform: translateX(-6px);
-}
-
-/* Scrollbar styling */
-.sidebar-menu::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar-menu::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar-menu::-webkit-scrollbar-thumb {
-  background: var(--color-border-light);
-  border-radius: var(--radius-sm);
-}
-
-.sidebar-menu::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-medium);
-}
-
-.sidebar-footer {
-  border-top: 1px solid var(--color-border-light);
-  padding: var(--spacing-md) var(--spacing-2xl);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  transition: padding var(--transition-base);
-  justify-content: flex-start;
-}
-
-.sidebar--collapsed .sidebar-footer {
-  padding: var(--spacing-md) var(--spacing-lg);
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.profile {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  flex: 1;
-  min-width: 0;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  padding: 0;
-  text-align: left;
-  color: inherit;
-  font-family: inherit;
-}
-
-.sidebar--collapsed .profile {
-  justify-content: center;
-  width: 100%;
-}
-
-.profile--collapsed {
-  justify-content: center;
-}
-
-.profile-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
-  color: var(--color-bg-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
-}
-
-.profile-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-  flex: 1;
-  opacity: 1;
-  max-width: 180px;
-  transform: translateX(0);
-  transition: none;
-}
-
-.sidebar.sidebar--ready .profile-text {
-  transition: opacity var(--transition-base), max-width var(--transition-base), transform var(--transition-base);
-}
-
-.profile-text--hidden {
-  flex: 0 0 auto;
-  opacity: 0;
-  max-width: 0;
-  transform: translateX(-6px);
-  overflow: hidden;
-}
-
-.profile-name {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.profile-email {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-regular);
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.profile-menu-container {
-  position: relative;
-  margin-left: auto;
-  flex: 0 0 auto;
-}
-
-.profile-menu-trigger {
-  width: 34px;
-  height: 34px;
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-base);
-}
-
-.profile-menu-trigger:hover {
-  background: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-}
-
-.profile-menu-trigger:focus-visible {
-  outline: none;
-  box-shadow: var(--input-focus-ring);
-}
-
-.profile-menu {
+.rail:not(.rail--expanded) .nav-item:is(:hover, :focus-visible)::after {
+  content: attr(data-tip);
   position: absolute;
-  left: 0;
-  bottom: calc(100% + var(--spacing-xs));
-  min-width: 200px;
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: var(--spacing-xs);
-  z-index: 30;
+  z-index: 5;
+  top: 50%;
+  left: calc(100% + 16px);
+  padding: 6px 10px;
+  border-radius: var(--ly-r-md);
+  background: var(--ink);
+  color: var(--surface);
+  font: 500 12px/16px var(--font-sans);
+  white-space: nowrap;
+  box-shadow: var(--ly-shadow-lg);
+  pointer-events: none;
+  transform: translateY(-50%);
+  animation: tip-in 125ms var(--ease-out);
 }
 
-.profile-menu-item {
-  width: 100%;
-  text-align: left;
-  border: none;
-  background: transparent;
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-4px, -50%);
+  }
+}
+
+/* ---------- Profile ---------- */
+
+/* Not clipped (unlike the design's row) so the account menu can rise above it. */
+.me {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  margin: 10px;
+  padding: 5px;
+  border-radius: 16px;
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.me-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.me-name {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  font: 600 14px/18px var(--font-sans);
+}
+
+.me-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.owner {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 18px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: var(--ly-r-full);
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  font: 600 10px/16px var(--font-sans);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.me-role {
+  overflow: hidden;
+  color: var(--ink-muted);
+  font: 400 12px/16px var(--font-sans);
+  text-overflow: ellipsis;
+}
+
+.me-menu {
+  flex: none;
+}
+
+.me-gear {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--ly-r-full);
+  background: var(--surface-raised);
+  color: var(--ink);
   cursor: pointer;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  transition: background var(--transition-base);
+  transition:
+    background-color 150ms ease-out,
+    transform 160ms var(--ease-out);
 }
 
-.profile-menu-item:hover {
-  background: var(--color-bg-secondary);
+.me-gear:active {
+  transform: scale(0.94);
 }
 
-.profile-menu-item--danger {
-  color: var(--color-error);
+@media (hover: hover) and (pointer: fine) {
+  .me-gear:hover {
+    background: var(--surface-sunken);
+  }
+}
+
+/* ---------- Drawer below 900px ---------- */
+
+@media (max-width: 900px) {
+  /* Off-screen the drawer is also hidden, so its shadow and links stay out of reach. */
+  .rail {
+    z-index: 35;
+    visibility: hidden;
+    transform: translateX(calc(-100% - 12px));
+    transition:
+      transform 300ms var(--ease-drawer),
+      width 300ms var(--ease-drawer),
+      visibility 0s 300ms;
+  }
+
+  .rail--open {
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  .toggle {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail,
+  .lbl,
+  .subs-wrap,
+  .subs,
+  .group-chev,
+  .group-chev svg,
+  .toggle .chev,
+  .nav-item,
+  .me-gear {
+    transition: none !important;
+  }
+
+  .rail:not(.rail--expanded) .nav-item:is(:hover, :focus-visible)::after {
+    animation: none;
+  }
 }

@@ -1,0 +1,146 @@
+/*
+ * LyHost UI tokens.
+ *
+ * Scoped to `.ly-theme` instead of :root so the legacy pages that still use the
+ * `--color-*` / `--radius-*` tokens in src/styles.css keep their current look.
+ * Radii and shadows carry a `--ly-` prefix because the legacy tokens already
+ * use `--radius-*` and `--shadow-*` with different values.
+ *
+ * Theme is switched with `data-theme="dark"` on the same element.
+ */
+
+.ly-theme {
+  --brand-950: #052e26;
+  --brand-900: #084539;
+  --brand-700: #0f7a56;
+  --brand-600: #2ec094;
+  --brand-300: #a9cac3;
+  --brand-100: #e6f7f2;
+
+  --surface: #f7f6f3;
+  --surface-raised: #ffffff;
+  --surface-sunken: #efeee9;
+  --line: #e3e1da;
+  --line-strong: #8a877e;
+  --ink: #10201b;
+  --ink-muted: #5c615d;
+
+  --primary: var(--brand-900);
+  --primary-text: var(--brand-700);
+  --primary-hover: var(--brand-950);
+  --primary-soft: var(--brand-100);
+  --on-primary: #ffffff;
+  --signal: var(--brand-600);
+  --logo: #287047;
+
+  --success: #15803d;
+  --success-soft: #f0fdf4;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --danger: #d32f2f;
+  --danger-soft: #fef2f2;
+  --on-danger: #ffffff;
+
+  --focus-ring: var(--primary-text);
+  --scrim: rgba(16, 32, 27, 0.35);
+
+  --ly-shadow-sm: 0 1px 2px rgba(16, 32, 27, 0.05);
+  --ly-shadow-lg: 0 24px 48px -12px rgba(16, 32, 27, 0.18);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --ly-r-sm: 6px;
+  --ly-r-md: 10px;
+  --ly-r-lg: 14px;
+  --ly-r-xl: 24px;
+  --ly-r-full: 9999px;
+
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Motion: strong ease-out for entrances, drawer curve for the rail. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  color-scheme: light;
+}
+
+/* Black-and-white scale, green only where it carries meaning. */
+.ly-theme[data-theme='dark'] {
+  color-scheme: dark;
+
+  --surface: #111111;
+  --surface-raised: #1b1b1b;
+  --surface-sunken: #0a0a0a;
+  --line: #2b2b2b;
+  --line-strong: #6e6e6e;
+  --ink: #f2f2f2;
+  --ink-muted: #a6a6a6;
+
+  --primary: #2ec094;
+  --primary-text: #5fd3ae;
+  --primary-hover: #5fd3ae;
+  --primary-soft: #14261f;
+  --on-primary: #0a0a0a;
+  --logo: #8cd9ad;
+
+  --success: #4ade80;
+  --success-soft: #052e16;
+  --warning: #fbbf24;
+  --warning-soft: #422006;
+  --danger: #f87171;
+  --danger-soft: #450a0a;
+  --on-danger: #0c1210;
+
+  --focus-ring: #5fd3ae;
+  --scrim: rgba(0, 0, 0, 0.6);
+
+  --ly-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ly-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+/*
+ * Bridge for pages that have not been redesigned yet: inside the shell their
+ * legacy tokens follow the active theme, so they stay readable in dark mode.
+ */
+.ly-theme {
+  --color-bg-primary: var(--surface-raised);
+  --color-bg-secondary: var(--surface);
+  --color-bg-tertiary: var(--surface-sunken);
+  --color-border-light: var(--line);
+}
+
+.ly-theme[data-theme='dark'] {
+  --color-text-primary: var(--ink);
+  --color-text-secondary: var(--ink-muted);
+  --color-text-tertiary: var(--ink-muted);
+  --color-border-medium: var(--line-strong);
+}
+
+/*
+ * Right after a theme switch every colour cross-fades once. Global because
+ * component styles cannot reach into their children; the toggle is left out so
+ * its sun/moon swap keeps its own transform transition.
+ */
+.ly-theme--switching,
+.ly-theme--switching *:not(app-ui-theme-toggle *) {
+  transition:
+    background-color 300ms ease-out,
+    color 300ms ease-out,
+    border-color 300ms ease-out,
+    fill 300ms ease-out,
+    stroke 300ms ease-out !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ly-theme--switching,
+  .ly-theme--switching * {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,18 @@
+<div class="trigger" (click)="toggle()" (keydown)="0" tabindex="-1">
+  <ng-content select="[menuTrigger]" />
+</div>
+
+@if (open()) {
+  <div
+    class="panel"
+    role="menu"
+    tabindex="-1"
+    [attr.aria-label]="label()"
+    [attr.data-placement]="placement()"
+    [attr.data-align]="align()"
+    (click)="onPanelClick($event)"
+    (keydown)="onPanelKeydown($event)"
+  >
+    <ng-content />
+  </div>
+}

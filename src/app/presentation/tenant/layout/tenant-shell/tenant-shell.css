@@ -1,12 +1,145 @@
 :host {
-  display: flex;
+  position: relative;
+  isolation: isolate;
+  display: block;
   min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--surface);
+  color: var(--ink);
 }
 
+/* Room for the 64px rail plus its 12px margins. */
 .shell-content {
-  margin-left: 80px;
-  width: calc(100% - 80px);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-width: 0;
+  min-height: inherit;
+  margin-left: 88px;
+}
+
+.shell-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ---------- Soft squares behind the page ---------- */
+
+.bg-art {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sq {
+  position: absolute;
+  display: block;
+  border-radius: var(--ly-r-xl);
+}
+
+.sq-a {
+  top: -110px;
+  right: -70px;
+  width: 420px;
+  height: 330px;
+  background: var(--brand-100);
+  --drift: 0.25;
+}
+
+.sq-b {
+  top: -60px;
+  right: 300px;
+  width: 210px;
+  height: 150px;
+  border-radius: 16px;
+  background: var(--brand-300);
+  opacity: 0.55;
+  --drift: 0.5;
+  --turn: 0.02;
+}
+
+.sq-c {
+  top: 250px;
+  right: 150px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--signal);
+  --drift: 0.9;
+  --turn: -0.12;
+}
+
+:host([data-theme='dark']) .sq-a {
+  background: var(--surface-raised);
+}
+
+:host([data-theme='dark']) .sq-b {
+  background: var(--primary);
+  opacity: 0.35;
+}
+
+/* The squares drift at different speeds while the page scrolls (compositor only). */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sq {
+      animation: drift linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 2400px;
+    }
+  }
+}
+
+@keyframes drift {
+  to {
+    transform: translate3d(0, calc(var(--drift, 0.3) * -2400px), 0)
+      rotate(calc(var(--turn, 0) * 2400deg));
+  }
+}
+
+/* ---------- Drawer scrim (below 900px) ---------- */
+
+.scrim {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: var(--scrim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease-out;
+}
+
+.scrim--on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 900px) {
+  .shell-content {
+    margin-left: 0;
+  }
+
+  .sq-b {
+    display: none;
+  }
+
+  .sq-a {
+    right: -90px;
+    width: 260px;
+    height: 220px;
+  }
+
+  .sq-c {
+    right: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim {
+    transition: none !important;
+  }
 }

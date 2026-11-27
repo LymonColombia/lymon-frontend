@@ -1,6 +1,32 @@
-<app-sidebar></app-sidebar>
+<div class="bg-art" aria-hidden="true">
+  <b class="sq sq-a"></b>
+  <b class="sq sq-b"></b>
+  <b class="sq sq-c"></b>
+</div>
+
+<app-sidebar [mobileOpen]="menuOpen()" />
+
+<button
+  type="button"
+  class="scrim"
+  [class.scrim--on]="menuOpen()"
+  tabindex="-1"
+  aria-label="Cerrar menú"
+  (click)="menuOpen.set(false)"
+></button>
+
 <div class="shell-content">
-  <router-outlet></router-outlet>
+  <app-tenant-topbar
+    [group]="crumb().group"
+    [label]="crumb().label"
+    [theme]="theme()"
+    [menuOpen]="menuOpen()"
+    (menuToggled)="toggleMenu()"
+    (themeToggled)="themeService.toggle()"
+  />
+  <main class="shell-main">
+    <router-outlet />
+  </main>
 </div>
 
 @if (tutorialService.isActive()) {

@@ -1,0 +1,68 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--logo);
+}
+
+.mark {
+  flex: none;
+  overflow: visible;
+}
+
+.word {
+  flex: none;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 120ms ease-out,
+    transform 120ms ease-out;
+}
+
+/* Same timing as the rail labels: in after the rail starts opening, out at once. */
+:host(.ui-logo--word) .word {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 220ms ease-out 120ms,
+    transform 220ms var(--ease-out) 120ms;
+}
+
+.bar {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+:host(.ui-logo--kick) .bar {
+  animation: bar-pinch 450ms cubic-bezier(0.3, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 40ms);
+}
+
+@keyframes bar-pinch {
+  0% {
+    transform: scaleX(1);
+  }
+
+  35% {
+    transform: scaleX(0.25);
+  }
+
+  75% {
+    transform: scaleX(1.12);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word,
+  :host(.ui-logo--word) .word {
+    transition: none;
+  }
+
+  :host(.ui-logo--kick) .bar {
+    animation: none;
+  }
+}

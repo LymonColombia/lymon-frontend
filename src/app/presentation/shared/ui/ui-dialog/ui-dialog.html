@@ -1,0 +1,17 @@
+<dialog
+  #dialog
+  class="dialog"
+  [attr.aria-labelledby]="titleId"
+  (close)="onClose()"
+  (pointerdown)="onBackdropPointerDown($event)"
+>
+  <div class="dialog-body">
+    <h2 class="dialog-title" [id]="titleId">{{ heading() }}</h2>
+    <div class="dialog-content">
+      <ng-content />
+    </div>
+    <div class="dialog-actions">
+      <ng-content select="[dialogActions]" />
+    </div>
+  </div>
+</dialog>
