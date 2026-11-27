@@ -1,4 +1,4 @@
-import { ROOM_LABELS } from '@/domain/shared/property/room.constants';
+import { UiIconName } from '@/presentation/shared/ui/ui-icon/ui-icon';
 
 export interface NavLeaf {
   readonly label: string;
@@ -8,24 +8,25 @@ export interface NavLeaf {
 export interface NavGroup {
   readonly id: string;
   readonly label: string;
-  /** Bootstrap icon name, registered by the sidebar. */
-  readonly icon: string;
+  readonly icon: UiIconName;
   readonly items: readonly NavLeaf[];
 }
 
-export const HOME_NAV: NavLeaf & { readonly icon: string } = {
+export const HOME_NAV: NavLeaf & { readonly icon: UiIconName } = {
   label: 'Inicio',
   route: '/admin/dashboard',
-  icon: 'bootstrapGrid',
+  icon: 'home',
 };
 
 export const NAV_GROUPS: readonly NavGroup[] = [
   {
     id: 'operation',
     label: 'Operación',
-    icon: 'bootstrapCalendar2Check',
+    icon: 'operation',
     items: [
       { label: 'Reservas', route: '/admin/reservations' },
+      // Needs a property: without ?propertyId the page sends you to Propiedades to pick one.
+      { label: 'Habitaciones', route: '/admin/units' },
       { label: 'Huéspedes', route: '/admin/crm/guests' },
       { label: 'Experiencias', route: '/admin/experiences' },
     ],
@@ -33,27 +34,27 @@ export const NAV_GROUPS: readonly NavGroup[] = [
   {
     id: 'team',
     label: 'Equipo',
-    icon: 'bootstrapPeople',
+    icon: 'team',
     items: [
-      { label: 'Empleados', route: '/admin/staff' },
+      { label: 'Personas', route: '/admin/staff' },
       { label: 'Turnos', route: '/admin/shifts' },
-      { label: 'Novedades laborales', route: '/admin/incidents' },
     ],
   },
   {
     id: 'business',
     label: 'Negocio',
-    icon: 'bootstrapHouseDoor',
+    icon: 'business',
     items: [
-      { label: ROOM_LABELS.propertiesAndRooms, route: '/admin/properties' },
-      { label: 'Registros de auditoría', route: '/admin/audit-log' },
+      { label: 'Propiedades', route: '/admin/properties' },
+      // No reports page exists yet; the audit log stands in until one does.
+      { label: 'Reportes', route: '/admin/audit-log' },
     ],
   },
 ];
 
 /** Pages that exist but have no sidebar entry; they still need a header label. */
 const EXTRA_PAGES: readonly { route: string; label: string; group: string | null }[] = [
-  { route: '/admin/units', label: 'Habitaciones', group: 'Negocio' },
+  { route: '/admin/incidents', label: 'Novedades laborales', group: 'Equipo' },
   { route: '/admin/settings', label: 'Configuración', group: null },
   { route: '/admin/plans', label: 'Planes', group: null },
 ];

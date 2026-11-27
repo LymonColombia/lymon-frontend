@@ -31,6 +31,7 @@
   --primary-soft: var(--brand-100);
   --on-primary: #ffffff;
   --signal: var(--brand-600);
+  --logo: #287047;
 
   --success: #15803d;
   --success-soft: #f0fdf4;
@@ -87,6 +88,7 @@
   --primary-hover: #5fd3ae;
   --primary-soft: #14261f;
   --on-primary: #0a0a0a;
+  --logo: #8cd9ad;
 
   --success: #4ade80;
   --success-soft: #052e16;

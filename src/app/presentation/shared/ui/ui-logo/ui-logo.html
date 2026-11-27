@@ -1,0 +1,17 @@
+<svg class="mark" aria-hidden="true" width="26" height="26" viewBox="0 0 64 64">
+  @for (bar of bars; track $index) {
+    <rect
+      class="bar"
+      [attr.x]="bar.x"
+      [attr.y]="bar.y"
+      [attr.width]="bar.w"
+      height="8"
+      rx="4"
+      fill="currentColor"
+      [style.--i]="$index"
+    />
+  }
+</svg>
+<svg class="word" aria-hidden="true" width="62" height="24" viewBox="1 -22 78 30">
+  <path fill="currentColor" [attr.d]="wordmarkPath" />
+</svg>

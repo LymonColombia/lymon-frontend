@@ -10,17 +10,6 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapBoxArrowRight,
-  bootstrapCalendar2Check,
-  bootstrapChevronDoubleRight,
-  bootstrapChevronDown,
-  bootstrapGear,
-  bootstrapGrid,
-  bootstrapHouseDoor,
-  bootstrapPeople,
-} from '@ng-icons/bootstrap-icons';
 import { filter, map, startWith } from 'rxjs';
 
 import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
@@ -29,9 +18,10 @@ import { UserSessionService } from '@/infrastructure/tenant/services/user-sessio
 import { UiAvatarComponent } from '@/presentation/shared/ui/ui-avatar/ui-avatar';
 import { UiButtonComponent } from '@/presentation/shared/ui/ui-button/ui-button';
 import { UiDialogComponent } from '@/presentation/shared/ui/ui-dialog/ui-dialog';
+import { UiIconComponent } from '@/presentation/shared/ui/ui-icon/ui-icon';
+import { UiLogoComponent } from '@/presentation/shared/ui/ui-logo/ui-logo';
 import { UiMenuComponent } from '@/presentation/shared/ui/ui-menu/ui-menu';
 import { UiMenuItemComponent } from '@/presentation/shared/ui/ui-menu/ui-menu-item';
-import { ThemeService } from '@/presentation/tenant/services/theme.service';
 import { HOME_NAV, NAV_GROUPS, NavGroup, groupOfUrl } from '@/presentation/tenant/layout/nav.config';
 
 /**
@@ -44,24 +34,13 @@ import { HOME_NAV, NAV_GROUPS, NavGroup, groupOfUrl } from '@/presentation/tenan
   imports: [
     RouterLink,
     RouterLinkActive,
-    NgIcon,
     UiAvatarComponent,
     UiButtonComponent,
     UiDialogComponent,
+    UiIconComponent,
+    UiLogoComponent,
     UiMenuComponent,
     UiMenuItemComponent,
-  ],
-  providers: [
-    provideIcons({
-      bootstrapBoxArrowRight,
-      bootstrapCalendar2Check,
-      bootstrapChevronDoubleRight,
-      bootstrapChevronDown,
-      bootstrapGear,
-      bootstrapGrid,
-      bootstrapHouseDoor,
-      bootstrapPeople,
-    }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sidebar.html',
@@ -73,7 +52,6 @@ export class SidebarComponent {
   private readonly getTenantProfile = inject(GetTenantProfileUseCase);
   private readonly userSession = inject(UserSessionService);
   private readonly tokenService = inject(TokenService);
-  private readonly themeService = inject(ThemeService);
 
   readonly mobileOpen = input(false);
 
@@ -82,18 +60,20 @@ export class SidebarComponent {
 
   protected readonly collapsedByUser = signal(true);
   protected readonly expanded = computed(() => !this.collapsedByUser() || this.mobileOpen());
-  protected readonly openGroups = signal<ReadonlySet<string>>(new Set());
+  /** Every group starts open, as in the design; the user folds what they don't need. */
+  protected readonly openGroups = signal<ReadonlySet<string>>(new Set(NAV_GROUPS.map((g) => g.id)));
+  /** True while the logo plays its pinch after the rail opens. */
+  protected readonly logoKick = signal(false);
+  private kickTimer?: ReturnType<typeof setTimeout>;
   protected readonly profileOpen = signal(false);
   protected readonly logoutOpen = signal(false);
 
   protected readonly tenantName = signal('');
-  protected readonly tenantEmail = signal('');
   protected readonly displayName = computed(() => this.tenantName().trim() || 'Mi cuenta');
-  protected readonly displayEmail = computed(() => this.tenantEmail().trim());
-
-  protected readonly logoSuffix = computed(() => (this.themeService.theme() === 'dark' ? '-white' : ''));
-  protected readonly markSrc = computed(() =>
-    this.themeService.theme() === 'dark' ? '/images/lyhost-mark-dark.svg' : '/images/lyhost-mark.svg',
+  /** Admins hold the account (they registered the tenant); staff log in under it. */
+  protected readonly isOwner = computed(() => this.userSession.currentUser()?.role !== 'STAFF');
+  protected readonly roleLabel = computed(() =>
+    this.isOwner() ? 'Titular de la cuenta' : 'Miembro del equipo',
   );
 
   private readonly url = toSignal(
@@ -117,17 +97,38 @@ export class SidebarComponent {
     this.getTenantProfile
       .execute()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (res) => {
-          this.tenantName.set(res.data?.name ?? '');
-          this.tenantEmail.set(res.data?.email ?? this.userSession.currentUser()?.email ?? '');
-        },
-        error: () => this.tenantEmail.set(this.userSession.currentUser()?.email ?? ''),
-      });
+      // On error the row falls back to "Mi cuenta"; the rail stays usable.
+      .subscribe({ next: (res) => this.tenantName.set(res.data?.name ?? ''), error: () => undefined });
+
+    // The drawer opening on mobile plays the logo too.
+    effect(() => {
+      if (this.mobileOpen()) this.playLogoKick();
+    });
+
+    this.destroyRef.onDestroy(() => clearTimeout(this.kickTimer));
   }
 
   protected toggleRail(): void {
-    this.collapsedByUser.update((v) => !v);
+    if (this.expanded()) {
+      this.collapsedByUser.set(true);
+      return;
+    }
+    // Ignore a second click while the opening is still playing.
+    if (this.logoKick()) return;
+    this.expandRail();
+  }
+
+  private expandRail(): void {
+    this.collapsedByUser.set(false);
+    this.playLogoKick();
+  }
+
+  private playLogoKick(): void {
+    if (globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    this.logoKick.set(true);
+    clearTimeout(this.kickTimer);
+    // 450ms pinch plus 4 × 40ms stagger, with a little slack.
+    this.kickTimer = setTimeout(() => this.logoKick.set(false), 650);
   }
 
   protected isOpen(group: NavGroup): boolean {
@@ -137,8 +138,8 @@ export class SidebarComponent {
   /** From the collapsed rail a group icon expands the rail and opens its pages. */
   protected toggleGroup(group: NavGroup): void {
     if (!this.expanded()) {
-      this.collapsedByUser.set(false);
       this.openGroups.update((set) => new Set(set).add(group.id));
+      this.expandRail();
       return;
     }
 

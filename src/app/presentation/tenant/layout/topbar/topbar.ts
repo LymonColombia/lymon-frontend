@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapList } from '@ng-icons/bootstrap-icons';
 
+import { UiIconComponent } from '@/presentation/shared/ui/ui-icon/ui-icon';
 import { UiIconButtonComponent } from '@/presentation/shared/ui/ui-icon-button/ui-icon-button';
 import {
   UiTheme,
@@ -11,8 +10,7 @@ import {
 /** Header of the admin shell: where you are, and the theme switch. */
 @Component({
   selector: 'app-tenant-topbar',
-  imports: [NgIcon, UiIconButtonComponent, UiThemeToggleComponent],
-  providers: [provideIcons({ bootstrapList })],
+  imports: [UiIconComponent, UiIconButtonComponent, UiThemeToggleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './topbar.html',
   styleUrl: './topbar.css',

@@ -6,14 +6,7 @@
 >
   <div class="brand">
     <a class="brand-link" routerLink="/admin/dashboard" aria-label="LyHost, ir al inicio">
-      <img class="brand-mark" [src]="markSrc()" alt="" width="26" height="26" />
-      <img
-        class="brand-logo lbl"
-        [src]="'/images/lyhost-logo' + logoSuffix() + '.svg'"
-        alt=""
-        width="82"
-        height="30"
-      />
+      <app-ui-logo [wordmark]="expanded()" [kick]="logoKick()" />
     </a>
   </div>
 
@@ -24,7 +17,7 @@
     [attr.data-tip]="expanded() ? 'Contraer menú' : 'Expandir menú'"
     (click)="toggleRail()"
   >
-    <ng-icon class="chev" name="bootstrapChevronDoubleRight" size="18" aria-hidden="true" />
+    <app-ui-icon class="chev" name="chevronsRight" [strokeWidth]="1.8" />
     <span class="lbl">{{ expanded() ? 'Contraer menú' : 'Expandir menú' }}</span>
   </button>
 
@@ -36,7 +29,7 @@
       ariaCurrentWhenActive="page"
       [attr.data-tip]="home.label"
     >
-      <ng-icon [name]="home.icon" size="18" aria-hidden="true" />
+      <app-ui-icon [name]="home.icon" />
       <span class="lbl">{{ home.label }}</span>
     </a>
 
@@ -51,9 +44,9 @@
           [attr.data-tip]="group.label"
           (click)="toggleGroup(group)"
         >
-          <ng-icon [name]="group.icon" size="18" aria-hidden="true" />
+          <app-ui-icon [name]="group.icon" />
           <span class="lbl">{{ group.label }}</span>
-          <ng-icon class="lbl group-chev" name="bootstrapChevronDown" size="16" aria-hidden="true" />
+          <app-ui-icon class="lbl group-chev" name="chevronDown" [size]="16" [strokeWidth]="1.8" />
         </button>
 
         <div class="subs-wrap" [id]="'subs-' + group.id">
@@ -76,31 +69,47 @@
     }
   </nav>
 
-  <app-ui-menu
-    #menu
-    class="me-menu"
-    label="Opciones de perfil"
-    placement="above"
-    align="start"
-    [(open)]="profileOpen"
-  >
-    <button menuTrigger type="button" class="me" aria-haspopup="menu" [attr.aria-expanded]="menu.open()">
-      <app-ui-avatar [name]="displayName()" />
-      <span class="lbl me-text">
-        <span class="me-name">{{ displayName() }}</span>
-        <span class="me-email">{{ displayEmail() }}</span>
-      </span>
-    </button>
+  <div class="me">
+    <app-ui-avatar [name]="displayName()" />
+    <div class="lbl me-text">
+      <div class="me-name">
+        <span class="me-name-text">{{ displayName() }}</span>
+        @if (isOwner()) {
+          <span class="owner">Titular</span>
+        }
+      </div>
+      <div class="me-role">{{ roleLabel() }}</div>
+    </div>
 
-    <app-ui-menu-item (click)="goToSettings()">
-      <ng-icon name="bootstrapGear" size="16" aria-hidden="true" />
-      Configuración
-    </app-ui-menu-item>
-    <app-ui-menu-item tone="danger" (click)="logoutOpen.set(true)">
-      <ng-icon name="bootstrapBoxArrowRight" size="16" aria-hidden="true" />
-      Cerrar sesión
-    </app-ui-menu-item>
-  </app-ui-menu>
+    <app-ui-menu
+      #menu
+      class="lbl me-menu"
+      label="Cuenta"
+      placement="above"
+      align="end"
+      [(open)]="profileOpen"
+    >
+      <button
+        menuTrigger
+        type="button"
+        class="me-gear"
+        aria-label="Configuración"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="menu.open()"
+      >
+        <app-ui-icon name="settings" [size]="16" />
+      </button>
+
+      <app-ui-menu-item (click)="goToSettings()">
+        <app-ui-icon name="settings" [size]="16" />
+        Configuración
+      </app-ui-menu-item>
+      <app-ui-menu-item tone="danger" (click)="logoutOpen.set(true)">
+        <app-ui-icon name="logout" [size]="16" />
+        Cerrar sesión
+      </app-ui-menu-item>
+    </app-ui-menu>
+  </div>
 </aside>
 
 <app-ui-dialog [(open)]="logoutOpen" heading="Cerrar sesión">
