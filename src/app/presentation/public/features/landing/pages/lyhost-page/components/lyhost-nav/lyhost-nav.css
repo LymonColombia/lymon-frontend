@@ -1,126 +1,131 @@
 :host {
   display: block;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.lyhost-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-fixed);
-  border-bottom: 1px solid var(--color-border-light);
-  background: color-mix(in srgb, var(--color-bg-primary) 85%, transparent);
-  backdrop-filter: blur(var(--spacing-xl));
+.nav-bar {
+  position: relative;
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--line);
 }
 
 .nav-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  min-height: calc(var(--spacing-6xl) + var(--spacing-sm));
+  gap: 32px;
+  height: 76px;
 }
 
-.brand-group {
-  display: flex;
-  align-items: center;
-}
-
-.brand-logo {
-  height: calc(var(--spacing-4xl) + var(--spacing-xs));
-  width: auto;
-  display: block;
-}
-
-.desktop-links {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4xl);
-}
-
-.desktop-link {
-  border: none;
-  background: transparent;
+.brand {
+  display: inline-flex;
   padding: 0;
+  border: 0;
+  background: none;
   cursor: pointer;
-  font-family: var(--font-secondary);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  transition: color var(--transition-base);
 }
 
-.desktop-link:hover {
-  color: var(--color-text-primary);
+.brand img {
+  display: block;
+  height: 36px;
+  width: auto;
 }
 
-.desktop-actions {
+.links {
   display: flex;
+  gap: 28px;
   align-items: center;
-  gap: var(--spacing-sm);
+  flex: 1;
 }
 
-.mobile-toggle {
-  display: none;
-  border: none;
-  background: transparent;
-  color: var(--color-text-primary);
-}
-
-.mobile-panel {
-  border-top: 1px solid var(--color-border-light);
-  border-bottom: 1px solid var(--color-border-light);
-  background: var(--color-bg-primary);
-  padding: var(--spacing-lg);
-  animation: lyhost-slide-down var(--transition-base);
-}
-
-.mobile-links {
+.actions {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
 }
 
-.mobile-link {
-  border: none;
-  background: transparent;
+.navlink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: 500 14px/20px var(--font-sans);
   cursor: pointer;
-  text-align: left;
-  padding: var(--spacing-sm) 0;
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  font-family: var(--font-secondary);
-  font-size: var(--font-size-sm);
+  transition: color 0.15s ease-out;
 }
 
-.mobile-actions {
-  margin-top: var(--spacing-sm);
-  padding-top: var(--spacing-sm);
-  border-top: 1px solid var(--color-border-light);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
+.navlink:hover {
+  color: var(--ink);
 }
 
-@keyframes lyhost-slide-down {
-  from {
-    opacity: 0;
-    transform: translateY(calc(var(--spacing-sm) * -1));
+.brand:focus-visible,
+.navlink:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.login {
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.scroll-prog {
+  display: none;
+}
+
+/* Solid + blurred once you scroll, with a mint progress line */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    @keyframes nav-solid {
+      from {
+        background: var(--surface);
+        box-shadow: 0 1px 0 transparent;
+      }
+      to {
+        background: color-mix(in srgb, var(--surface) 82%, transparent);
+        box-shadow: 0 1px 0 var(--line);
+      }
+    }
+
+    .nav-bar {
+      animation: nav-solid linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 120px;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .scroll-prog {
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: var(--signal);
+      transform-origin: left;
+      animation: lh-grow-x linear both;
+      animation-timeline: scroll(root);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
-@media (max-width: 960px) {
-  .desktop-links,
-  .desktop-actions {
+@media (max-width: 860px) {
+  .nav-inner {
+    gap: 16px;
+  }
+
+  .links {
     display: none;
   }
 
-  .mobile-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  .actions {
+    gap: 4px;
+  }
+
+  .login {
+    padding: 0 4px;
   }
 }

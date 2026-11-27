@@ -1,0 +1,32 @@
+<div class="head">
+  <span class="lab">{{ t().unit }}</span>
+  @for (d of days(); track d.dn) {
+    <span class="day" [class.today]="d.today" [class.we]="d.weekend">
+      <span>{{ d.dow }}</span><i>{{ d.dn }}</i>
+    </span>
+  }
+</div>
+<div class="body">
+  @for (r of rows(); track r.room) {
+    <div class="row">
+      <span class="lab">{{ r.room }}</span>
+      <span class="track">
+        @for (b of r.bars; track b.label) {
+          <span
+            [class]="'bar ' + b.channel"
+            [attr.data-spot]="b.spot"
+            [style.left]="b.left"
+            [style.width]="b.width"
+            [style.animation-delay]="b.delay"
+          >
+            <span class="src">{{ b.letter }}</span><span class="name">{{ b.label }}</span>
+          </span>
+        }
+      </span>
+    </div>
+  }
+  <ng-content />
+  @if (showToday()) {
+    <div class="today-line" aria-hidden="true" [style.left]="todayLeft()"></div>
+  }
+</div>

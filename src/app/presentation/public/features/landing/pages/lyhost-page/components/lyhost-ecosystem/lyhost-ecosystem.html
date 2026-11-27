@@ -1,109 +1,89 @@
-<section id="para-gestores" class="lyhost-ecosystem">
-  <svg class="eco-grid" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-    <defs>
-      <pattern id="eco-grid-pattern" width="12" height="12" patternUnits="userSpaceOnUse">
-        <path d="M 12 0 L 0 0 0 12" fill="none" stroke="var(--color-primary)" stroke-width="0.2"></path>
-      </pattern>
-    </defs>
-    <rect width="100" height="100" fill="url(#eco-grid-pattern)"></rect>
-  </svg>
-
-  <div class="container ecosystem-inner">
-    <div class="ecosystem-copy">
-      <div class="section-chip"><span>CARACTERÍSTICAS</span></div>
-      <h2>
-        Todo tu hotel<br />
-        <span>conectado</span>
-      </h2>
-      <p>
-        LyHost conecta todos los módulos de tu operación: Reservas, huéspedes, equipo, finanzas y experiencias. Un solo sistema, todo en tiempo real.
-      </p>
-
-      <div class="ecosystem-list">
-        @for (item of checklistItems; track item) {
-          <div class="ecosystem-item">
-            <span class="ecosystem-check" aria-hidden="true">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                <path d="M2 5L4.5 7.5L8 3" stroke="var(--color-primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </span>
-            <span>{{ item }}</span>
-          </div>
-        }
-      </div>
+<section id="ecosistema" class="eco">
+  <div class="wrap eco-inner">
+    <div class="g12 hw eco-head">
+      <h2 class="h2 eco-title"><span class="ln"><span>{{ t().title }}</span></span></h2>
+      <p class="ov muted eco-lead">{{ t().lead }}</p>
     </div>
 
-    <div class="ecosystem-visual">
-      <svg width="360" height="360" viewBox="0 0 360 360" fill="none" class="eco-orbit" aria-label="LyHost ecosystem animation">
-        <defs>
-          <linearGradient id="center-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="var(--color-primary)"></stop>
-            <stop offset="100%" stop-color="var(--color-primary-dark)"></stop>
-          </linearGradient>
-          <linearGradient id="node-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="var(--color-primary)"></stop>
-            <stop offset="100%" stop-color="var(--color-primary-dark)"></stop>
-          </linearGradient>
-        </defs>
+    <div class="g12 eco-grid">
+      <!-- The focal story: every property, one operation -->
+      <article class="reveal cs eco-main">
+        <figure class="ill ill-lg" [attr.aria-label]="t().propertiesLabel">
+          <div class="ill-h">
+            <span class="overline">{{ t().properties }}</span>
+            <span class="ill-tot">{{ t().totalBefore }} <b>68 %</b> {{ t().totalAfter }}</span>
+          </div>
+          <div class="ill-props">
+            <div class="ill-th">
+              <span>{{ t().colProperty }}</span><span>{{ t().colOccupancy }}</span><span class="num">{{ t().colArrivals }}</span><span class="num">{{ t().colRevenue }}</span>
+            </div>
+            @for (p of properties(); track p.name) {
+              <div class="ill-tr">
+                <span><b>{{ p.name }}</b><i>{{ p.meta }}</i></span>
+                <span class="ill-occ">
+                  <span class="ill-bar"><span class="fillx" [style.width.%]="p.occupancy"></span></span>
+                  <b class="tnum">{{ p.occupancy }} %</b>
+                </span>
+                <span class="num tnum">{{ p.arrivals }}</span>
+                <span class="num tnum">{{ p.revenue }}</span>
+              </div>
+            }
+          </div>
+        </figure>
+        <div class="copy copy-lg">
+          <h3 class="fh">{{ t().mainTitle }}</h3>
+          <p class="muted">{{ t().mainText }}</p>
+        </div>
+      </article>
 
-        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius + 44" stroke="var(--color-primary-light)" stroke-opacity="0.1" stroke-width="1"></circle>
-        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius" stroke="var(--color-primary-light)" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="6 5"></circle>
-        <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius - 52" stroke="var(--color-primary-light)" stroke-opacity="0.3" stroke-width="1"></circle>
+      <!-- Two quieter stories, separated by a fine rule -->
+      <div class="eco-side">
+        <article class="reveal cs side-feat">
+          <figure class="ill" [attr.aria-label]="t().guestLabel">
+            <div class="guest">
+              <img class="face" src="images/landing/guest-valentina-gomez.jpg" width="36" height="36" alt="Valentina Gómez" />
+              <div class="guest-text">
+                <div class="guest-name">Valentina Gómez</div>
+                <div class="tnum muted guest-meta">{{ t().guestMeta }}</div>
+              </div>
+              <app-lyhost-badge tone="info">{{ t().inStay }}</app-lyhost-badge>
+            </div>
+            <div class="tags">
+              @for (tag of t().guestTags; track tag; let i = $index) {
+                <span class="tag tagi" [style.--i]="i">{{ tag }}</span>
+              }
+            </div>
+            <div class="stays">
+              @for (stay of t().guestStays; track stay.room) {
+                <div class="stay"><span>{{ stay.room }}</span><span class="tnum muted">{{ stay.nights }}</span></div>
+              }
+            </div>
+          </figure>
+          <h3 class="fh">{{ t().guestTitle }}</h3>
+          <p class="muted">{{ t().guestText }}</p>
+        </article>
 
-        @for (node of nodes; track node.label) {
-          <line
-            [attr.x1]="cx"
-            [attr.y1]="cy"
-            [attr.x2]="node.x"
-            [attr.y2]="node.y"
-            stroke="var(--color-primary)"
-            stroke-opacity="0.18"
-            stroke-width="1.5"
-            stroke-dasharray="5 5"
-          ></line>
-        }
-
-        @for (node of nodes; track node.label) {
-          @for (particle of node.particles; track $index) {
-            <circle
-              [attr.cx]="particle.x"
-              [attr.cy]="particle.y"
-              r="2.8"
-              [attr.fill]="particle.color"
-              [attr.opacity]="particle.opacity"
-            ></circle>
-          }
-        }
-
-        <circle class="pulse-ring pulse-ring-a" [attr.cx]="cx" [attr.cy]="cy" r="34" fill="none" stroke="var(--color-primary)" stroke-width="1.5"></circle>
-        <circle class="pulse-ring pulse-ring-b" [attr.cx]="cx" [attr.cy]="cy" r="34" fill="none" stroke="var(--color-primary)" stroke-width="1"></circle>
-
-        <circle [attr.cx]="cx" [attr.cy]="cy" r="44" fill="var(--color-primary)" fill-opacity="0.05"></circle>
-
-        <g class="breathing-core">
-          <circle [attr.cx]="cx" [attr.cy]="cy" r="34" fill="url(#center-grad)"></circle>
-          <image
-            href="images/LyHost.svg"
-            [attr.x]="cx - 26"
-            [attr.y]="cy - 10"
-            width="52"
-            height="20"
-            style="filter: brightness(0) invert(1);"
-            aria-hidden="true"
-          />
-        </g>
-
-@for (node of nodes; track node.label) {
-          <g>
-            <rect [attr.x]="node.x - 38" [attr.y]="node.y - 38" width="76" height="76" rx="15" fill="url(#node-grad)"></rect>
-            <rect [attr.x]="node.x - 37" [attr.y]="node.y - 37" width="74" height="74" rx="14" fill="var(--color-bg-primary)"></rect>
-            <foreignObject [attr.x]="node.x - 12" [attr.y]="node.y - 22" width="24" height="24" aria-hidden="true">
-              <ng-icon [name]="node.icon" size="24px" [style.color]="node.accent" style="display: flex;"></ng-icon>
-            </foreignObject>
-            <text [attr.x]="node.x" [attr.y]="node.y + 18" text-anchor="middle" class="node-title">{{ node.label }}</text>
-          </g>
-        }
-      </svg>
+        <article class="reveal cs side-feat">
+          <figure class="ill" [attr.aria-label]="t().weekLabel">
+            <div class="kpi">
+              <div class="kpi-text">
+                <span class="overline">{{ t().today }}</span>
+                <span class="kpi-value">72 %</span>
+              </div>
+              <div class="bars">
+                @for (d of week(); track $index) {
+                  <div class="bar-col">
+                    <span class="filly" [class.current]="d.current" [style.--i]="$index" [style.height.px]="d.height"></span>
+                    <span class="tnum bar-label">{{ d.label }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </figure>
+          <h3 class="fh">{{ t().occupancyTitle }}</h3>
+          <p class="muted">{{ t().occupancyText }}</p>
+        </article>
+      </div>
     </div>
   </div>
 </section>

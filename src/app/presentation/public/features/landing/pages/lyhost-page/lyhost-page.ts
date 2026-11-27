@@ -1,91 +1,48 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnDestroy,
-  QueryList,
-  ViewChildren,
-  signal,
-} from '@angular/core';
-import { FooterComponent } from '@/presentation/shared/components/footer/footer';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { DOCUMENT, NgOptimizedImage } from '@angular/common';
+import { Router } from '@angular/router';
+import { LYHOST_LANG, landingText } from './i18n/lyhost-i18n';
+import { ButtonComponent } from '@/presentation/shared/components/button/button';
 import { LyhostNavComponent } from './components/lyhost-nav/lyhost-nav';
 import { LyhostHeroComponent } from './components/lyhost-hero/lyhost-hero';
 import { PlansComponent } from './components/lyhost-plans/lyhost-plans';
-import { PlanFeaturesComponent } from './components/lyhost-features/lyhost-features';
+import { LyhostFeaturesComponent } from './components/lyhost-features/lyhost-features';
 import { LyhostEcosystemComponent } from './components/lyhost-ecosystem/lyhost-ecosystem';
 
 @Component({
   selector: 'app-lyhost-page',
-  standalone: true,
   imports: [
+    ButtonComponent,
+    NgOptimizedImage,
     LyhostNavComponent,
     LyhostHeroComponent,
-    PlansComponent,
-    PlanFeaturesComponent,
     LyhostEcosystemComponent,
-    FooterComponent,
+    LyhostFeaturesComponent,
+    PlansComponent,
   ],
   templateUrl: './lyhost-page.html',
-  styleUrl: './lyhost-page.css',
+  styleUrls: ['./lyhost-theme.css', './lyhost-page.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '[class.scroll-reveal-enabled]': 'scrollRevealEnabled()',
-  },
 })
-export class LyhostPageComponent implements AfterViewInit, OnDestroy {
-  @ViewChildren('revealSection')
-  readonly revealSections?: QueryList<ElementRef<HTMLElement>>;
+export class LyhostPageComponent {
+  private readonly router = inject(Router);
+  readonly nav = landingText('nav');
+  readonly close = landingText('close');
+  readonly footer = landingText('footer');
 
-  readonly scrollRevealEnabled = signal(false);
-  readonly visibleSections = signal<Set<string>>(new Set());
-
-  private observer: IntersectionObserver | null = null;
-
-  ngAfterViewInit(): void {
-    this.scrollRevealEnabled.set(true);
-
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        const nextVisible = new Set(this.visibleSections());
-        let changed = false;
-
-        for (const entry of entries) {
-          if (!entry.isIntersecting) {
-            continue;
-          }
-
-          const sectionId = (entry.target as HTMLElement).dataset['sectionId'];
-          if (!sectionId || nextVisible.has(sectionId)) {
-            continue;
-          }
-
-          nextVisible.add(sectionId);
-          changed = true;
-          this.observer?.unobserve(entry.target);
-        }
-
-        if (changed) {
-          this.visibleSections.set(nextVisible);
-        }
-      },
-      {
-        threshold: 0.2,
-        rootMargin: '0px 0px -12% 0px',
-      },
-    );
-
-    this.revealSections?.forEach((sectionRef) => {
-      this.observer?.observe(sectionRef.nativeElement);
-    });
+  constructor() {
+    // Tell browsers and screen readers which language the page is in; restore the app's own on leave
+    const root = inject(DOCUMENT).documentElement;
+    const previous = root.lang;
+    root.lang = inject(LYHOST_LANG);
+    inject(DestroyRef).onDestroy(() => (root.lang = previous));
   }
 
-  ngOnDestroy(): void {
-    this.observer?.disconnect();
-    this.observer = null;
+  goToRegister(): void {
+    this.router.navigate(['/register']);
   }
 
-  isVisible(sectionId: string): boolean {
-    return this.visibleSections().has(sectionId);
+  scrollTo(sectionId: string): void {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
   }
 }

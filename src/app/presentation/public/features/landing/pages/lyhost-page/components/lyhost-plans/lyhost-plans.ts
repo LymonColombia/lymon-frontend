@@ -1,31 +1,26 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { Plan, PLANS } from '@/domain/shared/plan/plan.model';
+import { landingText } from '../../i18n/lyhost-i18n';
 
 @Component({
   selector: 'app-lyhost-plans',
-  standalone: true,
   imports: [ButtonComponent],
   templateUrl: './lyhost-plans.html',
-  styleUrl: './lyhost-plans.css',
+  styleUrls: ['../../lyhost-theme.css', './lyhost-plans.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlansComponent {
-  readonly plans: readonly Plan[] = PLANS;
+  private readonly router = inject(Router);
 
-  isHighlighted(plan: Plan): boolean {
-    return plan.type === 'PLUS';
+  // ponytail: landing copy is marketing text from the design (in the i18n files); checkout reads PLANS from the domain
+  readonly t = landingText('plans');
+
+  scrollTo(sectionId: string): void {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  isTrialPlan(plan: Plan): boolean {
-    return plan.type === 'TRIAL';
-  }
-
-  allFeatures(plan: Plan): string[] {
-    return plan.detailsSections.flatMap((s) => s.items);
-  }
-
-  isCustomPrice(plan: Plan): boolean {
-    return plan.price === 'Custom' || !plan.priceSuffix;
+  goToRegister(): void {
+    this.router.navigate(['/register']);
   }
 }

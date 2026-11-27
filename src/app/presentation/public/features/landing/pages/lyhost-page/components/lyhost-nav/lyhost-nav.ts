@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { bootstrapList, bootstrapXLg } from '@ng-icons/bootstrap-icons';
 import { ButtonComponent } from '@/presentation/shared/components/button/button';
+import { landingText } from '../../i18n/lyhost-i18n';
 
 interface LyhostNavLink {
   label: string;
@@ -12,57 +11,26 @@ interface LyhostNavLink {
 
 @Component({
   selector: 'app-lyhost-nav',
-  standalone: true,
-  imports: [ButtonComponent, NgOptimizedImage, NgIcon],
+  imports: [ButtonComponent, NgOptimizedImage],
   templateUrl: './lyhost-nav.html',
-  styleUrl: './lyhost-nav.css',
+  styleUrls: ['../../lyhost-theme.css', './lyhost-nav.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [provideIcons({ bootstrapList, bootstrapXLg })],
 })
 export class LyhostNavComponent {
   private readonly router = inject(Router);
+  readonly t = landingText('nav');
 
-  readonly mobileOpen = signal(false);
+  readonly links = computed<LyhostNavLink[]>(() => [
+    { label: this.t().product, sectionId: 'ecosistema' },
+    { label: this.t().modules, sectionId: 'caracteristicas' },
+    { label: this.t().plans, sectionId: 'planes' },
+  ]);
 
-  readonly links: LyhostNavLink[] = [
-    { label: 'Explorar', sectionId: 'explorar' },
-    { label: 'Ecosistema', sectionId: 'caracteristicas' },
-    { label: 'Características', sectionId: 'para-gestores' },
-    { label: 'Planes', sectionId: 'planes' },
-  ];
-
-  toggleMobileMenu(): void {
-    this.mobileOpen.update((value) => !value);
+  goTo(path: string): void {
+    this.router.navigate([path]);
   }
 
-  closeMobileMenu(): void {
-    this.mobileOpen.set(false);
-  }
-
-  goToManagerLogin(): void {
-    this.router.navigate(['/login']);
-  }
-
-  goToGuestLogin(): void {
-    this.router.navigate(['/guest/login']);
-  }
-
-  navigateToSection(sectionId: string): void {
-    const section = document.getElementById(sectionId);
-
-    if (!section) {
-      this.closeMobileMenu();
-      return;
-    }
-
-    const navOffset = 88;
-    const targetPosition = section.getBoundingClientRect().top + window.scrollY - navOffset;
-
-    window.scrollTo({
-      top: Math.max(targetPosition, 0),
-      behavior: 'smooth',
-    });
-
-    this.closeMobileMenu();
+  scrollTo(sectionId: string): void {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
   }
 }

@@ -1,0 +1,326 @@
+{
+  "nav": {
+    "label": "Main",
+    "home": "LyHost, home",
+    "product": "Product",
+    "modules": "Modules",
+    "plans": "Plans",
+    "login": "Log in",
+    "trial": "Free trial"
+  },
+  "hero": {
+    "titleA": "Your property. Your rules.",
+    "titleB": "All in one place.",
+    "lead": "For hotels, hostels and independent stays. Bookings, guests, staff and finances in one dashboard.",
+    "startTrial": "Start free trial",
+    "seePlans": "See plans",
+    "demoLabel": "Animation: on the LyHost Bookings calendar, someone taps a free slot in room 204, creates a booking for Ana Restrepo and the bar appears on the calendar",
+    "pause": "Pause the animation",
+    "resume": "Resume the animation",
+    "factsLabel": "Why LyHost",
+    "facts": [
+      {
+        "title": "No spreadsheets",
+        "text": "Bookings, guests and staff in one system."
+      },
+      {
+        "title": "No chaos",
+        "text": "Clear shifts, and everyone knows what they’re on."
+      },
+      {
+        "title": "No commissions",
+        "text": "You pay a monthly plan, not a cut of every booking."
+      },
+      {
+        "title": "Real time",
+        "text": "Everything updates instantly, on any device."
+      }
+    ],
+    "panel": {
+      "section": "Operations",
+      "page": "Bookings",
+      "search": "Search bookings, guests…",
+      "showing": "Showing:",
+      "property": "Casa Laureles, Medellín",
+      "synced": "Booking.com and Airbnb synced",
+      "newBooking": "+ New booking",
+      "direct": "LyHost · direct",
+      "occupancy": "Occupancy for these dates:",
+      "rangeWide": "Nov 14 – 23, 2026",
+      "rangeCompact": "Nov 16 – 21, 2026",
+      "selection": "Thu 19 → Mon 23 Nov · 4 nights",
+      "toast": "Booking created · RSV-00521 · Room 204 · Nov 19–23",
+      "drawerTitle": "New booking",
+      "drawerStep": "Step 2 of 3 · Guest",
+      "arrival": "Check-in",
+      "arrivalDate": "Thu 19 Nov",
+      "nights": "4 nights",
+      "departure": "Check-out",
+      "departureDate": "Mon 23 Nov",
+      "stayMeta": "Room 204 · Casa Laureles · 2 guests",
+      "guestName": "Guest name",
+      "recurring": "Returning guest",
+      "recurringMeta": "2 stays · prefers a high floor",
+      "phone": "Phone",
+      "payment": "Payment",
+      "paid": "Paid",
+      "pending": "Pending",
+      "back": "Back",
+      "create": "Create booking"
+    }
+  },
+  "calendar": {
+    "unit": "Unit",
+    "room": "Room",
+    "week": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ]
+  },
+  "ecosystem": {
+    "title": "One dashboard for your whole operation",
+    "lead": "What used to live in spreadsheets, chats and notebooks, now in one place.",
+    "propertiesLabel": "Example: three properties with their occupancy, today’s arrivals and this month’s revenue",
+    "properties": "Properties",
+    "totalBefore": "All ·",
+    "totalAfter": "occupancy",
+    "colProperty": "Property",
+    "colOccupancy": "Occupancy",
+    "colArrivals": "Arrivals today",
+    "colRevenue": "Revenue this month",
+    "propertyRows": [
+      {
+        "name": "Casa Laureles",
+        "meta": "Hotel · Medellín",
+        "revenue": "$12.9M"
+      },
+      {
+        "name": "Hostal Centro",
+        "meta": "Hostel · Medellín",
+        "revenue": "$8.6M"
+      },
+      {
+        "name": "Hotel Mar Azul",
+        "meta": "Hotel · Santa Marta",
+        "revenue": "$7.2M"
+      }
+    ],
+    "mainTitle": "All your properties, one operation.",
+    "mainText": "Bookings, staff and finances for every property in one dashboard. Switch between properties or see them all together.",
+    "guestLabel": "Example: a guest profile with their preferences and latest stays",
+    "guestMeta": "4 stays · since 2025",
+    "inStay": "Staying",
+    "guestTags": [
+      "High floor",
+      "Late check-out",
+      "Business traveller"
+    ],
+    "guestStays": [
+      {
+        "room": "Room 402 · Nov 8–11",
+        "nights": "3 nights"
+      },
+      {
+        "room": "Room 405 · Aug 2–4",
+        "nights": "2 nights"
+      }
+    ],
+    "guestTitle": "Remember every guest, not just their booking.",
+    "guestText": "Stays, preferences and staff notes on their profile, so every visit feels like home.",
+    "weekLabel": "Example: occupancy this week, from 58% on Tuesday to 94% on Saturday; today, Thursday, 72%.",
+    "today": "Occupancy today",
+    "weekDays": [
+      "M",
+      "T",
+      "W",
+      "T",
+      "F",
+      "S",
+      "S"
+    ],
+    "occupancyTitle": "Know today’s occupancy and revenue.",
+    "occupancyText": "Occupancy, arrivals and monthly revenue for every property, without building reports by hand."
+  },
+  "features": {
+    "title": "All your properties, connected",
+    "lead": "LyHost connects every part of your operation. One system, everything in real time.",
+    "tabsLabel": "Modules",
+    "pause": "Pause tour",
+    "resume": "Resume tour",
+    "modules": {
+      "res": {
+        "title": "Bookings and availability",
+        "text": "All your bookings and rooms on one calendar. See what’s taken, who arrives today and what’s still unpaid."
+      },
+      "guests": {
+        "title": "Guest history",
+        "text": "Everyone who stays with you, with their stays and preferences."
+      },
+      "shifts": {
+        "title": "Shifts and staff",
+        "text": "Plan front desk, housekeeping and maintenance shifts, and know who covers each one."
+      },
+      "fin": {
+        "title": "Finances",
+        "text": "Revenue, expenses and pending payments for every property, updated instantly."
+      },
+      "exp": {
+        "title": "Experiences for your guests",
+        "text": "Publish tours and activities, manage their spots and add them to your guests’ stays."
+      }
+    },
+    "res": {
+      "direct": "LyHost · direct",
+      "stay": "Room 101 · Mon 16 → Tue 17 Nov · 1 night",
+      "payment": "Payment",
+      "paid": "Paid in LyHost",
+      "pending": "Payment pending",
+      "register": "Record payment · $260,000",
+      "toast": "Payment recorded · $260,000"
+    },
+    "guests": {
+      "search": "Search by name, email or phone",
+      "viewProfile": "View profile",
+      "emailDomain": "example.co",
+      "vip": "VIP",
+      "loyalty": "Loyalty",
+      "business": "Business",
+      "regular": "Regular",
+      "staying": "Staying",
+      "arriving": "Arriving",
+      "past": "Past",
+      "stays": "Stays",
+      "nights": "Nights",
+      "spent": "Total spent",
+      "spentValue": "$2.58M",
+      "lastVisit": "Last visit",
+      "lastVisitValue": "Nov 16",
+      "noteTag": "Preference",
+      "note": "Prefers a high floor away from the lift. Asks for a firm pillow."
+    },
+    "shifts": {
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed"
+      ],
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "night": "Night",
+      "uncovered": "Uncovered",
+      "team": "Staff · Casa Laureles",
+      "thisWeek": "h this week",
+      "toast": "Wednesday night shift covered"
+    },
+    "fin": {
+      "revenue": "December revenue",
+      "revenueValue": "$18,450,000",
+      "pending": "Pending payments",
+      "pendingValue": "$1,960,000",
+      "tip": "Week 3",
+      "tipValue": "$5,240,000",
+      "weeks": [
+        "Wk 1",
+        "Wk 2",
+        "Wk 3",
+        "Wk 4"
+      ],
+      "export": "Export report",
+      "toast": "December report ready"
+    },
+    "exp": {
+      "coffee": "Coffee tour in Jardín",
+      "coffeeWhen": "Sat 14 Dec · 7:00 a.m. · 8 spots",
+      "graffiti": "Comuna 13 graffiti tour",
+      "graffitiWhen": "Every day · 10:00 a.m. · 2 spots",
+      "cooking": "Paisa cooking class",
+      "cookingWhen": "Sat 21 Dec · 4:00 p.m. · 10 spots",
+      "unscheduled": "Not scheduled",
+      "active": "Active",
+      "fewSpots": "Few spots left",
+      "draft": "Draft",
+      "toast": "Experience published"
+    }
+  },
+  "plans": {
+    "title": "A plan for every operation.",
+    "lead": "For owners and managers of tourist accommodation. Prices in Colombian pesos, billed monthly, no commitment.",
+    "popular": "Most popular",
+    "includes": "Included in",
+    "columns": [
+      {
+        "name": "LyHost One",
+        "subtitle": "For independent owners",
+        "price": "$124,999",
+        "note": "COP / month",
+        "features": [
+          "Up to 5 properties",
+          "Up to 2 users",
+          "Unlimited rooms",
+          "Basic inventory management",
+          "Audit log",
+          "2 active experiences",
+          "Basic roles and shifts"
+        ],
+        "cta": "Get One",
+        "featured": false
+      },
+      {
+        "name": "LyHost Plus",
+        "subtitle": "For growing teams",
+        "price": "$179,999",
+        "note": "COP / month · everything in One, plus",
+        "features": [
+          "Up to 20 properties",
+          "Up to 10 users",
+          "Built-in CRM",
+          "Reports and analytics",
+          "Basic financial management",
+          "Priority support"
+        ],
+        "cta": "Get Plus",
+        "featured": true
+      },
+      {
+        "name": "LyHost Prime",
+        "subtitle": "The complete package, no limits",
+        "price": "$280,000",
+        "note": "COP / month · everything included",
+        "features": [
+          "Unlimited properties",
+          "Unlimited users",
+          "Unlimited rooms",
+          "24/7 support",
+          "Personalised training"
+        ],
+        "cta": "Get Prime",
+        "featured": false
+      }
+    ],
+    "trialQuestion": "Rather try it first?",
+    "trialText": "Try LyHost for 5 days with full access to every module.",
+    "trialCta": "Try LyHost"
+  },
+  "close": {
+    "title": "Try LyHost for 5 days.",
+    "text": "Explore every module and see how to run your whole operation from one place.",
+    "start": "Start free trial",
+    "sales": "Contact sales"
+  },
+  "footer": {
+    "tagline": "Built in Colombia. Designed for hospitality.",
+    "company": "A Lymon Colombia S.A.S. product · Medellín, Colombia",
+    "product": "Product",
+    "legal": "Legal",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "dataPolicy": "Data processing",
+    "contact": "Contact",
+    "sample": "Screens on this page show sample data."
+  }
+}

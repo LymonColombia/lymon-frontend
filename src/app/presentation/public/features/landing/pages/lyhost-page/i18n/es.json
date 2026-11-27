@@ -1,0 +1,326 @@
+{
+  "nav": {
+    "label": "Principal",
+    "home": "LyHost, inicio",
+    "product": "Producto",
+    "modules": "Módulos",
+    "plans": "Planes",
+    "login": "Iniciar sesión",
+    "trial": "Prueba gratis"
+  },
+  "hero": {
+    "titleA": "Tu propiedad. Tus reglas.",
+    "titleB": "Todo en un solo lugar.",
+    "lead": "Para hoteles, hostales y alojamientos independientes. Reservas, huéspedes, equipo y finanzas en un solo panel.",
+    "startTrial": "Empezar prueba gratuita",
+    "seePlans": "Ver planes",
+    "demoLabel": "Animación: en el calendario de Reservas de LyHost, una persona toca un espacio libre de la habitación 204, crea la reserva de Ana Restrepo y la barra aparece en el calendario",
+    "pause": "Pausar la animación",
+    "resume": "Reanudar la animación",
+    "factsLabel": "Por qué LyHost",
+    "facts": [
+      {
+        "title": "Sin Excel",
+        "text": "Reservas, huéspedes y equipo en un solo sistema."
+      },
+      {
+        "title": "Sin caos",
+        "text": "Turnos claros y cada persona sabe qué le toca."
+      },
+      {
+        "title": "Sin comisiones",
+        "text": "Pagas un plan mensual, no un porcentaje por reserva."
+      },
+      {
+        "title": "En tiempo real",
+        "text": "Todo actualizado al instante, desde cualquier dispositivo."
+      }
+    ],
+    "panel": {
+      "section": "Operación",
+      "page": "Reservas",
+      "search": "Buscar reservas, huéspedes…",
+      "showing": "Mostrando:",
+      "property": "Casa Laureles, Medellín",
+      "synced": "Booking.com y Airbnb sincronizados",
+      "newBooking": "+ Nueva reserva",
+      "direct": "LyHost · directa",
+      "occupancy": "Ocupación en estas fechas:",
+      "rangeWide": "14 – 23 nov 2026",
+      "rangeCompact": "16 – 21 nov 2026",
+      "selection": "jue 19 → lun 23 nov · 4 noches",
+      "toast": "Reserva creada · RSV-00521 · Hab. 204 · 19–23 nov",
+      "drawerTitle": "Nueva reserva",
+      "drawerStep": "Paso 2 de 3 · Huésped",
+      "arrival": "Llegada",
+      "arrivalDate": "jue 19 nov",
+      "nights": "4 noches",
+      "departure": "Salida",
+      "departureDate": "lun 23 nov",
+      "stayMeta": "Hab. 204 · Casa Laureles · 2 huéspedes",
+      "guestName": "Nombre del huésped",
+      "recurring": "Huésped recurrente",
+      "recurringMeta": "2 estadías · prefiere piso alto",
+      "phone": "Teléfono",
+      "payment": "Pago",
+      "paid": "Pagada",
+      "pending": "Pendiente",
+      "back": "Atrás",
+      "create": "Crear reserva"
+    }
+  },
+  "calendar": {
+    "unit": "Unidad",
+    "room": "Hab.",
+    "week": [
+      "lun",
+      "mar",
+      "mié",
+      "jue",
+      "vie",
+      "sáb",
+      "dom"
+    ]
+  },
+  "ecosystem": {
+    "title": "Un solo panel para toda tu operación",
+    "lead": "Lo que antes estaba en hojas de cálculo, chats y cuadernos, ahora en un mismo lugar.",
+    "propertiesLabel": "Ejemplo: tres propiedades con su ocupación, llegadas de hoy e ingresos del mes",
+    "properties": "Propiedades",
+    "totalBefore": "Todas ·",
+    "totalAfter": "de ocupación",
+    "colProperty": "Propiedad",
+    "colOccupancy": "Ocupación",
+    "colArrivals": "Llegadas hoy",
+    "colRevenue": "Ingresos del mes",
+    "propertyRows": [
+      {
+        "name": "Casa Laureles",
+        "meta": "Hotel · Medellín",
+        "revenue": "$ 12,9 M"
+      },
+      {
+        "name": "Hostal Centro",
+        "meta": "Hostal · Medellín",
+        "revenue": "$ 8,6 M"
+      },
+      {
+        "name": "Hotel Mar Azul",
+        "meta": "Hotel · Santa Marta",
+        "revenue": "$ 7,2 M"
+      }
+    ],
+    "mainTitle": "Todas tus propiedades, una sola operación.",
+    "mainText": "Reservas, personal y finanzas de cada alojamiento en un mismo panel. Cambia de propiedad o míralas todas juntas.",
+    "guestLabel": "Ejemplo: perfil de un huésped con sus preferencias y sus últimas estadías",
+    "guestMeta": "4 estadías · desde 2025",
+    "inStay": "En estadía",
+    "guestTags": [
+      "Piso alto",
+      "Late check-out",
+      "Viaja por trabajo"
+    ],
+    "guestStays": [
+      {
+        "room": "Hab. 402 · 8–11 nov",
+        "nights": "3 noches"
+      },
+      {
+        "room": "Hab. 405 · 2–4 ago",
+        "nights": "2 noches"
+      }
+    ],
+    "guestTitle": "Recuerda a cada huésped, no solo su reserva.",
+    "guestText": "Estadías, preferencias y notas del equipo en su perfil, para que cada visita se sienta como en casa.",
+    "weekLabel": "Ejemplo: ocupación de la semana, de 58 % el martes a 94 % el sábado; hoy, jueves, 72 %.",
+    "today": "Ocupación hoy",
+    "weekDays": [
+      "L",
+      "M",
+      "M",
+      "J",
+      "V",
+      "S",
+      "D"
+    ],
+    "occupancyTitle": "Conoce la ocupación y los ingresos de hoy.",
+    "occupancyText": "Ocupación, llegadas e ingresos del mes de cada propiedad, sin armar reportes a mano."
+  },
+  "features": {
+    "title": "Todos tus alojamientos conectados",
+    "lead": "LyHost conecta todos los módulos de tu operación. Un solo sistema, todo en tiempo real.",
+    "tabsLabel": "Módulos",
+    "pause": "Pausar recorrido",
+    "resume": "Reanudar recorrido",
+    "modules": {
+      "res": {
+        "title": "Reservas y disponibilidad",
+        "text": "Todas tus reservas y habitaciones en un calendario. Sabes qué está ocupado, quién llega hoy y qué falta por pagar."
+      },
+      "guests": {
+        "title": "Historial de huéspedes",
+        "text": "Cada persona que se queda contigo, con sus estadías y preferencias."
+      },
+      "shifts": {
+        "title": "Turnos y equipo",
+        "text": "Arma los turnos de recepción, limpieza y mantenimiento, y sabe quién cubre cada uno."
+      },
+      "fin": {
+        "title": "Finanzas",
+        "text": "Ingresos, gastos y pagos pendientes de cada propiedad, actualizados al instante."
+      },
+      "exp": {
+        "title": "Experiencias para tus visitantes",
+        "text": "Publica tours y actividades, controla sus cupos y súmalos a la estadía de tus huéspedes."
+      }
+    },
+    "res": {
+      "direct": "LyHost · directa",
+      "stay": "Hab. 101 · lun 16 → mar 17 nov · 1 noche",
+      "payment": "Pago",
+      "paid": "Pagada en LyHost",
+      "pending": "Pendiente de pago",
+      "register": "Registrar pago · $ 260.000",
+      "toast": "Pago registrado · $ 260.000"
+    },
+    "guests": {
+      "search": "Buscar por nombre, correo o teléfono",
+      "viewProfile": "Ver perfil",
+      "emailDomain": "ejemplo.co",
+      "vip": "VIP",
+      "loyalty": "Fidelidad",
+      "business": "Negocios",
+      "regular": "Regular",
+      "staying": "Hospedado",
+      "arriving": "Por llegar",
+      "past": "Anterior",
+      "stays": "Estancias",
+      "nights": "Noches",
+      "spent": "Total gastado",
+      "spentValue": "$ 2,58 M",
+      "lastVisit": "Última visita",
+      "lastVisitValue": "16 nov",
+      "noteTag": "Preferencial",
+      "note": "Prefiere piso alto y lejos del ascensor. Pide almohada firme."
+    },
+    "shifts": {
+      "days": [
+        "Lun",
+        "Mar",
+        "Mié"
+      ],
+      "morning": "Mañana",
+      "afternoon": "Tarde",
+      "night": "Noche",
+      "uncovered": "Sin cubrir",
+      "team": "Equipo · Casa Laureles",
+      "thisWeek": "h esta semana",
+      "toast": "Turno de noche del miércoles cubierto"
+    },
+    "fin": {
+      "revenue": "Ingresos de diciembre",
+      "revenueValue": "$ 18.450.000",
+      "pending": "Pagos pendientes",
+      "pendingValue": "$ 1.960.000",
+      "tip": "Semana 3",
+      "tipValue": "$ 5.240.000",
+      "weeks": [
+        "Sem 1",
+        "Sem 2",
+        "Sem 3",
+        "Sem 4"
+      ],
+      "export": "Exportar reporte",
+      "toast": "Reporte de diciembre listo"
+    },
+    "exp": {
+      "coffee": "Tour de café en Jardín",
+      "coffeeWhen": "Sáb 14 dic · 7:00 a. m. · 8 cupos",
+      "graffiti": "Graffitour Comuna 13",
+      "graffitiWhen": "Todos los días · 10:00 a. m. · 2 cupos",
+      "cooking": "Clase de cocina paisa",
+      "cookingWhen": "Sáb 21 dic · 4:00 p. m. · 10 cupos",
+      "unscheduled": "Por programar",
+      "active": "Activa",
+      "fewSpots": "Pocos cupos",
+      "draft": "Borrador",
+      "toast": "Experiencia publicada"
+    }
+  },
+  "plans": {
+    "title": "Un plan para cada operación.",
+    "lead": "Para propietarios y administradores de alojamientos turísticos. Precios en pesos colombianos, pago mensual, sin compromiso.",
+    "popular": "Más popular",
+    "includes": "Incluye",
+    "columns": [
+      {
+        "name": "LyHost One",
+        "subtitle": "Para propietarios independientes",
+        "price": "$ 124.999",
+        "note": "COP / mes",
+        "features": [
+          "Hasta 5 propiedades",
+          "Hasta 2 usuarios",
+          "Habitaciones ilimitadas",
+          "Gestión básica de inventario",
+          "Registro de auditoría",
+          "2 experiencias activas",
+          "Roles y turnos básicos"
+        ],
+        "cta": "Adquirir One",
+        "featured": false
+      },
+      {
+        "name": "LyHost Plus",
+        "subtitle": "Para equipos en crecimiento",
+        "price": "$ 179.999",
+        "note": "COP / mes · todo lo de One, y además",
+        "features": [
+          "Hasta 20 propiedades",
+          "Hasta 10 usuarios",
+          "CRM integrado",
+          "Reportes y analíticas",
+          "Gestión financiera básica",
+          "Soporte prioritario"
+        ],
+        "cta": "Adquirir Plus",
+        "featured": true
+      },
+      {
+        "name": "LyHost Prime",
+        "subtitle": "Solución completa sin límites",
+        "price": "$ 280.000",
+        "note": "COP / mes · todo incluido",
+        "features": [
+          "Propiedades ilimitadas",
+          "Usuarios ilimitados",
+          "Habitaciones ilimitadas",
+          "Soporte 24/7",
+          "Capacitación personalizada"
+        ],
+        "cta": "Adquirir Prime",
+        "featured": false
+      }
+    ],
+    "trialQuestion": "¿Prefieres probar primero?",
+    "trialText": "Prueba LyHost 5 días con acceso completo a todos los módulos.",
+    "trialCta": "Probar LyHost"
+  },
+  "close": {
+    "title": "Prueba LyHost durante 5 días.",
+    "text": "Explora todos los módulos y descubre cómo gestionar tu operación desde un solo lugar.",
+    "start": "Empezar prueba gratuita",
+    "sales": "Contactar ventas"
+  },
+  "footer": {
+    "tagline": "Desarrollado en Colombia. Diseñado para la hospitalidad.",
+    "company": "Un producto de Lymon Colombia S.A.S. · Medellín, Colombia",
+    "product": "Producto",
+    "legal": "Legal",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "dataPolicy": "Tratamiento de datos",
+    "contact": "Contacto",
+    "sample": "Las pantallas de esta página muestran datos de ejemplo."
+  }
+}

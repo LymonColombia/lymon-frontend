@@ -250,3 +250,34 @@ ng-icon {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ========================================
+   LYHOST LANDING KEYFRAMES
+   Global on purpose: Angular scopes keyframes per component stylesheet,
+   so the landing components could not share them from lyhost-theme.css.
+   ======================================== */
+
+@keyframes lh-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes lh-line-up {
+  from { transform: translateY(105%); }
+  to { transform: none; }
+}
+
+@keyframes lh-grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes lh-grow-y {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* LyHost landing: keep focused controls clear of its sticky 76px header (WCAG 2.4.11) */
+html:has(app-lyhost-page) {
+  scroll-padding-top: 84px;
+}
