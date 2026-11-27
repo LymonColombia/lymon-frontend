@@ -1,31 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapArrowRightCircleFill,
-  bootstrapEnvelope,
-  bootstrapQuestionCircleFill,
-} from '@ng-icons/bootstrap-icons';
-import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
-import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle';
+import { AuthText, authText } from '@/presentation/tenant/features/auth/i18n/auth-i18n';
+import { LyhostBadgeComponent } from '@/presentation/public/features/landing/pages/lyhost-page/components/lyhost-badge/lyhost-badge';
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, NgIcon, PasswordInputComponent, AuthTypeToggleComponent],
-  providers: [
-    provideIcons({
-      bootstrapEnvelope,
-      bootstrapQuestionCircleFill,
-      bootstrapArrowRightCircleFill,
-    }),
-  ],
+  imports: [ReactiveFormsModule, RouterLink, LyhostBadgeComponent],
   templateUrl: './login.html',
-  styleUrls: ['../../../../../shared/styles/auth-form.css'],
+  styleUrl: './login.css',
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
@@ -34,7 +21,14 @@ export class LoginComponent {
   private readonly tutorialService = inject(TutorialService);
 
   readonly isLoading = signal(false);
-  readonly errorMessage = signal<string | null>(null);
+  readonly t = authText('login');
+
+  private readonly errorKey = signal<keyof AuthText['login']['errors'] | null>(null);
+  readonly errorMessage = computed(() => {
+    const key = this.errorKey();
+    return key ? this.t().errors[key] : null;
+  });
+  readonly showPassword = signal(false);
   readonly sessionExpired = signal(
     inject(ActivatedRoute).snapshot.queryParamMap.get('sessionExpired') === 'true',
   );
@@ -54,7 +48,7 @@ export class LoginComponent {
     }
 
     this.isLoading.set(true);
-    this.errorMessage.set(null);
+    this.errorKey.set(null);
 
     const { email, password } = this.form.getRawValue();
 
@@ -70,11 +64,11 @@ export class LoginComponent {
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
         if (err.status === 401) {
-          this.errorMessage.set('Correo o contraseña incorrectos.');
+          this.errorKey.set('invalidCredentials');
         } else if (err.status === 400) {
-          this.errorMessage.set('Datos inválidos. Verifica los campos.');
+          this.errorKey.set('invalidData');
         } else {
-          this.errorMessage.set('Ocurrió un error inesperado. Inténtalo de nuevo.');
+          this.errorKey.set('unexpected');
         }
       },
     });

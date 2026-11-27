@@ -1,0 +1,200 @@
+/* LyHost design system tokens, scoped to the login page */
+:host {
+  --brand-950: #052e26;
+  --brand-900: #084539;
+  --brand-700: #0f7a56;
+  --brand-600: #2ec094;
+  --brand-300: #a9cac3;
+  --brand-100: #e6f7f2;
+  --surface-raised: #ffffff;
+  --surface-sunken: #efeee9;
+  --line: #e3e1da;
+  --line-strong: #8a877e;
+  --ink: #10201b;
+  --ink-muted: #5c615d;
+  --primary: var(--brand-900);
+  --primary-text: var(--brand-700);
+  --primary-hover: var(--brand-950);
+  --primary-soft: var(--brand-100);
+  --on-primary: #ffffff;
+  --success: #15803d;
+  --success-soft: #f0fdf4;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --danger: #d32f2f;
+  --danger-soft: #fef2f2;
+  --link: var(--primary-text);
+  --focus-ring: var(--primary-text);
+  --shadow-lg: 0 24px 48px -12px rgba(16, 32, 27, 0.18);
+  --radius-sm: 6px;
+  --radius-full: 9999px;
+  --font-display: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  position: relative;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: var(--brand-900);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px max(16px, 3vw);
+}
+
+a { color: var(--link); }
+a:hover { color: var(--ink); }
+
+.sun { position: absolute; border-radius: 9999px; pointer-events: none; }
+.sun-a { width: 360px; height: 360px; left: -140px; bottom: -60px; background: var(--brand-950); }
+.sun-b { width: 220px; height: 220px; right: -60px; top: -50px; background: var(--brand-700); opacity: 0.55; }
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 1080px;
+  background: var(--surface-raised);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 32px 64px -24px rgba(0, 0, 0, 0.45);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 32px;
+  align-items: center;
+  padding: 48px 40px;
+}
+
+form { display: flex; flex-direction: column; gap: 24px; max-width: 400px; min-width: 0; }
+.logo { display: inline-flex; align-self: flex-start; }
+.logo img { height: 34px; width: auto; display: block; }
+.intro { display: flex; flex-direction: column; gap: 12px; }
+h1 { margin: 0; font: 600 40px/44px var(--font-display); letter-spacing: -0.035em; }
+.muted { margin: 0; color: var(--ink-muted); }
+
+.banner {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+  font-size: 14px; line-height: 20px;
+  animation: bannerIn 0.3s var(--ease) both;
+  background: var(--success-soft); color: var(--success);
+}
+.banner::before { content: ''; width: 8px; height: 8px; border-radius: 9999px; background: currentColor; flex: none; }
+.banner.warning { background: var(--warning-soft); color: var(--warning); }
+.banner.danger { background: var(--danger-soft); color: var(--danger); }
+
+.fields { display: flex; flex-direction: column; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label { font: 500 13px/16px var(--font-sans); color: var(--ink); }
+.input {
+  font: 400 15px/22px var(--font-sans); color: var(--ink); background: var(--surface-raised);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-full); padding: 9px 12px;
+  transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+.input::placeholder { color: var(--ink-muted); }
+.input:focus { border-color: var(--primary-text); box-shadow: 0 0 0 3px var(--primary-soft); }
+.input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.hint { font: 400 13px/20px var(--font-sans); color: var(--danger); }
+.field.invalid .input { border-color: var(--danger); }
+
+.pw-wrap { position: relative; display: flex; flex-direction: column; }
+.pw-wrap .input { padding-right: 44px; }
+.eye {
+  position: absolute; right: 4px; top: 4px; width: 34px; height: 34px; display: grid; place-items: center;
+  border: 0; border-radius: 9999px; background: transparent; color: var(--ink-muted); cursor: pointer;
+}
+.eye:hover { background: var(--surface-sunken); color: var(--ink); }
+
+.actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.small { font-size: 14px; line-height: 20px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: 500 14px/20px var(--font-sans); letter-spacing: -0.005em; padding: 9px 22px;
+  border-radius: var(--radius-full); border: 1px solid transparent; cursor: pointer;
+  background: var(--primary); color: var(--on-primary);
+}
+.btn:hover:not(:disabled) { background: var(--primary-hover); }
+@media (prefers-reduced-motion: no-preference) {
+  .btn { transition: background-color 0.15s ease-out, border-color 0.15s ease-out, transform 0.1s ease-out; }
+  .btn:active { transform: translateY(1px); }
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:focus-visible, .eye:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.signup { margin: 0; font-size: 14px; line-height: 22px; color: var(--ink-muted); }
+
+.art { position: relative; min-width: 0; height: 420px; }
+.scene { display: block; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.float {
+  position: absolute; background: var(--surface-raised); border: 1px solid var(--line);
+  border-radius: 14px; box-shadow: var(--shadow-lg);
+}
+.cardA { animation-name: cardA; left: 0; top: 4%; display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 10px; }
+.cardB { animation-name: cardB; right: 0; bottom: 4%; display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; }
+.avatar {
+  width: 32px; height: 32px; border-radius: 9999px; background: var(--primary-soft); color: var(--primary-text);
+  display: grid; place-items: center; font: 600 12px/1 var(--font-sans);
+}
+.stack { display: flex; flex-direction: column; }
+.caption { font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+.strong { font: 600 13px/18px var(--font-sans); color: var(--ink); }
+.amount { font-size: 15px; line-height: 20px; color: var(--ink); }
+
+/* motion: one easing, things arrive once */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.in { animation: fadeUp 0.6s var(--ease) both; animation-delay: var(--d, 0s); }
+@keyframes lineUp { from { transform: translateY(105%); } to { transform: none; } }
+.ln { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.ln > span { display: inline-block; animation: lineUp 0.8s var(--ease) both; animation-delay: var(--d, 0s); }
+@keyframes bannerIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .in, .ln > span, .banner { animation: none !important; }
+}
+
+/* ===== reception scene: a traveller checks in, on a 10s loop ===== */
+@keyframes guestWalk{0%{transform:translate(-230px,0);opacity:0}2%{opacity:1}3.0%{transform:translate(-201.2px,-3px);opacity:1}6.0%{transform:translate(-172.5px,0px);opacity:1}9.0%{transform:translate(-143.8px,-3px);opacity:1}12.0%{transform:translate(-115.0px,0px);opacity:1}15.0%{transform:translate(-86.2px,-3px);opacity:1}18.0%{transform:translate(-57.5px,0px);opacity:1}21.0%{transform:translate(-28.8px,-3px);opacity:1}24.0%{transform:translate(0.0px,0px);opacity:1}90%{transform:translate(0,0);opacity:1}97%{transform:translate(-50px,0);opacity:0}100%{transform:translate(-230px,0);opacity:0}}
+@keyframes legA{0.0%{transform:rotate(14deg)}3.0%{transform:rotate(-14deg)}6.0%{transform:rotate(14deg)}9.0%{transform:rotate(-14deg)}12.0%{transform:rotate(14deg)}15.0%{transform:rotate(-14deg)}18.0%{transform:rotate(14deg)}21.0%{transform:rotate(-14deg)}24.0%{transform:rotate(0deg)}90%{transform:rotate(0deg)}93.5%{transform:rotate(12deg)}97%{transform:rotate(-12deg)}100%{transform:rotate(0deg)}}
+@keyframes legB{0.0%{transform:rotate(-14deg)}3.0%{transform:rotate(14deg)}6.0%{transform:rotate(-14deg)}9.0%{transform:rotate(14deg)}12.0%{transform:rotate(-14deg)}15.0%{transform:rotate(14deg)}18.0%{transform:rotate(-14deg)}21.0%{transform:rotate(14deg)}24.0%{transform:rotate(0deg)}90%{transform:rotate(0deg)}93.5%{transform:rotate(-12deg)}97%{transform:rotate(12deg)}100%{transform:rotate(0deg)}}
+@keyframes gArm{0%,24%{transform:rotate(-12deg)}27%,29%{transform:rotate(-72deg)}31%{transform:rotate(-14deg)}36%,44%{transform:rotate(-62deg)}47%{transform:rotate(-14deg)}62%{transform:rotate(-14deg)}65%,68%{transform:rotate(-58deg)}72%,100%{transform:rotate(-22deg)}}
+@keyframes bellPress{0%,27%{transform:translateY(0)}28%{transform:translateY(2px)}29.5%,100%{transform:translateY(0)}}
+@keyframes ding{0%,27%{opacity:0;transform:scale(.6)}28.5%{opacity:1;transform:scale(1)}32%,100%{opacity:0;transform:scale(1.15)}}
+@keyframes rArm{0%,30%{transform:rotate(28deg)}32.5%{transform:rotate(140deg)}34%{transform:rotate(118deg)}35.5%{transform:rotate(140deg)}38%,56%{transform:rotate(28deg)}60%,65%{transform:rotate(78deg)}69%,100%{transform:rotate(28deg)}}
+@keyframes rHead{0%,30%{transform:rotate(0)}33%,36%{transform:rotate(-6deg)}39%,100%{transform:rotate(0)}}
+@keyframes idCard{0%,33%{opacity:0}35%,44%{opacity:1}46%,100%{opacity:0}}
+@keyframes keyR{0%,55%{opacity:0}57%,64.5%{opacity:1}65.5%,100%{opacity:0}}
+@keyframes keyG{0%,65%{opacity:0}66%,95%{opacity:1}97%,100%{opacity:0}}
+@keyframes screenOn{0%,45%{opacity:0}47%,49%{opacity:1}50%{opacity:.4}51%,53%{opacity:1}54%{opacity:.4}55%,57%{opacity:1}59%,100%{opacity:0}}
+@keyframes cardA{0%,47%{opacity:0;transform:translateY(10px) scale(.96)}50%,93%{opacity:1;transform:none}97%,100%{opacity:0;transform:translateY(6px)}}
+@keyframes cardB{0%,66%{opacity:0;transform:translateY(10px) scale(.96)}69%,93%{opacity:1;transform:none}97%,100%{opacity:0;transform:translateY(6px)}}
+.scene g, .scene path, .scene rect, .scene circle{transform-box:view-box}
+.loop{animation-duration:10s;animation-iteration-count:infinite;animation-timing-function:ease-in-out;animation-fill-mode:both}
+#guest{animation-name:guestWalk;animation-timing-function:linear}
+#legA{transform-origin:206px 292px;animation-name:legA;animation-timing-function:linear}
+#legB{transform-origin:206px 292px;animation-name:legB;animation-timing-function:linear}
+#gArm{transform-origin:228px 222px;transform:rotate(-22deg);animation-name:gArm}
+#bell{animation-name:bellPress}
+#ding{transform-origin:276px 206px;opacity:0;animation-name:ding}
+#rArm{transform-origin:338px 190px;transform:rotate(28deg);animation-name:rArm}
+#rHead{transform-origin:370px 162px;animation-name:rHead}
+#idCard{opacity:0;animation-name:idCard}
+#keyR{opacity:0;animation-name:keyR}
+#keyG{opacity:1;animation-name:keyG}
+#screenOn{opacity:0;animation-name:screenOn;animation-timing-function:steps(1,end)}
+@media (prefers-reduced-motion: reduce){
+  .loop{animation:none !important}
+  #screenOn{opacity:0}
+}
+
+
+@media (max-width: 960px) {
+  .card-grid { grid-template-columns: minmax(0, 1fr); }
+  .art { display: none; }
+}
