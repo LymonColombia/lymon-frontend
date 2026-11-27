@@ -1,28 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
-  ReactiveFormsModule,
   FormBuilder,
+  ReactiveFormsModule,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  bootstrapArrowLeft,
-  bootstrapArrowRightCircleFill,
-  bootstrapBuilding,
-  bootstrapCalendar,
-  bootstrapCheckCircleFill,
-  bootstrapCreditCard,
-  bootstrapEnvelope,
-  bootstrapEye,
-  bootstrapEyeSlash,
-  bootstrapLock,
-  bootstrapQuestionCircleFill,
-} from '@ng-icons/bootstrap-icons';
 import { RegisterUseCase } from '@/domain/tenant/auth/use-cases/register.use-case';
 import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
 import { GetPlansUseCase } from '@/domain/shared/plan/use-cases/get-plans.use-case';
@@ -31,8 +17,8 @@ import { UserSessionService } from '@/infrastructure/tenant/services/user-sessio
 import { PlanType } from '@/domain/tenant/auth/auth.model';
 import { Plan, isFreePlan } from '@/domain/shared/plan/plan.model';
 import { ModalComponent } from '@/presentation/shared/components/modal/modal';
-import { PasswordInputComponent } from '@/presentation/shared/components/password-input/password-input';
-import { AuthTypeToggleComponent } from '@/presentation/shared/components/auth-type-toggle/auth-type-toggle';
+import { AuthText, authText } from '@/presentation/tenant/features/auth/i18n/auth-i18n';
+import { passwordStrength } from '@/presentation/tenant/features/auth/password-strength';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -51,49 +37,28 @@ function futureExpiryValidator(control: AbstractControl): ValidationErrors | nul
 
   const month = Number.parseInt(match[1], 10);
   const year = Number.parseInt(match[2], 10) + 2000;
-
   if (month < 1 || month > 12) return { expiryInvalid: true };
 
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
-
   if (year < currentYear || (year === currentYear && month < currentMonth)) {
     return { expiryPast: true };
   }
-
   return null;
 }
 
+export type RegisterStep = 'hotel' | 'email' | 'password' | 'plan' | 'billing';
+
+/** Bar heights of the plan scene, cheapest to most complete. */
+const PLAN_BAR_HEIGHTS = [60, 100, 150, 200];
+
 @Component({
   selector: 'app-register',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    NgIcon,
-    ModalComponent,
-    PasswordInputComponent,
-    AuthTypeToggleComponent,
-  ],
-  providers: [
-    provideIcons({
-      bootstrapArrowLeft,
-      bootstrapArrowRightCircleFill,
-      bootstrapBuilding,
-      bootstrapCalendar,
-      bootstrapCheckCircleFill,
-      bootstrapCreditCard,
-      bootstrapEnvelope,
-      bootstrapEye,
-      bootstrapEyeSlash,
-      bootstrapLock,
-      bootstrapQuestionCircleFill,
-    }),
-  ],
+  imports: [ReactiveFormsModule, RouterLink, ModalComponent],
   templateUrl: './register.html',
-  styleUrls: ['../../../../../shared/styles/auth-form.css', './register.css'],
+  styleUrls: ['../../styles/auth-shell.css', './register.css'],
 })
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
@@ -104,173 +69,188 @@ export class RegisterComponent {
   private readonly userSessionService = inject(UserSessionService);
   private readonly router = inject(Router);
 
-  readonly currentStep = signal<1 | 2 | 3>(1);
-  readonly isLoading = signal(false);
-  readonly isProcessingPayment = signal(false);
-  readonly errorMessage = signal<string | null>(null);
-  readonly isTermsOpen = signal(false);
-  readonly isConfirmModalOpen = signal(false);
-  readonly showCvv = signal(false);
-
-  readonly availablePlans = signal<Plan[]>([]);
-  readonly plansLoading = signal(false);
-  readonly plansError = signal<string | null>(null);
-
-  readonly isTrialSelected = computed(() => {
-    const plan = this.selectedPlan();
-    return plan ? isFreePlan(plan) : false;
-  });
-
-  readonly visibleStepLabels = computed(() => {
-    const base = ['Datos de tu hotel', 'Elegí tu plan'];
-    return this.isTrialSelected() ? base : [...base, 'Pago'];
-  });
+  readonly t = authText('register');
 
   readonly form = this.fb.group({
-    stepOne: this.fb.group(
+    hotel: this.fb.group({
+      tenantName: ['', Validators.required],
+    }),
+    account: this.fb.group({
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
+    }),
+    password: this.fb.group(
       {
-        tenantName: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
         password: ['', [Validators.required, Validators.minLength(8)]],
         confirmPassword: ['', Validators.required],
         terms: [false, Validators.requiredTrue],
       },
       { validators: passwordsMatchValidator },
     ),
-    stepTwo: this.fb.group({
-      planType: ['' as PlanType, Validators.required],
+    plan: this.fb.group({
+      planType: ['TRIAL' as PlanType, Validators.required],
     }),
-    stepThree: this.fb.group({
-      cardName: ['', Validators.required],
+    billing: this.fb.group({
       cardNumber: ['', [Validators.required, Validators.pattern(/^\d{16}$/)]],
       expiry: ['', [Validators.required, futureExpiryValidator]],
       cvv: ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]],
     }),
   });
 
-  readonly selectedPlanTypeSignal = signal<PlanType | null>(null);
-  readonly cardNumberRaw = signal('');
+  readonly stepIndex = signal(0);
+  readonly isLoading = signal(false);
+  readonly isTermsOpen = signal(false);
+  readonly showPassword = signal(false);
+  readonly showConfirmation = signal(false);
 
-  readonly selectedPlan = computed<Plan | null>(() => {
-    const type = this.selectedPlanTypeSignal();
-    if (!type) return null;
-    return this.availablePlans().find((p) => p.type === type) ?? null;
+  readonly availablePlans = signal<Plan[]>([]);
+  readonly plansLoading = signal(false);
+  readonly plansError = signal(false);
+
+  private readonly errorKey = signal<keyof AuthText['register']['errors'] | null>(null);
+  /** The backend's own 400 message, shown as is when it sends one. */
+  private readonly serverMessage = signal<string | null>(null);
+  readonly errorMessage = computed(() => {
+    const key = this.errorKey();
+    return this.serverMessage() ?? (key ? this.t().errors[key] : null);
   });
 
-  readonly cardNumberDisplay = computed(() => {
-    const value = this.cardNumberRaw();
-    return value.replace(/(\d{4})(?=\d)/g, '$1 ');
+  // Form values as signals, for the step list and the scenes
+  private readonly tenantName = toSignal(this.hotelForm.controls.tenantName.valueChanges, { initialValue: '' });
+  private readonly email = toSignal(this.accountForm.controls.email.valueChanges, { initialValue: '' });
+  private readonly password = toSignal(this.passwordForm.controls.password.valueChanges, { initialValue: '' });
+  private readonly confirmPassword = toSignal(this.passwordForm.controls.confirmPassword.valueChanges, {
+    initialValue: '',
+  });
+  private readonly planType = toSignal(this.planForm.controls.planType.valueChanges, {
+    initialValue: 'TRIAL' as PlanType,
+  });
+  private readonly cardNumber = toSignal(this.billingForm.controls.cardNumber.valueChanges, { initialValue: '' });
+  private readonly expiry = toSignal(this.billingForm.controls.expiry.valueChanges, { initialValue: '' });
+
+  readonly selectedPlan = computed<Plan | null>(
+    () => this.availablePlans().find((p) => p.type === this.planType()) ?? null,
+  );
+  readonly isTrialSelected = computed(() => {
+    const plan = this.selectedPlan();
+    return plan ? isFreePlan(plan) : this.planType() === 'TRIAL';
   });
 
-  readonly cardNumberConfirmMask = computed(() => {
-    const value = this.cardNumberRaw();
-    if (value.length < 4) return value;
-    return `**** **** **** ${value.slice(-4)}`;
+  /** The card step only exists for paid plans. */
+  readonly steps = computed<RegisterStep[]>(() => {
+    const base: RegisterStep[] = ['hotel', 'email', 'password', 'plan'];
+    return this.isTrialSelected() ? base : [...base, 'billing'];
   });
+  readonly step = computed(() => this.steps()[Math.min(this.stepIndex(), this.steps().length - 1)]);
+  readonly isLastStep = computed(() => this.stepIndex() >= this.steps().length - 1);
 
-  constructor() {
-    this.stepTwoForm.controls.planType.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((value) => this.selectedPlanTypeSignal.set(value ?? null));
+  readonly strength = computed(() => passwordStrength(this.password() ?? ''));
+  readonly strengthWord = computed(() => {
+    const s = this.strength();
+    return s ? this.t().strength[String(s) as keyof AuthText['register']['strength']] : '';
+  });
+  readonly passwordsMatch = computed(
+    () => (this.password() ?? '').length >= 8 && this.password() === this.confirmPassword(),
+  );
 
-    this.stepThreeForm.controls.cardNumber.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((value) => this.cardNumberRaw.set(value ?? ''));
+  // Scene text
+  readonly signText = computed(() => this.short(this.tenantName() ?? '', 22) || this.t().scene.yourHotel);
+  readonly emailShown = computed(() => this.short(this.email() ?? '', 24) || this.t().scene.emailSample);
+  readonly emailOk = computed(() => this.accountForm.controls.email.valid && !!this.email());
+  readonly pwDots = computed(() => '•'.repeat(Math.min((this.password() ?? '').length, 14)));
+  readonly pwLabel = computed(() => {
+    const scene = this.t().scene;
+    if (this.passwordsMatch()) return `${scene.pwMatch} · ${this.strengthWord()}`;
+    if (this.confirmPassword() && this.confirmPassword() !== this.password()) return scene.pwMismatch;
+    return this.strength() ? `${scene.security}: ${this.strengthWord()}` : scene.typePassword;
+  });
+  readonly meter = computed(() => {
+    const score = this.strength();
+    const lit = score >= 3 ? 'var(--brand-600)' : 'var(--brand-300)';
+    return [0, 1, 2, 3].map((n) => ({ x: 186 + n * 38, fill: n < score ? lit : 'var(--line)' }));
+  });
+  readonly planBars = computed(() =>
+    this.availablePlans()
+      .slice(0, PLAN_BAR_HEIGHTS.length)
+      .map((plan, n) => {
+        const h = PLAN_BAR_HEIGHTS[n];
+        const x = 120 + n * 74;
+        return {
+          type: plan.type,
+          on: plan.type === this.planType(),
+          x,
+          y: 342 - h,
+          h,
+          cx: x + 28,
+          ty: 342 - h - 10,
+          name: plan.name.replace('LyHost ', ''),
+          price: plan.price,
+          delay: `${n * 0.08}s`,
+        };
+      }),
+  );
+  readonly cardShown = computed(() => {
+    const last4 = (this.cardNumber() ?? '').slice(-4);
+    return '•••• •••• •••• ' + (last4.length === 4 ? last4 : '••••');
+  });
+  readonly cardDisplay = computed(() => (this.cardNumber() ?? '').replace(/(\d{4})(?=\d)/g, '$1 '));
+  readonly expShown = computed(() =>
+    this.expiry() ? `${this.t().scene.expires} ${this.expiry()}` : this.t().expiryPlaceholder,
+  );
+
+  get hotelForm() {
+    return this.form.controls.hotel;
+  }
+  get accountForm() {
+    return this.form.controls.account;
+  }
+  get passwordForm() {
+    return this.form.controls.password;
+  }
+  get planForm() {
+    return this.form.controls.plan;
+  }
+  get billingForm() {
+    return this.form.controls.billing;
   }
 
-  get stepOneForm() {
-    return this.form.controls.stepOne;
-  }
-  get stepTwoForm() {
-    return this.form.controls.stepTwo;
-  }
-  get stepThreeForm() {
-    return this.form.controls.stepThree;
-  }
-
-  get tenantNameControl() {
-    return this.stepOneForm.controls.tenantName;
-  }
-  get emailControl() {
-    return this.stepOneForm.controls.email;
-  }
-  get passwordControl() {
-    return this.stepOneForm.controls.password;
-  }
-  get confirmPasswordControl() {
-    return this.stepOneForm.controls.confirmPassword;
-  }
-  get termsControl() {
-    return this.stepOneForm.controls.terms;
-  }
-  get planTypeControl() {
-    return this.stepTwoForm.controls.planType;
-  }
-  get cardNameControl() {
-    return this.stepThreeForm.controls.cardName;
-  }
-  get cardNumberControl() {
-    return this.stepThreeForm.controls.cardNumber;
-  }
-  get expiryControl() {
-    return this.stepThreeForm.controls.expiry;
-  }
-  get cvvControl() {
-    return this.stepThreeForm.controls.cvv;
-  }
-
-  openTermsModal(): void {
-    this.isTermsOpen.set(true);
-  }
-
-  closeTermsModal(): void {
-    this.isTermsOpen.set(false);
-  }
-
-  openConfirmModal(): void {
-    if (this.stepThreeForm.invalid) {
-      this.stepThreeForm.markAllAsTouched();
+  /** Validate the current step, then go to the next one, or create the account on the last. */
+  next(): void {
+    if (this.isLoading()) return;
+    const groups = {
+      hotel: this.hotelForm,
+      email: this.accountForm,
+      password: this.passwordForm,
+      plan: this.planForm,
+      billing: this.billingForm,
+    };
+    const group = groups[this.step()];
+    if (group.invalid) {
+      group.markAllAsTouched();
       return;
     }
-    this.isConfirmModalOpen.set(true);
-  }
+    if (this.step() === 'plan' && !this.selectedPlan()) return;
 
-  closeConfirmModal(): void {
-    this.isConfirmModalOpen.set(false);
-  }
-
-  goToStepTwo(): void {
-    if (this.stepOneForm.invalid) {
-      this.stepOneForm.markAllAsTouched();
+    if (this.isLastStep()) {
+      this.submit();
       return;
     }
-
-    this.currentStep.set(2);
-    this.loadPlans();
+    this.stepIndex.update((i) => i + 1);
+    if (this.step() === 'plan') this.loadPlans();
   }
 
-  goToStepThree(): void {
-    if (this.stepTwoForm.invalid) {
-      this.stepTwoForm.markAllAsTouched();
-      return;
-    }
-
-    this.currentStep.set(3);
+  back(): void {
+    this.stepIndex.update((i) => Math.max(0, i - 1));
   }
 
-  goBackToStepOne(): void {
-    this.currentStep.set(1);
-  }
-
-  goBackToStepTwo(): void {
-    this.currentStep.set(2);
+  /** Jump back to a finished step from the step dots. */
+  goTo(index: number): void {
+    if (index < this.stepIndex()) this.stepIndex.set(index);
   }
 
   loadPlans(): void {
-    if (this.plansLoading()) return;
-
+    if (this.plansLoading() || this.availablePlans().length) return;
     this.plansLoading.set(true);
-    this.plansError.set(null);
+    this.plansError.set(false);
 
     this.getPlansUseCase.execute().subscribe({
       next: (plans) => {
@@ -279,84 +259,58 @@ export class RegisterComponent {
       },
       error: () => {
         this.plansLoading.set(false);
-        this.plansError.set('No se pudieron cargar los planes. Intentá de nuevo.');
+        this.plansError.set(true);
       },
     });
   }
 
   selectPlan(planType: PlanType): void {
-    this.planTypeControl.setValue(planType);
-    this.selectedPlanTypeSignal.set(planType);
+    this.planForm.controls.planType.setValue(planType);
   }
 
   onCardNumberInput(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const raw = target.value.replace(/\D/g, '').slice(0, 16);
-    this.cardNumberRaw.set(raw);
-    this.cardNumberControl.setValue(raw);
-    this.cardNumberControl.markAsTouched();
+    const raw = (event.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 16);
+    this.billingForm.controls.cardNumber.setValue(raw);
   }
 
   onExpiryInput(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const digits = target.value.replace(/\D/g, '').slice(0, 4);
-    const formatted = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
-    this.expiryControl.setValue(formatted);
-    this.expiryControl.markAsTouched();
+    const digits = (event.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 4);
+    this.billingForm.controls.expiry.setValue(digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits);
   }
 
   onCvvInput(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const raw = target.value.replace(/\D/g, '').slice(0, 4);
-    this.cvvControl.setValue(raw);
+    this.billingForm.controls.cvv.setValue((event.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 4));
   }
 
-  toggleCvvVisibility(): void {
-    this.showCvv.update((v) => !v);
-  }
-
-  onTrialRegister(): void {
-    this.isProcessingPayment.set(true);
-    this.errorMessage.set(null);
-    this.submitRegistration();
-  }
-
-  onFinalRegister(): void {
-    this.isProcessingPayment.set(true);
-    this.errorMessage.set(null);
-
-    globalThis.setTimeout(() => {
-      this.submitRegistration();
-    }, 1500);
-  }
-
-  private submitRegistration(): void {
-    const stepOne = this.stepOneForm.getRawValue();
-    const stepTwo = this.stepTwoForm.getRawValue();
-
-    const payload = {
-      tenantName: stepOne.tenantName!,
-      email: stepOne.email!,
-      password: stepOne.password!,
-      planType: stepTwo.planType!,
-    };
-
+  private submit(): void {
     this.isLoading.set(true);
+    this.errorKey.set(null);
+    this.serverMessage.set(null);
+    // ponytail: no payment provider yet, so a paid plan only waits 1.5 s like the previous page did
+    if (this.isTrialSelected()) {
+      this.register();
+    } else {
+      globalThis.setTimeout(() => this.register(), 1500);
+    }
+  }
 
-    this.registerUseCase.execute(payload).subscribe({
-      next: () => {
-        this.autoLogin(stepOne.email!, stepOne.password!);
-      },
+  private register(): void {
+    const tenantName = this.hotelForm.controls.tenantName.value!;
+    const email = this.accountForm.controls.email.value!;
+    const password = this.passwordForm.controls.password.value!;
+    const planType = this.planForm.controls.planType.value!;
+
+    this.registerUseCase.execute({ tenantName, email, password, planType }).subscribe({
+      next: () => this.autoLogin(email, password),
       error: (err: HttpErrorResponse) => {
-        this.isProcessingPayment.set(false);
         this.isLoading.set(false);
-        this.isConfirmModalOpen.set(false);
         if (err.status === 409) {
-          this.errorMessage.set('Ya existe una cuenta con este correo.');
+          this.errorKey.set('emailTaken');
         } else if (err.status === 400) {
-          this.errorMessage.set(err.error?.message ?? 'Datos inválidos. Verifica los campos.');
+          this.errorKey.set('invalidData');
+          this.serverMessage.set(err.error?.message ?? null);
         } else {
-          this.errorMessage.set('Ocurrió un error inesperado. Inténtalo de nuevo.');
+          this.errorKey.set('unexpected');
         }
       },
     });
@@ -366,16 +320,19 @@ export class RegisterComponent {
     this.loginUseCase.execute({ email, password }).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.isProcessingPayment.set(false);
         this.router.navigate(['/admin/dashboard']);
       },
       error: () => {
         this.isLoading.set(false);
-        this.isProcessingPayment.set(false);
         this.tokenService.clear();
         this.userSessionService.clear();
         this.router.navigate(['/login'], { queryParams: { registered: 'true' } });
       },
     });
+  }
+
+  private short(text: string, max: number): string {
+    const value = text.trim();
+    return value.length > max ? value.slice(0, max - 1) + '…' : value;
   }
 }

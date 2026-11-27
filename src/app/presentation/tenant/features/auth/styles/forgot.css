@@ -14,26 +14,6 @@ h1.title { font: 600 32px/36px var(--font-display); letter-spacing: -0.03em; }
 .art { min-height: 480px; overflow: hidden; }
 .scene { position: absolute; inset: 0; }
 
-/* password strength: one bar from low to high, red to green */
-.pw-meter { display: flex; flex-direction: column; gap: 6px; margin-top: -8px; }
-.pw-track { display: block; height: 6px; border-radius: 9999px; background: var(--surface-sunken); overflow: hidden; }
-.pw-fill { display: block; height: 100%; border-radius: 9999px; }
-.pw-scale { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
-.pw-word { font-weight: 600; }
-.s1 .pw-fill { width: 25%; background: var(--danger); }
-.s2 .pw-fill { width: 50%; background: var(--warning); }
-.s3 .pw-fill { width: 75%; background: var(--brand-600); }
-.s4 .pw-fill { width: 100%; background: var(--success); }
-.s1 .pw-word { color: var(--danger); }
-.s2 .pw-word { color: var(--warning); }
-.s3 .pw-word { color: var(--primary-text); }
-.s4 .pw-word { color: var(--success); }
-
-@media (prefers-reduced-motion: no-preference) {
-  .pw-fill { transition: width 0.35s var(--ease), background-color 0.35s ease-out; }
-  .pw-word { transition: color 0.35s ease-out; }
-}
-
 /* ===== scenes: a person who forgot their password ===== */
 .scene rect, .scene path, .scene g, .scene circle, .scene text { transform-box: fill-box; }
 @keyframes sceneIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
