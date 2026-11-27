@@ -1,0 +1,93 @@
+.dialog {
+  /* The global `* { margin: 0 }` reset removes the UA centering, so restore it. */
+  margin: auto;
+  width: min(420px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--ly-r-xl);
+  background: var(--surface-raised);
+  color: var(--ink);
+  box-shadow: var(--ly-shadow-lg);
+  font-family: var(--font-sans);
+
+  /* Closed state: the exit plays because display/overlay switch after the fade. */
+  opacity: 0;
+  transform: scale(0.96) translateY(4px);
+  transition:
+    opacity 180ms var(--ease-out),
+    transform 180ms var(--ease-out),
+    overlay 180ms allow-discrete,
+    display 180ms allow-discrete;
+}
+
+.dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+}
+
+.dialog::backdrop {
+  background: var(--scrim, rgba(16, 32, 27, 0.35));
+  opacity: 0;
+  transition:
+    opacity 180ms ease-out,
+    overlay 180ms allow-discrete,
+    display 180ms allow-discrete;
+}
+
+.dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+}
+
+.dialog-title {
+  margin: 0;
+  font: 600 18px/24px var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.dialog-content {
+  font: 400 15px/22px var(--font-sans);
+  color: var(--ink-muted);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog {
+    transform: none;
+    transition:
+      opacity 120ms linear,
+      overlay 120ms allow-discrete,
+      display 120ms allow-discrete;
+  }
+
+  @starting-style {
+    .dialog[open] {
+      transform: none;
+    }
+  }
+}

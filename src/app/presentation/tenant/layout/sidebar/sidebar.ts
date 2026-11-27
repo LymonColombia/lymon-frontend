@@ -3,224 +3,118 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
-  ElementRef,
-  OnInit,
+  input,
   signal,
-  ViewChild,
 } from '@angular/core';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter } from 'rxjs';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { ROOM_LABELS } from '@/domain/shared/property/room.constants';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  bootstrapBarChartFill,
-  bootstrapCalendar,
-  bootstrapCurrencyDollar,
-  bootstrapEnvelopeAt,
+  bootstrapBoxArrowRight,
+  bootstrapCalendar2Check,
+  bootstrapChevronDoubleRight,
+  bootstrapChevronDown,
+  bootstrapGear,
   bootstrapGrid,
   bootstrapHouseDoor,
-  bootstrapHouseFill,
-  bootstrapInfoCircle,
-  bootstrapLayoutSidebar,
   bootstrapPeople,
-  bootstrapPersonAdd,
-  bootstrapPersonGear,
-  bootstrapStar,
-  bootstrapThreeDotsVertical,
-  bootstrapArchive,
-  bootstrapClockHistory,
-  bootstrapCalendar2Check
 } from '@ng-icons/bootstrap-icons';
+import { filter, map, startWith } from 'rxjs';
 
 import { GetTenantProfileUseCase } from '@/domain/tenant/tenant/use-cases/get-tenant-profile.use-case';
 import { TokenService } from '@/infrastructure/tenant/services/token.service';
 import { UserSessionService } from '@/infrastructure/tenant/services/user-session.service';
-import { ButtonComponent } from '@/presentation/shared/components/button/button';
-import { ModalComponent } from '@/presentation/shared/components/modal/modal';
+import { UiAvatarComponent } from '@/presentation/shared/ui/ui-avatar/ui-avatar';
+import { UiButtonComponent } from '@/presentation/shared/ui/ui-button/ui-button';
+import { UiDialogComponent } from '@/presentation/shared/ui/ui-dialog/ui-dialog';
+import { UiMenuComponent } from '@/presentation/shared/ui/ui-menu/ui-menu';
+import { UiMenuItemComponent } from '@/presentation/shared/ui/ui-menu/ui-menu-item';
+import { ThemeService } from '@/presentation/tenant/services/theme.service';
+import { HOME_NAV, NAV_GROUPS, NavGroup, groupOfUrl } from '@/presentation/tenant/layout/nav.config';
 
-interface MenuItem {
-  icon: string;
-  label: string;
-  route: string;
-}
-
-
+/**
+ * Floating navigation rail. Collapsed it shows icons; expanded it shows the
+ * labels and opens each group onto its pages. Below 900px it becomes a drawer
+ * driven by the shell through `mobileOpen`.
+ */
 @Component({
   selector: 'app-sidebar',
-  standalone: true,
-  imports: [RouterModule, NgIconComponent, ModalComponent, ButtonComponent],
-  templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css',
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    NgIcon,
+    UiAvatarComponent,
+    UiButtonComponent,
+    UiDialogComponent,
+    UiMenuComponent,
+    UiMenuItemComponent,
+  ],
   providers: [
     provideIcons({
-      bootstrapBarChartFill,
-      bootstrapCalendar,
-      bootstrapCurrencyDollar,
-      bootstrapEnvelopeAt,
+      bootstrapBoxArrowRight,
+      bootstrapCalendar2Check,
+      bootstrapChevronDoubleRight,
+      bootstrapChevronDown,
+      bootstrapGear,
       bootstrapGrid,
       bootstrapHouseDoor,
-      bootstrapHouseFill,
-      bootstrapInfoCircle,
-      bootstrapLayoutSidebar,
       bootstrapPeople,
-      bootstrapPersonAdd,
-      bootstrapPersonGear,
-      bootstrapStar,
-      bootstrapThreeDotsVertical,
-      bootstrapArchive,
-      bootstrapClockHistory,
-      bootstrapCalendar2Check
     }),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '[class.sidebar-host--expanded]': 'isExpanded()',
-    '[class.sidebar-host--ready]': 'transitionsReady()',
-    '(document:click)': 'onDocumentClick($event)',
-    '(document:keydown.escape)': 'onEscapeKey()',
-  },
+  templateUrl: './sidebar.html',
+  styleUrl: './sidebar.css',
 })
-export class SidebarComponent implements OnInit {
-  @ViewChild('profileMenuContainer', { read: ElementRef })
-  private readonly profileMenuContainer?: ElementRef<HTMLElement>;
-  @ViewChild('profileContainer', { read: ElementRef })
-  private readonly profileContainer?: ElementRef<HTMLElement>;
-
+export class SidebarComponent {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly getTenantProfileUseCase = inject(GetTenantProfileUseCase);
+  private readonly router = inject(Router);
+  private readonly getTenantProfile = inject(GetTenantProfileUseCase);
   private readonly userSession = inject(UserSessionService);
   private readonly tokenService = inject(TokenService);
-  private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
 
-  readonly isExpanded = signal(false);
-  readonly transitionsReady = signal(false);
-  readonly tenantName = signal('');
-  readonly tenantEmail = signal('');
+  readonly mobileOpen = input(false);
 
-  readonly isProfileMenuOpen = signal(false);
-  readonly isLogoutConfirmOpen = signal(false);
+  protected readonly home = HOME_NAV;
+  protected readonly groups = NAV_GROUPS;
 
-  readonly tenantNameDisplay = computed(() => this.tenantName().trim() || '—');
-  readonly tenantEmailDisplay = computed(() => this.tenantEmail().trim() || '—');
+  protected readonly collapsedByUser = signal(true);
+  protected readonly expanded = computed(() => !this.collapsedByUser() || this.mobileOpen());
+  protected readonly openGroups = signal<ReadonlySet<string>>(new Set());
+  protected readonly profileOpen = signal(false);
+  protected readonly logoutOpen = signal(false);
 
-  readonly tenantInitials = computed(() => {
-    const name = this.tenantName().trim();
-    if (!name) return '—';
+  protected readonly tenantName = signal('');
+  protected readonly tenantEmail = signal('');
+  protected readonly displayName = computed(() => this.tenantName().trim() || 'Mi cuenta');
+  protected readonly displayEmail = computed(() => this.tenantEmail().trim());
 
-    const parts = name.split(/\s+/).filter(Boolean);
-    const first = parts[0]?.charAt(0) ?? '';
-    const second = (parts.length > 1 ? parts[1]?.charAt(0) : parts[0]?.charAt(1)) ?? '';
-    const initials = (first + second).toUpperCase();
-    return initials || '—';
-  });
+  protected readonly logoSuffix = computed(() => (this.themeService.theme() === 'dark' ? '-white' : ''));
+  protected readonly markSrc = computed(() =>
+    this.themeService.theme() === 'dark' ? '/images/lyhost-mark-dark.svg' : '/images/lyhost-mark.svg',
+  );
 
-  readonly menuItems: MenuItem[] = [
-    { icon: 'bootstrapGrid', label: 'Inicio', route: '/admin/dashboard' },
-    { icon: 'bootstrapCalendar2Check', label: 'Reservas', route: '/admin/reservations' },
-    { icon: 'bootstrapHouseDoor', label: ROOM_LABELS.propertiesAndRooms, route: '/admin/properties' },
-    { icon: 'bootstrapStar', label: 'Experiencias', route: '/admin/experiences' },
-    { icon: 'bootstrapPeople', label: 'Gesti\u00f3n de Empleados', route: '/admin/staff' },
-    { icon: 'bootstrapClockHistory', label: 'Turnos', route: '/admin/shifts' },
-    { icon: 'bootstrapInfoCircle', label: 'Registros de Auditoría', route: '/admin/audit-log' },
-    { icon: 'bootstrapPeople', label: 'CRM de Huéspedes', route: '/admin/crm/guests' },
-    { icon: 'bootstrapBarChartFill', label: 'Novedades Laborales', route: '/admin/incidents' },
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map((e) => e.urlAfterRedirects),
+      startWith(this.router.url),
+    ),
+    { requireSync: true },
+  );
 
-  ];
+  protected readonly currentGroupId = computed(() => groupOfUrl(this.url())?.id ?? null);
 
-  onMouseEnter(): void {
-    this.isExpanded.set(true);
-  }
-
-  onMouseLeave(): void {
-    this.isExpanded.set(false);
-    this.closeProfileMenu();
-  }
-
-  toggleExpanded(): void {
-    this.isExpanded.update((v) => !v);
-    this.closeProfileMenu();
-  }
-
-  toggleProfileMenu(): void {
-    if (!this.isExpanded()) return;
-    this.isProfileMenuOpen.set(!this.isProfileMenuOpen());
-  }
-
-  closeProfileMenu(): void {
-    this.isProfileMenuOpen.set(false);
-  }
-
-  goToSettings(): void {
-    this.closeProfileMenu();
-    void this.router.navigateByUrl('/admin/settings');
-  }
-
-  goToPlans(): void {
-    this.closeProfileMenu();
-    void this.router.navigateByUrl('/admin/plans');
-  }
-
-  goToSessions(): void {
-    this.closeProfileMenu();
-    void this.router.navigateByUrl('/sessions');
-  }
-
-  openLogoutConfirm(): void {
-    this.closeProfileMenu();
-    this.isLogoutConfirmOpen.set(true);
-  }
-
-  closeLogoutConfirm(): void {
-    this.isLogoutConfirmOpen.set(false);
-  }
-
-  confirmLogout(): void {
-    this.closeLogoutConfirm();
-    this.closeProfileMenu();
-    this.tokenService.clear();
-    this.userSession.clear();
-    void this.router.navigateByUrl('/login', { replaceUrl: true });
-  }
-
-  onEscapeKey(): void {
-    this.closeProfileMenu();
-    this.isExpanded.set(false);
-  }
-
-  onDocumentClick(event: MouseEvent): void {
-    if (!this.isProfileMenuOpen()) return;
-
-    const container = this.profileMenuContainer?.nativeElement;
-    const profileContainer = this.profileContainer?.nativeElement;
-    if (!container || !profileContainer) {
-      this.closeProfileMenu();
-      return;
-    }
-
-    const target = event.target as Node | null;
-    if (target && (container.contains(target) || profileContainer.contains(target))) return;
-
-    this.closeProfileMenu();
-  }
-
-  ngOnInit(): void {
-    requestAnimationFrame(() => {
-      this.transitionsReady.set(true);
+  constructor() {
+    // The group that holds the current page is always open.
+    effect(() => {
+      const id = this.currentGroupId();
+      if (id) this.openGroups.update((set) => new Set(set).add(id));
     });
 
-    this.router.events
-      .pipe(
-        filter((e) => e instanceof NavigationEnd),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => {
-        this.isExpanded.set(false);
-        this.closeProfileMenu();
-      });
-
-    this.getTenantProfileUseCase
+    this.getTenantProfile
       .execute()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -228,10 +122,41 @@ export class SidebarComponent implements OnInit {
           this.tenantName.set(res.data?.name ?? '');
           this.tenantEmail.set(res.data?.email ?? this.userSession.currentUser()?.email ?? '');
         },
-        error: () => {
-          this.tenantName.set('');
-          this.tenantEmail.set(this.userSession.currentUser()?.email ?? '');
-        },
+        error: () => this.tenantEmail.set(this.userSession.currentUser()?.email ?? ''),
       });
+  }
+
+  protected toggleRail(): void {
+    this.collapsedByUser.update((v) => !v);
+  }
+
+  protected isOpen(group: NavGroup): boolean {
+    return this.openGroups().has(group.id);
+  }
+
+  /** From the collapsed rail a group icon expands the rail and opens its pages. */
+  protected toggleGroup(group: NavGroup): void {
+    if (!this.expanded()) {
+      this.collapsedByUser.set(false);
+      this.openGroups.update((set) => new Set(set).add(group.id));
+      return;
+    }
+
+    this.openGroups.update((set) => {
+      const next = new Set(set);
+      if (!next.delete(group.id)) next.add(group.id);
+      return next;
+    });
+  }
+
+  protected goToSettings(): void {
+    void this.router.navigateByUrl('/admin/settings');
+  }
+
+  protected confirmLogout(): void {
+    this.logoutOpen.set(false);
+    this.tokenService.clear();
+    this.userSession.clear();
+    void this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 }

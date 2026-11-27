@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="toggle"
+  [class.toggle--dark]="isDark()"
+  aria-label="Tema oscuro"
+  [attr.aria-pressed]="isDark()"
+  (click)="toggled.emit()"
+>
+  <ng-icon class="sun" name="bootstrapSun" size="18" aria-hidden="true" />
+  <ng-icon class="moon" name="bootstrapMoon" size="18" aria-hidden="true" />
+</button>

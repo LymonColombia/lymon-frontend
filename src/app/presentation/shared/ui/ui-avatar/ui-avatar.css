@@ -1,0 +1,18 @@
+:host {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--ly-r-full);
+  background: var(--primary);
+  color: var(--on-primary);
+  font: 700 13px/1 var(--font-sans);
+  letter-spacing: 0.02em;
+}
+
+:host(.ui-avatar--sm) {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}

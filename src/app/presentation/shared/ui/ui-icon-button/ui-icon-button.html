@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="icon-btn"
+  [class.icon-btn--sm]="size() === 'sm'"
+  [disabled]="disabled()"
+  [attr.aria-label]="label()"
+  [attr.aria-pressed]="pressed()"
+  [attr.aria-expanded]="expanded()"
+>
+  <ng-content />
+</button>

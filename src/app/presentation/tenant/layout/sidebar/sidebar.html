@@ -1,97 +1,112 @@
-@if (isExpanded()) {
-  <div class="sidebar-backdrop" (click)="toggleExpanded()" (keydown)="toggleExpanded()" aria-hidden="true"></div>
-}
-
-<nav class="sidebar" [class.sidebar--collapsed]="!isExpanded()" [class.sidebar--ready]="transitionsReady()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-  <div class="sidebar-header">
-    <a routerLink="/lyhost" class="sidebar-logo-link">
+<aside
+  class="rail"
+  [class.rail--expanded]="expanded()"
+  [class.rail--open]="mobileOpen()"
+  aria-label="Navegación principal"
+>
+  <div class="brand">
+    <a class="brand-link" routerLink="/admin/dashboard" aria-label="LyHost, ir al inicio">
+      <img class="brand-mark" [src]="markSrc()" alt="" width="26" height="26" />
       <img
-        class="sidebar-logo-image"
-        [class.sidebar-logo-image--hidden]="!isExpanded()"
-        src="/images/LyHost.svg"
-        alt="LyHost"
-        width="140"
-        height="38"
-      />
-      <img
-        class="sidebar-logo-image--collapsed"
-        [class.sidebar-logo-image--collapsed-visible]="!isExpanded()"
-        src="/images/LyHost.svg"
-        alt="LyHost"
-        width="56"
-        height="14"
+        class="brand-logo lbl"
+        [src]="'/images/lyhost-logo' + logoSuffix() + '.svg'"
+        alt=""
+        width="82"
+        height="30"
       />
     </a>
   </div>
 
-  <ul class="sidebar-menu">
-    @for (item of menuItems; track item.route) {
-      <li class="menu-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <a [routerLink]="item.route" class="menu-link" [attr.title]="!isExpanded() ? item.label : null">
-          <ng-icon [name]="item.icon" size="20px" class="menu-icon" aria-hidden="true"></ng-icon>
-          <span class="menu-label" [class.menu-label--hidden]="!isExpanded()">{{ item.label }}</span>
-        </a>
-      </li>
-    }
-  </ul>
+  <button
+    type="button"
+    class="nav-item toggle"
+    [attr.aria-expanded]="expanded()"
+    [attr.data-tip]="expanded() ? 'Contraer menú' : 'Expandir menú'"
+    (click)="toggleRail()"
+  >
+    <ng-icon class="chev" name="bootstrapChevronDoubleRight" size="18" aria-hidden="true" />
+    <span class="lbl">{{ expanded() ? 'Contraer menú' : 'Expandir menú' }}</span>
+  </button>
 
-  <div class="sidebar-footer" aria-label="Perfil">
-    <button type="button" class="profile" [class.profile--collapsed]="!isExpanded()" (click)="toggleProfileMenu()" #profileContainer>
-      <div class="profile-avatar" aria-hidden="true" [title]="!isExpanded() ? tenantNameDisplay() : null">{{ tenantInitials() }}</div>
-      <div class="profile-text" [class.profile-text--hidden]="!isExpanded()">
-        <div class="profile-name" [title]="tenantNameDisplay()">{{ tenantNameDisplay() }}</div>
-        <div class="profile-email" [title]="tenantEmailDisplay()">{{ tenantEmailDisplay() }}</div>
-      </div>
-    </button>
+  <nav class="nav" aria-label="Módulos">
+    <a
+      class="nav-item"
+      [routerLink]="home.route"
+      routerLinkActive="on"
+      ariaCurrentWhenActive="page"
+      [attr.data-tip]="home.label"
+    >
+      <ng-icon [name]="home.icon" size="18" aria-hidden="true" />
+      <span class="lbl">{{ home.label }}</span>
+    </a>
 
-    @if (isExpanded()) {
-      <div class="profile-menu-container" #profileMenuContainer>
+    @for (group of groups; track group.id) {
+      <div class="group" [class.group--open]="isOpen(group)">
         <button
           type="button"
-          class="profile-menu-trigger"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="isProfileMenuOpen()"
-          aria-label="Opciones de perfil"
-          (click)="toggleProfileMenu()"
+          class="nav-item"
+          [class.is-current]="currentGroupId() === group.id"
+          [attr.aria-expanded]="isOpen(group) && expanded()"
+          [attr.aria-controls]="'subs-' + group.id"
+          [attr.data-tip]="group.label"
+          (click)="toggleGroup(group)"
         >
-          <ng-icon name="bootstrapThreeDotsVertical" size="18px" aria-hidden="true"></ng-icon>
+          <ng-icon [name]="group.icon" size="18" aria-hidden="true" />
+          <span class="lbl">{{ group.label }}</span>
+          <ng-icon class="lbl group-chev" name="bootstrapChevronDown" size="16" aria-hidden="true" />
         </button>
 
-        @if (isProfileMenuOpen()) {
-          <div class="profile-menu" role="menu" aria-label="Opciones">
-            <button type="button" class="profile-menu-item" role="menuitem" (click)="goToSettings()">
-              Configuración
-            </button>
-
-            <button
-              type="button"
-              class="profile-menu-item profile-menu-item--danger"
-              role="menuitem"
-              (click)="openLogoutConfirm()"
-            >
-              Cerrar sesión
-            </button>
+        <div class="subs-wrap" [id]="'subs-' + group.id">
+          <div class="subs">
+            <div class="subs-in">
+              @for (item of group.items; track item.route) {
+                <a
+                  class="sub"
+                  [routerLink]="item.route"
+                  routerLinkActive="on"
+                  ariaCurrentWhenActive="page"
+                >
+                  {{ item.label }}
+                </a>
+              }
+            </div>
           </div>
-        }
+        </div>
       </div>
     }
-  </div>
+  </nav>
 
-  <app-modal
-    [open]="isLogoutConfirmOpen()"
-    title="Cerrar sesión"
-    size="small"
-    (closed)="closeLogoutConfirm()"
+  <app-ui-menu
+    #menu
+    class="me-menu"
+    label="Opciones de perfil"
+    placement="above"
+    align="start"
+    [(open)]="profileOpen"
   >
-    <p>¿Seguro que deseas cerrar sesión?</p>
+    <button menuTrigger type="button" class="me" aria-haspopup="menu" [attr.aria-expanded]="menu.open()">
+      <app-ui-avatar [name]="displayName()" />
+      <span class="lbl me-text">
+        <span class="me-name">{{ displayName() }}</span>
+        <span class="me-email">{{ displayEmail() }}</span>
+      </span>
+    </button>
 
-    <div modal-footer style="display: flex; justify-content: flex-end; gap: 10px;">
-      <app-button variant="secondary" size="medium" type="button" (clicked)="closeLogoutConfirm()">
-        Cancelar
-      </app-button>
-      <app-button variant="primary" size="medium" type="button" (clicked)="confirmLogout()">
-        Cerrar sesión
-      </app-button>
-    </div>
-  </app-modal>
-</nav>
+    <app-ui-menu-item (click)="goToSettings()">
+      <ng-icon name="bootstrapGear" size="16" aria-hidden="true" />
+      Configuración
+    </app-ui-menu-item>
+    <app-ui-menu-item tone="danger" (click)="logoutOpen.set(true)">
+      <ng-icon name="bootstrapBoxArrowRight" size="16" aria-hidden="true" />
+      Cerrar sesión
+    </app-ui-menu-item>
+  </app-ui-menu>
+</aside>
+
+<app-ui-dialog [(open)]="logoutOpen" heading="Cerrar sesión">
+  ¿Seguro que quieres cerrar sesión?
+  <ng-container dialogActions>
+    <app-ui-button variant="secondary" (click)="logoutOpen.set(false)">Cancelar</app-ui-button>
+    <app-ui-button (click)="confirmLogout()">Cerrar sesión</app-ui-button>
+  </ng-container>
+</app-ui-dialog>
