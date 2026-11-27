@@ -66,7 +66,7 @@ h1.title { font: 600 32px/36px var(--font-display); letter-spacing: -0.03em; }
 .ok-badge { transform-origin: center; opacity: 0; animation: okIn 3.6s var(--ease) 0.4s infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pane, .scene-in, .bg-c, .rub, .q, .mail, .ping, .phone, .trail, .shackle-loop, .pop, .ok-badge { animation: none !important; }
+  .pane, .scene-in, .bg-c, .scene .rub, .q, .mail, .ping, .phone, .trail, .shackle-loop, .pop, .ok-badge { animation: none !important; }
   .q, .mail { opacity: 0 !important; }
   .ping, .ok-badge { opacity: 1 !important; }
 }
