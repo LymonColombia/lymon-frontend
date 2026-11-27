@@ -445,29 +445,18 @@ describe('RegisterComponent – register errors', () => {
     return ctx;
   }
 
-  it('should show the email-taken message on 409', async () => {
-    const { component } = await submitWith(new HttpErrorResponse({ status: 409 }));
-    expect(component.errorMessage()).toBe('Ya existe una cuenta con este correo.');
-    expect(component.isLoading()).toBe(false);
-  });
-
-  it('should show the backend message on 400 when present', async () => {
-    const { component } = await submitWith(
+  it.each([
+    ['409', new HttpErrorResponse({ status: 409 }), 'Ya existe una cuenta con este correo.'],
+    [
+      '400 with a backend message',
       new HttpErrorResponse({ status: 400, error: { message: 'El nombre del hotel ya existe' } }),
-    );
-    expect(component.errorMessage()).toBe('El nombre del hotel ya existe');
-    expect(component.isLoading()).toBe(false);
-  });
-
-  it('should show the generic invalid-data message on 400 without a backend message', async () => {
-    const { component } = await submitWith(new HttpErrorResponse({ status: 400 }));
-    expect(component.errorMessage()).toBe('Datos inválidos. Verifica los campos.');
-    expect(component.isLoading()).toBe(false);
-  });
-
-  it('should show the unexpected-error message on other statuses', async () => {
-    const { component } = await submitWith(new HttpErrorResponse({ status: 500 }));
-    expect(component.errorMessage()).toBe('Ocurrió un error inesperado. Inténtalo de nuevo.');
+      'El nombre del hotel ya existe',
+    ],
+    ['400 without a backend message', new HttpErrorResponse({ status: 400 }), 'Datos inválidos. Verifica los campos.'],
+    ['other statuses', new HttpErrorResponse({ status: 500 }), 'Ocurrió un error inesperado. Inténtalo de nuevo.'],
+  ])('should show the right message on %s', async (_case, error, expected) => {
+    const { component } = await submitWith(error);
+    expect(component.errorMessage()).toBe(expected);
     expect(component.isLoading()).toBe(false);
   });
 

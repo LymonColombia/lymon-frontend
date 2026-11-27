@@ -165,10 +165,8 @@ export class RegisterComponent {
   });
   readonly meter = computed(() => {
     const score = this.strength();
-    return [0, 1, 2, 3].map((n) => ({
-      x: 186 + n * 38,
-      fill: n < score ? (score >= 3 ? 'var(--brand-600)' : 'var(--brand-300)') : 'var(--line)',
-    }));
+    const lit = score >= 3 ? 'var(--brand-600)' : 'var(--brand-300)';
+    return [0, 1, 2, 3].map((n) => ({ x: 186 + n * 38, fill: n < score ? lit : 'var(--line)' }));
   });
   readonly planBars = computed(() =>
     this.availablePlans()
