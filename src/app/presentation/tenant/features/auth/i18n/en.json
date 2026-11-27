@@ -1,0 +1,39 @@
+{
+  "login": {
+    "home": "LyHost, back to home",
+    "titleA": "Manage bookings,",
+    "titleB": "guests and shifts",
+    "titleC": "without switching apps.",
+    "lead": "Log in to open your hotel.",
+    "sessionExpired": "Your session expired. Log in again.",
+    "accountCreated": "Your account was created. Log in to continue.",
+    "email": "Email",
+    "emailPlaceholder": "name@hotel.com",
+    "emailRequired": "Enter your email.",
+    "emailInvalid": "That email doesn't look right. Check it has an @ and a domain, for example you@hotel.com.",
+    "password": "Password",
+    "passwordPlaceholder": "Your password",
+    "passwordRequired": "Enter your password.",
+    "passwordShort": "Passwords have at least 8 characters.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Log in",
+    "submitting": "Logging in…",
+    "forgot": "Forgot your password?",
+    "noAccount": "Your hotel doesn't use LyHost yet?",
+    "trial": "Try it free for 5 days",
+    "errors": {
+      "invalidCredentials": "Wrong email or password.",
+      "invalidData": "Invalid data. Check the fields.",
+      "unexpected": "Something went wrong. Try again."
+    },
+    "scene": {
+      "reception": "RECEPTION",
+      "bookingFound": "Booking found",
+      "bookingGuest": "Daniel Ortiz · 3 nights",
+      "checkedIn": "Check-in complete",
+      "room": "Room 204 · $ 735,000",
+      "paid": "Payment recorded"
+    }
+  }
+}

@@ -3,6 +3,8 @@ import { adminGuard } from '@/infrastructure/tenant/guards/admin.guard';
 import { adminPublicGuard } from '@/infrastructure/tenant/guards/admin-public.guard';
 import { TenantShellComponent } from '@/presentation/tenant/layout/tenant-shell/tenant-shell';
 import { LoginComponent } from '@/presentation/tenant/features/auth/pages/login/login';
+import { provideTranslocoScope } from '@jsverse/transloco';
+import { AUTH_SCOPE, loadAuth } from '@/presentation/tenant/features/auth/i18n/auth-i18n';
 import { RegisterComponent } from '@/presentation/tenant/features/auth/pages/register/register';
 import { RecoverPasswordComponent } from '@/presentation/tenant/features/auth/pages/recover-password/recover-password';
 import { ConfirmRecoverPasswordComponent } from '@/presentation/tenant/features/auth/pages/recover-password-confirm/recover-password-confirm';
@@ -33,7 +35,12 @@ import { StorageTestComponent } from '@/presentation/tenant/features/storage-tes
  * Everything behind the session hangs off the /admin shell.
  */
 export const tenantRoutes: Routes = [
-  { path: 'login', component: LoginComponent, canActivate: [adminPublicGuard] },
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [adminPublicGuard, loadAuth],
+    providers: [provideTranslocoScope(AUTH_SCOPE)],
+  },
   { path: 'register', component: RegisterComponent, canActivate: [adminPublicGuard] },
   { path: 'recover-password', component: RecoverPasswordComponent, canActivate: [adminPublicGuard] },
   {

@@ -5,13 +5,23 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { LoginComponent } from './login';
 import { LoginUseCase } from '@/domain/tenant/auth/use-cases/login.use-case';
 import { TutorialService } from '@/presentation/tenant/services/tutorial.service';
+import { TranslocoTestingModule } from '@jsverse/transloco';
+import es from '@/presentation/tenant/features/auth/i18n/es.json';
+import en from '@/presentation/tenant/features/auth/i18n/en.json';
 
 const mockUseCase = { execute: vi.fn() };
 const mockTutorialService = { start: vi.fn() };
 
-async function setup() {
+async function setup(lang: 'es' | 'en' = 'es') {
   await TestBed.configureTestingModule({
-    imports: [LoginComponent],
+    imports: [
+      LoginComponent,
+      TranslocoTestingModule.forRoot({
+        langs: { 'auth/es': es, 'auth/en': en },
+        translocoConfig: { availableLangs: ['es', 'en'], defaultLang: lang },
+        preloadLangs: true,
+      }),
+    ],
     providers: [
       provideRouter([{ path: '**', children: [] }]),
       { provide: LoginUseCase, useValue: mockUseCase },
@@ -164,5 +174,75 @@ describe('LoginComponent – error inesperado', () => {
     component.form.patchValue({ email: 'admin@lymon.com', password: 'Password1' });
     component.onSubmit();
     expect(component.errorMessage()).toBe('Ocurrió un error inesperado. Inténtalo de nuevo.');
+  });
+});
+
+// ─── Mostrar/ocultar contraseña ───────────────────────────────────────────────
+describe('LoginComponent – mostrar/ocultar contraseña', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+  });
+
+  it('oculta la contraseña por defecto con aria-label "Mostrar contraseña"', async () => {
+    const { fixture } = await setup();
+    const el: HTMLElement = fixture.nativeElement;
+    const input = el.querySelector<HTMLInputElement>('#login-password')!;
+    const eye = el.querySelector<HTMLButtonElement>('.eye')!;
+    expect(input.type).toBe('password');
+    expect(eye.getAttribute('aria-label')).toBe('Mostrar contraseña');
+  });
+
+  it('muestra la contraseña y cambia el aria-label al pulsar el botón', async () => {
+    const { fixture, component } = await setup();
+    const el: HTMLElement = fixture.nativeElement;
+    el.querySelector<HTMLButtonElement>('.eye')!.click();
+    fixture.detectChanges();
+    expect(component.showPassword()).toBe(true);
+    expect(el.querySelector<HTMLInputElement>('#login-password')!.type).toBe('text');
+    expect(el.querySelector('.eye')!.getAttribute('aria-label')).toBe('Ocultar contraseña');
+  });
+
+  it('vuelve a ocultar la contraseña al pulsar el botón dos veces', async () => {
+    const { fixture } = await setup();
+    const el: HTMLElement = fixture.nativeElement;
+    const eye = el.querySelector<HTMLButtonElement>('.eye')!;
+    eye.click();
+    fixture.detectChanges();
+    eye.click();
+    fixture.detectChanges();
+    expect(el.querySelector<HTMLInputElement>('#login-password')!.type).toBe('password');
+    expect(eye.getAttribute('aria-label')).toBe('Mostrar contraseña');
+  });
+});
+
+// ─── Idioma ──────────────────────────────────────────────────────────────────
+describe('LoginComponent – idioma', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    TestBed.resetTestingModule();
+  });
+
+  it('muestra el texto en inglés cuando el idioma activo es inglés', async () => {
+    const { fixture } = await setup('en');
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('button[type="submit"]')!.textContent!.trim()).toBe('Log in');
+    expect(el.querySelector('label[for="login-email"]')!.textContent!.trim()).toBe('Email');
+  });
+
+  it('traduce los errores del servidor al idioma activo', async () => {
+    mockUseCase.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
+    const { component } = await setup('en');
+    component.form.patchValue({ email: 'admin@lymon.com', password: 'Password1' });
+    component.onSubmit();
+    expect(component.errorMessage()).toBe('Wrong email or password.');
+  });
+
+  it('el inglés tiene exactamente las mismas claves que el español', () => {
+    const keys = (o: object, path = ''): string[] =>
+      Object.entries(o).flatMap(([k, v]) =>
+        v && typeof v === 'object' ? keys(v, `${path}${k}.`) : [`${path}${k}`],
+      );
+    expect(keys(en)).toEqual(keys(es));
   });
 });

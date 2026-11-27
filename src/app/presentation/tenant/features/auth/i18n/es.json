@@ -1,0 +1,39 @@
+{
+  "login": {
+    "home": "LyHost, volver al inicio",
+    "titleA": "Gestiona reservas,",
+    "titleB": "huéspedes y turnos",
+    "titleC": "sin cambiar de programa.",
+    "lead": "Inicia sesión para entrar a tu hotel.",
+    "sessionExpired": "Tu sesión expiró. Inicia sesión de nuevo.",
+    "accountCreated": "Tu cuenta fue creada. Inicia sesión para continuar.",
+    "email": "Correo",
+    "emailPlaceholder": "nombre@hotel.com",
+    "emailRequired": "Escribe tu correo.",
+    "emailInvalid": "Ese correo no parece válido. Revisa que tenga @ y un dominio, por ejemplo tu@hotel.com.",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Tu contraseña",
+    "passwordRequired": "Escribe tu contraseña.",
+    "passwordShort": "La contraseña tiene al menos 8 caracteres.",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "submit": "Iniciar sesión",
+    "submitting": "Iniciando sesión…",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿Tu hotel aún no usa LyHost?",
+    "trial": "Pruébalo 5 días gratis",
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "invalidData": "Datos inválidos. Verifica los campos.",
+      "unexpected": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    },
+    "scene": {
+      "reception": "RECEPCIÓN",
+      "bookingFound": "Reserva encontrada",
+      "bookingGuest": "Daniel Ortiz · 3 noches",
+      "checkedIn": "Check-in completado",
+      "room": "Hab. 204 · $ 735.000",
+      "paid": "Pago registrado"
+    }
+  }
+}
