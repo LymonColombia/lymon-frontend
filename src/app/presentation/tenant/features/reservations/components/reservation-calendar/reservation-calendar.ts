@@ -58,6 +58,7 @@ interface Bar {
   readonly channel: Channel;
   readonly state: BookingState;
   readonly guest: string;
+  readonly sub: string;
   readonly letter: string;
   readonly left: number;
   readonly width: number;
@@ -91,6 +92,10 @@ export class ReservationCalendarComponent {
   readonly loading = input(false);
 
   readonly bookingSelected = output<string>();
+  /** The empty calendar offers to start the first reservation. */
+  readonly createRequested = output<void>();
+  /** A calendar with only a few units offers to add more. */
+  readonly addUnitsRequested = output<void>();
 
   private readonly scroller = viewChild<ElementRef<HTMLElement>>('scroller');
   private readonly reducedMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -116,6 +121,9 @@ export class ReservationCalendarComponent {
       }))
       .filter((r) => Number.isFinite(r.start) && Number.isFinite(r.end) && r.end > r.start),
   );
+
+  protected readonly resolvedCount = computed(() => this.resolved().length);
+  protected readonly notice = signal('');
 
   protected readonly rangeEnd = computed(() =>
     this.resolved().reduce((max, r) => Math.max(max, r.end + 7), MIN_RANGE_END),
@@ -188,6 +196,7 @@ export class ReservationCalendarComponent {
         channel: booking.channel,
         state: booking.state,
         guest: booking.guest,
+        sub: `${CHANNELS[booking.channel].label} · ${nights} ${nights === 1 ? 'noche' : 'noches'}`,
         letter: CHANNELS[booking.channel].letter,
         left: (visibleFrom - RANGE_START) * COL_W + gapLeft,
         width: (visibleTo - visibleFrom) * COL_W - gapLeft - gapRight,
@@ -202,30 +211,34 @@ export class ReservationCalendarComponent {
 
   protected readonly rows = computed(() => {
     const bars = this.barsByUnit();
-    const window = this.inWindow();
-    const hidden = this.hiddenChannels();
     return this.groups().map((group) => {
-      const unitIds = new Set(group.units.map((u) => u.id));
-      const count = window.filter(
-        (r) => unitIds.has(r.booking.unitId) && !hidden.has(r.booking.channel),
-      ).length;
       return {
         id: group.id,
         name: group.name,
-        meta: `${group.city ? group.city + ' · ' : ''}${count} ${count === 1 ? 'reserva' : 'reservas'}`,
         units: group.units.map((unit) => ({ id: unit.id, name: unit.name, bars: bars.get(unit.id) ?? [] })),
       };
     });
   });
 
-  protected readonly nothingToShow = computed(
-    () => this.unitCount() > 0 && this.barsByUnit().size === 0,
+  /** No reservations at all: the grid stays as a backdrop under a call to action. */
+  protected readonly isZero = computed(() => this.unitCount() > 0 && !this.resolved().length);
+
+  /** Few units: taller rows so the planner does not look sparse. */
+  protected readonly roomy = computed(() => this.unitCount() <= 4);
+
+  protected readonly isFew = computed(
+    () => this.unitCount() > 0 && this.unitCount() <= 3 && this.resolved().length > 0,
   );
 
-  protected readonly emptyMessage = computed(() => {
-    if (!this.resolved().length) return 'Aún no hay reservas. Cuando crees la primera aparecerá aquí.';
-    return 'Ocultaste todos los canales con reservas.';
-  });
+  protected readonly nothingToShow = computed(
+    () => this.unitCount() > 0 && this.resolved().length > 0 && this.barsByUnit().size === 0,
+  );
+
+  protected readonly emptyMessage = computed(() =>
+    this.inWindow().length
+      ? 'Ocultaste todos los canales con reservas en estas fechas.'
+      : 'No hay reservas en estas fechas.',
+  );
 
   constructor() {
     // The grid only exists once there are units to draw, so place it when it appears.
@@ -234,6 +247,10 @@ export class ReservationCalendarComponent {
       this.placed = true;
       afterNextRender(() => this.jumpTo(FIRST_VIEW_OFFSET, false), { injector: this.injector });
     });
+  }
+
+  protected connectChannels(): void {
+    this.notice.set('La conexión con Booking.com y Airbnb llega pronto. Mientras tanto, crea aquí tus reservas directas.');
   }
 
   protected toggleChannel(channel: Channel): void {
@@ -267,22 +284,6 @@ export class ReservationCalendarComponent {
       this.frame = 0;
       this.syncWindow();
     });
-  }
-
-  /** The mouse wheel moves through the dates over the grid; over the unit names the page still scrolls. */
-  protected onWheel(event: WheelEvent): void {
-    const el = this.scroller()?.nativeElement;
-    if (!el || event.ctrlKey || event.shiftKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-    if ((event.target as HTMLElement | null)?.closest('.g-lab')) return;
-
-    const max = el.scrollWidth - el.clientWidth;
-    if (max <= 0) return;
-    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? el.clientWidth : 1;
-    const delta = event.deltaY * unit;
-    if ((delta < 0 && el.scrollLeft <= 0) || (delta > 0 && el.scrollLeft >= max - 1)) return;
-
-    event.preventDefault();
-    el.scrollLeft += delta;
   }
 
   private jumpTo(offset: number, animate = true): void {

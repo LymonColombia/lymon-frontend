@@ -17,7 +17,7 @@
 
   <span class="grow"></span>
 
-  @if (occupancy() !== null) {
+  @if (occupancy() !== null && resolvedCount() > 0) {
     <span class="occ">Ocupación en estas fechas: {{ occupancy() }} %</span>
   }
 
@@ -35,6 +35,7 @@
 
 <section class="card" [attr.aria-busy]="loading()">
   @if (unitCount() > 0) {
+    <div class="g-wrap" [class.roomy]="roomy()">
     <div
       #scroller
       class="gantt"
@@ -42,7 +43,6 @@
       aria-label="Calendario de reservas: desliza horizontalmente para ver más fechas"
       tabindex="0"
       (scroll)="onScroll()"
-      (wheel)="onWheel($event)"
     >
       <div class="g-in">
         <div class="g-head">
@@ -61,7 +61,6 @@
           <div class="g-grp">
             <div class="g-lab">
               <b>{{ group.name }}</b>
-              <span>{{ group.meta }}</span>
             </div>
             <div class="g-fill" [style.width.px]="trackWidth()"></div>
           </div>
@@ -84,7 +83,10 @@
                     (click)="select(bar.id)"
                   >
                     <span class="g-src" aria-hidden="true">{{ bar.letter }}</span>
-                    <span class="g-name">{{ bar.guest }}</span>
+                    <span class="g-txt">
+                      <span class="g-name">{{ bar.guest }}</span>
+                      <span class="g-sub">{{ bar.sub }}</span>
+                    </span>
                   </button>
                 }
               </div>
@@ -94,12 +96,44 @@
       </div>
     </div>
 
+    </div>
+
+    @if (isFew()) {
+      <div class="g-few">
+        <div>
+          <b>Tu calendario tiene {{ unitCount() }} {{ unitCount() === 1 ? 'unidad' : 'unidades' }}</b>
+          <span>Cada habitación, apartamento o cama que agregues en Propiedades aparece aquí como una fila nueva.</span>
+        </div>
+        <app-ui-button variant="secondary" (click)="addUnitsRequested.emit()">Agregar unidades</app-ui-button>
+      </div>
+    }
+
+    @if (isZero()) {
+      <div class="g-few" role="status">
+        <div>
+          <b>Aún no hay reservas</b>
+          <span>
+            Las reservas directas, de Booking.com y de Airbnb aparecerán como barras en la fila de cada unidad.
+          </span>
+          @if (notice()) {
+            <span class="g-notice">{{ notice() }}</span>
+          }
+          <div class="g-zero-demo" aria-hidden="true">
+            <span class="g-bar ly"><span class="g-src">L</span><span class="g-name">Directa</span></span>
+            <span class="g-bar bk"><span class="g-src">B</span><span class="g-name">Booking.com</span></span>
+            <span class="g-bar ab"><span class="g-src">A</span><span class="g-name">Airbnb</span></span>
+          </div>
+        </div>
+        <app-ui-button (click)="createRequested.emit()">Crear la primera reserva</app-ui-button>
+        <app-ui-button variant="secondary" (click)="connectChannels()">Conectar Booking.com y Airbnb</app-ui-button>
+      </div>
+    }
+
     @if (nothingToShow()) {
       <div class="g-empty">{{ emptyMessage() }}</div>
     }
     <div class="g-key">
       <span>Desliza o usa las flechas para cambiar de fechas · toca una reserva para ver el detalle</span>
-      <span>Rayada: pendiente de confirmar · Atenuada: finalizada</span>
     </div>
   } @else {
     <div class="soon">

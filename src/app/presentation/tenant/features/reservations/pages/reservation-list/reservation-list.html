@@ -2,19 +2,10 @@
   <header class="res-head">
     <div>
       <h1 class="res-title">Reservas</h1>
-      <p class="res-sub">Todas las estancias de tus propiedades, unidad por unidad y día por día.</p>
+      <p class="res-sub">Mostrando: <b>{{ scopeLabel() }}</b></p>
     </div>
     <div class="res-actions">
-      <div class="seg" role="group" aria-label="Vista de reservas">
-        <button type="button" class="seg-btn" [class.on]="view() === 'calendar'"
-          [attr.aria-pressed]="view() === 'calendar'" (click)="view.set('calendar')">
-          <app-ui-icon name="operation" [size]="16" />Calendario
-        </button>
-        <button type="button" class="seg-btn" [class.on]="view() === 'list'"
-          [attr.aria-pressed]="view() === 'list'" (click)="view.set('list')">
-          <app-ui-icon name="list" [size]="16" />Lista
-        </button>
-      </div>
+      <span class="res-pill">Canales sin conectar</span>
       <app-ui-button (click)="openWizard()">
         <app-ui-icon name="plus" [size]="16" [strokeWidth]="2" />Nueva reserva
       </app-ui-button>
@@ -28,7 +19,7 @@
   @if (view() === 'calendar') {
   <app-reservation-calendar [groups]="calendarGroups()" [bookings]="calendarBookings()"
     [selectedId]="selectedReservation()?.id ?? null" [loading]="isLoading()"
-    (bookingSelected)="openById($event)" />
+    (bookingSelected)="openById($event)" (createRequested)="openWizard()" (addUnitsRequested)="goToProperties()" />
   } @else {
   <section class="summary-grid" aria-label="Resumen de reservaciones">
     <article class="summary-card">

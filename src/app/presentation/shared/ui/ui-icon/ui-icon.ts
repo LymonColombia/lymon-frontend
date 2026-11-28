@@ -15,6 +15,7 @@ const ICON_PATHS = {
   chevronLeft: 'm15 6-6 6 6 6',
   chevronRight: 'm9 6 6 6-6 6',
   plus: 'M12 5v14M5 12h14',
+  calendarPlus: 'M7 3v3M17 3v3M4 6h16v14H4zM4 10h16M12 13v4M10 15h4',
   list: 'M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01',
   menu: 'M4 6h16M4 12h16M4 18h16',
   sun: 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',

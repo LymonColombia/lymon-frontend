@@ -1,4 +1,5 @@
 import { Component, signal, inject, OnInit, computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -82,6 +83,7 @@ const STATUS_FILTER_OPTIONS: SelectOption[] = [
   ]
 })
 export class TenantReservations implements OnInit {
+  private readonly router = inject(Router);
   private readonly getReservationsUseCase = inject(GetReservationsUseCase);
   private readonly confirmReservationUseCase = inject(ConfirmReservationUseCase);
   private readonly checkInReservationUseCase = inject(CheckInReservationUseCase);
@@ -97,6 +99,14 @@ export class TenantReservations implements OnInit {
   /** The calendar is the main view; the table stays one click away. */
   view = signal<'calendar' | 'list'>('calendar');
   calendarGroups = signal<CalendarGroup[]>([]);
+  goToProperties(): void {
+    void this.router.navigate(['/admin/properties']);
+  }
+
+  scopeLabel = computed(() => {
+    const n = this.calendarGroups().length;
+    return n ? `todas las propiedades (${n})` : 'aún no hay propiedades';
+  });
 
   /** Cancelled stays free their unit, so the calendar leaves them out. */
   calendarBookings = computed<CalendarBooking[]>(() =>
