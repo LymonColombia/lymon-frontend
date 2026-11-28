@@ -1,5 +1,26 @@
-<app-tenant-page-layout title="Gestión de Reservaciones"
-  subtitle="Visualiza todas las reservas registradas en tus propiedades" iconName="bootstrapCalendarEvent">
+<div class="res-page">
+  <header class="res-head">
+    <div>
+      <h1 class="res-title">Reservas</h1>
+      <p class="res-sub">Mostrando: <b>{{ scopeLabel() }}</b></p>
+    </div>
+    <div class="res-actions">
+      <span class="res-pill">Canales sin conectar</span>
+      <app-ui-button (click)="openWizard()">
+        <app-ui-icon name="plus" [size]="16" [strokeWidth]="2" />Nueva reserva
+      </app-ui-button>
+    </div>
+  </header>
+
+  @if (errorMessage() && view() === 'calendar') {
+  <p class="res-error" role="alert">{{ errorMessage() }}</p>
+  }
+
+  @if (view() === 'calendar') {
+  <app-reservation-calendar [groups]="calendarGroups()" [bookings]="calendarBookings()"
+    [selectedId]="selectedReservation()?.id ?? null" [loading]="isLoading()"
+    (bookingSelected)="openById($event)" (createRequested)="openWizard()" (addUnitsRequested)="goToProperties()" />
+  } @else {
   <section class="summary-grid" aria-label="Resumen de reservaciones">
     <article class="summary-card">
       <p class="summary-label">Total de Reservas</p>
@@ -116,6 +137,7 @@
       }
     </div>
   </section>
+  }
 
   @if (selectedReservation(); as res) {
   <div class="modal-overlay-wrapper">
@@ -371,4 +393,4 @@
   <app-create-reservation-wizard (closeWizard)="closeWizard()"
     (reservationCreated)="onReservationCreated()"></app-create-reservation-wizard>
   }
-</app-tenant-page-layout>
+</div>
